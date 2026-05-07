@@ -23,3 +23,30 @@ Edit `index.html` and push to `main`. GitHub Pages republishes within a minute o
 These files describe the **whole origin**. Adding a new project under this Pages
 site means adding a `<url>` entry to `sitemap.xml` and a link to `llms.txt` here,
 then republishing.
+
+## Agent / crawler discovery files
+
+The repository also ships a few files that make the site easier for AI agents
+and crawlers to consume:
+
+| File | Purpose |
+|---|---|
+| `index.md` | Markdown representation of the landing page (advertised from `index.html` as `<link rel="alternate" type="text/markdown">`). |
+| `_headers` | RFC 8288 `Link` response headers and a `Content-Type: text/markdown` rule for `/index.md`. Honored by Cloudflare Pages and Netlify; **GitHub Pages ignores this file**, so the same metadata is also encoded as `<link>` elements in `index.html` and as Content-Signal directives in `robots.txt`. |
+| `robots.txt` | Includes [Content Signals](https://contentsignals.org/) (`Content-Signal: search=yes, ai-train=no, ai-input=no`) declaring AI usage preferences alongside the standard crawler policy. |
+
+### Limitations on GitHub Pages
+
+GitHub Pages does not let us set arbitrary HTTP response headers, so true
+`Accept: text/markdown` content negotiation and origin-level `Link:` headers
+are not possible without fronting the site with a proxy or migrating to a
+host such as Cloudflare Pages or Netlify. The `_headers` file in this
+repository is configured to do the right thing if/when that happens.
+
+References:
+
+- [RFC 8288 — Web Linking](https://www.rfc-editor.org/rfc/rfc8288)
+- [RFC 9727 §3 — `service-doc` / API discovery](https://www.rfc-editor.org/rfc/rfc9727#section-3)
+- [Cloudflare — Markdown for Agents](https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents/)
+- [contentsignals.org](https://contentsignals.org/) /
+  [draft-romm-aipref-contentsignals](https://datatracker.ietf.org/doc/draft-romm-aipref-contentsignals/)
