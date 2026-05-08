@@ -12,6 +12,7 @@ sub-directories that are populated from other repositories.
 | Path | Source repository | Pushed by |
 |---|---|---|
 | [`/move-book/`](https://aptos-labs.github.io/move-book/) | [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) — `third_party/move/documentation/book` | `book/deploy.sh` in aptos-core |
+| [`/framework-book/`](https://aptos-labs.github.io/framework-book/) | [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) — `third_party/move/documentation/framework-book` | `framework-book/deploy.sh` in aptos-core |
 
 ## Updating the landing page
 
