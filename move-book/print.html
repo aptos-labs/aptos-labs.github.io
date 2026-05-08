@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3568a93a.js";
+            window.path_to_searchindex_js = "searchindex-ab367f79.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-3f294769.js"></script>
+        <script src="toc-431fca17.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -202,6 +202,8 @@ The <a href="#integers">Primitive Types</a> and <a href="#local-variables-and-sc
 sections then walk through the language feature by feature, including
 <a href="#modules-and-scripts">modules and scripts</a>. For an overview of what each
 release of the language adds, see <a href="#language-versions">Language Versions</a>.</p>
+<hr>
+<p><em>Build: (local build)</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="integers"><a class="header" href="#integers">Integers</a></h1>
 <p>Move supports six unsigned integer types: <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>, and <code>u256</code>. Values of these types range from 0 to a maximum that depends on the size of the type.</p>
@@ -8384,7 +8386,7 @@ spec bump {
 <li><code>aptos move run</code>, <code>view</code>, or <code>simulate</code> — invoke the published code.</li>
 </ol>
 <h2 id="package-options"><a class="header" href="#package-options">Package options</a></h2>
-<p>The flags below come from <code>MovePackageOptions</code> and are accepted by most package-related subcommands: <code>compile</code>, <code>compile-script</code>, <code>test</code>, <code>lint</code>, <code>fmt</code>, <code>prove</code>, <code>document</code>, <code>clean</code>, <code>publish</code>, <code>deploy-object</code>, <code>upgrade-object</code>, <code>create-resource-account-and-publish-package</code>, <code>verify-package</code>, <code>disassemble</code>, and <code>decompile</code>.</p>
+<p>The flags below come from <code>MovePackageOptions</code> and are accepted by most package-related subcommands: <code>compile</code>, <code>compile-script</code>, <code>test</code>, <code>lint</code>, <code>fmt</code>, <code>prove</code>, <code>document</code>, <code>clean</code>, <code>publish</code>, <code>deploy-object</code>, <code>upgrade-object</code>, <code>verify-package</code>, <code>disassemble</code>, and <code>decompile</code>.</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -8405,7 +8407,7 @@ spec bump {
 </table>
 </div>
 <h2 id="transaction-options"><a class="header" href="#transaction-options">Transaction options</a></h2>
-<p>The flags below are accepted by every subcommand that submits a transaction: <code>publish</code>, <code>deploy-object</code>, <code>upgrade-object</code>, <code>create-resource-account-and-publish-package</code>, <code>run</code>, <code>run-script</code>, <code>view</code>, <code>simulate</code>.</p>
+<p>The flags below are accepted by every subcommand that submits a transaction: <code>publish</code>, <code>deploy-object</code>, <code>upgrade-object</code>, <code>run</code>, <code>run-script</code>, <code>view</code>, <code>simulate</code>.</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -8446,6 +8448,7 @@ aptos move init --name my_package --template hello-blockchain
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/create-package">Create Package</a>, <a href="https://aptos.dev/build/cli/start-from-template">Start a Move package from a template</a>.</em></p>
 <h2 id="aptos-move-compile-alias-build"><a class="header" href="#aptos-move-compile-alias-build"><code>aptos move compile</code> (alias: <code>build</code>)</a></h2>
 <p>Compile a Move package to bytecode, writing artifacts under <code>&lt;package-dir&gt;/build/</code>.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move compile
@@ -8463,11 +8466,13 @@ aptos move compile --named-addresses example=0x42 --save-metadata
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/compiling">Compiling (Move)</a>.</em></p>
 <h2 id="aptos-move-compile-script-alias-build-script"><a class="header" href="#aptos-move-compile-script-alias-build-script"><code>aptos move compile-script</code> (alias: <code>build-script</code>)</a></h2>
 <p>Compile a single <code>script { ... }</code> source file into a transaction script blob and report its hash.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move compile-script --package-dir my_script_pkg
 </code></pre>
 <p>The package must contain exactly one script source. Use the resulting <code>.mv</code> with <a href="#aptos-move-run-script"><code>aptos move run-script</code></a>.</p>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/scripts/compiling-scripts">Compiling Move Scripts</a>.</em></p>
 <h2 id="aptos-move-test"><a class="header" href="#aptos-move-test"><code>aptos move test</code></a></h2>
 <p>Run all functions annotated with <code>#[test]</code> in the package. Test code under <code>tests/</code> and inside <code>#[test_only]</code> modules is included automatically.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move test
@@ -8511,6 +8516,10 @@ aptos move coverage bytecode --module my_module
 </div>
 <h2 id="aptos-move-prove"><a class="header" href="#aptos-move-prove"><code>aptos move prove</code></a></h2>
 <p>Run the <a href="#move-specification-language">Move Prover</a> against the package’s spec blocks.</p>
+<p>The prover relies on two external binaries — <code>boogie</code> and <code>z3</code> — which the CLI doesn’t bundle. Install (or update) them once before running <code>prove</code>:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos update prover-dependencies
+</code></pre>
+<p>Then:</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move prove
 aptos move prove --filter Counter --vc-timeout 60
 </code></pre>
@@ -8524,10 +8533,10 @@ aptos move prove --filter Counter --vc-timeout 60
 <tr><td><code>--only &lt;FN&gt;</code> / <code>-o &lt;FN&gt;</code></td><td>Verify only the named function (e.g., <code>mod::increment</code> or just <code>increment</code>).</td></tr>
 <tr><td><code>--verbosity &lt;LEVEL&gt;</code> / <code>-v</code></td><td>Diagnostic verbosity: <code>error</code>, <code>warn</code>, <code>info</code>, <code>debug</code>.</td></tr>
 <tr><td><code>--proc-cores &lt;N&gt;</code></td><td>Parallelism for verification conditions.</td></tr>
-<tr><td><code>--vc-timeout &lt;SECS&gt;</code></td><td>Per-VC SMT solver timeout (soft).</td></tr>
-<tr><td><code>--cvc5</code></td><td>Use CVC5 instead of Z3. Requires <code>CVC5_EXE</code> in the environment.</td></tr>
-<tr><td><code>--random-seed &lt;N&gt;</code></td><td>Pin the prover’s random seed (useful for reproducing flaky timeouts).</td></tr>
+<tr><td><code>--vc-timeout &lt;SECS&gt;</code></td><td>Per-function SMT solver timeout (soft).</td></tr>
+<tr><td><code>--random-seed &lt;N&gt;</code></td><td>Pin the prover’s random seed .</td></tr>
 <tr><td><code>--check-inconsistency</code></td><td>Smoke-check that specs aren’t contradicting themselves.</td></tr>
+<tr><td><code>--dump</code></td><td>Dump intermediate step results (bytecode, generated SMT, Z3 trace, …) to files alongside the package. Useful when debugging a verification failure.</td></tr>
 </tbody>
 </table>
 </div>
@@ -8549,8 +8558,13 @@ aptos move lint --list-checks            # show every available lint, grouped by
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/linter">Aptos Move Lint</a>.</em></p>
 <h2 id="aptos-move-fmt"><a class="header" href="#aptos-move-fmt"><code>aptos move fmt</code></a></h2>
 <p>Format Move source files in place using <code>movefmt</code>.</p>
+<p><code>movefmt</code> is a separate binary that the CLI doesn’t bundle. Install (or update) it once before running <code>fmt</code>:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos update movefmt
+</code></pre>
+<p>Then:</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move fmt                                 # rewrite files in place
 aptos move fmt --emit-mode diff                # show a diff instead
 aptos move fmt --emit-mode std-out             # print to stdout
@@ -8570,6 +8584,7 @@ aptos move fmt --file-path src/foo.move src/bar.move
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/cli/formatting-move-contracts">Formatting Move Contracts</a>.</em></p>
 <h2 id="aptos-move-document-alias-doc"><a class="header" href="#aptos-move-document-alias-doc"><code>aptos move document</code> (alias: <code>doc</code>)</a></h2>
 <p>Generate Markdown documentation from <code>///</code> doc-comments and spec blocks. Output lands in <code>&lt;package-dir&gt;/build/&lt;package&gt;/doc/</code>.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move document
@@ -8626,7 +8641,6 @@ aptos move decompile --bytecode-path some_module.mv
 <ul>
 <li><strong>Account publishing</strong> (<code>publish</code> / <code>deploy</code>): the modules live at the <strong>signer’s account address</strong>. Simplest pattern. Upgrades happen by re-publishing from the same account. The signer owns upgrade authority and can’t transfer it.</li>
 <li><strong>Code-object publishing</strong> (<code>deploy-object</code> / <code>upgrade-object</code>): the modules live at a <strong>separate, derived object address</strong>. Upgrade authority is held in a code object and can be transferred. Use this when modules need an address independent of any single account.</li>
-<li><strong>Resource-account publishing</strong> (<code>create-resource-account-and-publish-package</code>): the modules live at a <strong>deterministic address derived from a seed</strong>. Use this when a stable, reproducible address is required and you don’t need to transfer upgrade authority.</li>
 </ul>
 <p>For code review and reproducibility, <a href="#aptos-move-verify-package"><code>verify-package</code></a> checks that on-chain bytecode matches a local source tree.</p>
 <h2 id="aptos-move-publish-alias-deploy"><a class="header" href="#aptos-move-publish-alias-deploy"><code>aptos move publish</code> (alias: <code>deploy</code>)</a></h2>
@@ -8647,6 +8661,8 @@ aptos move publish --named-addresses example=0x42 --included-artifacts sparse
 </tbody>
 </table>
 </div>
+<p>Re-publishing this command upgrades the package in place, subject to the <a href="#package-upgrades">package upgrade rules</a>.</p>
+<p><em>See also: <a href="https://aptos.dev/build/cli/working-with-move-contracts">Working With Move Contracts</a>, <a href="#package-upgrades">Package Upgrades</a>.</em></p>
 <h2 id="aptos-move-deploy-object"><a class="header" href="#aptos-move-deploy-object"><code>aptos move deploy-object</code></a></h2>
 <p>Publish the package as a <strong>code object</strong> at a freshly derived object address. The chosen named address (passed by <code>--address-name</code>) is auto-bound to that object’s address before compile.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move deploy-object \
@@ -8664,8 +8680,9 @@ aptos move publish --named-addresses example=0x42 --included-artifacts sparse
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/deployment">Object Code Deployment</a>, <a href="#package-upgrades">Package Upgrades</a>.</em></p>
 <h2 id="aptos-move-upgrade-object"><a class="header" href="#aptos-move-upgrade-object"><code>aptos move upgrade-object</code></a></h2>
-<p>Upgrade a package previously published with <code>deploy-object</code>. The original <code>--address-name</code> is rebound to the existing object address (passed via <code>--object-address</code>) so the rebuild produces the same module ids.</p>
+<p>Upgrade a package previously published with <code>deploy-object</code>. The original <code>--address-name</code> is rebound to the existing object address (passed via <code>--object-address</code>) so the rebuild produces the same module ids. The new bytecode must satisfy the <a href="#package-upgrades">package upgrade rules</a> against the version currently on-chain.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move upgrade-object \
   --address-name example \
   --object-address 0xABC...123 \
@@ -8683,26 +8700,7 @@ aptos move publish --named-addresses example=0x42 --included-artifacts sparse
 </tbody>
 </table>
 </div>
-<h2 id="aptos-move-create-resource-account-and-publish-package"><a class="header" href="#aptos-move-create-resource-account-and-publish-package"><code>aptos move create-resource-account-and-publish-package</code></a></h2>
-<p>Create a resource account derived from <code>(signer_address, seed)</code> and publish the package under it.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move create-resource-account-and-publish-package \
-  --address-name example \
-  --seed my_seed_v1 \
-  --profile devnet
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--address-name &lt;NAME&gt;</code></td><td>Named address bound to the derived resource-account address before compile.</td></tr>
-<tr><td><code>--seed &lt;STRING&gt;</code></td><td>Seed used to derive the address. Same <code>(signer, seed)</code> always derives the same resource account.</td></tr>
-<tr><td><code>--seed-encoding &lt;bcs|utf8|hex&gt;</code></td><td>How the seed string is converted to bytes. Default <code>bcs</code> (legacy). <code>utf8</code> matches Move’s <code>b"…"</code> literal; <code>hex</code> reads the seed as hex bytes.</td></tr>
-<tr><td><code>--included-artifacts</code>, <code>--override-size-check</code></td><td>Same as <code>publish</code>.</td></tr>
-</tbody>
-</table>
-</div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/deployment">Object Code Deployment</a>, <a href="#package-upgrades">Package Upgrades</a>.</em></p>
 <h2 id="aptos-move-verify-package"><a class="header" href="#aptos-move-verify-package"><code>aptos move verify-package</code></a></h2>
 <p>Build the package locally and verify that the on-chain copy matches.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move verify-package --account 0xABC...123
@@ -8790,6 +8788,7 @@ aptos move run-script \
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/scripts/running-scripts">Running Move Scripts</a>.</em></p>
 <h2 id="aptos-move-view"><a class="header" href="#aptos-move-view"><code>aptos move view</code></a></h2>
 <p>Call a <code>#[view]</code> function. View functions don’t change state and don’t submit a transaction; the result is read directly from the fullnode.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move view \
@@ -8840,6 +8839,7 @@ aptos move replay --network testnet --txn-id 87654321 --profile-gas
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/cli/replay-past-transactions">Replaying Past Transactions</a>.</em></p>
 <h2 id="aptos-move-list"><a class="header" href="#aptos-move-list"><code>aptos move list</code></a></h2>
 <p>List on-chain packages owned by an account.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move list --account 0xABC...123 --profile devnet

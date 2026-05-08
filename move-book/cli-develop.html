@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3568a93a.js";
+            window.path_to_searchindex_js = "searchindex-ab367f79.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-3f294769.js"></script>
+        <script src="toc-431fca17.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -200,6 +200,7 @@ aptos move init --name my_package --template hello-blockchain
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/create-package">Create Package</a>, <a href="https://aptos.dev/build/cli/start-from-template">Start a Move package from a template</a>.</em></p>
 <h2 id="aptos-move-compile-alias-build"><a class="header" href="#aptos-move-compile-alias-build"><code>aptos move compile</code> (alias: <code>build</code>)</a></h2>
 <p>Compile a Move package to bytecode, writing artifacts under <code>&lt;package-dir&gt;/build/</code>.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move compile
@@ -217,11 +218,13 @@ aptos move compile --named-addresses example=0x42 --save-metadata
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/compiling">Compiling (Move)</a>.</em></p>
 <h2 id="aptos-move-compile-script-alias-build-script"><a class="header" href="#aptos-move-compile-script-alias-build-script"><code>aptos move compile-script</code> (alias: <code>build-script</code>)</a></h2>
 <p>Compile a single <code>script { ... }</code> source file into a transaction script blob and report its hash.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move compile-script --package-dir my_script_pkg
 </code></pre>
 <p>The package must contain exactly one script source. Use the resulting <code>.mv</code> with <a href="./cli-run.html#aptos-move-run-script"><code>aptos move run-script</code></a>.</p>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/scripts/compiling-scripts">Compiling Move Scripts</a>.</em></p>
 <h2 id="aptos-move-test"><a class="header" href="#aptos-move-test"><code>aptos move test</code></a></h2>
 <p>Run all functions annotated with <code>#[test]</code> in the package. Test code under <code>tests/</code> and inside <code>#[test_only]</code> modules is included automatically.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move test
@@ -265,6 +268,10 @@ aptos move coverage bytecode --module my_module
 </div>
 <h2 id="aptos-move-prove"><a class="header" href="#aptos-move-prove"><code>aptos move prove</code></a></h2>
 <p>Run the <a href="./spec-lang.html">Move Prover</a> against the package’s spec blocks.</p>
+<p>The prover relies on two external binaries — <code>boogie</code> and <code>z3</code> — which the CLI doesn’t bundle. Install (or update) them once before running <code>prove</code>:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos update prover-dependencies
+</code></pre>
+<p>Then:</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move prove
 aptos move prove --filter Counter --vc-timeout 60
 </code></pre>
@@ -278,10 +285,10 @@ aptos move prove --filter Counter --vc-timeout 60
 <tr><td><code>--only &lt;FN&gt;</code> / <code>-o &lt;FN&gt;</code></td><td>Verify only the named function (e.g., <code>mod::increment</code> or just <code>increment</code>).</td></tr>
 <tr><td><code>--verbosity &lt;LEVEL&gt;</code> / <code>-v</code></td><td>Diagnostic verbosity: <code>error</code>, <code>warn</code>, <code>info</code>, <code>debug</code>.</td></tr>
 <tr><td><code>--proc-cores &lt;N&gt;</code></td><td>Parallelism for verification conditions.</td></tr>
-<tr><td><code>--vc-timeout &lt;SECS&gt;</code></td><td>Per-VC SMT solver timeout (soft).</td></tr>
-<tr><td><code>--cvc5</code></td><td>Use CVC5 instead of Z3. Requires <code>CVC5_EXE</code> in the environment.</td></tr>
-<tr><td><code>--random-seed &lt;N&gt;</code></td><td>Pin the prover’s random seed (useful for reproducing flaky timeouts).</td></tr>
+<tr><td><code>--vc-timeout &lt;SECS&gt;</code></td><td>Per-function SMT solver timeout (soft).</td></tr>
+<tr><td><code>--random-seed &lt;N&gt;</code></td><td>Pin the prover’s random seed .</td></tr>
 <tr><td><code>--check-inconsistency</code></td><td>Smoke-check that specs aren’t contradicting themselves.</td></tr>
+<tr><td><code>--dump</code></td><td>Dump intermediate step results (bytecode, generated SMT, Z3 trace, …) to files alongside the package. Useful when debugging a verification failure.</td></tr>
 </tbody>
 </table>
 </div>
@@ -303,8 +310,13 @@ aptos move lint --list-checks            # show every available lint, grouped by
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/linter">Aptos Move Lint</a>.</em></p>
 <h2 id="aptos-move-fmt"><a class="header" href="#aptos-move-fmt"><code>aptos move fmt</code></a></h2>
 <p>Format Move source files in place using <code>movefmt</code>.</p>
+<p><code>movefmt</code> is a separate binary that the CLI doesn’t bundle. Install (or update) it once before running <code>fmt</code>:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos update movefmt
+</code></pre>
+<p>Then:</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move fmt                                 # rewrite files in place
 aptos move fmt --emit-mode diff                # show a diff instead
 aptos move fmt --emit-mode std-out             # print to stdout
@@ -324,6 +336,7 @@ aptos move fmt --file-path src/foo.move src/bar.move
 </tbody>
 </table>
 </div>
+<p><em>See also: <a href="https://aptos.dev/build/cli/formatting-move-contracts">Formatting Move Contracts</a>.</em></p>
 <h2 id="aptos-move-document-alias-doc"><a class="header" href="#aptos-move-document-alias-doc"><code>aptos move document</code> (alias: <code>doc</code>)</a></h2>
 <p>Generate Markdown documentation from <code>///</code> doc-comments and spec blocks. Output lands in <code>&lt;package-dir&gt;/build/&lt;package&gt;/doc/</code>.</p>
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move document
