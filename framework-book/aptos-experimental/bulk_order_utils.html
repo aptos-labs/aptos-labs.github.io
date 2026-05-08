@@ -1,0 +1,711 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>bulk_order_utils - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap-384c98b0.css">
+        <link rel="stylesheet" href="../theme/build-stamp-020e146c.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-589e30ea.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-0b791361.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-experimental/bulk_order_utils.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-0x7bulk_order_utils"><a class="header" href="#module-0x7bulk_order_utils">Module <code>0x7::bulk_order_utils</code> <a id="0x7_bulk_order_utils"></a></a></h1>
+<ul>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x7_bulk_order_utils_new_bulk_order_request_with_sanitization">Function <code>new_bulk_order_request_with_sanitization</code></a>
+<ul>
+<li><a href="#@Aborts:_1">Aborts:</a></li>
+</ul>
+</li>
+<li><a href="#0x7_bulk_order_utils_new_bulk_order_with_sanitization">Function <code>new_bulk_order_with_sanitization</code></a>
+<ul>
+<li><a href="#@Arguments:_2">Arguments:</a></li>
+<li><a href="#@Returns:_3">Returns:</a></li>
+</ul>
+</li>
+<li><a href="#0x7_bulk_order_utils_validate_not_zero_sizes">Function <code>validate_not_zero_sizes</code></a>
+<ul>
+<li><a href="#@Arguments:_4">Arguments:</a></li>
+</ul>
+</li>
+<li><a href="#0x7_bulk_order_utils_validate_price_ordering">Function <code>validate_price_ordering</code></a>
+<ul>
+<li><a href="#@Arguments:_5">Arguments:</a></li>
+</ul>
+</li>
+<li><a href="#0x7_bulk_order_utils_trim_start">Function <code>trim_start</code></a></li>
+<li><a href="#0x7_bulk_order_utils_discard_price_crossing_levels">Function <code>discard_price_crossing_levels</code></a></li>
+<li><a href="#0x7_bulk_order_utils_reinsert_order_into_bulk_order">Function <code>reinsert_order_into_bulk_order</code></a>
+<ul>
+<li><a href="#@Arguments:_6">Arguments:</a></li>
+</ul>
+</li>
+<li><a href="#0x7_bulk_order_utils_match_order_and_get_next_from_bulk_order">Function <code>match_order_and_get_next_from_bulk_order</code></a>
+<ul>
+<li><a href="#@Arguments:_7">Arguments:</a></li>
+<li><a href="#@Returns:_8">Returns:</a></li>
+<li><a href="#@Aborts:_9">Aborts:</a></li>
+</ul>
+</li>
+<li><a href="#0x7_bulk_order_utils_cancel_at_price_level">Function <code>cancel_at_price_level</code></a>
+<ul>
+<li><a href="#@Arguments:_10">Arguments:</a></li>
+<li><a href="#@Returns:_11">Returns:</a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../aptos-framework/timestamp.html#0x1_timestamp">0x1::timestamp</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+<b>use</b> <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types">0x5::bulk_order_types</a>;
+<b>use</b> <a href="../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+<b>use</b> <a href="../aptos-trading/order_match_types.html#0x5_order_match_types">0x5::order_match_types</a>;
+</code></pre>
+
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x7_bulk_order_utils_EPRICE_CROSSING"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_EPRICE_CROSSING">EPRICE_CROSSING</a>: u64 = 1;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_EUNEXPECTED_MATCH_SIZE"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_EUNEXPECTED_MATCH_SIZE">EUNEXPECTED_MATCH_SIZE</a>: u64 = 11;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_ASK_LENGTH_MISMATCH"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_ASK_LENGTH_MISMATCH">E_ASK_LENGTH_MISMATCH</a>: u64 = 3;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_ASK_ORDER_INVALID"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_ASK_ORDER_INVALID">E_ASK_ORDER_INVALID</a>: u64 = 8;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_ASK_SIZE_ZERO"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_ASK_SIZE_ZERO">E_ASK_SIZE_ZERO</a>: u64 = 6;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_BID_LENGTH_MISMATCH"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BID_LENGTH_MISMATCH">E_BID_LENGTH_MISMATCH</a>: u64 = 2;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_BID_ORDER_INVALID"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BID_ORDER_INVALID">E_BID_ORDER_INVALID</a>: u64 = 7;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_BID_SIZE_ZERO"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BID_SIZE_ZERO">E_BID_SIZE_ZERO</a>: u64 = 5;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_BULK_ORDER_DEPTH_EXCEEDED"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BULK_ORDER_DEPTH_EXCEEDED">E_BULK_ORDER_DEPTH_EXCEEDED</a>: u64 = 9;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_EMPTY_ORDER"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_EMPTY_ORDER">E_EMPTY_ORDER</a>: u64 = 4;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_E_INVALID_SEQUENCE_NUMBER"></a></p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_INVALID_SEQUENCE_NUMBER">E_INVALID_SEQUENCE_NUMBER</a>: u64 = 10;
+</code></pre>
+
+<p><a id="0x7_bulk_order_utils_MAX_BULK_ORDER_DEPTH_PER_SIDE"></a></p>
+<p>Maximum number of price levels per side (bid or ask) in a bulk order.
+This limit prevents gas DoS scenarios when cancelling bulk orders.</p>
+<pre><code><b>const</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_MAX_BULK_ORDER_DEPTH_PER_SIDE">MAX_BULK_ORDER_DEPTH_PER_SIDE</a>: u64 = 30;
+</code></pre>
+
+<h2 id="function-new_bulk_order_request_with_sanitization"><a class="header" href="#function-new_bulk_order_request_with_sanitization">Function <code>new_bulk_order_request_with_sanitization</code> <a id="0x7_bulk_order_utils_new_bulk_order_request_with_sanitization"></a></a></h2>
+<h3 id="aborts"><a class="header" href="#aborts">Aborts: <a id="@Aborts:_1"></a></a></h3>
+<ul>
+<li>If sequence_number is 0 (reserved to avoid ambiguity in events)</li>
+<li>If bid_prices and bid_sizes have different lengths</li>
+<li>If ask_prices and ask_sizes have different lengths</li>
+<li>If bid_prices or ask_prices exceeds MAX_BULK_ORDER_DEPTH_PER_SIDE (30) levels</li>
+</ul>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_new_bulk_order_request_with_sanitization">new_bulk_order_request_with_sanitization</a>&lt;M: <b>copy</b>, drop, store&gt;(<a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, sequence_number: u64, bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, metadata: M): <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrderRequest">bulk_order_types::BulkOrderRequest</a>&lt;M&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_new_bulk_order_request_with_sanitization">new_bulk_order_request_with_sanitization</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    sequence_number: u64,
+    bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    metadata: M
+): BulkOrderRequest&lt;M&gt; {
+    // Sequence number 0 is reserved <b>to</b> avoid ambiguity in events
+    <b>assert</b>!(sequence_number &gt; 0, <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_INVALID_SEQUENCE_NUMBER">E_INVALID_SEQUENCE_NUMBER</a>);
+
+    <b>let</b> num_bids = bid_prices.length();
+    <b>let</b> num_asks = ask_prices.length();
+
+    // Basic length validation
+    <b>assert</b>!(num_bids == bid_sizes.length(), <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BID_LENGTH_MISMATCH">E_BID_LENGTH_MISMATCH</a>);
+    <b>assert</b>!(num_asks == ask_sizes.length(), <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_ASK_LENGTH_MISMATCH">E_ASK_LENGTH_MISMATCH</a>);
+    <b>assert</b>!(num_bids &gt; 0 || num_asks &gt; 0, <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_EMPTY_ORDER">E_EMPTY_ORDER</a>);
+    // Depth validation <b>to</b> prevent gas DoS when cancelling
+    <b>assert</b>!(num_bids &lt;= <a href="bulk_order_utils.html#0x7_bulk_order_utils_MAX_BULK_ORDER_DEPTH_PER_SIDE">MAX_BULK_ORDER_DEPTH_PER_SIDE</a>, <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BULK_ORDER_DEPTH_EXCEEDED">E_BULK_ORDER_DEPTH_EXCEEDED</a>);
+    <b>assert</b>!(num_asks &lt;= <a href="bulk_order_utils.html#0x7_bulk_order_utils_MAX_BULK_ORDER_DEPTH_PER_SIDE">MAX_BULK_ORDER_DEPTH_PER_SIDE</a>, <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BULK_ORDER_DEPTH_EXCEEDED">E_BULK_ORDER_DEPTH_EXCEEDED</a>);
+    <b>assert</b>!(<a href="bulk_order_utils.html#0x7_bulk_order_utils_validate_not_zero_sizes">validate_not_zero_sizes</a>(&amp;bid_sizes), <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BID_SIZE_ZERO">E_BID_SIZE_ZERO</a>);
+    <b>assert</b>!(<a href="bulk_order_utils.html#0x7_bulk_order_utils_validate_not_zero_sizes">validate_not_zero_sizes</a>(&amp;ask_sizes), <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_ASK_SIZE_ZERO">E_ASK_SIZE_ZERO</a>);
+    <b>assert</b>!(<a href="bulk_order_utils.html#0x7_bulk_order_utils_validate_price_ordering">validate_price_ordering</a>(&amp;bid_prices, <b>true</b>), <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_BID_ORDER_INVALID">E_BID_ORDER_INVALID</a>);
+    <b>assert</b>!(<a href="bulk_order_utils.html#0x7_bulk_order_utils_validate_price_ordering">validate_price_ordering</a>(&amp;ask_prices, <b>false</b>), <a href="bulk_order_utils.html#0x7_bulk_order_utils_E_ASK_ORDER_INVALID">E_ASK_ORDER_INVALID</a>);
+
+    <b>if</b> (num_bids &gt; 0 &amp;&amp; num_asks &gt; 0) {
+        // First element in bids is the highest (descending order), first element in asks is the lowest (ascending
+        // order).
+        <b>assert</b>!(bid_prices[0] &lt; ask_prices[0], <a href="bulk_order_utils.html#0x7_bulk_order_utils_EPRICE_CROSSING">EPRICE_CROSSING</a>);
+    };
+    <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_new_bulk_order_request">bulk_order_types::new_bulk_order_request</a>(
+        <a href="../aptos-framework/account.html#0x1_account">account</a>,
+        sequence_number,
+        bid_prices,
+        bid_sizes,
+        ask_prices,
+        ask_sizes,
+        metadata
+    )
+}
+</code></pre>
+
+</details>
+<h2 id="function-new_bulk_order_with_sanitization"><a class="header" href="#function-new_bulk_order_with_sanitization">Function <code>new_bulk_order_with_sanitization</code> <a id="0x7_bulk_order_utils_new_bulk_order_with_sanitization"></a></a></h2>
+<p>Creates a new bulk order with the specified parameters.</p>
+<h3 id="arguments"><a class="header" href="#arguments">Arguments: <a id="@Arguments:_2"></a></a></h3>
+<ul>
+<li><code>order_id</code>: Unique identifier for the order</li>
+<li><code>unique_priority_idx</code>: Priority index for time-based ordering</li>
+<li><code>order_req</code>: The bulk order request containing all order details</li>
+<li><code>best_bid_price</code>: Current best bid price in the market</li>
+<li><code>best_ask_price</code>: Current best ask price in the market</li>
+</ul>
+<h3 id="returns"><a class="header" href="#returns">Returns: <a id="@Returns:_3"></a></a></h3>
+<p>A tuple containing:</p>
+<ul>
+<li><code>BulkOrder&lt;M&gt;</code>: The created bulk order with non-crossing levels</li>
+<li><code><a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>: Cancelled bid prices (levels that crossed the spread)</li>
+<li><code><a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>: Cancelled bid sizes corresponding to cancelled prices</li>
+<li><code><a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>: Cancelled ask prices (levels that crossed the spread)</li>
+<li><code><a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>: Cancelled ask sizes corresponding to cancelled prices</li>
+</ul>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_new_bulk_order_with_sanitization">new_bulk_order_with_sanitization</a>&lt;M: <b>copy</b>, drop, store&gt;(order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, unique_priority_idx: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>, order_req: <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrderRequest">bulk_order_types::BulkOrderRequest</a>&lt;M&gt;, best_bid_price: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;, best_ask_price: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;): (<a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrder">bulk_order_types::BulkOrder</a>&lt;M&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_new_bulk_order_with_sanitization">new_bulk_order_with_sanitization</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    order_id: OrderId,
+    unique_priority_idx: IncreasingIdx,
+    order_req: BulkOrderRequest&lt;M&gt;,
+    best_bid_price: Option&lt;u64&gt;,
+    best_ask_price: Option&lt;u64&gt;
+): (BulkOrder&lt;M&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;) {
+    <b>let</b> creation_time_micros = <a href="../aptos-framework/timestamp.html#0x1_timestamp_now_microseconds">timestamp::now_microseconds</a>();
+    <b>let</b> bid_price_crossing_idx =
+        <a href="bulk_order_utils.html#0x7_bulk_order_utils_discard_price_crossing_levels">discard_price_crossing_levels</a>(
+            &amp;order_req.get_all_prices(<b>true</b>), best_ask_price, <b>true</b>
+        );
+    <b>let</b> ask_price_crossing_idx =
+        <a href="bulk_order_utils.html#0x7_bulk_order_utils_discard_price_crossing_levels">discard_price_crossing_levels</a>(
+            &amp;order_req.get_all_prices(<b>false</b>), best_bid_price, <b>false</b>
+        );
+
+    // Extract cancelled levels (the ones that were discarded)
+    <b>let</b> (cancelled_bid_prices, cancelled_bid_sizes) =
+        <b>if</b> (bid_price_crossing_idx &gt; 0) {
+            <b>let</b> cancelled_bid_prices =
+                <a href="bulk_order_utils.html#0x7_bulk_order_utils_trim_start">trim_start</a>(
+                    order_req.get_all_prices_mut(<b>true</b>), bid_price_crossing_idx
+                );
+            <b>let</b> cancelled_bid_sizes =
+                <a href="bulk_order_utils.html#0x7_bulk_order_utils_trim_start">trim_start</a>(
+                    order_req.get_all_sizes_mut(<b>true</b>), bid_price_crossing_idx
+                );
+            (cancelled_bid_prices, cancelled_bid_sizes)
+        } <b>else</b> {
+            (<a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>&lt;u64&gt;(), <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>&lt;u64&gt;())
+        };
+    <b>let</b> (cancelled_ask_prices, cancelled_ask_sizes) =
+        <b>if</b> (ask_price_crossing_idx &gt; 0) {
+            <b>let</b> cancelled_ask_prices =
+                <a href="bulk_order_utils.html#0x7_bulk_order_utils_trim_start">trim_start</a>(
+                    order_req.get_all_prices_mut(<b>false</b>), ask_price_crossing_idx
+                );
+            <b>let</b> cancelled_ask_sizes =
+                <a href="bulk_order_utils.html#0x7_bulk_order_utils_trim_start">trim_start</a>(
+                    order_req.get_all_sizes_mut(<b>false</b>), ask_price_crossing_idx
+                );
+            (cancelled_ask_prices, cancelled_ask_sizes)
+        } <b>else</b> {
+            (<a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>&lt;u64&gt;(), <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>&lt;u64&gt;())
+        };
+    <b>let</b> bulk_order =
+        <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_new_bulk_order">bulk_order_types::new_bulk_order</a>(
+            order_req,
+            order_id,
+            unique_priority_idx,
+            creation_time_micros
+        );
+    (
+        bulk_order,
+        cancelled_bid_prices,
+        cancelled_bid_sizes,
+        cancelled_ask_prices,
+        cancelled_ask_sizes
+    )
+}
+</code></pre>
+
+</details>
+<h2 id="function-validate_not_zero_sizes"><a class="header" href="#function-validate_not_zero_sizes">Function <code>validate_not_zero_sizes</code> <a id="0x7_bulk_order_utils_validate_not_zero_sizes"></a></a></h2>
+<p>Validates that all sizes in the vector are greater than 0.</p>
+<h3 id="arguments-1"><a class="header" href="#arguments-1">Arguments: <a id="@Arguments:_4"></a></a></h3>
+<ul>
+<li><code>sizes</code>: Vector of sizes to validate</li>
+</ul>
+<pre><code><b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_validate_not_zero_sizes">validate_not_zero_sizes</a>(sizes: &amp;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_validate_not_zero_sizes">validate_not_zero_sizes</a>(sizes: &amp;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): bool {
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; sizes.length()) {
+        <b>if</b> (sizes[i] == 0) {
+            <b>return</b> <b>false</b>;
+        };
+        i += 1;
+    };
+    <b>true</b>
+}
+</code></pre>
+
+</details>
+<h2 id="function-validate_price_ordering"><a class="header" href="#function-validate_price_ordering">Function <code>validate_price_ordering</code> <a id="0x7_bulk_order_utils_validate_price_ordering"></a></a></h2>
+<p>Validates that prices are in the correct order (descending for bids, ascending for asks).</p>
+<h3 id="arguments-2"><a class="header" href="#arguments-2">Arguments: <a id="@Arguments:_5"></a></a></h3>
+<ul>
+<li><code>prices</code>: Vector of prices to validate</li>
+<li><code>is_descending</code>: True if prices should be in descending order, false for ascending</li>
+</ul>
+<pre><code><b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_validate_price_ordering">validate_price_ordering</a>(prices: &amp;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, is_descending: bool): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_validate_price_ordering">validate_price_ordering</a>(
+    prices: &amp;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, is_descending: bool
+): bool {
+    <b>let</b> i = 0;
+    <b>if</b> (prices.length() == 0) {
+        <b>return</b> <b>true</b>; // No prices <b>to</b> validate
+    };
+    <b>while</b> (i &lt; prices.length() - 1) {
+        <b>if</b> (is_descending) {
+            <b>if</b> (prices[i] &lt;= prices[i + 1]) {
+                <b>return</b> <b>false</b>;
+            };
+        } <b>else</b> {
+            <b>if</b> (prices[i] &gt;= prices[i + 1]) {
+                <b>return</b> <b>false</b>;
+            };
+        };
+        i += 1;
+    };
+    <b>true</b>
+}
+</code></pre>
+
+</details>
+<h2 id="function-trim_start"><a class="header" href="#function-trim_start">Function <code>trim_start</code> <a id="0x7_bulk_order_utils_trim_start"></a></a></h2>
+<pre><code><b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_trim_start">trim_start</a>&lt;Element&gt;(v: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Element&gt;, new_start: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_trim_start">trim_start</a>&lt;Element&gt;(v: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Element&gt;, new_start: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Element&gt; {
+    <b>let</b> other = <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
+    <a href="../move-stdlib/vector.html#0x1_vector_move_range">vector::move_range</a>(v, 0, new_start, &amp;<b>mut</b> other, 0);
+    other
+}
+</code></pre>
+
+</details>
+<h2 id="function-discard_price_crossing_levels"><a class="header" href="#function-discard_price_crossing_levels">Function <code>discard_price_crossing_levels</code> <a id="0x7_bulk_order_utils_discard_price_crossing_levels"></a></a></h2>
+<pre><code><b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_discard_price_crossing_levels">discard_price_crossing_levels</a>(prices: &amp;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, best_price: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;, is_bid: bool): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_discard_price_crossing_levels">discard_price_crossing_levels</a>(
+    prices: &amp;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, best_price: Option&lt;u64&gt;, is_bid: bool
+): u64 {
+    // Discard bid levels that are &gt;= best ask price
+    <b>let</b> i = 0;
+    <b>if</b> (best_price.is_some()) {
+        <b>let</b> best_price = best_price.destroy_some();
+        <b>while</b> (i &lt; prices.length()) {
+            <b>if</b> (is_bid &amp;&amp; prices[i] &lt; best_price) {
+                <b>break</b>;
+            } <b>else</b> <b>if</b> (!is_bid &amp;&amp; prices[i] &gt; best_price) {
+                <b>break</b>;
+            };
+            i += 1;
+        };
+    };
+    i // Return the index of the first non-crossing level
+}
+</code></pre>
+
+</details>
+<h2 id="function-reinsert_order_into_bulk_order"><a class="header" href="#function-reinsert_order_into_bulk_order">Function <code>reinsert_order_into_bulk_order</code> <a id="0x7_bulk_order_utils_reinsert_order_into_bulk_order"></a></a></h2>
+<p>Reinserts an order into a bulk order.</p>
+<p>This function adds the reinserted order’s price and size to the appropriate side
+of the bulk order. If the price already exists at the first level, it increases
+the size; otherwise, it inserts the new price level at the front.</p>
+<h3 id="arguments-3"><a class="header" href="#arguments-3">Arguments: <a id="@Arguments:_6"></a></a></h3>
+<ul>
+<li><code>self</code>: Mutable reference to the bulk order</li>
+<li><code>other</code>: Reference to the order result to reinsert</li>
+</ul>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_reinsert_order_into_bulk_order">reinsert_order_into_bulk_order</a>&lt;M: <b>copy</b>, drop, store&gt;(order: &amp;<b>mut</b> <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrder">bulk_order_types::BulkOrder</a>&lt;M&gt;, other: &amp;<a href="../aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_reinsert_order_into_bulk_order">reinsert_order_into_bulk_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    order: &amp;<b>mut</b> BulkOrder&lt;M&gt;, other: &amp;OrderMatchDetails&lt;M&gt;
+) {
+    // Reinsert the order into the bulk order
+    <b>let</b> (prices, sizes) =
+        order.get_order_request_mut().get_prices_and_sizes_mut(
+            other.is_bid_from_match_details()
+        );
+    // Reinsert the price and size at the front of the respective vectors - <b>if</b> the price already <b>exists</b>, we ensure that
+    // it is same <b>as</b> the reinsertion price and we just increase the size
+    // If the price does not exist, we insert it at the front.
+    <b>let</b> other_price = other.get_price_from_match_details();
+    <b>if</b> (prices.length() &gt; 0 &amp;&amp; prices[0] == other_price) {
+        sizes[0] += other.get_remaining_size_from_match_details(); // Increase the size at the first price level
+    } <b>else</b> {
+        prices.insert(0, other_price); // Insert the new price at the front
+        sizes.insert(0, other.get_remaining_size_from_match_details()); // Insert the new size at the front
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-match_order_and_get_next_from_bulk_order"><a class="header" href="#function-match_order_and_get_next_from_bulk_order">Function <code>match_order_and_get_next_from_bulk_order</code> <a id="0x7_bulk_order_utils_match_order_and_get_next_from_bulk_order"></a></a></h2>
+<p>Matches an order and returns the next active price and size.</p>
+<p>This function reduces the size at the first price level by the matched size.
+If the first level becomes empty, it is removed and the next level becomes active.</p>
+<h3 id="arguments-4"><a class="header" href="#arguments-4">Arguments: <a id="@Arguments:_7"></a></a></h3>
+<ul>
+<li><code>self</code>: Mutable reference to the bulk order</li>
+<li><code>is_bid</code>: True if matching against bid side, false for ask side</li>
+<li><code>matched_size</code>: Size that was matched in this operation</li>
+</ul>
+<h3 id="returns-1"><a class="header" href="#returns-1">Returns: <a id="@Returns:_8"></a></a></h3>
+<p>A tuple containing the next active price and size as options.</p>
+<h3 id="aborts-1"><a class="header" href="#aborts-1">Aborts: <a id="@Aborts:_9"></a></a></h3>
+<ul>
+<li>If the matched size exceeds the available size at the first level</li>
+</ul>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_match_order_and_get_next_from_bulk_order">match_order_and_get_next_from_bulk_order</a>&lt;M: <b>copy</b>, drop, store&gt;(order: &amp;<b>mut</b> <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrder">bulk_order_types::BulkOrder</a>&lt;M&gt;, is_bid: bool, matched_size: u64): (<a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_match_order_and_get_next_from_bulk_order">match_order_and_get_next_from_bulk_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    order: &amp;<b>mut</b> BulkOrder&lt;M&gt;, is_bid: bool, matched_size: u64
+): (Option&lt;u64&gt;, Option&lt;u64&gt;) {
+    <b>let</b> (prices, sizes) =
+        order.get_order_request_mut().get_prices_and_sizes_mut(is_bid);
+    <b>assert</b>!(matched_size &lt;= sizes[0], <a href="bulk_order_utils.html#0x7_bulk_order_utils_EUNEXPECTED_MATCH_SIZE">EUNEXPECTED_MATCH_SIZE</a>); // Ensure the remaining size is not more than the size at the first price level
+    sizes[0] -= matched_size; // Decrease the size at the first price level by the matched size
+    <b>if</b> (sizes[0] == 0) {
+        // If the size at the first price level is now 0, remove this price level
+        prices.remove(0);
+        sizes.remove(0);
+    };
+    <b>if</b> (sizes.length() == 0) {
+        (<a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()) // No active price or size left
+    } <b>else</b> {
+        (<a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(prices[0]), <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(sizes[0])) // Return the next active price and size
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-cancel_at_price_level"><a class="header" href="#function-cancel_at_price_level">Function <code>cancel_at_price_level</code> <a id="0x7_bulk_order_utils_cancel_at_price_level"></a></a></h2>
+<p>Cancels a specific price level in a bulk order by setting its size to 0 and removing it.</p>
+<p>This function finds the price level matching the specified price and removes it from
+the order, keeping other price levels intact.</p>
+<h3 id="arguments-5"><a class="header" href="#arguments-5">Arguments: <a id="@Arguments:_10"></a></a></h3>
+<ul>
+<li><code>order</code>: Mutable reference to the bulk order</li>
+<li><code>price</code>: The price level to cancel</li>
+<li><code>is_bid</code>: True to cancel from bid side, false for ask side</li>
+</ul>
+<h3 id="returns-2"><a class="header" href="#returns-2">Returns: <a id="@Returns:_11"></a></a></h3>
+<p>The size that was cancelled at that price level, or 0 if the price wasn’t found</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_cancel_at_price_level">cancel_at_price_level</a>&lt;M: <b>copy</b>, drop, store&gt;(order: &amp;<b>mut</b> <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrder">bulk_order_types::BulkOrder</a>&lt;M&gt;, price: u64, is_bid: bool): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="bulk_order_utils.html#0x7_bulk_order_utils_cancel_at_price_level">cancel_at_price_level</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    order: &amp;<b>mut</b> BulkOrder&lt;M&gt;, price: u64, is_bid: bool
+): u64 {
+    <b>let</b> (prices, sizes) =
+        order.get_order_request_mut().get_prices_and_sizes_mut(is_bid);
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; prices.length()) {
+        <b>if</b> (prices[i] == price) {
+            // Found the price level, remove it
+            <b>let</b> cancelled_size = sizes[i];
+            prices.remove(i);
+            sizes.remove(i);
+            <b>return</b> cancelled_size
+        };
+        i = i + 1;
+    };
+    0 // Price not found
+}
+</code></pre>
+
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-experimental/bulk_order_book.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-experimental/dead_mans_switch_operations.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-experimental/bulk_order_book.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-experimental/dead_mans_switch_operations.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp-c45f76e8.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

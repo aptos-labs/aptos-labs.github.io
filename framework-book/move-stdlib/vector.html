@@ -1,0 +1,1620 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>vector - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap-384c98b0.css">
+        <link rel="stylesheet" href="../theme/build-stamp-020e146c.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-589e30ea.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-0b791361.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/move-stdlib/vector.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-0x1vector"><a class="header" href="#module-0x1vector">Module <code>0x1::vector</code> <a id="0x1_vector"></a></a></h1>
+<p>A variable-sized container that can hold any type. Indexing is 0-based, and
+vectors are growable. This module has many native functions.
+Verification of modules that use this one uses model functions that are implemented
+directly in Boogie. The specification language has built-in functions operations such
+as <code>singleton_vector</code>. There are some helper functions defined here for specifications in other
+modules as well.</p>
+<blockquote>
+<p>Note: We did not verify most of the
+Move functions here because many have loops, requiring loop invariants to prove, and
+the return on investment didn’t seem worth it for these simple functions.</p>
+</blockquote>
+<ul>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_vector_empty">Function <code>empty</code></a></li>
+<li><a href="#0x1_vector_length">Function <code>length</code></a></li>
+<li><a href="#0x1_vector_borrow">Function <code>borrow</code></a></li>
+<li><a href="#0x1_vector_push_back">Function <code>push_back</code></a></li>
+<li><a href="#0x1_vector_borrow_mut">Function <code>borrow_mut</code></a></li>
+<li><a href="#0x1_vector_pop_back">Function <code>pop_back</code></a></li>
+<li><a href="#0x1_vector_destroy_empty">Function <code>destroy_empty</code></a></li>
+<li><a href="#0x1_vector_swap">Function <code>swap</code></a></li>
+<li><a href="#0x1_vector_move_range">Function <code>move_range</code></a></li>
+<li><a href="#0x1_vector_singleton">Function <code>singleton</code></a></li>
+<li><a href="#0x1_vector_last">Function <code>last</code></a></li>
+<li><a href="#0x1_vector_last_mut">Function <code>last_mut</code></a></li>
+<li><a href="#0x1_vector_reverse">Function <code>reverse</code></a></li>
+<li><a href="#0x1_vector_reverse_slice">Function <code>reverse_slice</code></a></li>
+<li><a href="#0x1_vector_append">Function <code>append</code></a></li>
+<li><a href="#0x1_vector_reverse_append">Function <code>reverse_append</code></a></li>
+<li><a href="#0x1_vector_trim">Function <code>trim</code></a></li>
+<li><a href="#0x1_vector_trim_reverse">Function <code>trim_reverse</code></a></li>
+<li><a href="#0x1_vector_is_empty">Function <code>is_empty</code></a></li>
+<li><a href="#0x1_vector_contains">Function <code>contains</code></a></li>
+<li><a href="#0x1_vector_index_of">Function <code>index_of</code></a></li>
+<li><a href="#0x1_vector_find">Function <code>find</code></a></li>
+<li><a href="#0x1_vector_insert">Function <code>insert</code></a></li>
+<li><a href="#0x1_vector_remove">Function <code>remove</code></a></li>
+<li><a href="#0x1_vector_remove_value">Function <code>remove_value</code></a></li>
+<li><a href="#0x1_vector_swap_remove">Function <code>swap_remove</code></a></li>
+<li><a href="#0x1_vector_replace">Function <code>replace</code></a></li>
+<li><a href="#0x1_vector_for_each">Function <code>for_each</code></a></li>
+<li><a href="#0x1_vector_for_each_reverse">Function <code>for_each_reverse</code></a></li>
+<li><a href="#0x1_vector_for_each_ref">Function <code>for_each_ref</code></a></li>
+<li><a href="#0x1_vector_zip">Function <code>zip</code></a></li>
+<li><a href="#0x1_vector_zip_reverse">Function <code>zip_reverse</code></a></li>
+<li><a href="#0x1_vector_zip_ref">Function <code>zip_ref</code></a></li>
+<li><a href="#0x1_vector_enumerate_ref">Function <code>enumerate_ref</code></a></li>
+<li><a href="#0x1_vector_for_each_mut">Function <code>for_each_mut</code></a></li>
+<li><a href="#0x1_vector_zip_mut">Function <code>zip_mut</code></a></li>
+<li><a href="#0x1_vector_enumerate_mut">Function <code>enumerate_mut</code></a></li>
+<li><a href="#0x1_vector_fold">Function <code>fold</code></a></li>
+<li><a href="#0x1_vector_foldr">Function <code>foldr</code></a></li>
+<li><a href="#0x1_vector_map_ref">Function <code>map_ref</code></a></li>
+<li><a href="#0x1_vector_zip_map_ref">Function <code>zip_map_ref</code></a></li>
+<li><a href="#0x1_vector_map">Function <code>map</code></a></li>
+<li><a href="#0x1_vector_zip_map">Function <code>zip_map</code></a></li>
+<li><a href="#0x1_vector_filter">Function <code>filter</code></a></li>
+<li><a href="#0x1_vector_partition">Function <code>partition</code></a></li>
+<li><a href="#0x1_vector_rotate">Function <code>rotate</code></a></li>
+<li><a href="#0x1_vector_rotate_slice">Function <code>rotate_slice</code></a></li>
+<li><a href="#0x1_vector_stable_partition">Function <code>stable_partition</code></a></li>
+<li><a href="#0x1_vector_any">Function <code>any</code></a></li>
+<li><a href="#0x1_vector_all">Function <code>all</code></a></li>
+<li><a href="#0x1_vector_destroy">Function <code>destroy</code></a></li>
+<li><a href="#0x1_vector_range">Function <code>range</code></a></li>
+<li><a href="#0x1_vector_range_with_step">Function <code>range_with_step</code></a></li>
+<li><a href="#0x1_vector_slice">Function <code>slice</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Helper_Functions_2">Helper Functions</a></li>
+<li><a href="#@Specification_1_singleton">Function <code>singleton</code></a></li>
+<li><a href="#@Specification_1_reverse">Function <code>reverse</code></a></li>
+<li><a href="#@Specification_1_reverse_slice">Function <code>reverse_slice</code></a></li>
+<li><a href="#@Specification_1_append">Function <code>append</code></a></li>
+<li><a href="#@Specification_1_reverse_append">Function <code>reverse_append</code></a></li>
+<li><a href="#@Specification_1_trim">Function <code>trim</code></a></li>
+<li><a href="#@Specification_1_trim_reverse">Function <code>trim_reverse</code></a></li>
+<li><a href="#@Specification_1_is_empty">Function <code>is_empty</code></a></li>
+<li><a href="#@Specification_1_contains">Function <code>contains</code></a></li>
+<li><a href="#@Specification_1_index_of">Function <code>index_of</code></a></li>
+<li><a href="#@Specification_1_insert">Function <code>insert</code></a></li>
+<li><a href="#@Specification_1_remove">Function <code>remove</code></a></li>
+<li><a href="#@Specification_1_remove_value">Function <code>remove_value</code></a></li>
+<li><a href="#@Specification_1_swap_remove">Function <code>swap_remove</code></a></li>
+<li><a href="#@Specification_1_rotate">Function <code>rotate</code></a></li>
+<li><a href="#@Specification_1_rotate_slice">Function <code>rotate_slice</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="mem.html#0x1_mem">0x1::mem</a>;
+</code></pre>
+
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_vector_EINDEX_OUT_OF_BOUNDS"></a></p>
+<p>The index into the vector is out of bounds</p>
+<pre><code><b>const</b> <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>: u64 = 131072;
+</code></pre>
+
+<p><a id="0x1_vector_EINVALID_RANGE"></a></p>
+<p>The index into the vector is out of bounds</p>
+<pre><code><b>const</b> <a href="vector.html#0x1_vector_EINVALID_RANGE">EINVALID_RANGE</a>: u64 = 131073;
+</code></pre>
+
+<p><a id="0x1_vector_EINVALID_SLICE_RANGE"></a></p>
+<p>The range in <code>slice</code> is invalid.</p>
+<pre><code><b>const</b> <a href="vector.html#0x1_vector_EINVALID_SLICE_RANGE">EINVALID_SLICE_RANGE</a>: u64 = 131076;
+</code></pre>
+
+<p><a id="0x1_vector_EINVALID_STEP"></a></p>
+<p>The step provided in <code>range</code> is invalid, must be greater than zero.</p>
+<pre><code><b>const</b> <a href="vector.html#0x1_vector_EINVALID_STEP">EINVALID_STEP</a>: u64 = 131075;
+</code></pre>
+
+<p><a id="0x1_vector_EVECTORS_LENGTH_MISMATCH"></a></p>
+<p>The length of the vectors are not equal.</p>
+<pre><code><b>const</b> <a href="vector.html#0x1_vector_EVECTORS_LENGTH_MISMATCH">EVECTORS_LENGTH_MISMATCH</a>: u64 = 131074;
+</code></pre>
+
+<p><a id="0x1_vector_USE_MOVE_RANGE"></a></p>
+<p>Whether to utilize native vector::move_range
+Vector module cannot call features module, due to cyclic dependency,
+so this is a constant.</p>
+<pre><code><b>const</b> <a href="vector.html#0x1_vector_USE_MOVE_RANGE">USE_MOVE_RANGE</a>: bool = <b>true</b>;
+</code></pre>
+
+<h2 id="function-empty"><a class="header" href="#function-empty">Function <code>empty</code> <a id="0x1_vector_empty"></a></a></h2>
+<p>Create an empty vector.</p>
+<pre><code>#[bytecode_instruction]
+<b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_empty">empty</a>&lt;Element&gt;(): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_empty">empty</a>&lt;Element&gt;(): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;;
+</code></pre>
+
+</details>
+<h2 id="function-length"><a class="header" href="#function-length">Function <code>length</code> <a id="0x1_vector_length"></a></a></h2>
+<p>Return the length of the vector.</p>
+<pre><code>#[bytecode_instruction]
+<b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_length">length</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_length">length</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): u64;
+</code></pre>
+
+</details>
+<h2 id="function-borrow"><a class="header" href="#function-borrow">Function <code>borrow</code> <a id="0x1_vector_borrow"></a></a></h2>
+<p>Acquire an immutable reference to the <code>i</code>th element of the vector <code>self</code>.
+Aborts if <code>i</code> is out of bounds.</p>
+<pre><code>#[bytecode_instruction]
+<b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_borrow">borrow</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): &amp;Element
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_borrow">borrow</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): ∈
+</code></pre>
+
+</details>
+<h2 id="function-push_back"><a class="header" href="#function-push_back">Function <code>push_back</code> <a id="0x1_vector_push_back"></a></a></h2>
+<p>Add element <code>e</code> to the end of the vector <code>self</code>.</p>
+<pre><code>#[bytecode_instruction]
+<b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_push_back">push_back</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: Element)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_push_back">push_back</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: Element);
+</code></pre>
+
+</details>
+<h2 id="function-borrow_mut"><a class="header" href="#function-borrow_mut">Function <code>borrow_mut</code> <a id="0x1_vector_borrow_mut"></a></a></h2>
+<p>Return a mutable reference to the <code>i</code>th element in the vector <code>self</code>.
+Aborts if <code>i</code> is out of bounds.</p>
+<pre><code>#[bytecode_instruction]
+<b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): &amp;<b>mut</b> Element
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): &amp;<b>mut</b> Element;
+</code></pre>
+
+</details>
+<h2 id="function-pop_back"><a class="header" href="#function-pop_back">Function <code>pop_back</code> <a id="0x1_vector_pop_back"></a></a></h2>
+<p>Pop an element from the end of vector <code>self</code>.
+Aborts if <code>self</code> is empty.</p>
+<pre><code>#[bytecode_instruction]
+<b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_pop_back">pop_back</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): Element
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_pop_back">pop_back</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): Element;
+</code></pre>
+
+</details>
+<h2 id="function-destroy_empty"><a class="header" href="#function-destroy_empty">Function <code>destroy_empty</code> <a id="0x1_vector_destroy_empty"></a></a></h2>
+<p>Destroy the vector <code>self</code>.
+Aborts if <code>self</code> is not empty.</p>
+<pre><code>#[bytecode_instruction]
+<b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;);
+</code></pre>
+
+</details>
+<h2 id="function-swap"><a class="header" href="#function-swap">Function <code>swap</code> <a id="0x1_vector_swap"></a></a></h2>
+<p>Swaps the elements at the <code>i</code>th and <code>j</code>th indices in the vector <code>self</code>.
+Aborts if <code>i</code> or <code>j</code> is out of bounds.</p>
+<pre><code>#[bytecode_instruction]
+<b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_swap">swap</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64, j: u64)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_swap">swap</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64, j: u64);
+</code></pre>
+
+</details>
+<h2 id="function-move_range"><a class="header" href="#function-move_range">Function <code>move_range</code> <a id="0x1_vector_move_range"></a></a></h2>
+<p>Moves range of elements <code>[removal_position, removal_position + length)</code> from vector <code>from</code>,
+to vector <code><b>to</b></code>, inserting them starting at the <code>insert_position</code>.
+In the <code>from</code> vector, elements after the selected range are moved left to fill the hole
+(i.e. range is removed, while the order of the rest of the elements is kept)
+In the <code><b>to</b></code> vector, elements after the <code>insert_position</code> are moved to the right to make
+space for new elements (i.e. range is inserted, while the order of the rest of the
+elements is kept).
+Move prevents from having two mutable references to the same value, so <code>from</code> and <code><b>to</b></code>
+vectors are always distinct.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_move_range">move_range</a>&lt;T&gt;(from: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;T&gt;, removal_position: u64, length: u64, <b>to</b>: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;T&gt;, insert_position: u64)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_move_range">move_range</a>&lt;T&gt;(
+    from: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;T&gt;,
+    removal_position: u64,
+    length: u64,
+    <b>to</b>: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;T&gt;,
+    insert_position: u64
+);
+</code></pre>
+
+</details>
+<h2 id="function-singleton"><a class="header" href="#function-singleton">Function <code>singleton</code> <a id="0x1_vector_singleton"></a></a></h2>
+<p>Return an vector of size one containing element <code>e</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_singleton">singleton</a>&lt;Element&gt;(e: Element): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_singleton">singleton</a>&lt;Element&gt;(e: Element): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt; {
+    <b>let</b> v = <a href="vector.html#0x1_vector_empty">empty</a>();
+    v.<a href="vector.html#0x1_vector_push_back">push_back</a>(e);
+    v
+}
+</code></pre>
+
+</details>
+<h2 id="function-last"><a class="header" href="#function-last">Function <code>last</code> <a id="0x1_vector_last"></a></a></h2>
+<p>Returns a reference to last element in the vector, or aborts if the vector is empty.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_last">last</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): &amp;Element
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_last">last</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): &amp;Element {
+    <b>assert</b>!(self.<a href="vector.html#0x1_vector_length">length</a>() &gt; 0, <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>);
+
+    &amp;self[self.<a href="vector.html#0x1_vector_length">length</a>() - 1]
+}
+</code></pre>
+
+</details>
+<h2 id="function-last_mut"><a class="header" href="#function-last_mut">Function <code>last_mut</code> <a id="0x1_vector_last_mut"></a></a></h2>
+<p>Returns a mutable reference to the last element in the vector, or aborts if the vector is empty.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_last_mut">last_mut</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): &amp;<b>mut</b> Element
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_last_mut">last_mut</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): &amp;<b>mut</b> Element {
+    <b>assert</b>!(self.<a href="vector.html#0x1_vector_length">length</a>() &gt; 0, <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>);
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    &amp;<b>mut</b> self[len - 1]
+}
+</code></pre>
+
+</details>
+<h2 id="function-reverse"><a class="header" href="#function-reverse">Function <code>reverse</code> <a id="0x1_vector_reverse"></a></a></h2>
+<p>Reverses the order of the elements in the vector <code>self</code> in place.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse">reverse</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse">reverse</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;) {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    self.<a href="vector.html#0x1_vector_reverse_slice">reverse_slice</a>(0, len);
+}
+</code></pre>
+
+</details>
+<h2 id="function-reverse_slice"><a class="header" href="#function-reverse_slice">Function <code>reverse_slice</code> <a id="0x1_vector_reverse_slice"></a></a></h2>
+<p>Reverses the order of the elements [left, right) in the vector <code>self</code> in place.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse_slice">reverse_slice</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, left: u64, right: u64)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse_slice">reverse_slice</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, left: u64, right: u64) {
+    <b>assert</b>!(left &lt;= right, <a href="vector.html#0x1_vector_EINVALID_RANGE">EINVALID_RANGE</a>);
+    <b>if</b> (left == right) <b>return</b>;
+    right -= 1;
+    <b>while</b> (left &lt; right) {
+        self.<a href="vector.html#0x1_vector_swap">swap</a>(left, right);
+        left += 1;
+        right -= 1;
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-append"><a class="header" href="#function-append">Function <code>append</code> <a id="0x1_vector_append"></a></a></h2>
+<p>Pushes all of the elements of the <code>other</code> vector into the <code>self</code> vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_append">append</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, other: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_append">append</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, other: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;) {
+    <b>if</b> (<a href="vector.html#0x1_vector_USE_MOVE_RANGE">USE_MOVE_RANGE</a>) {
+        <b>let</b> self_length = self.<a href="vector.html#0x1_vector_length">length</a>();
+        <b>let</b> other_length = other.<a href="vector.html#0x1_vector_length">length</a>();
+        <a href="vector.html#0x1_vector_move_range">move_range</a>(&amp;<b>mut</b> other, 0, other_length, self, self_length);
+        other.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
+    } <b>else</b> {
+        other.<a href="vector.html#0x1_vector_reverse">reverse</a>();
+        self.<a href="vector.html#0x1_vector_reverse_append">reverse_append</a>(other);
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-reverse_append"><a class="header" href="#function-reverse_append">Function <code>reverse_append</code> <a id="0x1_vector_reverse_append"></a></a></h2>
+<p>Pushes all of the elements of the <code>other</code> vector into the <code>self</code> vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse_append">reverse_append</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, other: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse_append">reverse_append</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, other: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;) {
+    <b>let</b> len = other.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (len &gt; 0) {
+        self.<a href="vector.html#0x1_vector_push_back">push_back</a>(other.<a href="vector.html#0x1_vector_pop_back">pop_back</a>());
+        len -= 1;
+    };
+    other.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
+}
+</code></pre>
+
+</details>
+<h2 id="function-trim"><a class="header" href="#function-trim">Function <code>trim</code> <a id="0x1_vector_trim"></a></a></h2>
+<p>Splits (trims) the collection into two at the given index.
+Returns a newly allocated vector containing the elements in the range [new_len, len).
+After the call, the original vector will be left containing the elements [0, new_len)
+with its previous capacity unchanged.
+In many languages this is also called <code>split_off</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_trim">trim</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, new_len: u64): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_trim">trim</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, new_len: u64): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt; {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>assert</b>!(new_len &lt;= len, <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>);
+
+    <b>let</b> other = <a href="vector.html#0x1_vector_empty">empty</a>();
+    <b>if</b> (<a href="vector.html#0x1_vector_USE_MOVE_RANGE">USE_MOVE_RANGE</a>) {
+        <a href="vector.html#0x1_vector_move_range">move_range</a>(self, new_len, len - new_len, &amp;<b>mut</b> other, 0);
+    } <b>else</b> {
+        <b>while</b> (len &gt; new_len) {
+            other.<a href="vector.html#0x1_vector_push_back">push_back</a>(self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>());
+            len -= 1;
+        };
+        other.<a href="vector.html#0x1_vector_reverse">reverse</a>();
+    };
+
+    other
+}
+</code></pre>
+
+</details>
+<h2 id="function-trim_reverse"><a class="header" href="#function-trim_reverse">Function <code>trim_reverse</code> <a id="0x1_vector_trim_reverse"></a></a></h2>
+<p>Trim a vector to a smaller size, returning the evicted elements in reverse order</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_trim_reverse">trim_reverse</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, new_len: u64): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_trim_reverse">trim_reverse</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, new_len: u64): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt; {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>assert</b>!(new_len &lt;= len, <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>);
+    <b>let</b> result = <a href="vector.html#0x1_vector_empty">empty</a>();
+    <b>while</b> (new_len &lt; len) {
+        result.<a href="vector.html#0x1_vector_push_back">push_back</a>(self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>());
+        len -= 1;
+    };
+    result
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_empty"><a class="header" href="#function-is_empty">Function <code>is_empty</code> <a id="0x1_vector_is_empty"></a></a></h2>
+<p>Return <code><b>true</b></code> if the vector <code>self</code> has no elements and <code><b>false</b></code> otherwise.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_is_empty">is_empty</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_is_empty">is_empty</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): bool {
+    self.<a href="vector.html#0x1_vector_length">length</a>() == 0
+}
+</code></pre>
+
+</details>
+<h2 id="function-contains"><a class="header" href="#function-contains">Function <code>contains</code> <a id="0x1_vector_contains"></a></a></h2>
+<p>Return true if <code>e</code> is in the vector <code>self</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_contains">contains</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: &amp;Element): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_contains">contains</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: &amp;Element): bool {
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        <b>if</b> (self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i) == e) <b>return</b> <b>true</b>;
+        i += 1;
+    };
+    <b>false</b>
+}
+</code></pre>
+
+</details>
+<h2 id="function-index_of"><a class="header" href="#function-index_of">Function <code>index_of</code> <a id="0x1_vector_index_of"></a></a></h2>
+<p>Return <code>(<b>true</b>, i)</code> if <code>e</code> is in the vector <code>self</code> at index <code>i</code>.
+Otherwise, returns <code>(<b>false</b>, 0)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_index_of">index_of</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: &amp;Element): (bool, u64)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_index_of">index_of</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: &amp;Element): (bool, u64) {
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        <b>if</b> (self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i) == e) <b>return</b> (<b>true</b>, i);
+        i += 1;
+    };
+    (<b>false</b>, 0)
+}
+</code></pre>
+
+</details>
+<h2 id="function-find"><a class="header" href="#function-find">Function <code>find</code> <a id="0x1_vector_find"></a></a></h2>
+<p>Return <code>(<b>true</b>, i)</code> if there’s an element that matches the predicate. If there are multiple elements that match
+the predicate, only the index of the first one is returned.
+Otherwise, returns <code>(<b>false</b>, 0)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_find">find</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |&amp;Element|bool): (bool, u64)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_find">find</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |&amp;Element|bool): (bool, u64) {
+    <b>let</b> find = <b>false</b>;
+    <b>let</b> found_index = 0;
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> ({
+        <b>spec</b> {
+            <b>invariant</b> i &lt;= len;
+            <b>invariant</b> <b>forall</b> j: num <b>where</b> j &gt;= 0 &amp;&amp; j &lt; i: !f(self[j]);
+            <b>invariant</b> find ==&gt; i &lt; len &amp;&amp; f(self[i]);
+        };
+        i &lt; len
+        }) {
+        // Cannot call <b>return</b> in an inline function so we need <b>to</b> resort <b>to</b> <b>break</b> here.
+        <b>if</b> (f(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i))) {
+            find = <b>true</b>;
+            found_index = i;
+            <b>break</b>
+        };
+        i += 1;
+    };
+    <b>spec</b> {
+        <b>assert</b> !<a href="vector.html#0x1_vector_find">find</a> &lt;==&gt; (<b>forall</b> j: num <b>where</b> j &gt;= 0 &amp;&amp; j &lt; len: !f(self[j]));
+    };
+    (find, found_index)
+}
+</code></pre>
+
+</details>
+<h2 id="function-insert"><a class="header" href="#function-insert">Function <code>insert</code> <a id="0x1_vector_insert"></a></a></h2>
+<p>Insert a new element at position 0 &lt;= i &lt;= length, using O(length - i) time.
+Aborts if out of bounds.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_insert">insert</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64, e: Element)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_insert">insert</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64, e: Element) {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>assert</b>!(i &lt;= len, <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>);
+
+    <b>if</b> (<a href="vector.html#0x1_vector_USE_MOVE_RANGE">USE_MOVE_RANGE</a>) {
+        <b>if</b> (i + 2 &gt;= len) {
+            // When we are close <b>to</b> the end, it is cheaper <b>to</b> not create
+            // a temporary <a href="vector.html#0x1_vector">vector</a>, and swap directly
+            self.<a href="vector.html#0x1_vector_push_back">push_back</a>(e);
+            <b>while</b> (i &lt; len) {
+                self.<a href="vector.html#0x1_vector_swap">swap</a>(i, len);
+                i += 1;
+            };
+        } <b>else</b> {
+            <b>let</b> other = <a href="vector.html#0x1_vector_singleton">singleton</a>(e);
+            <a href="vector.html#0x1_vector_move_range">move_range</a>(&amp;<b>mut</b> other, 0, 1, self, i);
+            other.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
+        }
+    } <b>else</b> {
+        self.<a href="vector.html#0x1_vector_push_back">push_back</a>(e);
+        <b>while</b> (i &lt; len) {
+            self.<a href="vector.html#0x1_vector_swap">swap</a>(i, len);
+            i += 1;
+        };
+    };
+}
+</code></pre>
+
+</details>
+<h2 id="function-remove"><a class="header" href="#function-remove">Function <code>remove</code> <a id="0x1_vector_remove"></a></a></h2>
+<p>Remove the <code>i</code>th element of the vector <code>self</code>, shifting all subsequent elements.
+This is O(n) and preserves ordering of elements in the vector.
+Aborts if <code>i</code> is out of bounds.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_remove">remove</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): Element
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_remove">remove</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): Element {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    // i out of bounds; <b>abort</b>
+    <b>if</b> (i &gt;= len) <b>abort</b> <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>;
+
+    <b>if</b> (<a href="vector.html#0x1_vector_USE_MOVE_RANGE">USE_MOVE_RANGE</a>) {
+        // When we are close <b>to</b> the end, it is cheaper <b>to</b> not create
+        // a temporary <a href="vector.html#0x1_vector">vector</a>, and swap directly
+        <b>if</b> (i + 3 &gt;= len) {
+            len -= 1;
+            <b>while</b> (i &lt; len) self.<a href="vector.html#0x1_vector_swap">swap</a>(i, { i += 1; i });
+            self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>()
+        } <b>else</b> {
+            <b>let</b> other = <a href="vector.html#0x1_vector_empty">empty</a>();
+            <a href="vector.html#0x1_vector_move_range">move_range</a>(self, i, 1, &amp;<b>mut</b> other, 0);
+            <b>let</b> result = other.<a href="vector.html#0x1_vector_pop_back">pop_back</a>();
+            other.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
+            result
+        }
+    } <b>else</b> {
+        len -= 1;
+        <b>while</b> (i &lt; len) self.<a href="vector.html#0x1_vector_swap">swap</a>(i, { i += 1; i });
+        self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>()
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-remove_value"><a class="header" href="#function-remove_value">Function <code>remove_value</code> <a id="0x1_vector_remove_value"></a></a></h2>
+<p>Remove the first occurrence of a given value in the vector <code>self</code> and return it in a vector, shifting all
+subsequent elements.
+This is O(n) and preserves ordering of elements in the vector.
+This returns an empty vector if the value isn’t present in the vector.
+Note that this cannot return an option as option uses vector and there’d be a circular dependency between option
+and vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_remove_value">remove_value</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, val: &amp;Element): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_remove_value">remove_value</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, val: &amp;Element): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt; {
+    // This doesn't cost a O(2N) run time <b>as</b> index_of scans from left <b>to</b> right and stops when the element is found,
+    // <b>while</b> remove would <b>continue</b> from the identified index <b>to</b> the end of the <a href="vector.html#0x1_vector">vector</a>.
+    <b>let</b> (found, index) = self.<a href="vector.html#0x1_vector_index_of">index_of</a>(val);
+    <b>if</b> (found) {
+        <a href="vector.html#0x1_vector">vector</a>[self.<a href="vector.html#0x1_vector_remove">remove</a>(index)]
+    } <b>else</b> {
+       <a href="vector.html#0x1_vector">vector</a>[]
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-swap_remove"><a class="header" href="#function-swap_remove">Function <code>swap_remove</code> <a id="0x1_vector_swap_remove"></a></a></h2>
+<p>Swap the <code>i</code>th element of the vector <code>self</code> with the last element and then pop the vector.
+This is O(1), but does not preserve ordering of elements in the vector.
+Aborts if <code>i</code> is out of bounds.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_swap_remove">swap_remove</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): Element
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_swap_remove">swap_remove</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): Element {
+    <b>assert</b>!(!self.<a href="vector.html#0x1_vector_is_empty">is_empty</a>(), <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>);
+    <b>let</b> last_idx = self.<a href="vector.html#0x1_vector_length">length</a>() - 1;
+    self.<a href="vector.html#0x1_vector_swap">swap</a>(i, last_idx);
+    self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>()
+}
+</code></pre>
+
+</details>
+<h2 id="function-replace"><a class="header" href="#function-replace">Function <code>replace</code> <a id="0x1_vector_replace"></a></a></h2>
+<p>Replace the <code>i</code>th element of the vector <code>self</code> with the given value, and return
+to the caller the value that was there before.
+Aborts if <code>i</code> is out of bounds.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_replace">replace</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64, val: Element): Element
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_replace">replace</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64, val: Element): Element {
+    <b>let</b> last_idx = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>assert</b>!(i &lt; last_idx, <a href="vector.html#0x1_vector_EINDEX_OUT_OF_BOUNDS">EINDEX_OUT_OF_BOUNDS</a>);
+    <b>if</b> (<a href="vector.html#0x1_vector_USE_MOVE_RANGE">USE_MOVE_RANGE</a>) {
+        <a href="mem.html#0x1_mem_replace">mem::replace</a>(self.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i), val)
+    } <b>else</b> {
+        self.<a href="vector.html#0x1_vector_push_back">push_back</a>(val);
+        self.<a href="vector.html#0x1_vector_swap">swap</a>(i, last_idx);
+        self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>()
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-for_each"><a class="header" href="#function-for_each">Function <code>for_each</code> <a id="0x1_vector_for_each"></a></a></h2>
+<p>Apply the function to each element in the vector, consuming it.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_for_each">for_each</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |Element|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_for_each">for_each</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |Element|) {
+    self.<a href="vector.html#0x1_vector_reverse">reverse</a>(); // We need <b>to</b> reverse the <a href="vector.html#0x1_vector">vector</a> <b>to</b> consume it efficiently
+    self.<a href="vector.html#0x1_vector_for_each_reverse">for_each_reverse</a>(|e| f(e));
+}
+</code></pre>
+
+</details>
+<h2 id="function-for_each_reverse"><a class="header" href="#function-for_each_reverse">Function <code>for_each_reverse</code> <a id="0x1_vector_for_each_reverse"></a></a></h2>
+<p>Apply the function to each element in the vector, consuming it.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_for_each_reverse">for_each_reverse</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |Element|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_for_each_reverse">for_each_reverse</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |Element|) {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (len &gt; 0) {
+        f(self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>());
+        len -= 1;
+    };
+    self.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>()
+}
+</code></pre>
+
+</details>
+<h2 id="function-for_each_ref"><a class="header" href="#function-for_each_ref">Function <code>for_each_ref</code> <a id="0x1_vector_for_each_ref"></a></a></h2>
+<p>Apply the function to a reference of each element in the vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_for_each_ref">for_each_ref</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |&amp;Element|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_for_each_ref">for_each_ref</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |&amp;Element|) {
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        f(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i));
+        i += 1
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-zip"><a class="header" href="#function-zip">Function <code>zip</code> <a id="0x1_vector_zip"></a></a></h2>
+<p>Apply the function to each pair of elements in the two given vectors, consuming them.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_zip">zip</a>&lt;Element1, Element2&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;, v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;, f: |Element1, Element2|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_zip">zip</a>&lt;Element1, Element2&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;, v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;, f: |Element1, Element2|) {
+    // We need <b>to</b> reverse the vectors <b>to</b> consume it efficiently
+    self.<a href="vector.html#0x1_vector_reverse">reverse</a>();
+    v2.<a href="vector.html#0x1_vector_reverse">reverse</a>();
+    self.<a href="vector.html#0x1_vector_zip_reverse">zip_reverse</a>(v2, |e1, e2| f(e1, e2));
+}
+</code></pre>
+
+</details>
+<h2 id="function-zip_reverse"><a class="header" href="#function-zip_reverse">Function <code>zip_reverse</code> <a id="0x1_vector_zip_reverse"></a></a></h2>
+<p>Apply the function to each pair of elements in the two given vectors in the reverse order, consuming them.
+This errors out if the vectors are not of the same length.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_zip_reverse">zip_reverse</a>&lt;Element1, Element2&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;, v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;, f: |Element1, Element2|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_zip_reverse">zip_reverse</a>&lt;Element1, Element2&gt;(
+    self: <a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;,
+    v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;,
+    f: |Element1, Element2|,
+) {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    // We can't <b>use</b> the constant <a href="vector.html#0x1_vector_EVECTORS_LENGTH_MISMATCH">EVECTORS_LENGTH_MISMATCH</a> here <b>as</b> all calling code would then need <b>to</b> define it
+    // due <b>to</b> how inline functions work.
+    <b>assert</b>!(len == v2.<a href="vector.html#0x1_vector_length">length</a>(), 0x20002);
+    <b>while</b> (len &gt; 0) {
+        f(self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>(), v2.<a href="vector.html#0x1_vector_pop_back">pop_back</a>());
+        len -= 1;
+    };
+    self.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
+    v2.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
+}
+</code></pre>
+
+</details>
+<h2 id="function-zip_ref"><a class="header" href="#function-zip_ref">Function <code>zip_ref</code> <a id="0x1_vector_zip_ref"></a></a></h2>
+<p>Apply the function to the references of each pair of elements in the two given vectors.
+This errors out if the vectors are not of the same length.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_zip_ref">zip_ref</a>&lt;Element1, Element2&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;, v2: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;, f: |&amp;Element1, &amp;Element2|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_zip_ref">zip_ref</a>&lt;Element1, Element2&gt;(
+    self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;,
+    v2: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;,
+    f: |&amp;Element1, &amp;Element2|,
+) {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    // We can't <b>use</b> the constant <a href="vector.html#0x1_vector_EVECTORS_LENGTH_MISMATCH">EVECTORS_LENGTH_MISMATCH</a> here <b>as</b> all calling code would then need <b>to</b> define it
+    // due <b>to</b> how inline functions work.
+    <b>assert</b>!(len == v2.<a href="vector.html#0x1_vector_length">length</a>(), 0x20002);
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; len) {
+        f(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i), v2.<a href="vector.html#0x1_vector_borrow">borrow</a>(i));
+        i += 1
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-enumerate_ref"><a class="header" href="#function-enumerate_ref">Function <code>enumerate_ref</code> <a id="0x1_vector_enumerate_ref"></a></a></h2>
+<p>Apply the function to a reference of each element in the vector with its index.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_enumerate_ref">enumerate_ref</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |u64, &amp;Element|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_enumerate_ref">enumerate_ref</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |u64, &amp;Element|) {
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        f(i, self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i));
+        i += 1;
+    };
+}
+</code></pre>
+
+</details>
+<h2 id="function-for_each_mut"><a class="header" href="#function-for_each_mut">Function <code>for_each_mut</code> <a id="0x1_vector_for_each_mut"></a></a></h2>
+<p>Apply the function to a mutable reference to each element in the vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_for_each_mut">for_each_mut</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |&amp;<b>mut</b> Element|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_for_each_mut">for_each_mut</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |&amp;<b>mut</b> Element|) {
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        f(self.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
+        i += 1
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-zip_mut"><a class="header" href="#function-zip_mut">Function <code>zip_mut</code> <a id="0x1_vector_zip_mut"></a></a></h2>
+<p>Apply the function to mutable references to each pair of elements in the two given vectors.
+This errors out if the vectors are not of the same length.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_zip_mut">zip_mut</a>&lt;Element1, Element2&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;, v2: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;, f: |&amp;<b>mut</b> Element1, &amp;<b>mut</b> Element2|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_zip_mut">zip_mut</a>&lt;Element1, Element2&gt;(
+    self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;,
+    v2: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;,
+    f: |&amp;<b>mut</b> Element1, &amp;<b>mut</b> Element2|,
+) {
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    // We can't <b>use</b> the constant <a href="vector.html#0x1_vector_EVECTORS_LENGTH_MISMATCH">EVECTORS_LENGTH_MISMATCH</a> here <b>as</b> all calling code would then need <b>to</b> define it
+    // due <b>to</b> how inline functions work.
+    <b>assert</b>!(len == v2.<a href="vector.html#0x1_vector_length">length</a>(), 0x20002);
+    <b>while</b> (i &lt; len) {
+        f(self.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i), v2.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
+        i += 1
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-enumerate_mut"><a class="header" href="#function-enumerate_mut">Function <code>enumerate_mut</code> <a id="0x1_vector_enumerate_mut"></a></a></h2>
+<p>Apply the function to a mutable reference of each element in the vector with its index.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_enumerate_mut">enumerate_mut</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |u64, &amp;<b>mut</b> Element|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_enumerate_mut">enumerate_mut</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |u64, &amp;<b>mut</b> Element|) {
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        f(i, self.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
+        i += 1;
+    };
+}
+</code></pre>
+
+</details>
+<h2 id="function-fold"><a class="header" href="#function-fold">Function <code>fold</code> <a id="0x1_vector_fold"></a></a></h2>
+<p>Fold the function over the elements. For example, <code><a href="vector.html#0x1_vector_fold">fold</a>(<a href="vector.html#0x1_vector">vector</a>[1,2,3], 0, f)</code> will execute
+<code>f(f(f(0, 1), 2), 3)</code></p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_fold">fold</a>&lt;Accumulator, Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, init: Accumulator, f: |Accumulator, Element|Accumulator): Accumulator
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_fold">fold</a>&lt;Accumulator, Element&gt;(
+    self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    init: Accumulator,
+    f: |Accumulator,Element|Accumulator
+): Accumulator {
+    <b>let</b> accu = init;
+    self.<a href="vector.html#0x1_vector_for_each">for_each</a>(|elem| accu = f(accu, elem));
+    accu
+}
+</code></pre>
+
+</details>
+<h2 id="function-foldr"><a class="header" href="#function-foldr">Function <code>foldr</code> <a id="0x1_vector_foldr"></a></a></h2>
+<p>Fold right like fold above but working right to left. For example, <code><a href="vector.html#0x1_vector_fold">fold</a>(<a href="vector.html#0x1_vector">vector</a>[1,2,3], 0, f)</code> will execute
+<code>f(1, f(2, f(3, 0)))</code></p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_foldr">foldr</a>&lt;Accumulator, Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, init: Accumulator, f: |Element, Accumulator|Accumulator): Accumulator
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_foldr">foldr</a>&lt;Accumulator, Element&gt;(
+    self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    init: Accumulator,
+    f: |Element, Accumulator|Accumulator
+): Accumulator {
+    <b>let</b> accu = init;
+    self.<a href="vector.html#0x1_vector_for_each_reverse">for_each_reverse</a>(|elem| accu = f(elem, accu));
+    accu
+}
+</code></pre>
+
+</details>
+<h2 id="function-map_ref"><a class="header" href="#function-map_ref">Function <code>map_ref</code> <a id="0x1_vector_map_ref"></a></a></h2>
+<p>Map the function over the references of the elements of the vector, producing a new vector without modifying the
+original vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_map_ref">map_ref</a>&lt;Element, NewElement&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |&amp;Element|NewElement): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_map_ref">map_ref</a>&lt;Element, NewElement&gt;(
+    self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    f: |&amp;Element|NewElement
+): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt; {
+    <b>let</b> result = <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;[];
+    self.<a href="vector.html#0x1_vector_for_each_ref">for_each_ref</a>(|elem| result.<a href="vector.html#0x1_vector_push_back">push_back</a>(f(elem)));
+    result
+}
+</code></pre>
+
+</details>
+<h2 id="function-zip_map_ref"><a class="header" href="#function-zip_map_ref">Function <code>zip_map_ref</code> <a id="0x1_vector_zip_map_ref"></a></a></h2>
+<p>Map the function over the references of the element pairs of two vectors, producing a new vector from the return
+values without modifying the original vectors.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_zip_map_ref">zip_map_ref</a>&lt;Element1, Element2, NewElement&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;, v2: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;, f: |&amp;Element1, &amp;Element2|NewElement): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_zip_map_ref">zip_map_ref</a>&lt;Element1, Element2, NewElement&gt;(
+    self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;,
+    v2: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;,
+    f: |&amp;Element1, &amp;Element2|NewElement
+): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt; {
+    // We can't <b>use</b> the constant <a href="vector.html#0x1_vector_EVECTORS_LENGTH_MISMATCH">EVECTORS_LENGTH_MISMATCH</a> here <b>as</b> all calling code would then need <b>to</b> define it
+    // due <b>to</b> how inline functions work.
+    <b>assert</b>!(self.<a href="vector.html#0x1_vector_length">length</a>() == v2.<a href="vector.html#0x1_vector_length">length</a>(), 0x20002);
+
+    <b>let</b> result = <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;[];
+    self.<a href="vector.html#0x1_vector_zip_ref">zip_ref</a>(v2, |e1, e2| result.<a href="vector.html#0x1_vector_push_back">push_back</a>(f(e1, e2)));
+    result
+}
+</code></pre>
+
+</details>
+<h2 id="function-map"><a class="header" href="#function-map">Function <code>map</code> <a id="0x1_vector_map"></a></a></h2>
+<p>Map the function over the elements of the vector, producing a new vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_map">map</a>&lt;Element, NewElement&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, f: |Element|NewElement): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_map">map</a>&lt;Element, NewElement&gt;(
+    self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    f: |Element|NewElement
+): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt; {
+    <b>let</b> result = <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;[];
+    self.<a href="vector.html#0x1_vector_for_each">for_each</a>(|elem| result.<a href="vector.html#0x1_vector_push_back">push_back</a>(f(elem)));
+    result
+}
+</code></pre>
+
+</details>
+<h2 id="function-zip_map"><a class="header" href="#function-zip_map">Function <code>zip_map</code> <a id="0x1_vector_zip_map"></a></a></h2>
+<p>Map the function over the element pairs of the two vectors, producing a new vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_zip_map">zip_map</a>&lt;Element1, Element2, NewElement&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;, v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;, f: |Element1, Element2|NewElement): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_zip_map">zip_map</a>&lt;Element1, Element2, NewElement&gt;(
+    self: <a href="vector.html#0x1_vector">vector</a>&lt;Element1&gt;,
+    v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element2&gt;,
+    f: |Element1, Element2|NewElement
+): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt; {
+    // We can't <b>use</b> the constant <a href="vector.html#0x1_vector_EVECTORS_LENGTH_MISMATCH">EVECTORS_LENGTH_MISMATCH</a> here <b>as</b> all calling code would then need <b>to</b> define it
+    // due <b>to</b> how inline functions work.
+    <b>assert</b>!(self.<a href="vector.html#0x1_vector_length">length</a>() == v2.<a href="vector.html#0x1_vector_length">length</a>(), 0x20002);
+
+    <b>let</b> result = <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;[];
+    self.<a href="vector.html#0x1_vector_zip">zip</a>(v2, |e1, e2| result.<a href="vector.html#0x1_vector_push_back">push_back</a>(f(e1, e2)));
+    result
+}
+</code></pre>
+
+</details>
+<h2 id="function-filter"><a class="header" href="#function-filter">Function <code>filter</code> <a id="0x1_vector_filter"></a></a></h2>
+<p>Filter the vector using the boolean function, removing all elements for which <code>p(e)</code> is not true.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_filter">filter</a>&lt;Element: drop&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, p: |&amp;Element|bool): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_filter">filter</a>&lt;Element:drop&gt;(
+    self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    p: |&amp;Element|bool
+): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt; {
+    <b>let</b> result = <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;[];
+    self.<a href="vector.html#0x1_vector_for_each">for_each</a>(|elem| {
+        <b>if</b> (p(&amp;elem)) result.<a href="vector.html#0x1_vector_push_back">push_back</a>(elem);
+    });
+    result
+}
+</code></pre>
+
+</details>
+<h2 id="function-partition"><a class="header" href="#function-partition">Function <code>partition</code> <a id="0x1_vector_partition"></a></a></h2>
+<p>Partition, sorts all elements for which pred is true to the front.
+Preserves the relative order of the elements for which pred is true,
+BUT NOT for the elements for which pred is false.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_partition">partition</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, pred: |&amp;Element|bool): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_partition">partition</a>&lt;Element&gt;(
+    self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    pred: |&amp;Element|bool
+): u64 {
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        <b>if</b> (!pred(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i))) <b>break</b>;
+        i += 1;
+    };
+    <b>let</b> p = i;
+    i += 1;
+    <b>while</b> (i &lt; len) {
+        <b>if</b> (pred(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i))) {
+            self.<a href="vector.html#0x1_vector_swap">swap</a>(p, i);
+            p += 1;
+        };
+        i += 1;
+    };
+    p
+}
+</code></pre>
+
+</details>
+<h2 id="function-rotate"><a class="header" href="#function-rotate">Function <code>rotate</code> <a id="0x1_vector_rotate"></a></a></h2>
+<p>rotate(&amp;mut [1, 2, 3, 4, 5], 2) -&gt; [3, 4, 5, 1, 2] in place, returns the split point
+ie. 3 in the example above</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_rotate">rotate</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, rot: u64): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_rotate">rotate</a>&lt;Element&gt;(
+    self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    rot: u64
+): u64 {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    self.<a href="vector.html#0x1_vector_rotate_slice">rotate_slice</a>(0, rot, len)
+}
+</code></pre>
+
+</details>
+<h2 id="function-rotate_slice"><a class="header" href="#function-rotate_slice">Function <code>rotate_slice</code> <a id="0x1_vector_rotate_slice"></a></a></h2>
+<p>Same as above but on a sub-slice of an array [left, right) with left &lt;= rot &lt;= right
+returns the</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_rotate_slice">rotate_slice</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, left: u64, rot: u64, right: u64): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_rotate_slice">rotate_slice</a>&lt;Element&gt;(
+    self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    left: u64,
+    rot: u64,
+    right: u64
+): u64 {
+    self.<a href="vector.html#0x1_vector_reverse_slice">reverse_slice</a>(left, rot);
+    self.<a href="vector.html#0x1_vector_reverse_slice">reverse_slice</a>(rot, right);
+    self.<a href="vector.html#0x1_vector_reverse_slice">reverse_slice</a>(left, right);
+    left + (right - rot)
+}
+</code></pre>
+
+</details>
+<h2 id="function-stable_partition"><a class="header" href="#function-stable_partition">Function <code>stable_partition</code> <a id="0x1_vector_stable_partition"></a></a></h2>
+<p>Partition the array based on a predicate p, this routine is stable and thus
+preserves the relative order of the elements in the two partitions.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_stable_partition">stable_partition</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, p: |&amp;Element|bool): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_stable_partition">stable_partition</a>&lt;Element&gt;(
+    self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    p: |&amp;Element|bool
+): u64 {
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>let</b> t = <a href="vector.html#0x1_vector_empty">empty</a>();
+    <b>let</b> f = <a href="vector.html#0x1_vector_empty">empty</a>();
+    <b>while</b> (len &gt; 0) {
+        <b>let</b> e = self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>();
+        <b>if</b> (p(&amp;e)) {
+            t.<a href="vector.html#0x1_vector_push_back">push_back</a>(e);
+        } <b>else</b> {
+            f.<a href="vector.html#0x1_vector_push_back">push_back</a>(e);
+        };
+        len -= 1;
+    };
+    <b>let</b> pos = t.<a href="vector.html#0x1_vector_length">length</a>();
+    self.<a href="vector.html#0x1_vector_reverse_append">reverse_append</a>(t);
+    self.<a href="vector.html#0x1_vector_reverse_append">reverse_append</a>(f);
+    pos
+}
+</code></pre>
+
+</details>
+<h2 id="function-any"><a class="header" href="#function-any">Function <code>any</code> <a id="0x1_vector_any"></a></a></h2>
+<p>Return true if any element in the vector satisfies the predicate.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_any">any</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, p: |&amp;Element|bool): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_any">any</a>&lt;Element&gt;(
+    self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    p: |&amp;Element|bool
+): bool {
+    <b>let</b> result = <b>false</b>;
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; self.<a href="vector.html#0x1_vector_length">length</a>()) {
+        result = p(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i));
+        <b>if</b> (result) {
+            <b>break</b>
+        };
+        i += 1
+    };
+    result
+}
+</code></pre>
+
+</details>
+<h2 id="function-all"><a class="header" href="#function-all">Function <code>all</code> <a id="0x1_vector_all"></a></a></h2>
+<p>Return true if all elements in the vector satisfy the predicate.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_all">all</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, p: |&amp;Element|bool): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_all">all</a>&lt;Element&gt;(
+    self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    p: |&amp;Element|bool
+): bool {
+    <b>let</b> result = <b>true</b>;
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; self.<a href="vector.html#0x1_vector_length">length</a>()) {
+        result = p(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i));
+        <b>if</b> (!result) {
+            <b>break</b>
+        };
+        i += 1
+    };
+    result
+}
+</code></pre>
+
+</details>
+<h2 id="function-destroy"><a class="header" href="#function-destroy">Function <code>destroy</code> <a id="0x1_vector_destroy"></a></a></h2>
+<p>Destroy a vector, just a wrapper around for_each_reverse with a descriptive name
+when used in the context of destroying a vector.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_destroy">destroy</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, d: |Element|)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="vector.html#0x1_vector_destroy">destroy</a>&lt;Element&gt;(
+    self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    d: |Element|
+) {
+    self.<a href="vector.html#0x1_vector_for_each_reverse">for_each_reverse</a>(|e| d(e))
+}
+</code></pre>
+
+</details>
+<h2 id="function-range"><a class="header" href="#function-range">Function <code>range</code> <a id="0x1_vector_range"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_range">range</a>(start: u64, end: u64): <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_range">range</a>(start: u64, end: u64): <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt; {
+    <a href="vector.html#0x1_vector_range_with_step">range_with_step</a>(start, end, 1)
+}
+</code></pre>
+
+</details>
+<h2 id="function-range_with_step"><a class="header" href="#function-range_with_step">Function <code>range_with_step</code> <a id="0x1_vector_range_with_step"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_range_with_step">range_with_step</a>(start: u64, end: u64, step: u64): <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_range_with_step">range_with_step</a>(start: u64, end: u64, step: u64): <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt; {
+    <b>assert</b>!(step &gt; 0, <a href="vector.html#0x1_vector_EINVALID_STEP">EINVALID_STEP</a>);
+
+    <b>let</b> vec = <a href="vector.html#0x1_vector">vector</a>[];
+    <b>while</b> (start &lt; end) {
+        vec.<a href="vector.html#0x1_vector_push_back">push_back</a>(start);
+        start += step;
+    };
+    vec
+}
+</code></pre>
+
+</details>
+<h2 id="function-slice"><a class="header" href="#function-slice">Function <code>slice</code> <a id="0x1_vector_slice"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_slice">slice</a>&lt;Element: <b>copy</b>&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, start: u64, end: u64): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_slice">slice</a>&lt;Element: <b>copy</b>&gt;(
+    self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;,
+    start: u64,
+    end: u64
+): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt; {
+    <b>assert</b>!(start &lt;= end &amp;&amp; end &lt;= self.<a href="vector.html#0x1_vector_length">length</a>(), <a href="vector.html#0x1_vector_EINVALID_SLICE_RANGE">EINVALID_SLICE_RANGE</a>);
+
+    <b>let</b> vec = <a href="vector.html#0x1_vector">vector</a>[];
+    <b>while</b> (start &lt; end) {
+        vec.<a href="vector.html#0x1_vector_push_back">push_back</a>(self[start]);
+        start += 1;
+    };
+    vec
+}
+</code></pre>
+
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="helper-functions"><a class="header" href="#helper-functions">Helper Functions <a id="@Helper_Functions_2"></a></a></h3>
+<p>Check if <code>self</code> is equal to the result of adding <code>e</code> at the end of <code>v2</code></p>
+<p><a id="0x1_vector_eq_push_back"></a></p>
+<pre><code><b>fun</b> <a href="vector.html#0x1_vector_eq_push_back">eq_push_back</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: Element): bool {
+    len(self) == len(v2) + 1 &amp;&amp;
+    self[len(self)-1] == e &amp;&amp;
+    self[0..len(self)-1] == v2[0..len(v2)]
+}
+</code></pre>
+
+<p>Check if <code>self</code> is equal to the result of concatenating <code>v1</code> and <code>v2</code></p>
+<p><a id="0x1_vector_eq_append"></a></p>
+<pre><code><b>fun</b> <a href="vector.html#0x1_vector_eq_append">eq_append</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, v1: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): bool {
+    len(self) == len(v1) + len(v2) &amp;&amp;
+    self[0..len(v1)] == v1 &amp;&amp;
+    self[len(v1)..len(self)] == v2
+}
+</code></pre>
+
+<p>Check <code>self</code> is equal to the result of removing the first element of <code>v2</code></p>
+<p><a id="0x1_vector_eq_pop_front"></a></p>
+<pre><code><b>fun</b> <a href="vector.html#0x1_vector_eq_pop_front">eq_pop_front</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): bool {
+    len(self) + 1 == len(v2) &amp;&amp;
+    self == v2[1..len(v2)]
+}
+</code></pre>
+
+<p>Check that <code>v1</code> is equal to the result of removing the element at index <code>i</code> from <code>v2</code>.</p>
+<p><a id="0x1_vector_eq_remove_elem_at_index"></a></p>
+<pre><code><b>fun</b> <a href="vector.html#0x1_vector_eq_remove_elem_at_index">eq_remove_elem_at_index</a>&lt;Element&gt;(i: u64, v1: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, v2: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): bool {
+    len(v1) + 1 == len(v2) &amp;&amp;
+    v1[0..i] == v2[0..i] &amp;&amp;
+    v1[i..len(v1)] == v2[i + 1..len(v2)]
+}
+</code></pre>
+
+<p>Check if <code>self</code> contains <code>e</code>.</p>
+<p><a id="0x1_vector_spec_contains"></a></p>
+<pre><code><b>fun</b> <a href="vector.html#0x1_vector_spec_contains">spec_contains</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: Element): bool {
+    <b>exists</b> x in self: x == e
+}
+</code></pre>
+
+<h3 id="function-singleton-1"><a class="header" href="#function-singleton-1">Function <code>singleton</code> <a id="@Specification_1_singleton"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_singleton">singleton</a>&lt;Element&gt;(e: Element): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == vec(e);
+</code></pre>
+
+<h3 id="function-reverse-1"><a class="header" href="#function-reverse-1">Function <code>reverse</code> <a id="@Specification_1_reverse"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse">reverse</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;)
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-reverse_slice-1"><a class="header" href="#function-reverse_slice-1">Function <code>reverse_slice</code> <a id="@Specification_1_reverse_slice"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse_slice">reverse_slice</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, left: u64, right: u64)
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-append-1"><a class="header" href="#function-append-1">Function <code>append</code> <a id="@Specification_1_append"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_append">append</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, other: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;)
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-reverse_append-1"><a class="header" href="#function-reverse_append-1">Function <code>reverse_append</code> <a id="@Specification_1_reverse_append"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_reverse_append">reverse_append</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, other: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;)
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-trim-1"><a class="header" href="#function-trim-1">Function <code>trim</code> <a id="@Specification_1_trim"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_trim">trim</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, new_len: u64): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-trim_reverse-1"><a class="header" href="#function-trim_reverse-1">Function <code>trim_reverse</code> <a id="@Specification_1_trim_reverse"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_trim_reverse">trim_reverse</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, new_len: u64): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-is_empty-1"><a class="header" href="#function-is_empty-1">Function <code>is_empty</code> <a id="@Specification_1_is_empty"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_is_empty">is_empty</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): bool
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-contains-1"><a class="header" href="#function-contains-1">Function <code>contains</code> <a id="@Specification_1_contains"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_contains">contains</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: &amp;Element): bool
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-index_of-1"><a class="header" href="#function-index_of-1">Function <code>index_of</code> <a id="@Specification_1_index_of"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_index_of">index_of</a>&lt;Element&gt;(self: &amp;<a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: &amp;Element): (bool, u64)
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-insert-1"><a class="header" href="#function-insert-1">Function <code>insert</code> <a id="@Specification_1_insert"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_insert">insert</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64, e: Element)
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-remove-1"><a class="header" href="#function-remove-1">Function <code>remove</code> <a id="@Specification_1_remove"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_remove">remove</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): Element
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-remove_value-1"><a class="header" href="#function-remove_value-1">Function <code>remove_value</code> <a id="@Specification_1_remove_value"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_remove_value">remove_value</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, val: &amp;Element): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-swap_remove-1"><a class="header" href="#function-swap_remove-1">Function <code>swap_remove</code> <a id="@Specification_1_swap_remove"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_swap_remove">swap_remove</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, i: u64): Element
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-rotate-1"><a class="header" href="#function-rotate-1">Function <code>rotate</code> <a id="@Specification_1_rotate"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_rotate">rotate</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, rot: u64): u64
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+<h3 id="function-rotate_slice-1"><a class="header" href="#function-rotate_slice-1">Function <code>rotate_slice</code> <a id="@Specification_1_rotate_slice"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="vector.html#0x1_vector_rotate_slice">rotate_slice</a>&lt;Element&gt;(self: &amp;<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, left: u64, rot: u64, right: u64): u64
+</code></pre>
+
+<pre><code><b>pragma</b> intrinsic = <b>true</b>;
+</code></pre>
+
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../move-stdlib/string.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/any.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../move-stdlib/string.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/any.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp-c45f76e8.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

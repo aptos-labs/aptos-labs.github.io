@@ -1,0 +1,1203 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>bls12381 - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap-384c98b0.css">
+        <link rel="stylesheet" href="../theme/build-stamp-020e146c.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-589e30ea.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-0b791361.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/bls12381.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-0x1bls12381"><a class="header" href="#module-0x1bls12381">Module <code>0x1::bls12381</code> <a id="0x1_bls12381"></a></a></h1>
+<p>Contains functions for:</p>
+<p>The minimum-pubkey-size variant of <a href="https://en.wikipedia.org/wiki/BLS_digital_signature">Boneh-Lynn-Shacham (BLS) signatures</a>,
+where public keys are BLS12-381 elliptic-curve points in $\mathbb{G}_1$ and signatures are in $\mathbb{G}_2$,
+as per the <a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature#section-2.1">IETF BLS draft standard</a>.</p>
+<ul>
+<li><a href="#0x1_bls12381_PublicKey">Struct <code>PublicKey</code></a></li>
+<li><a href="#0x1_bls12381_ProofOfPossession">Struct <code>ProofOfPossession</code></a></li>
+<li><a href="#0x1_bls12381_PublicKeyWithPoP">Struct <code>PublicKeyWithPoP</code></a></li>
+<li><a href="#0x1_bls12381_AggrPublicKeysWithPoP">Struct <code>AggrPublicKeysWithPoP</code></a></li>
+<li><a href="#0x1_bls12381_Signature">Struct <code>Signature</code></a></li>
+<li><a href="#0x1_bls12381_AggrOrMultiSignature">Struct <code>AggrOrMultiSignature</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_bls12381_public_key_from_bytes">Function <code>public_key_from_bytes</code></a></li>
+<li><a href="#0x1_bls12381_public_key_to_bytes">Function <code>public_key_to_bytes</code></a></li>
+<li><a href="#0x1_bls12381_proof_of_possession_from_bytes">Function <code>proof_of_possession_from_bytes</code></a></li>
+<li><a href="#0x1_bls12381_proof_of_possession_to_bytes">Function <code>proof_of_possession_to_bytes</code></a></li>
+<li><a href="#0x1_bls12381_public_key_from_bytes_with_pop">Function <code>public_key_from_bytes_with_pop</code></a></li>
+<li><a href="#0x1_bls12381_public_key_with_pop_to_normal">Function <code>public_key_with_pop_to_normal</code></a></li>
+<li><a href="#0x1_bls12381_public_key_with_pop_to_bytes">Function <code>public_key_with_pop_to_bytes</code></a></li>
+<li><a href="#0x1_bls12381_signature_from_bytes">Function <code>signature_from_bytes</code></a></li>
+<li><a href="#0x1_bls12381_signature_to_bytes">Function <code>signature_to_bytes</code></a></li>
+<li><a href="#0x1_bls12381_signature_subgroup_check">Function <code>signature_subgroup_check</code></a></li>
+<li><a href="#0x1_bls12381_aggregate_pubkeys">Function <code>aggregate_pubkeys</code></a></li>
+<li><a href="#0x1_bls12381_aggregate_pubkey_to_bytes">Function <code>aggregate_pubkey_to_bytes</code></a></li>
+<li><a href="#0x1_bls12381_aggregate_signatures">Function <code>aggregate_signatures</code></a></li>
+<li><a href="#0x1_bls12381_aggr_or_multi_signature_to_bytes">Function <code>aggr_or_multi_signature_to_bytes</code></a></li>
+<li><a href="#0x1_bls12381_aggr_or_multi_signature_from_bytes">Function <code>aggr_or_multi_signature_from_bytes</code></a></li>
+<li><a href="#0x1_bls12381_aggr_or_multi_signature_subgroup_check">Function <code>aggr_or_multi_signature_subgroup_check</code></a></li>
+<li><a href="#0x1_bls12381_verify_aggregate_signature">Function <code>verify_aggregate_signature</code></a></li>
+<li><a href="#0x1_bls12381_verify_multisignature">Function <code>verify_multisignature</code></a></li>
+<li><a href="#0x1_bls12381_verify_normal_signature">Function <code>verify_normal_signature</code></a></li>
+<li><a href="#0x1_bls12381_verify_signature_share">Function <code>verify_signature_share</code></a></li>
+<li><a href="#0x1_bls12381_aggregate_pubkeys_internal">Function <code>aggregate_pubkeys_internal</code></a></li>
+<li><a href="#0x1_bls12381_aggregate_signatures_internal">Function <code>aggregate_signatures_internal</code></a></li>
+<li><a href="#0x1_bls12381_validate_pubkey_internal">Function <code>validate_pubkey_internal</code></a></li>
+<li><a href="#0x1_bls12381_signature_subgroup_check_internal">Function <code>signature_subgroup_check_internal</code></a></li>
+<li><a href="#0x1_bls12381_verify_aggregate_signature_internal">Function <code>verify_aggregate_signature_internal</code></a></li>
+<li><a href="#0x1_bls12381_verify_multisignature_internal">Function <code>verify_multisignature_internal</code></a></li>
+<li><a href="#0x1_bls12381_verify_normal_signature_internal">Function <code>verify_normal_signature_internal</code></a></li>
+<li><a href="#0x1_bls12381_verify_proof_of_possession_internal">Function <code>verify_proof_of_possession_internal</code></a></li>
+<li><a href="#0x1_bls12381_verify_signature_share_internal">Function <code>verify_signature_share_internal</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Helper_functions_2">Helper functions</a></li>
+<li><a href="#@Specification_1_public_key_from_bytes">Function <code>public_key_from_bytes</code></a></li>
+<li><a href="#@Specification_1_public_key_from_bytes_with_pop">Function <code>public_key_from_bytes_with_pop</code></a></li>
+<li><a href="#@Specification_1_aggregate_pubkeys">Function <code>aggregate_pubkeys</code></a></li>
+<li><a href="#@Specification_1_aggregate_signatures">Function <code>aggregate_signatures</code></a></li>
+<li><a href="#@Specification_1_aggr_or_multi_signature_from_bytes">Function <code>aggr_or_multi_signature_from_bytes</code></a></li>
+<li><a href="#@Specification_1_aggr_or_multi_signature_subgroup_check">Function <code>aggr_or_multi_signature_subgroup_check</code></a></li>
+<li><a href="#@Specification_1_verify_aggregate_signature">Function <code>verify_aggregate_signature</code></a></li>
+<li><a href="#@Specification_1_verify_multisignature">Function <code>verify_multisignature</code></a></li>
+<li><a href="#@Specification_1_verify_normal_signature">Function <code>verify_normal_signature</code></a></li>
+<li><a href="#@Specification_1_verify_signature_share">Function <code>verify_signature_share</code></a></li>
+<li><a href="#@Specification_1_aggregate_pubkeys_internal">Function <code>aggregate_pubkeys_internal</code></a></li>
+<li><a href="#@Specification_1_aggregate_signatures_internal">Function <code>aggregate_signatures_internal</code></a></li>
+<li><a href="#@Specification_1_validate_pubkey_internal">Function <code>validate_pubkey_internal</code></a></li>
+<li><a href="#@Specification_1_signature_subgroup_check_internal">Function <code>signature_subgroup_check_internal</code></a></li>
+<li><a href="#@Specification_1_verify_aggregate_signature_internal">Function <code>verify_aggregate_signature_internal</code></a></li>
+<li><a href="#@Specification_1_verify_multisignature_internal">Function <code>verify_multisignature_internal</code></a></li>
+<li><a href="#@Specification_1_verify_normal_signature_internal">Function <code>verify_normal_signature_internal</code></a></li>
+<li><a href="#@Specification_1_verify_proof_of_possession_internal">Function <code>verify_proof_of_possession_internal</code></a></li>
+<li><a href="#@Specification_1_verify_signature_share_internal">Function <code>verify_signature_share_internal</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+</code></pre>
+
+<h2 id="struct-publickey"><a class="header" href="#struct-publickey">Struct <code>PublicKey</code> <a id="0x1_bls12381_PublicKey"></a></a></h2>
+<p>A <em>validated</em> public key that:
+(1) is a point in the prime-order subgroup of the BLS12-381 elliptic curve, and
+(2) is not the identity point</p>
+<p>This struct can be used to verify a normal (non-aggregated) signature.</p>
+<p>This struct can be combined with a ProofOfPossession struct in order to create a PublicKeyWithPop struct, which
+can be used to verify a multisignature.</p>
+<pre><code><b>struct</b> <a href="bls12381.html#0x1_bls12381_PublicKey">PublicKey</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-proofofpossession"><a class="header" href="#struct-proofofpossession">Struct <code>ProofOfPossession</code> <a id="0x1_bls12381_ProofOfPossession"></a></a></h2>
+<p>A proof-of-possession (PoP).
+Given such a struct and a PublicKey struct, one can construct a PublicKeyWithPoP (see below).</p>
+<pre><code><b>struct</b> <a href="bls12381.html#0x1_bls12381_ProofOfPossession">ProofOfPossession</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-publickeywithpop"><a class="header" href="#struct-publickeywithpop">Struct <code>PublicKeyWithPoP</code> <a id="0x1_bls12381_PublicKeyWithPoP"></a></a></h2>
+<p>A <em>validated</em> public key that had a successfully-verified proof-of-possession (PoP).</p>
+<p>A vector of these structs can be either:
+(1) used to verify an aggregate signature
+(2) aggregated with other PublicKeyWithPoP structs into an AggrPublicKeysWithPoP, which in turn can be used
+to verify a multisignature</p>
+<pre><code><b>struct</b> <a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-aggrpublickeyswithpop"><a class="header" href="#struct-aggrpublickeyswithpop">Struct <code>AggrPublicKeysWithPoP</code> <a id="0x1_bls12381_AggrPublicKeysWithPoP"></a></a></h2>
+<p>An aggregation of public keys with verified PoPs, which can be used to verify multisignatures.</p>
+<pre><code><b>struct</b> <a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">AggrPublicKeysWithPoP</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-signature"><a class="header" href="#struct-signature">Struct <code>Signature</code> <a id="0x1_bls12381_Signature"></a></a></h2>
+<p>A BLS signature. This can be either a:
+(1) normal (non-aggregated) signature
+(2) signature share (for a multisignature or aggregate signature)</p>
+<pre><code><b>struct</b> <a href="bls12381.html#0x1_bls12381_Signature">Signature</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-aggrormultisignature"><a class="header" href="#struct-aggrormultisignature">Struct <code>AggrOrMultiSignature</code> <a id="0x1_bls12381_AggrOrMultiSignature"></a></a></h2>
+<p>An aggregation of BLS signatures. This can be either a:
+(4) aggregated signature (i.e., an aggregation of signatures s_i, each on a message m_i)
+(3) multisignature (i.e., an aggregation of signatures s_i, each on the same message m)</p>
+<p>We distinguish between a Signature type and a AggrOrMultiSignature type to prevent developers from interchangeably
+calling <code>verify_multisignature</code> and <code>verify_signature_share</code> to verify both multisignatures and signature shares,
+which could create problems down the line.</p>
+<pre><code><b>struct</b> <a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_bls12381_EWRONG_SIZE"></a></p>
+<p>One of the given inputs has the wrong size.s</p>
+<pre><code><b>const</b> <a href="bls12381.html#0x1_bls12381_EWRONG_SIZE">EWRONG_SIZE</a>: u64 = 2;
+</code></pre>
+
+<p><a id="0x1_bls12381_EZERO_PUBKEYS"></a></p>
+<p>The caller was supposed to input one or more public keys.</p>
+<pre><code><b>const</b> <a href="bls12381.html#0x1_bls12381_EZERO_PUBKEYS">EZERO_PUBKEYS</a>: u64 = 1;
+</code></pre>
+
+<p><a id="0x1_bls12381_E_NUM_SIGNERS_MUST_EQ_NUM_MESSAGES"></a></p>
+<p>The number of signers does not match the number of messages to be signed.</p>
+<pre><code><b>const</b> <a href="bls12381.html#0x1_bls12381_E_NUM_SIGNERS_MUST_EQ_NUM_MESSAGES">E_NUM_SIGNERS_MUST_EQ_NUM_MESSAGES</a>: u64 = 3;
+</code></pre>
+
+<p><a id="0x1_bls12381_PUBLIC_KEY_NUM_BYTES"></a></p>
+<p>The public key size, in bytes</p>
+<pre><code><b>const</b> <a href="bls12381.html#0x1_bls12381_PUBLIC_KEY_NUM_BYTES">PUBLIC_KEY_NUM_BYTES</a>: u64 = 48;
+</code></pre>
+
+<p><a id="0x1_bls12381_RANDOM_PK"></a></p>
+<p>Random signature generated by running <code>cargo test – bls12381_sample_signature –nocapture –<b>include</b>-ignored</code> in <code>crates/aptos-crypto</code>.
+The associated SK is 07416693b6b32c84abe45578728e2379f525729e5b94762435a31e65ecc728da.</p>
+<pre><code><b>const</b> <a href="bls12381.html#0x1_bls12381_RANDOM_PK">RANDOM_PK</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [138, 83, 231, 174, 82, 112, 227, 231, 101, 205, 138, 64, 50, 194, 231, 124, 111, 126, 135, 164, 78, 187, 133, 191, 40, 164, 215, 134, 85, 101, 105, 143, 151, 83, 70, 113, 66, 98, 249, 228, 124, 111, 62, 13, 93, 149, 22, 96];
+</code></pre>
+
+<p><a id="0x1_bls12381_RANDOM_SIGNATURE"></a></p>
+<p>Random signature generated by running <code>cargo test – bls12381_sample_signature –nocapture –<b>include</b>-ignored</code> in <code>crates/aptos-crypto</code>.
+The message signed is “Hello Aptos!” and the associated SK is 07416693b6b32c84abe45578728e2379f525729e5b94762435a31e65ecc728da.</p>
+<pre><code><b>const</b> <a href="bls12381.html#0x1_bls12381_RANDOM_SIGNATURE">RANDOM_SIGNATURE</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [160, 26, 101, 133, 79, 152, 125, 52, 52, 20, 155, 127, 8, 247, 7, 48, 227, 11, 36, 25, 132, 232, 113, 43, 194, 172, 168, 133, 214, 50, 170, 252, 237, 76, 63, 102, 18, 9, 222, 187, 107, 28, 134, 1, 50, 102, 35, 204, 22, 202, 47, 108, 158, 220, 83, 183, 184, 139, 116, 53, 251, 107, 5, 221, 236, 228, 24, 210, 195, 77, 198, 172, 162, 245, 161, 26, 121, 230, 119, 116, 88, 44, 20, 8, 74, 1, 220, 183, 130, 14, 76, 180, 186, 208, 234, 141];
+</code></pre>
+
+<p><a id="0x1_bls12381_SIGNATURE_SIZE"></a></p>
+<p>The signature size, in bytes</p>
+<pre><code><b>const</b> <a href="bls12381.html#0x1_bls12381_SIGNATURE_SIZE">SIGNATURE_SIZE</a>: u64 = 96;
+</code></pre>
+
+<h2 id="function-public_key_from_bytes"><a class="header" href="#function-public_key_from_bytes">Function <code>public_key_from_bytes</code> <a id="0x1_bls12381_public_key_from_bytes"></a></a></h2>
+<p>Creates a new public key from a sequence of bytes.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_from_bytes">public_key_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKey">bls12381::PublicKey</a>&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_from_bytes">public_key_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): Option&lt;<a href="bls12381.html#0x1_bls12381_PublicKey">PublicKey</a>&gt; {
+    <b>if</b> (<a href="bls12381.html#0x1_bls12381_validate_pubkey_internal">validate_pubkey_internal</a>(bytes)) {
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="bls12381.html#0x1_bls12381_PublicKey">PublicKey</a> {
+            bytes
+        })
+    } <b>else</b> {
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKey">PublicKey</a>&gt;()
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-public_key_to_bytes"><a class="header" href="#function-public_key_to_bytes">Function <code>public_key_to_bytes</code> <a id="0x1_bls12381_public_key_to_bytes"></a></a></h2>
+<p>Serializes a public key into 48 bytes.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_to_bytes">public_key_to_bytes</a>(pk: &amp;<a href="bls12381.html#0x1_bls12381_PublicKey">bls12381::PublicKey</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_to_bytes">public_key_to_bytes</a>(pk: &amp;<a href="bls12381.html#0x1_bls12381_PublicKey">PublicKey</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    pk.bytes
+}
+</code></pre>
+
+</details>
+<h2 id="function-proof_of_possession_from_bytes"><a class="header" href="#function-proof_of_possession_from_bytes">Function <code>proof_of_possession_from_bytes</code> <a id="0x1_bls12381_proof_of_possession_from_bytes"></a></a></h2>
+<p>Creates a new proof-of-possession (PoP) which can be later used to create a PublicKeyWithPoP struct,</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_proof_of_possession_from_bytes">proof_of_possession_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="bls12381.html#0x1_bls12381_ProofOfPossession">bls12381::ProofOfPossession</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_proof_of_possession_from_bytes">proof_of_possession_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="bls12381.html#0x1_bls12381_ProofOfPossession">ProofOfPossession</a> {
+    <a href="bls12381.html#0x1_bls12381_ProofOfPossession">ProofOfPossession</a> {
+        bytes
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-proof_of_possession_to_bytes"><a class="header" href="#function-proof_of_possession_to_bytes">Function <code>proof_of_possession_to_bytes</code> <a id="0x1_bls12381_proof_of_possession_to_bytes"></a></a></h2>
+<p>Serializes the signature into 96 bytes.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_proof_of_possession_to_bytes">proof_of_possession_to_bytes</a>(pop: &amp;<a href="bls12381.html#0x1_bls12381_ProofOfPossession">bls12381::ProofOfPossession</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_proof_of_possession_to_bytes">proof_of_possession_to_bytes</a>(pop: &amp;<a href="bls12381.html#0x1_bls12381_ProofOfPossession">ProofOfPossession</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    pop.bytes
+}
+</code></pre>
+
+</details>
+<h2 id="function-public_key_from_bytes_with_pop"><a class="header" href="#function-public_key_from_bytes_with_pop">Function <code>public_key_from_bytes_with_pop</code> <a id="0x1_bls12381_public_key_from_bytes_with_pop"></a></a></h2>
+<p>Creates a PoP’d public key from a normal public key and a corresponding proof-of-possession.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_from_bytes_with_pop">public_key_from_bytes_with_pop</a>(pk_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, pop: &amp;<a href="bls12381.html#0x1_bls12381_ProofOfPossession">bls12381::ProofOfPossession</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_from_bytes_with_pop">public_key_from_bytes_with_pop</a>(pk_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, pop: &amp;<a href="bls12381.html#0x1_bls12381_ProofOfPossession">ProofOfPossession</a>): Option&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt; {
+    <b>if</b> (<a href="bls12381.html#0x1_bls12381_verify_proof_of_possession_internal">verify_proof_of_possession_internal</a>(pk_bytes, pop.bytes)) {
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a> {
+            bytes: pk_bytes
+        })
+    } <b>else</b> {
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;()
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-public_key_with_pop_to_normal"><a class="header" href="#function-public_key_with_pop_to_normal">Function <code>public_key_with_pop_to_normal</code> <a id="0x1_bls12381_public_key_with_pop_to_normal"></a></a></h2>
+<p>Creates a normal public key from a PoP’d public key.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_with_pop_to_normal">public_key_with_pop_to_normal</a>(pkpop: &amp;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>): <a href="bls12381.html#0x1_bls12381_PublicKey">bls12381::PublicKey</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_with_pop_to_normal">public_key_with_pop_to_normal</a>(pkpop: &amp;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>): <a href="bls12381.html#0x1_bls12381_PublicKey">PublicKey</a> {
+    <a href="bls12381.html#0x1_bls12381_PublicKey">PublicKey</a> {
+        bytes: pkpop.bytes
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-public_key_with_pop_to_bytes"><a class="header" href="#function-public_key_with_pop_to_bytes">Function <code>public_key_with_pop_to_bytes</code> <a id="0x1_bls12381_public_key_with_pop_to_bytes"></a></a></h2>
+<p>Serializes a PoP’d public key into 48 bytes.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_with_pop_to_bytes">public_key_with_pop_to_bytes</a>(pk: &amp;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_with_pop_to_bytes">public_key_with_pop_to_bytes</a>(pk: &amp;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    pk.bytes
+}
+</code></pre>
+
+</details>
+<h2 id="function-signature_from_bytes"><a class="header" href="#function-signature_from_bytes">Function <code>signature_from_bytes</code> <a id="0x1_bls12381_signature_from_bytes"></a></a></h2>
+<p>Creates a new signature from a sequence of bytes. Does not check the signature for prime-order subgroup
+membership since that is done implicitly during verification.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_from_bytes">signature_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_from_bytes">signature_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="bls12381.html#0x1_bls12381_Signature">Signature</a> {
+    <a href="bls12381.html#0x1_bls12381_Signature">Signature</a> {
+        bytes
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-signature_to_bytes"><a class="header" href="#function-signature_to_bytes">Function <code>signature_to_bytes</code> <a id="0x1_bls12381_signature_to_bytes"></a></a></h2>
+<p>Serializes the signature into 96 bytes.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_to_bytes">signature_to_bytes</a>(sig: &amp;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_to_bytes">signature_to_bytes</a>(sig: &amp;<a href="bls12381.html#0x1_bls12381_Signature">Signature</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    sig.bytes
+}
+</code></pre>
+
+</details>
+<h2 id="function-signature_subgroup_check"><a class="header" href="#function-signature_subgroup_check">Function <code>signature_subgroup_check</code> <a id="0x1_bls12381_signature_subgroup_check"></a></a></h2>
+<p>Checks that the group element that defines a signature is in the prime-order subgroup.
+This check is implicitly performed when verifying any signature via this module, but we expose this functionality
+in case it might be useful for applications to easily dismiss invalid signatures early on.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_subgroup_check">signature_subgroup_check</a>(signature: &amp;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_subgroup_check">signature_subgroup_check</a>(signature: &amp;<a href="bls12381.html#0x1_bls12381_Signature">Signature</a>): bool {
+    <a href="bls12381.html#0x1_bls12381_signature_subgroup_check_internal">signature_subgroup_check_internal</a>(signature.bytes)
+}
+</code></pre>
+
+</details>
+<h2 id="function-aggregate_pubkeys"><a class="header" href="#function-aggregate_pubkeys">Function <code>aggregate_pubkeys</code> <a id="0x1_bls12381_aggregate_pubkeys"></a></a></h2>
+<p>Given a vector of public keys with verified PoPs, combines them into an <em>aggregated</em> public key which can be used
+to verify multisignatures using <code>verify_multisignature</code> and aggregate signatures using <code>verify_aggregate_signature</code>.
+Aborts if no public keys are given as input.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_pubkeys">aggregate_pubkeys</a>(public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;): <a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">bls12381::AggrPublicKeysWithPoP</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_pubkeys">aggregate_pubkeys</a>(public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;): <a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">AggrPublicKeysWithPoP</a> {
+    <b>let</b> (bytes, success) = <a href="bls12381.html#0x1_bls12381_aggregate_pubkeys_internal">aggregate_pubkeys_internal</a>(public_keys);
+    <b>assert</b>!(success, std::error::invalid_argument(<a href="bls12381.html#0x1_bls12381_EZERO_PUBKEYS">EZERO_PUBKEYS</a>));
+
+    <a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">AggrPublicKeysWithPoP</a> {
+        bytes
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-aggregate_pubkey_to_bytes"><a class="header" href="#function-aggregate_pubkey_to_bytes">Function <code>aggregate_pubkey_to_bytes</code> <a id="0x1_bls12381_aggregate_pubkey_to_bytes"></a></a></h2>
+<p>Serializes an aggregate public key into 48 bytes.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_pubkey_to_bytes">aggregate_pubkey_to_bytes</a>(apk: &amp;<a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">bls12381::AggrPublicKeysWithPoP</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_pubkey_to_bytes">aggregate_pubkey_to_bytes</a>(apk: &amp;<a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">AggrPublicKeysWithPoP</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    apk.bytes
+}
+</code></pre>
+
+</details>
+<h2 id="function-aggregate_signatures"><a class="header" href="#function-aggregate_signatures">Function <code>aggregate_signatures</code> <a id="0x1_bls12381_aggregate_signatures"></a></a></h2>
+<p>Aggregates the input signatures into an aggregate-or-multi-signature structure, which can be later verified via
+<code>verify_aggregate_signature</code> or <code>verify_multisignature</code>. Returns <code>None</code> if zero signatures are given as input
+or if some of the signatures are not valid group elements.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_signatures">aggregate_signatures</a>(signatures: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_signatures">aggregate_signatures</a>(signatures: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_Signature">Signature</a>&gt;): Option&lt;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a>&gt; {
+    <b>let</b> (bytes, success) = <a href="bls12381.html#0x1_bls12381_aggregate_signatures_internal">aggregate_signatures_internal</a>(signatures);
+    <b>if</b> (success) {
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(
+            <a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a> {
+                bytes
+            }
+        )
+    } <b>else</b> {
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>&lt;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a>&gt;()
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-aggr_or_multi_signature_to_bytes"><a class="header" href="#function-aggr_or_multi_signature_to_bytes">Function <code>aggr_or_multi_signature_to_bytes</code> <a id="0x1_bls12381_aggr_or_multi_signature_to_bytes"></a></a></h2>
+<p>Serializes an aggregate-or-multi-signature into 96 bytes.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggr_or_multi_signature_to_bytes">aggr_or_multi_signature_to_bytes</a>(sig: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggr_or_multi_signature_to_bytes">aggr_or_multi_signature_to_bytes</a>(sig: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    sig.bytes
+}
+</code></pre>
+
+</details>
+<h2 id="function-aggr_or_multi_signature_from_bytes"><a class="header" href="#function-aggr_or_multi_signature_from_bytes">Function <code>aggr_or_multi_signature_from_bytes</code> <a id="0x1_bls12381_aggr_or_multi_signature_from_bytes"></a></a></h2>
+<p>Deserializes an aggregate-or-multi-signature from 96 bytes.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggr_or_multi_signature_from_bytes">aggr_or_multi_signature_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggr_or_multi_signature_from_bytes">aggr_or_multi_signature_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a> {
+    <b>assert</b>!(bytes.length() == <a href="bls12381.html#0x1_bls12381_SIGNATURE_SIZE">SIGNATURE_SIZE</a>, std::error::invalid_argument(<a href="bls12381.html#0x1_bls12381_EWRONG_SIZE">EWRONG_SIZE</a>));
+
+    <a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a> {
+        bytes
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-aggr_or_multi_signature_subgroup_check"><a class="header" href="#function-aggr_or_multi_signature_subgroup_check">Function <code>aggr_or_multi_signature_subgroup_check</code> <a id="0x1_bls12381_aggr_or_multi_signature_subgroup_check"></a></a></h2>
+<p>Checks that the group element that defines an aggregate-or-multi-signature is in the prime-order subgroup.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggr_or_multi_signature_subgroup_check">aggr_or_multi_signature_subgroup_check</a>(signature: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggr_or_multi_signature_subgroup_check">aggr_or_multi_signature_subgroup_check</a>(signature: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a>): bool {
+    <a href="bls12381.html#0x1_bls12381_signature_subgroup_check_internal">signature_subgroup_check_internal</a>(signature.bytes)
+}
+</code></pre>
+
+</details>
+<h2 id="function-verify_aggregate_signature"><a class="header" href="#function-verify_aggregate_signature">Function <code>verify_aggregate_signature</code> <a id="0x1_bls12381_verify_aggregate_signature"></a></a></h2>
+<p>Verifies an aggregate signature, an aggregation of many signatures <code>s_i</code>, each on a different message <code>m_i</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_aggregate_signature">verify_aggregate_signature</a>(aggr_sig: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>, public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;, messages: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_aggregate_signature">verify_aggregate_signature</a>(
+    aggr_sig: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a>,
+    public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;,
+    messages: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+): bool {
+    <a href="bls12381.html#0x1_bls12381_verify_aggregate_signature_internal">verify_aggregate_signature_internal</a>(aggr_sig.bytes, public_keys, messages)
+}
+</code></pre>
+
+</details>
+<h2 id="function-verify_multisignature"><a class="header" href="#function-verify_multisignature">Function <code>verify_multisignature</code> <a id="0x1_bls12381_verify_multisignature"></a></a></h2>
+<p>Verifies a multisignature: an aggregation of many signatures, each on the same message <code>m</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_multisignature">verify_multisignature</a>(multisig: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>, aggr_public_key: &amp;<a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">bls12381::AggrPublicKeysWithPoP</a>, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_multisignature">verify_multisignature</a>(
+    multisig: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">AggrOrMultiSignature</a>,
+    aggr_public_key: &amp;<a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">AggrPublicKeysWithPoP</a>,
+    message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool {
+    <a href="bls12381.html#0x1_bls12381_verify_multisignature_internal">verify_multisignature_internal</a>(multisig.bytes, aggr_public_key.bytes, message)
+}
+</code></pre>
+
+</details>
+<h2 id="function-verify_normal_signature"><a class="header" href="#function-verify_normal_signature">Function <code>verify_normal_signature</code> <a id="0x1_bls12381_verify_normal_signature"></a></a></h2>
+<p>Verifies a normal, non-aggregated signature.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_normal_signature">verify_normal_signature</a>(signature: &amp;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>, public_key: &amp;<a href="bls12381.html#0x1_bls12381_PublicKey">bls12381::PublicKey</a>, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_normal_signature">verify_normal_signature</a>(
+    signature: &amp;<a href="bls12381.html#0x1_bls12381_Signature">Signature</a>,
+    public_key: &amp;<a href="bls12381.html#0x1_bls12381_PublicKey">PublicKey</a>,
+    message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool {
+    <a href="bls12381.html#0x1_bls12381_verify_normal_signature_internal">verify_normal_signature_internal</a>(signature.bytes, public_key.bytes, message)
+}
+</code></pre>
+
+</details>
+<h2 id="function-verify_signature_share"><a class="header" href="#function-verify_signature_share">Function <code>verify_signature_share</code> <a id="0x1_bls12381_verify_signature_share"></a></a></h2>
+<p>Verifies a signature share in the multisignature share or an aggregate signature share.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_signature_share">verify_signature_share</a>(signature_share: &amp;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>, public_key: &amp;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_signature_share">verify_signature_share</a>(
+    signature_share: &amp;<a href="bls12381.html#0x1_bls12381_Signature">Signature</a>,
+    public_key: &amp;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>,
+    message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool {
+    <a href="bls12381.html#0x1_bls12381_verify_signature_share_internal">verify_signature_share_internal</a>(signature_share.bytes, public_key.bytes, message)
+}
+</code></pre>
+
+</details>
+<h2 id="function-aggregate_pubkeys_internal"><a class="header" href="#function-aggregate_pubkeys_internal">Function <code>aggregate_pubkeys_internal</code> <a id="0x1_bls12381_aggregate_pubkeys_internal"></a></a></h2>
+<p>CRYPTOGRAPHY WARNING: This function assumes that the caller verified all public keys have a valid
+proof-of-possesion (PoP) using <code>verify_proof_of_possession</code>.</p>
+<p>Given a vector of serialized public keys, combines them into an aggregated public key, returning <code>(bytes, <b>true</b>)</code>,
+where <code>bytes</code> store the serialized public key.
+Aborts if no public keys are given as input.</p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_pubkeys_internal">aggregate_pubkeys_internal</a>(public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bool)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_pubkeys_internal">aggregate_pubkeys_internal</a>(public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bool);
+</code></pre>
+
+</details>
+<h2 id="function-aggregate_signatures_internal"><a class="header" href="#function-aggregate_signatures_internal">Function <code>aggregate_signatures_internal</code> <a id="0x1_bls12381_aggregate_signatures_internal"></a></a></h2>
+<p>CRYPTOGRAPHY WARNING: This function can be safely called without verifying that the input signatures are elements
+of the prime-order subgroup of the BLS12-381 curve.</p>
+<p>Given a vector of serialized signatures, combines them into an aggregate signature, returning <code>(bytes, <b>true</b>)</code>,
+where <code>bytes</code> store the serialized signature.
+Does not check the input signatures nor the final aggregated signatures for prime-order subgroup membership.
+Returns <code>(_, <b>false</b>)</code> if no signatures are given as input.
+Does not abort.</p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_signatures_internal">aggregate_signatures_internal</a>(signatures: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bool)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_signatures_internal">aggregate_signatures_internal</a>(signatures: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_Signature">Signature</a>&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bool);
+</code></pre>
+
+</details>
+<h2 id="function-validate_pubkey_internal"><a class="header" href="#function-validate_pubkey_internal">Function <code>validate_pubkey_internal</code> <a id="0x1_bls12381_validate_pubkey_internal"></a></a></h2>
+<p>Return <code><b>true</b></code> if the bytes in <code>public_key</code> are a valid BLS12-381 public key:
+(1) it is NOT the identity point, and
+(2) it is a BLS12-381 elliptic curve point, and
+(3) it is a prime-order point
+Return <code><b>false</b></code> otherwise.
+Does not abort.</p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_validate_pubkey_internal">validate_pubkey_internal</a>(public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_validate_pubkey_internal">validate_pubkey_internal</a>(public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool;
+</code></pre>
+
+</details>
+<h2 id="function-signature_subgroup_check_internal"><a class="header" href="#function-signature_subgroup_check_internal">Function <code>signature_subgroup_check_internal</code> <a id="0x1_bls12381_signature_subgroup_check_internal"></a></a></h2>
+<p>Return <code><b>true</b></code> if the elliptic curve point serialized in <code>signature</code>:
+(1) is NOT the identity point, and
+(2) is a BLS12-381 elliptic curve point, and
+(3) is a prime-order point
+Return <code><b>false</b></code> otherwise.
+Does not abort.</p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_subgroup_check_internal">signature_subgroup_check_internal</a>(signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_subgroup_check_internal">signature_subgroup_check_internal</a>(signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool;
+</code></pre>
+
+</details>
+<h2 id="function-verify_aggregate_signature_internal"><a class="header" href="#function-verify_aggregate_signature_internal">Function <code>verify_aggregate_signature_internal</code> <a id="0x1_bls12381_verify_aggregate_signature_internal"></a></a></h2>
+<p>CRYPTOGRAPHY WARNING: First, this function assumes all public keys have a valid proof-of-possesion (PoP).
+This prevents both small-subgroup attacks and rogue-key attacks. Second, this function can be safely called
+without verifying that the aggregate signature is in the prime-order subgroup of the BLS12-381 curve.</p>
+<p>Returns <code><b>true</b></code> if the aggregate signature <code>aggsig</code> on <code>messages</code> under <code>public_keys</code> verifies (where <code>messages[i]</code>
+should be signed by <code>public_keys[i]</code>).</p>
+<p>Returns <code><b>false</b></code> if either:</p>
+<ul>
+<li>no public keys or messages are given as input,</li>
+<li>number of messages does not equal number of public keys</li>
+<li><code>aggsig</code> (1) is the identity point, or (2) is NOT a BLS12-381 elliptic curve point, or (3) is NOT a
+prime-order point
+Does not abort.</li>
+</ul>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_aggregate_signature_internal">verify_aggregate_signature_internal</a>(aggsig: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;, messages: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_aggregate_signature_internal">verify_aggregate_signature_internal</a>(
+    aggsig: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;,
+    messages: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+): bool;
+</code></pre>
+
+</details>
+<h2 id="function-verify_multisignature_internal"><a class="header" href="#function-verify_multisignature_internal">Function <code>verify_multisignature_internal</code> <a id="0x1_bls12381_verify_multisignature_internal"></a></a></h2>
+<p>CRYPTOGRAPHY WARNING: This function assumes verified proofs-of-possesion (PoP) for the public keys used in
+computing the aggregate public key. This prevents small-subgroup attacks and rogue-key attacks.</p>
+<p>Return <code><b>true</b></code> if the BLS <code>multisignature</code> on <code>message</code> verifies against the BLS aggregate public key <code>agg_public_key</code>.
+Returns <code><b>false</b></code> otherwise.
+Does not abort.</p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_multisignature_internal">verify_multisignature_internal</a>(multisignature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, agg_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_multisignature_internal">verify_multisignature_internal</a>(
+    multisignature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    agg_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool;
+</code></pre>
+
+</details>
+<h2 id="function-verify_normal_signature_internal"><a class="header" href="#function-verify_normal_signature_internal">Function <code>verify_normal_signature_internal</code> <a id="0x1_bls12381_verify_normal_signature_internal"></a></a></h2>
+<p>CRYPTOGRAPHY WARNING: This function WILL check that the public key is a prime-order point, in order to prevent
+library users from misusing the library by forgetting to validate public keys before giving them as arguments to
+this function.</p>
+<p>Returns <code><b>true</b></code> if the <code>signature</code> on <code>message</code> verifies under <code><b>public</b> key</code>.
+Returns <code><b>false</b></code> otherwise.
+Does not abort.</p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_normal_signature_internal">verify_normal_signature_internal</a>(signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_normal_signature_internal">verify_normal_signature_internal</a>(
+    signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool;
+</code></pre>
+
+</details>
+<h2 id="function-verify_proof_of_possession_internal"><a class="header" href="#function-verify_proof_of_possession_internal">Function <code>verify_proof_of_possession_internal</code> <a id="0x1_bls12381_verify_proof_of_possession_internal"></a></a></h2>
+<p>Return <code><b>true</b></code> if the bytes in <code>public_key</code> are a valid bls12381 public key (as per <code>validate_pubkey</code>)
+<em>and</em> this public key has a valid proof-of-possesion (PoP).
+Return <code><b>false</b></code> otherwise.
+Does not abort.</p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_proof_of_possession_internal">verify_proof_of_possession_internal</a>(public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, proof_of_possesion: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_proof_of_possession_internal">verify_proof_of_possession_internal</a>(
+    public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    proof_of_possesion: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool;
+</code></pre>
+
+</details>
+<h2 id="function-verify_signature_share_internal"><a class="header" href="#function-verify_signature_share_internal">Function <code>verify_signature_share_internal</code> <a id="0x1_bls12381_verify_signature_share_internal"></a></a></h2>
+<p>CRYPTOGRAPHY WARNING: Assumes the public key has a valid proof-of-possesion (PoP). This prevents rogue-key
+attacks later on during signature aggregation.</p>
+<p>Returns <code><b>true</b></code> if the <code>signature_share</code> on <code>message</code> verifies under <code><b>public</b> key</code>.
+Returns <code><b>false</b></code> otherwise, similar to <code>verify_multisignature</code>.
+Does not abort.</p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_signature_share_internal">verify_signature_share_internal</a>(signature_share: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_signature_share_internal">verify_signature_share_internal</a>(
+    signature_share: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool;
+</code></pre>
+
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="helper-functions"><a class="header" href="#helper-functions">Helper functions <a id="@Helper_functions_2"></a></a></h3>
+<p><a id="0x1_bls12381_spec_aggregate_pubkeys_internal_1"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_aggregate_pubkeys_internal_1">spec_aggregate_pubkeys_internal_1</a>(public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_public_key_from_bytes_with_pop"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_public_key_from_bytes_with_pop">spec_public_key_from_bytes_with_pop</a>(pk_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, pop: <a href="bls12381.html#0x1_bls12381_ProofOfPossession">ProofOfPossession</a>): Option&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_aggregate_pubkeys_internal_2"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_aggregate_pubkeys_internal_2">spec_aggregate_pubkeys_internal_2</a>(public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;): bool;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_aggregate_signatures_internal_1"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_aggregate_signatures_internal_1">spec_aggregate_signatures_internal_1</a>(signatures: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_Signature">Signature</a>&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_aggregate_signatures_internal_2"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_aggregate_signatures_internal_2">spec_aggregate_signatures_internal_2</a>(signatures: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_Signature">Signature</a>&gt;): bool;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_validate_pubkey_internal"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_validate_pubkey_internal">spec_validate_pubkey_internal</a>(public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_signature_subgroup_check_internal"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_signature_subgroup_check_internal">spec_signature_subgroup_check_internal</a>(signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_verify_aggregate_signature_internal"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_verify_aggregate_signature_internal">spec_verify_aggregate_signature_internal</a>(
+   aggsig: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+   public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">PublicKeyWithPoP</a>&gt;,
+   messages: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+): bool;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_verify_multisignature_internal"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_verify_multisignature_internal">spec_verify_multisignature_internal</a>(
+   multisignature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+   agg_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+   message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_verify_normal_signature_internal"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_verify_normal_signature_internal">spec_verify_normal_signature_internal</a>(
+   signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+   public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+   message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_verify_proof_of_possession_internal"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_verify_proof_of_possession_internal">spec_verify_proof_of_possession_internal</a>(
+   public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+   proof_of_possesion: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool;
+</code></pre>
+
+<p><a id="0x1_bls12381_spec_verify_signature_share_internal"></a></p>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_spec_verify_signature_share_internal">spec_verify_signature_share_internal</a>(
+   signature_share: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+   public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+   message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): bool;
+</code></pre>
+
+<h3 id="function-public_key_from_bytes-1"><a class="header" href="#function-public_key_from_bytes-1">Function <code>public_key_from_bytes</code> <a id="@Specification_1_public_key_from_bytes"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_from_bytes">public_key_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKey">bls12381::PublicKey</a>&gt;
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="bls12381.html#0x1_bls12381_spec_validate_pubkey_internal">spec_validate_pubkey_internal</a>(bytes) ==&gt; (std::option::is_some(result) &amp;&amp; std::option::borrow(result).bytes == bytes);
+<b>ensures</b> !<a href="bls12381.html#0x1_bls12381_spec_validate_pubkey_internal">spec_validate_pubkey_internal</a>(bytes) ==&gt; std::option::is_none(result);
+</code></pre>
+
+<h3 id="function-public_key_from_bytes_with_pop-1"><a class="header" href="#function-public_key_from_bytes_with_pop-1">Function <code>public_key_from_bytes_with_pop</code> <a id="@Specification_1_public_key_from_bytes_with_pop"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_public_key_from_bytes_with_pop">public_key_from_bytes_with_pop</a>(pk_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, pop: &amp;<a href="bls12381.html#0x1_bls12381_ProofOfPossession">bls12381::ProofOfPossession</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="bls12381.html#0x1_bls12381_spec_verify_proof_of_possession_internal">spec_verify_proof_of_possession_internal</a>(pk_bytes, pop.bytes) ==&gt; (std::option::is_some(result) &amp;&amp; std::option::borrow(result).bytes == pk_bytes);
+<b>ensures</b> !<a href="bls12381.html#0x1_bls12381_spec_verify_proof_of_possession_internal">spec_verify_proof_of_possession_internal</a>(pk_bytes, pop.bytes) ==&gt; std::option::is_none(result);
+<b>ensures</b> [abstract] result == <a href="bls12381.html#0x1_bls12381_spec_public_key_from_bytes_with_pop">spec_public_key_from_bytes_with_pop</a>(pk_bytes, pop);
+</code></pre>
+
+<h3 id="function-aggregate_pubkeys-1"><a class="header" href="#function-aggregate_pubkeys-1">Function <code>aggregate_pubkeys</code> <a id="@Specification_1_aggregate_pubkeys"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_pubkeys">aggregate_pubkeys</a>(public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;): <a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">bls12381::AggrPublicKeysWithPoP</a>
+</code></pre>
+
+<pre><code><b>let</b> bytes = <a href="bls12381.html#0x1_bls12381_spec_aggregate_pubkeys_internal_1">spec_aggregate_pubkeys_internal_1</a>(public_keys);
+<b>let</b> success = <a href="bls12381.html#0x1_bls12381_spec_aggregate_pubkeys_internal_2">spec_aggregate_pubkeys_internal_2</a>(public_keys);
+<b>aborts_if</b> !success;
+<b>ensures</b> result.bytes == bytes;
+</code></pre>
+
+<h3 id="function-aggregate_signatures-1"><a class="header" href="#function-aggregate_signatures-1">Function <code>aggregate_signatures</code> <a id="@Specification_1_aggregate_signatures"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_signatures">aggregate_signatures</a>(signatures: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>&gt;
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>let</b> bytes = <a href="bls12381.html#0x1_bls12381_spec_aggregate_signatures_internal_1">spec_aggregate_signatures_internal_1</a>(signatures);
+<b>let</b> success = <a href="bls12381.html#0x1_bls12381_spec_aggregate_signatures_internal_2">spec_aggregate_signatures_internal_2</a>(signatures);
+<b>ensures</b> success ==&gt; (std::option::is_some(result) &amp;&amp; std::option::borrow(result).bytes == bytes);
+<b>ensures</b> !success ==&gt; std::option::is_none(result);
+</code></pre>
+
+<h3 id="function-aggr_or_multi_signature_from_bytes-1"><a class="header" href="#function-aggr_or_multi_signature_from_bytes-1">Function <code>aggr_or_multi_signature_from_bytes</code> <a id="@Specification_1_aggr_or_multi_signature_from_bytes"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggr_or_multi_signature_from_bytes">aggr_or_multi_signature_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>
+</code></pre>
+
+<pre><code><b>aborts_if</b> len(bytes) != <a href="bls12381.html#0x1_bls12381_SIGNATURE_SIZE">SIGNATURE_SIZE</a>;
+<b>ensures</b> result.bytes == bytes;
+</code></pre>
+
+<h3 id="function-aggr_or_multi_signature_subgroup_check-1"><a class="header" href="#function-aggr_or_multi_signature_subgroup_check-1">Function <code>aggr_or_multi_signature_subgroup_check</code> <a id="@Specification_1_aggr_or_multi_signature_subgroup_check"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_aggr_or_multi_signature_subgroup_check">aggr_or_multi_signature_subgroup_check</a>(signature: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>): bool
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_signature_subgroup_check_internal">spec_signature_subgroup_check_internal</a>(signature.bytes);
+</code></pre>
+
+<h3 id="function-verify_aggregate_signature-1"><a class="header" href="#function-verify_aggregate_signature-1">Function <code>verify_aggregate_signature</code> <a id="@Specification_1_verify_aggregate_signature"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_aggregate_signature">verify_aggregate_signature</a>(aggr_sig: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>, public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;, messages: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): bool
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_aggregate_signature_internal">spec_verify_aggregate_signature_internal</a>(aggr_sig.bytes, public_keys, messages);
+</code></pre>
+
+<h3 id="function-verify_multisignature-1"><a class="header" href="#function-verify_multisignature-1">Function <code>verify_multisignature</code> <a id="@Specification_1_verify_multisignature"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_multisignature">verify_multisignature</a>(multisig: &amp;<a href="bls12381.html#0x1_bls12381_AggrOrMultiSignature">bls12381::AggrOrMultiSignature</a>, aggr_public_key: &amp;<a href="bls12381.html#0x1_bls12381_AggrPublicKeysWithPoP">bls12381::AggrPublicKeysWithPoP</a>, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_multisignature_internal">spec_verify_multisignature_internal</a>(multisig.bytes, aggr_public_key.bytes, message);
+</code></pre>
+
+<h3 id="function-verify_normal_signature-1"><a class="header" href="#function-verify_normal_signature-1">Function <code>verify_normal_signature</code> <a id="@Specification_1_verify_normal_signature"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_normal_signature">verify_normal_signature</a>(signature: &amp;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>, public_key: &amp;<a href="bls12381.html#0x1_bls12381_PublicKey">bls12381::PublicKey</a>, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_normal_signature_internal">spec_verify_normal_signature_internal</a>(signature.bytes, public_key.bytes, message);
+</code></pre>
+
+<h3 id="function-verify_signature_share-1"><a class="header" href="#function-verify_signature_share-1">Function <code>verify_signature_share</code> <a id="@Specification_1_verify_signature_share"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_signature_share">verify_signature_share</a>(signature_share: &amp;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>, public_key: &amp;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_signature_share_internal">spec_verify_signature_share_internal</a>(signature_share.bytes, public_key.bytes, message);
+</code></pre>
+
+<h3 id="function-aggregate_pubkeys_internal-1"><a class="header" href="#function-aggregate_pubkeys_internal-1">Function <code>aggregate_pubkeys_internal</code> <a id="@Specification_1_aggregate_pubkeys_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_pubkeys_internal">aggregate_pubkeys_internal</a>(public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bool)
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result_1 == <a href="bls12381.html#0x1_bls12381_spec_aggregate_pubkeys_internal_1">spec_aggregate_pubkeys_internal_1</a>(public_keys);
+<b>ensures</b> result_2 == <a href="bls12381.html#0x1_bls12381_spec_aggregate_pubkeys_internal_2">spec_aggregate_pubkeys_internal_2</a>(public_keys);
+</code></pre>
+
+<h3 id="function-aggregate_signatures_internal-1"><a class="header" href="#function-aggregate_signatures_internal-1">Function <code>aggregate_signatures_internal</code> <a id="@Specification_1_aggregate_signatures_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_aggregate_signatures_internal">aggregate_signatures_internal</a>(signatures: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_Signature">bls12381::Signature</a>&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bool)
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result_1 == <a href="bls12381.html#0x1_bls12381_spec_aggregate_signatures_internal_1">spec_aggregate_signatures_internal_1</a>(signatures);
+<b>ensures</b> result_2 == <a href="bls12381.html#0x1_bls12381_spec_aggregate_signatures_internal_2">spec_aggregate_signatures_internal_2</a>(signatures);
+</code></pre>
+
+<h3 id="function-validate_pubkey_internal-1"><a class="header" href="#function-validate_pubkey_internal-1">Function <code>validate_pubkey_internal</code> <a id="@Specification_1_validate_pubkey_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_validate_pubkey_internal">validate_pubkey_internal</a>(public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_validate_pubkey_internal">spec_validate_pubkey_internal</a>(public_key);
+</code></pre>
+
+<h3 id="function-signature_subgroup_check_internal-1"><a class="header" href="#function-signature_subgroup_check_internal-1">Function <code>signature_subgroup_check_internal</code> <a id="@Specification_1_signature_subgroup_check_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_signature_subgroup_check_internal">signature_subgroup_check_internal</a>(signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_signature_subgroup_check_internal">spec_signature_subgroup_check_internal</a>(signature);
+</code></pre>
+
+<h3 id="function-verify_aggregate_signature_internal-1"><a class="header" href="#function-verify_aggregate_signature_internal-1">Function <code>verify_aggregate_signature_internal</code> <a id="@Specification_1_verify_aggregate_signature_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_aggregate_signature_internal">verify_aggregate_signature_internal</a>(aggsig: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, public_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="bls12381.html#0x1_bls12381_PublicKeyWithPoP">bls12381::PublicKeyWithPoP</a>&gt;, messages: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): bool
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_aggregate_signature_internal">spec_verify_aggregate_signature_internal</a>(aggsig, public_keys, messages);
+</code></pre>
+
+<h3 id="function-verify_multisignature_internal-1"><a class="header" href="#function-verify_multisignature_internal-1">Function <code>verify_multisignature_internal</code> <a id="@Specification_1_verify_multisignature_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_multisignature_internal">verify_multisignature_internal</a>(multisignature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, agg_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_multisignature_internal">spec_verify_multisignature_internal</a>(multisignature, agg_public_key, message);
+</code></pre>
+
+<h3 id="function-verify_normal_signature_internal-1"><a class="header" href="#function-verify_normal_signature_internal-1">Function <code>verify_normal_signature_internal</code> <a id="@Specification_1_verify_normal_signature_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_normal_signature_internal">verify_normal_signature_internal</a>(signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_normal_signature_internal">spec_verify_normal_signature_internal</a>(signature, public_key, message);
+</code></pre>
+
+<h3 id="function-verify_proof_of_possession_internal-1"><a class="header" href="#function-verify_proof_of_possession_internal-1">Function <code>verify_proof_of_possession_internal</code> <a id="@Specification_1_verify_proof_of_possession_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_proof_of_possession_internal">verify_proof_of_possession_internal</a>(public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, proof_of_possesion: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_proof_of_possession_internal">spec_verify_proof_of_possession_internal</a>(public_key, proof_of_possesion);
+</code></pre>
+
+<h3 id="function-verify_signature_share_internal-1"><a class="header" href="#function-verify_signature_share_internal-1">Function <code>verify_signature_share_internal</code> <a id="@Specification_1_verify_signature_share_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="bls12381.html#0x1_bls12381_verify_signature_share_internal">verify_signature_share_internal</a>(signature_share: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="bls12381.html#0x1_bls12381_spec_verify_signature_share_internal">spec_verify_signature_share_internal</a>(signature_share, public_key, message);
+</code></pre>
+
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/big_vector.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/bls12381_algebra.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/big_vector.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/bls12381_algebra.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp-c45f76e8.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

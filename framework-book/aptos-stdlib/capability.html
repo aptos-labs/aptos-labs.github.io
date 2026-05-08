@@ -1,0 +1,687 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>capability - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap-384c98b0.css">
+        <link rel="stylesheet" href="../theme/build-stamp-020e146c.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-589e30ea.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-0b791361.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/capability.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-0x1capability"><a class="header" href="#module-0x1capability">Module <code>0x1::capability</code> <a id="0x1_capability"></a></a></h1>
+<p>A module which defines the basic concept of
+<a href="https://en.wikipedia.org/wiki/Capability-based_security"><em>capabilities</em></a> for managing access control.</p>
+<p>EXPERIMENTAL</p>
+<h2 id="overview"><a class="header" href="#overview">Overview <a id="@Overview_0"></a></a></h2>
+<p>A capability is a unforgeable token which testifies that a signer has authorized a certain operation.
+The token is valid during the transaction where it is obtained. Since the type <code><a href="capability.html#0x1_capability_Cap">capability::Cap</a></code> has
+no ability to be stored in global memory, capabilities cannot leak out of a transaction. For every function
+called within a transaction which has a capability as a parameter, it is guaranteed that the capability
+has been obtained via a proper signer-based authorization step previously in the transaction’s execution.</p>
+<h3 id="usage"><a class="header" href="#usage">Usage <a id="@Usage_1"></a></a></h3>
+<p>Initializing and acquiring capabilities is usually encapsulated in a module with a type
+tag which can only be constructed by this module.</p>
+<pre><code>module Pkg::Feature {
+use std::capability::Cap;
+
+/// A type tag used in Cap&lt;Feature&gt;. Only this module can create an instance,
+/// and there is no public function other than Self::acquire which returns a value of this type.
+/// This way, this module has full control how Cap&lt;Feature&gt; is given out.
+struct Feature has drop {}
+
+/// Initializes this module.
+public fun initialize(s: &amp;signer) {
+// Create capability. This happens once at module initialization time.
+// One needs to provide a witness for being the owner of Feature
+// in the 2nd parameter.
+&lt;&lt;additional conditions allowing to initialize this capability&gt;&gt;
+capability::create&lt;Feature&gt;(s, &amp;Feature{});
+}
+
+/// Acquires the capability to work with this feature.
+public fun acquire(s: &amp;signer): Cap&lt;Feature&gt; {
+&lt;&lt;additional conditions allowing to acquire this capability&gt;&gt;
+capability::acquire&lt;Feature&gt;(s, &amp;Feature{});
+}
+
+/// Does something related to the feature. The caller must pass a Cap&lt;Feature&gt;.
+public fun do_something(_cap: Cap&lt;Feature&gt;) { ... }
+}
+</code></pre>
+<h3 id="delegation"><a class="header" href="#delegation">Delegation <a id="@Delegation_2"></a></a></h3>
+<p>Capabilities come with the optional feature of <em>delegation</em>. Via <code><a href="capability.html#0x1_capability_delegate">Self::delegate</a></code>, an owner of a capability
+can designate another signer to be also capable of acquiring the capability. Like the original creator,
+the delegate needs to present his signer to obtain the capability in his transactions. Delegation can
+be revoked via <code><a href="capability.html#0x1_capability_revoke">Self::revoke</a></code>, removing this access right from the delegate.</p>
+<p>While the basic authorization mechanism for delegates is the same as with core capabilities, the
+target of delegation might be subject of restrictions which need to be specified and verified. This can
+be done via global invariants in the specification language. For example, in order to prevent delegation
+all together for a capability, one can use the following invariant:</p>
+<pre><code>invariant forall a: address where capability::spec_has_cap&lt;Feature&gt;(a):
+len(capability::spec_delegates&lt;Feature&gt;(a)) == 0;
+</code></pre>
+<p>Similarly, the following invariant would enforce that delegates, if existent, must satisfy a certain
+predicate:</p>
+<pre><code>invariant forall a: address where capability::spec_has_cap&lt;Feature&gt;(a):
+forall d in capability::spec_delegates&lt;Feature&gt;(a):
+is_valid_delegate_for_feature(d);
+</code></pre>
+<ul>
+<li><a href="#@Overview_0">Overview</a>
+<ul>
+<li><a href="#@Usage_1">Usage</a></li>
+<li><a href="#@Delegation_2">Delegation</a></li>
+</ul>
+</li>
+<li><a href="#0x1_capability_Cap">Struct <code>Cap</code></a></li>
+<li><a href="#0x1_capability_LinearCap">Struct <code>LinearCap</code></a></li>
+<li><a href="#0x1_capability_CapState">Resource <code>CapState</code></a></li>
+<li><a href="#0x1_capability_CapDelegateState">Resource <code>CapDelegateState</code></a></li>
+<li><a href="#@Constants_3">Constants</a></li>
+<li><a href="#0x1_capability_create">Function <code>create</code></a></li>
+<li><a href="#0x1_capability_acquire">Function <code>acquire</code></a></li>
+<li><a href="#0x1_capability_acquire_linear">Function <code>acquire_linear</code></a></li>
+<li><a href="#0x1_capability_validate_acquire">Function <code>validate_acquire</code></a></li>
+<li><a href="#0x1_capability_root_addr">Function <code>root_addr</code></a></li>
+<li><a href="#0x1_capability_linear_root_addr">Function <code>linear_root_addr</code></a></li>
+<li><a href="#0x1_capability_delegate">Function <code>delegate</code></a></li>
+<li><a href="#0x1_capability_revoke">Function <code>revoke</code></a></li>
+<li><a href="#0x1_capability_remove_element">Function <code>remove_element</code></a></li>
+<li><a href="#0x1_capability_add_element">Function <code>add_element</code></a></li>
+<li><a href="#@Specification_4">Specification</a>
+<ul>
+<li><a href="#@Specification_4_create">Function <code>create</code></a></li>
+<li><a href="#@Specification_4_acquire">Function <code>acquire</code></a></li>
+<li><a href="#@Specification_4_acquire_linear">Function <code>acquire_linear</code></a></li>
+<li><a href="#@Specification_4_delegate">Function <code>delegate</code></a></li>
+<li><a href="#@Specification_4_revoke">Function <code>revoke</code></a></li>
+<li><a href="#@Specification_4_remove_element">Function <code>remove_element</code></a></li>
+<li><a href="#@Specification_4_add_element">Function <code>add_element</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+
+<h2 id="struct-cap"><a class="header" href="#struct-cap">Struct <code>Cap</code> <a id="0x1_capability_Cap"></a></a></h2>
+<p>The token representing an acquired capability. Cannot be stored in memory, but copied and dropped freely.</p>
+<pre><code><b>struct</b> <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt; <b>has</b> <b>copy</b>, drop
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>root: <b>address</b></code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-linearcap"><a class="header" href="#struct-linearcap">Struct <code>LinearCap</code> <a id="0x1_capability_LinearCap"></a></a></h2>
+<p>A linear version of a capability token. This can be used if an acquired capability should be enforced
+to be used only once for an authorization.</p>
+<pre><code><b>struct</b> <a href="capability.html#0x1_capability_LinearCap">LinearCap</a>&lt;Feature&gt; <b>has</b> drop
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>root: <b>address</b></code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="resource-capstate"><a class="header" href="#resource-capstate">Resource <code>CapState</code> <a id="0x1_capability_CapState"></a></a></h2>
+<p>An internal data structure for representing a configured capability.</p>
+<pre><code><b>struct</b> <a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt; <b>has</b> key
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>delegates: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="resource-capdelegatestate"><a class="header" href="#resource-capdelegatestate">Resource <code>CapDelegateState</code> <a id="0x1_capability_CapDelegateState"></a></a></h2>
+<p>An internal data structure for representing a configured delegated capability.</p>
+<pre><code><b>struct</b> <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt; <b>has</b> key
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>root: <b>address</b></code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_3"></a></a></h2>
+<p><a id="0x1_capability_ECAPABILITY_ALREADY_EXISTS"></a></p>
+<p>Capability resource already exists on the specified account</p>
+<pre><code><b>const</b> <a href="capability.html#0x1_capability_ECAPABILITY_ALREADY_EXISTS">ECAPABILITY_ALREADY_EXISTS</a>: u64 = 1;
+</code></pre>
+
+<p><a id="0x1_capability_ECAPABILITY_NOT_FOUND"></a></p>
+<p>Capability resource not found</p>
+<pre><code><b>const</b> <a href="capability.html#0x1_capability_ECAPABILITY_NOT_FOUND">ECAPABILITY_NOT_FOUND</a>: u64 = 2;
+</code></pre>
+
+<p><a id="0x1_capability_EDELEGATE"></a></p>
+<p>Account does not have delegated permissions</p>
+<pre><code><b>const</b> <a href="capability.html#0x1_capability_EDELEGATE">EDELEGATE</a>: u64 = 3;
+</code></pre>
+
+<h2 id="function-create"><a class="header" href="#function-create">Function <code>create</code> <a id="0x1_capability_create"></a></a></h2>
+<p>Creates a new capability class, owned by the passed signer. A caller must pass a witness that
+they own the <code>Feature</code> type parameter.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_create">create</a>&lt;Feature&gt;(owner: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_create">create</a>&lt;Feature&gt;(owner: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature) {
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+    <b>assert</b>!(!<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(addr), <a href="../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="capability.html#0x1_capability_ECAPABILITY_ALREADY_EXISTS">ECAPABILITY_ALREADY_EXISTS</a>));
+    <b>move_to</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(owner, <a href="capability.html#0x1_capability_CapState">CapState</a> { delegates: <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>() });
+}
+</code></pre>
+
+</details>
+<h2 id="function-acquire"><a class="header" href="#function-acquire">Function <code>acquire</code> <a id="0x1_capability_acquire"></a></a></h2>
+<p>Acquires a capability token. Only the owner of the capability class, or an authorized delegate,
+can succeed with this operation. A caller must pass a witness that they own the <code>Feature</code> type
+parameter.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire">acquire</a>&lt;Feature&gt;(requester: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature): <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire">acquire</a>&lt;Feature&gt;(requester: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature): <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt;
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a> {
+    <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt; { root: <a href="capability.html#0x1_capability_validate_acquire">validate_acquire</a>&lt;Feature&gt;(requester) }
+}
+</code></pre>
+
+</details>
+<h2 id="function-acquire_linear"><a class="header" href="#function-acquire_linear">Function <code>acquire_linear</code> <a id="0x1_capability_acquire_linear"></a></a></h2>
+<p>Acquires a linear capability token. It is up to the module which owns <code>Feature</code> to decide
+whether to expose a linear or non-linear capability.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire_linear">acquire_linear</a>&lt;Feature&gt;(requester: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature): <a href="capability.html#0x1_capability_LinearCap">capability::LinearCap</a>&lt;Feature&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire_linear">acquire_linear</a>&lt;Feature&gt;(requester: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature): <a href="capability.html#0x1_capability_LinearCap">LinearCap</a>&lt;Feature&gt;
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a> {
+    <a href="capability.html#0x1_capability_LinearCap">LinearCap</a>&lt;Feature&gt; { root: <a href="capability.html#0x1_capability_validate_acquire">validate_acquire</a>&lt;Feature&gt;(requester) }
+}
+</code></pre>
+
+</details>
+<h2 id="function-validate_acquire"><a class="header" href="#function-validate_acquire">Function <code>validate_acquire</code> <a id="0x1_capability_validate_acquire"></a></a></h2>
+<p>Helper to validate an acquire. Returns the root address of the capability.</p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_validate_acquire">validate_acquire</a>&lt;Feature&gt;(requester: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <b>address</b>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_validate_acquire">validate_acquire</a>&lt;Feature&gt;(requester: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <b>address</b>
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a> {
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(requester);
+    <b>if</b> (<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr)) {
+        <b>let</b> root_addr = <b>borrow_global</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr).root;
+        // double check that requester is actually registered <b>as</b> a delegate
+        <b>assert</b>!(<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(root_addr), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="capability.html#0x1_capability_EDELEGATE">EDELEGATE</a>));
+        <b>assert</b>!(<b>borrow_global</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(root_addr).delegates.contains(&amp;addr),
+            <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="capability.html#0x1_capability_EDELEGATE">EDELEGATE</a>));
+        root_addr
+    } <b>else</b> {
+        <b>assert</b>!(<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(addr), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="capability.html#0x1_capability_ECAPABILITY_NOT_FOUND">ECAPABILITY_NOT_FOUND</a>));
+        addr
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-root_addr"><a class="header" href="#function-root_addr">Function <code>root_addr</code> <a id="0x1_capability_root_addr"></a></a></h2>
+<p>Returns the root address associated with the given capability token. Only the owner
+of the feature can do this.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_root_addr">root_addr</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature): <b>address</b>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_root_addr">root_addr</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature): <b>address</b> {
+    self.root
+}
+</code></pre>
+
+</details>
+<h2 id="function-linear_root_addr"><a class="header" href="#function-linear_root_addr">Function <code>linear_root_addr</code> <a id="0x1_capability_linear_root_addr"></a></a></h2>
+<p>Returns the root address associated with the given linear capability token.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_linear_root_addr">linear_root_addr</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_LinearCap">capability::LinearCap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature): <b>address</b>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_linear_root_addr">linear_root_addr</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_LinearCap">LinearCap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature): <b>address</b> {
+    self.root
+}
+</code></pre>
+
+</details>
+<h2 id="function-delegate"><a class="header" href="#function-delegate">Function <code>delegate</code> <a id="0x1_capability_delegate"></a></a></h2>
+<p>Registers a delegation relation. If the relation already exists, this function does
+nothing.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_delegate">delegate</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature, <b>to</b>: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_delegate">delegate</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature, <b>to</b>: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a> {
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<b>to</b>);
+    <b>if</b> (<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr)) <b>return</b>;
+    <b>move_to</b>(<b>to</b>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt; { root: self.root });
+    <a href="capability.html#0x1_capability_add_element">add_element</a>(&amp;<b>mut</b> <b>borrow_global_mut</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(self.root).delegates, addr);
+}
+</code></pre>
+
+</details>
+<h2 id="function-revoke"><a class="header" href="#function-revoke">Function <code>revoke</code> <a id="0x1_capability_revoke"></a></a></h2>
+<p>Revokes a delegation relation. If no relation exists, this function does nothing.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_revoke">revoke</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature, from: <b>address</b>)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_revoke">revoke</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature, from: <b>address</b>)
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>
+{
+    <b>if</b> (!<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(from)) <b>return</b>;
+    <b>let</b> <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a> { root: _root } = <b>move_from</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(from);
+    <a href="capability.html#0x1_capability_remove_element">remove_element</a>(&amp;<b>mut</b> <b>borrow_global_mut</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(self.root).delegates, &amp;from);
+}
+</code></pre>
+
+</details>
+<h2 id="function-remove_element"><a class="header" href="#function-remove_element">Function <code>remove_element</code> <a id="0x1_capability_remove_element"></a></a></h2>
+<p>Helper to remove an element from a vector.</p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_remove_element">remove_element</a>&lt;E: drop&gt;(v: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: &amp;E)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_remove_element">remove_element</a>&lt;E: drop&gt;(v: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: &amp;E) {
+    <b>let</b> (found, index) = v.index_of(x);
+    <b>if</b> (found) {
+        v.remove(index);
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-add_element"><a class="header" href="#function-add_element">Function <code>add_element</code> <a id="0x1_capability_add_element"></a></a></h2>
+<p>Helper to add an element to a vector.</p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_add_element">add_element</a>&lt;E: drop&gt;(v: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: E)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_add_element">add_element</a>&lt;E: drop&gt;(v: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: E) {
+    <b>if</b> (!v.contains(&amp;x)) {
+        v.push_back(x)
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_4"></a></a></h2>
+<p>Helper specification function to check whether a capability exists at address.</p>
+<p><a id="0x1_capability_spec_has_cap"></a></p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(addr: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(addr)
+}
+</code></pre>
+
+<p>Helper specification function to obtain the delegates of a capability.</p>
+<p><a id="0x1_capability_spec_delegates"></a></p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_spec_delegates">spec_delegates</a>&lt;Feature&gt;(addr: <b>address</b>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt; {
+   <b>global</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(addr).delegates
+}
+</code></pre>
+
+<p>Helper specification function to check whether a delegated capability exists at address.</p>
+<p><a id="0x1_capability_spec_has_delegate_cap"></a></p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr)
+}
+</code></pre>
+
+<h3 id="function-create-1"><a class="header" href="#function-create-1">Function <code>create</code> <a id="@Specification_4_create"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_create">create</a>&lt;Feature&gt;(owner: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature)
+</code></pre>
+
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>aborts_if</b> <a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(addr);
+<b>ensures</b> <a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(addr);
+</code></pre>
+
+<h3 id="function-acquire-1"><a class="header" href="#function-acquire-1">Function <code>acquire</code> <a id="@Specification_4_acquire"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire">acquire</a>&lt;Feature&gt;(requester: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature): <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;
+</code></pre>
+
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(requester);
+<b>let</b> root_addr = <b>global</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr).root;
+<b>include</b> <a href="capability.html#0x1_capability_AcquireSchema">AcquireSchema</a>&lt;Feature&gt;;
+<b>ensures</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) ==&gt; result.root == root_addr;
+<b>ensures</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) ==&gt; result.root == addr;
+</code></pre>
+
+<h3 id="function-acquire_linear-1"><a class="header" href="#function-acquire_linear-1">Function <code>acquire_linear</code> <a id="@Specification_4_acquire_linear"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire_linear">acquire_linear</a>&lt;Feature&gt;(requester: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &amp;Feature): <a href="capability.html#0x1_capability_LinearCap">capability::LinearCap</a>&lt;Feature&gt;
+</code></pre>
+
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(requester);
+<b>let</b> root_addr = <b>global</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr).root;
+<b>include</b> <a href="capability.html#0x1_capability_AcquireSchema">AcquireSchema</a>&lt;Feature&gt;;
+<b>ensures</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) ==&gt; result.root == root_addr;
+<b>ensures</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) ==&gt; result.root == addr;
+</code></pre>
+
+<p><a id="0x1_capability_AcquireSchema"></a></p>
+<pre><code><b>schema</b> <a href="capability.html#0x1_capability_AcquireSchema">AcquireSchema</a>&lt;Feature&gt; {
+    addr: <b>address</b>;
+    root_addr: <b>address</b>;
+    <b>aborts_if</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) &amp;&amp; !<a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(root_addr);
+    <b>aborts_if</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) &amp;&amp; !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<a href="capability.html#0x1_capability_spec_delegates">spec_delegates</a>&lt;Feature&gt;(root_addr), addr);
+    <b>aborts_if</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) &amp;&amp; !<a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(addr);
+}
+</code></pre>
+
+<h3 id="function-delegate-1"><a class="header" href="#function-delegate-1">Function <code>delegate</code> <a id="@Specification_4_delegate"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_delegate">delegate</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature, <b>to</b>: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<b>to</b>);
+<b>aborts_if</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) &amp;&amp; !<a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(self.root);
+<b>ensures</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr);
+<b>ensures</b> !<b>old</b>(<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr)) ==&gt; <b>global</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr).root == self.root;
+<b>ensures</b> !<b>old</b>(<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr)) ==&gt; <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<a href="capability.html#0x1_capability_spec_delegates">spec_delegates</a>&lt;Feature&gt;(self.root), addr);
+</code></pre>
+
+<h3 id="function-revoke-1"><a class="header" href="#function-revoke-1">Function <code>revoke</code> <a id="@Specification_4_revoke"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_revoke">revoke</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &amp;Feature, from: <b>address</b>)
+</code></pre>
+
+<pre><code><b>aborts_if</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(from) &amp;&amp; !<a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(self.root);
+<b>ensures</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(from);
+</code></pre>
+
+<h3 id="function-remove_element-1"><a class="header" href="#function-remove_element-1">Function <code>remove_element</code> <a id="@Specification_4_remove_element"></a></a></h3>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_remove_element">remove_element</a>&lt;E: drop&gt;(v: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: &amp;E)
+</code></pre>
+
+<h3 id="function-add_element-1"><a class="header" href="#function-add_element-1">Function <code>add_element</code> <a id="@Specification_4_add_element"></a></a></h3>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_add_element">add_element</a>&lt;E: drop&gt;(v: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: E)
+</code></pre>
+
+<pre><code><b>ensures</b> <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(v, x);
+</code></pre>
+
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/bn254_algebra.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/comparator.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/bn254_algebra.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/comparator.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp-c45f76e8.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

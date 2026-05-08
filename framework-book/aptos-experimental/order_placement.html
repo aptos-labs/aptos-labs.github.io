@@ -1,0 +1,1810 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>order_placement - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap-384c98b0.css">
+        <link rel="stylesheet" href="../theme/build-stamp-020e146c.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-589e30ea.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-0b791361.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-experimental/order_placement.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-0x7order_placement"><a class="header" href="#module-0x7order_placement">Module <code>0x7::order_placement</code> <a id="0x7_order_placement"></a></a></h1>
+<p>This module provides a generic trading engine implementation for a market. On a high level, it’s a data structure,
+that stores an order book and provides APIs to place orders, cancel orders, and match orders. The market also acts
+as a wrapper around the order book and pluggable clearinghouse implementation.
+A clearing house implementation is expected to implement the following APIs</p>
+<ul>
+<li>
+<p>settle_trade(taker, taker_order_id, maker, maker_order_id, fill_id, is_taker_long, price, size): SettleTradeResult -&gt;
+Called by the market when there is a match between taker and maker. The clearinghouse is expected to settle the trade
+and return the result. Please note that the clearing house settlement size might not be the same as the order match size and
+the settlement might also fail. The fill_id is an incremental counter for matched orders and can be used to track specific fills</p>
+</li>
+<li>
+<p>validate_order_placement(account, is_taker, is_long, price, size): bool -&gt; Called by the market to validate
+an order when it’s placed. The clearinghouse is expected to validate the order and return true if the order is valid.
+This API is called for both maker and taker order placements.
+Check out clearinghouse_test as an example of the simplest form of clearing house implementation that just tracks
+the position size of the user and does not do any validation.</p>
+</li>
+<li>
+<p>place_maker_order(account, order_id, is_bid, price, size, metadata) -&gt; Called by the market before placing the
+maker order in the order book. The clearinghouse can use this to track pending orders in the order book and perform
+any other book keeping operations.</p>
+</li>
+<li>
+<p>cleanup_order(account, order_id, is_bid, remaining_size, order_metadata) -&gt; Called by the market when an order is cancelled or fully filled
+The clearinhouse can perform any cleanup operations like removing the order from the pending orders list. For every order placement
+that passes the validate_order_placement check,
+the market guarantees that the cleanup_order API will be called once and only once with the remaining size of the order.
+the remaining size of the order being cleaned up - it can be 0, if the order was fully matched</p>
+</li>
+<li>
+<p>decrease_order_size(account, order_id, is_bid, price, size) -&gt; Called by the market when a maker order is decreased
+in size by the user. Please note that this API will only be called after place_maker_order is called and the order is
+already in the order book. Size in this case is the remaining size of the order after the decrease.</p>
+</li>
+</ul>
+<p>Following are some valid sequence of API calls that the market makes to the clearinghouse:</p>
+<ol>
+<li>validate_order_placement(10)</li>
+<li>settle_trade(2)</li>
+<li>settle_trade(3)</li>
+<li>place_maker_order(5)</li>
+<li>decrease_order_size(2)</li>
+<li>decrease_order_size(1)</li>
+<li>cleanup_order(2)
+or</li>
+<li>validate_order_placement(10)</li>
+<li>cleanup_order(10)</li>
+</ol>
+<p>Upon placement of an order, the market generates an order id and emits an event with the order details - the order id
+is a unique id for the order that can be used to later get the status of the order or cancel the order.</p>
+<p>Market also supports various conditions for order matching like Good Till Cancelled (GTC), Post Only, Immediate or Cancel (IOC).
+GTC orders are orders that are valid until they are cancelled or filled. Post Only orders are orders that are valid only if they are not
+taker orders. IOC orders are orders that are valid only if they are taker orders.</p>
+<p>In addition, the market also supports trigger conditions for orders. An order with trigger condition is not put
+on the order book until its trigger conditions are met. The following trigger conditions are supported:
+TakeProfit(price): If it’s a buy order it’s triggered when the market price is greater than or equal to the price. If
+it’s a sell order it’s triggered when the market price is less than or equal to the price.
+StopLoss(price): If it’s a buy order it’s triggered when the market price is less than or equal to the price. If it’s
+a sell order it’s triggered when the market price is greater than or equal to the price.
+TimeBased(time): The order is triggered when the current time is greater than or equal to the time.</p>
+<ul>
+<li><a href="#0x7_order_placement_OrderMatchResult">Enum <code>OrderMatchResult</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x7_order_placement_destroy_order_match_result">Function <code>destroy_order_match_result</code></a></li>
+<li><a href="#0x7_order_placement_number_of_fills">Function <code>number_of_fills</code></a></li>
+<li><a href="#0x7_order_placement_number_of_matches">Function <code>number_of_matches</code></a></li>
+<li><a href="#0x7_order_placement_total_fill_size">Function <code>total_fill_size</code></a></li>
+<li><a href="#0x7_order_placement_get_cancel_reason">Function <code>get_cancel_reason</code></a></li>
+<li><a href="#0x7_order_placement_get_remaining_size_from_result">Function <code>get_remaining_size_from_result</code></a></li>
+<li><a href="#0x7_order_placement_is_ioc_violation">Function <code>is_ioc_violation</code></a></li>
+<li><a href="#0x7_order_placement_is_fill_limit_violation">Function <code>is_fill_limit_violation</code></a></li>
+<li><a href="#0x7_order_placement_is_dead_mans_switch_expired">Function <code>is_dead_mans_switch_expired</code></a></li>
+<li><a href="#0x7_order_placement_is_clearinghouse_stopped_matching">Function <code>is_clearinghouse_stopped_matching</code></a></li>
+<li><a href="#0x7_order_placement_get_order_id">Function <code>get_order_id</code></a></li>
+<li><a href="#0x7_order_placement_place_limit_order">Function <code>place_limit_order</code></a></li>
+<li><a href="#0x7_order_placement_place_market_order">Function <code>place_market_order</code></a></li>
+<li><a href="#0x7_order_placement_place_maker_order_internal">Function <code>place_maker_order_internal</code></a></li>
+<li><a href="#0x7_order_placement_cancel_bulk_maker_order_internal">Function <code>cancel_bulk_maker_order_internal</code></a></li>
+<li><a href="#0x7_order_placement_cancel_maker_order_internal">Function <code>cancel_maker_order_internal</code></a></li>
+<li><a href="#0x7_order_placement_cancel_taker_order_internal">Function <code>cancel_taker_order_internal</code></a></li>
+<li><a href="#0x7_order_placement_cleanup_order_internal">Function <code>cleanup_order_internal</code></a></li>
+<li><a href="#0x7_order_placement_settle_single_trade">Function <code>settle_single_trade</code></a></li>
+<li><a href="#0x7_order_placement_place_order_with_order_id">Function <code>place_order_with_order_id</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="../aptos-framework/transaction_context.html#0x1_transaction_context">0x1::transaction_context</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+<b>use</b> <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types">0x5::bulk_order_types</a>;
+<b>use</b> <a href="../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+<b>use</b> <a href="../aptos-trading/order_match_types.html#0x5_order_match_types">0x5::order_match_types</a>;
+<b>use</b> <a href="../aptos-trading/single_order_types.html#0x5_single_order_types">0x5::single_order_types</a>;
+<b>use</b> <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">0x7::dead_mans_switch_tracker</a>;
+<b>use</b> <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info">0x7::market_clearinghouse_order_info</a>;
+<b>use</b> <a href="market_types.html#0x7_market_types">0x7::market_types</a>;
+<b>use</b> <a href="order_book.html#0x7_order_book">0x7::order_book</a>;
+<b>use</b> <a href="order_id_generation.html#0x7_order_id_generation">0x7::order_id_generation</a>;
+<b>use</b> <a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">0x7::pre_cancellation_tracker</a>;
+</code></pre>
+
+<h2 id="enum-ordermatchresult"><a class="header" href="#enum-ordermatchresult">Enum <code>OrderMatchResult</code> <a id="0x7_order_placement_OrderMatchResult"></a></a></h2>
+<pre><code>enum <a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R: <b>copy</b>, drop, store&gt; <b>has</b> drop
+</code></pre>
+
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>remaining_size: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>cancel_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>callback_results: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;R&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>fill_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>match_count: u32</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+</details>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x7_order_placement_U64_MAX"></a></p>
+<pre><code><b>const</b> <a href="order_placement.html#0x7_order_placement_U64_MAX">U64_MAX</a>: u64 = 18446744073709551615;
+</code></pre>
+
+<p><a id="0x7_order_placement_ECLEARINGHOUSE_SETTLEMENT_VIOLATION"></a></p>
+<pre><code><b>const</b> <a href="order_placement.html#0x7_order_placement_ECLEARINGHOUSE_SETTLEMENT_VIOLATION">ECLEARINGHOUSE_SETTLEMENT_VIOLATION</a>: u64 = 2;
+</code></pre>
+
+<p><a id="0x7_order_placement_ECLIENT_ORDER_ID_LENGTH_EXCEEDED"></a></p>
+<pre><code><b>const</b> <a href="order_placement.html#0x7_order_placement_ECLIENT_ORDER_ID_LENGTH_EXCEEDED">ECLIENT_ORDER_ID_LENGTH_EXCEEDED</a>: u64 = 3;
+</code></pre>
+
+<p><a id="0x7_order_placement_EINVALID_ORDER"></a></p>
+<pre><code><b>const</b> <a href="order_placement.html#0x7_order_placement_EINVALID_ORDER">EINVALID_ORDER</a>: u64 = 1;
+</code></pre>
+
+<p><a id="0x7_order_placement_MAX_CLIENT_ORDER_ID_LENGTH"></a></p>
+<pre><code><b>const</b> <a href="order_placement.html#0x7_order_placement_MAX_CLIENT_ORDER_ID_LENGTH">MAX_CLIENT_ORDER_ID_LENGTH</a>: u64 = 32;
+</code></pre>
+
+<h2 id="function-destroy_order_match_result"><a class="header" href="#function-destroy_order_match_result">Function <code>destroy_order_match_result</code> <a id="0x7_order_placement_destroy_order_match_result"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_destroy_order_match_result">destroy_order_match_result</a>&lt;R: <b>copy</b>, drop, store&gt;(self: <a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;): (<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, u64, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;R&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, u32)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_destroy_order_match_result">destroy_order_match_result</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: <a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt;
+): (OrderId, u64, Option&lt;OrderCancellationReason&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;R&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, u32) {
+    <b>let</b> OrderMatchResult::V1 {
+        order_id,
+        remaining_size,
+        cancel_reason,
+        callback_results,
+        fill_sizes,
+        match_count
+    } = self;
+    (
+        order_id,
+        remaining_size,
+        cancel_reason,
+        callback_results,
+        fill_sizes,
+        match_count
+    )
+}
+</code></pre>
+
+</details>
+<h2 id="function-number_of_fills"><a class="header" href="#function-number_of_fills">Function <code>number_of_fills</code> <a id="0x7_order_placement_number_of_fills"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_number_of_fills">number_of_fills</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_number_of_fills">number_of_fills</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt;
+): u64 {
+    self.fill_sizes.length()
+}
+</code></pre>
+
+</details>
+<h2 id="function-number_of_matches"><a class="header" href="#function-number_of_matches">Function <code>number_of_matches</code> <a id="0x7_order_placement_number_of_matches"></a></a></h2>
+<p>Includes fills and cancels</p>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_number_of_matches">number_of_matches</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;): u32
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_number_of_matches">number_of_matches</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt;
+): u32 {
+    self.match_count
+}
+</code></pre>
+
+</details>
+<h2 id="function-total_fill_size"><a class="header" href="#function-total_fill_size">Function <code>total_fill_size</code> <a id="0x7_order_placement_total_fill_size"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_total_fill_size">total_fill_size</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_total_fill_size">total_fill_size</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt;
+): u64 {
+    self.fill_sizes.fold(0, |acc, fill_size| acc + fill_size)
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_cancel_reason"><a class="header" href="#function-get_cancel_reason">Function <code>get_cancel_reason</code> <a id="0x7_order_placement_get_cancel_reason"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_get_cancel_reason">get_cancel_reason</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_get_cancel_reason">get_cancel_reason</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt;
+): Option&lt;OrderCancellationReason&gt; {
+    self.cancel_reason
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_remaining_size_from_result"><a class="header" href="#function-get_remaining_size_from_result">Function <code>get_remaining_size_from_result</code> <a id="0x7_order_placement_get_remaining_size_from_result"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_get_remaining_size_from_result">get_remaining_size_from_result</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_get_remaining_size_from_result">get_remaining_size_from_result</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt;
+): u64 {
+    self.remaining_size
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_ioc_violation"><a class="header" href="#function-is_ioc_violation">Function <code>is_ioc_violation</code> <a id="0x7_order_placement_is_ioc_violation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_is_ioc_violation">is_ioc_violation</a>(reason: <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_is_ioc_violation">is_ioc_violation</a>(reason: OrderCancellationReason): bool {
+    reason == <a href="market_types.html#0x7_market_types_order_cancellation_reason_ioc_violation">market_types::order_cancellation_reason_ioc_violation</a>()
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_fill_limit_violation"><a class="header" href="#function-is_fill_limit_violation">Function <code>is_fill_limit_violation</code> <a id="0x7_order_placement_is_fill_limit_violation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_is_fill_limit_violation">is_fill_limit_violation</a>(cancel_reason: <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_is_fill_limit_violation">is_fill_limit_violation</a>(
+    cancel_reason: OrderCancellationReason
+): bool {
+    cancel_reason
+        == <a href="market_types.html#0x7_market_types_order_cancellation_reason_max_fill_limit_violation">market_types::order_cancellation_reason_max_fill_limit_violation</a>()
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_dead_mans_switch_expired"><a class="header" href="#function-is_dead_mans_switch_expired">Function <code>is_dead_mans_switch_expired</code> <a id="0x7_order_placement_is_dead_mans_switch_expired"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_is_dead_mans_switch_expired">is_dead_mans_switch_expired</a>(cancel_reason: <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_is_dead_mans_switch_expired">is_dead_mans_switch_expired</a>(
+    cancel_reason: OrderCancellationReason
+): bool {
+    cancel_reason
+        == <a href="market_types.html#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">market_types::order_cancellation_reason_dead_mans_switch_expired</a>()
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_clearinghouse_stopped_matching"><a class="header" href="#function-is_clearinghouse_stopped_matching">Function <code>is_clearinghouse_stopped_matching</code> <a id="0x7_order_placement_is_clearinghouse_stopped_matching"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_is_clearinghouse_stopped_matching">is_clearinghouse_stopped_matching</a>(cancel_reason: <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_is_clearinghouse_stopped_matching">is_clearinghouse_stopped_matching</a>(
+    cancel_reason: OrderCancellationReason
+): bool {
+    cancel_reason
+        == <a href="market_types.html#0x7_market_types_order_cancellation_reason_clearinghouse_stopped_matching">market_types::order_cancellation_reason_clearinghouse_stopped_matching</a>()
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_order_id"><a class="header" href="#function-get_order_id">Function <code>get_order_id</code> <a id="0x7_order_placement_get_order_id"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_get_order_id">get_order_id</a>&lt;R: <b>copy</b>, drop, store&gt;(self: <a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;): <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_get_order_id">get_order_id</a>&lt;R: store + <b>copy</b> + drop&gt;(self: <a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt;): OrderId {
+    self.order_id
+}
+</code></pre>
+
+</details>
+<h2 id="function-place_limit_order"><a class="header" href="#function-place_limit_order">Function <code>place_limit_order</code> <a id="0x7_order_placement_place_limit_order"></a></a></h2>
+<p>Places a limit order - If it’s a taker order, it will be matched immediately and if it’s a maker order, it will simply
+be placed in the order book. An order id is generated when the order is placed and this id can be used to
+uniquely identify the order for this market and can also be used to get the status of the order or cancel the order.
+The order is placed with the following parameters:</p>
+<ul>
+<li>user: The user who is placing the order</li>
+<li>price: The price at which the order is placed</li>
+<li>orig_size: The original size of the order</li>
+<li>is_bid: Whether the order is a buy order or a sell order</li>
+<li>time_in_force: The time in force for the order. This can be one of the following:</li>
+<li>TimeInForce::GTC: Good till cancelled order type</li>
+<li>TimeInForce::POST_ONLY: Post Only order type - ensures that the order is not a taker order</li>
+<li>TimeInForce::IOC: Immediate or Cancel order type - ensures that the order is a taker order. Try to match as much of the
+order as possible as taker order and cancel the rest.</li>
+<li>trigger_condition: The trigger condition</li>
+<li>metadata: The metadata for the order. This can be any type that the clearing house implementation supports.</li>
+<li>client_order_id: The client order id for the order. This is an optional field that can be specified by the client
+is solely used for their own tracking of the order. client order id doesn’t have semantic meaning and
+is not be inspected by the orderbook internally.</li>
+<li>max_match_limit: The maximum match limit for the order. This is the maximum number of matches (fills or cancels) to trigger for this order.
+This knob is present to configure maximum amount of gas any order placement transaction might consume and avoid
+hitting the maximum has limit of the blockchain.</li>
+<li>cancel_on_match_limit: bool: Whether to cancel the given order when the match limit is reached.
+This is useful as the caller might not want to cancel the order when the limit is reached and can continue
+that order in a separate transaction.</li>
+<li>callbacks: The callbacks for the market clearinghouse. This is a struct that implements the MarketClearinghouseCallbacks
+interface. This is used to validate the order and settle the trade.
+Returns the order id, remaining size, cancel reason and number of fills for the order.</li>
+</ul>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_place_limit_order">place_limit_order</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &amp;<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, limit_price: u64, orig_size: u64, is_bid: bool, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;, metadata: M, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, max_match_limit: u32, cancel_on_match_limit: bool, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_place_limit_order">place_limit_order</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &amp;<b>mut</b> Market&lt;M&gt;,
+    user: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    limit_price: u64,
+    orig_size: u64,
+    is_bid: bool,
+    time_in_force: TimeInForce,
+    trigger_condition: Option&lt;TriggerCondition&gt;,
+    metadata: M,
+    client_order_id: Option&lt;String&gt;,
+    max_match_limit: u32,
+    cancel_on_match_limit: bool,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;
+): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt; {
+    <a href="order_placement.html#0x7_order_placement_place_order_with_order_id">place_order_with_order_id</a>(
+        market,
+        <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(user),
+        limit_price,
+        orig_size,
+        orig_size,
+        is_bid,
+        time_in_force,
+        trigger_condition,
+        metadata,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // order_id
+        client_order_id,
+        max_match_limit,
+        cancel_on_match_limit,
+        <b>true</b>,
+        callbacks
+    )
+}
+</code></pre>
+
+</details>
+<h2 id="function-place_market_order"><a class="header" href="#function-place_market_order">Function <code>place_market_order</code> <a id="0x7_order_placement_place_market_order"></a></a></h2>
+<p>Places a market order - The order is guaranteed to be a taker order and will be matched immediately.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_place_market_order">place_market_order</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &amp;<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, orig_size: u64, is_bid: bool, metadata: M, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, max_match_limit: u32, cancel_on_match_limit: bool, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_place_market_order">place_market_order</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &amp;<b>mut</b> Market&lt;M&gt;,
+    user: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    orig_size: u64,
+    is_bid: bool,
+    metadata: M,
+    client_order_id: Option&lt;String&gt;,
+    max_match_limit: u32,
+    cancel_on_match_limit: bool,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;
+): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt; {
+    <a href="order_placement.html#0x7_order_placement_place_order_with_order_id">place_order_with_order_id</a>(
+        market,
+        <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(user),
+        <b>if</b> (is_bid) {
+            <a href="order_placement.html#0x7_order_placement_U64_MAX">U64_MAX</a>
+        } <b>else</b> { 1 },
+        orig_size,
+        orig_size,
+        is_bid,
+        immediate_or_cancel(), // market orders are always IOC
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+        metadata,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // order_id
+        client_order_id,
+        max_match_limit,
+        cancel_on_match_limit,
+        <b>true</b>,
+        callbacks
+    )
+}
+</code></pre>
+
+</details>
+<h2 id="function-place_maker_order_internal"><a class="header" href="#function-place_maker_order_internal">Function <code>place_maker_order_internal</code> <a id="0x7_order_placement_place_maker_order_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_place_maker_order_internal">place_maker_order_internal</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &amp;<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user_addr: <b>address</b>, limit_price: u64, orig_size: u64, remaining_size: u64, fill_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, match_count: u32, is_bid: bool, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;, metadata: M, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, emit_open_for_cancellation: bool, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, callback_results: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;R&gt;): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_place_maker_order_internal">place_maker_order_internal</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &amp;<b>mut</b> Market&lt;M&gt;,
+    user_addr: <b>address</b>,
+    limit_price: u64,
+    orig_size: u64,
+    remaining_size: u64,
+    fill_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    match_count: u32,
+    is_bid: bool,
+    time_in_force: TimeInForce,
+    trigger_condition: Option&lt;TriggerCondition&gt;,
+    metadata: M,
+    order_id: OrderId,
+    client_order_id: Option&lt;String&gt;,
+    emit_open_for_cancellation: bool,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;,
+    callback_results: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;R&gt;
+): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt; {
+    <b>if</b> (time_in_force == immediate_or_cancel() &amp;&amp; trigger_condition.is_none()) {
+        <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+            market,
+            user_addr,
+            limit_price,
+            order_id,
+            client_order_id,
+            orig_size,
+            remaining_size,
+            fill_sizes,
+            match_count,
+            is_bid,
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_ioc_violation">market_types::order_cancellation_reason_ioc_violation</a>(),
+            std::string::utf8(b"IOC Violation"),
+            trigger_condition,
+            metadata,
+            time_in_force,
+            emit_open_for_cancellation,
+            callbacks,
+            callback_results
+        );
+    };
+
+    <b>if</b> (trigger_condition.is_some()) {
+        // Do not emit an open <a href="../aptos-framework/event.html#0x1_event">event</a> for orders <b>with</b> trigger conditions <b>as</b> they are not live in the order book yet
+        market.get_order_book_mut().place_maker_order(
+            new_single_order_request(
+                user_addr,
+                order_id,
+                client_order_id,
+                limit_price,
+                orig_size,
+                remaining_size,
+                is_bid,
+                trigger_condition,
+                time_in_force,
+                metadata
+            )
+        );
+        <b>return</b> OrderMatchResult::V1 {
+            order_id,
+            remaining_size,
+            cancel_reason: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+            callback_results,
+            fill_sizes,
+            match_count
+        }
+    };
+
+    <b>let</b> result =
+        callbacks.place_maker_order(
+            new_clearinghouse_order_info(
+                user_addr,
+                order_id,
+                client_order_id,
+                is_bid,
+                limit_price,
+                time_in_force,
+                single_order_type(),
+                <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+                metadata
+            ),
+            remaining_size
+        );
+    <b>if</b> (result.get_place_maker_order_cancellation_reason().is_some()) {
+        <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+            market,
+            user_addr,
+            limit_price,
+            order_id,
+            client_order_id,
+            orig_size,
+            remaining_size,
+            fill_sizes,
+            match_count,
+            is_bid,
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_place_maker_order_violation">market_types::order_cancellation_reason_place_maker_order_violation</a>(),
+            result.get_place_maker_order_cancellation_reason().destroy_some(),
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+            metadata,
+            time_in_force,
+            emit_open_for_cancellation,
+            callbacks,
+            callback_results
+        );
+    };
+
+    // Emit order open <a href="../aptos-framework/event.html#0x1_event">event</a> for the maker order
+    market.emit_event_for_order(
+        order_id,
+        client_order_id,
+        user_addr,
+        orig_size,
+        remaining_size,
+        remaining_size,
+        limit_price,
+        is_bid,
+        <b>false</b>,
+        <a href="market_types.html#0x7_market_types_order_status_open">market_types::order_status_open</a>(),
+        std::string::utf8(b""),
+        metadata,
+        trigger_condition,
+        time_in_force,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        callbacks
+    );
+
+    <b>let</b> actions = result.get_place_maker_order_actions();
+    <b>if</b> (actions.is_some()) {
+        callback_results.push_back(actions.destroy_some());
+    };
+    market.get_order_book_mut().place_maker_order(
+        new_single_order_request(
+            user_addr,
+            order_id,
+            client_order_id,
+            limit_price,
+            orig_size,
+            remaining_size,
+            is_bid,
+            trigger_condition,
+            time_in_force,
+            metadata
+        )
+    );
+    <b>return</b> OrderMatchResult::V1 {
+        order_id,
+        remaining_size,
+        cancel_reason: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        callback_results,
+        fill_sizes,
+        match_count
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-cancel_bulk_maker_order_internal"><a class="header" href="#function-cancel_bulk_maker_order_internal">Function <code>cancel_bulk_maker_order_internal</code> <a id="0x7_order_placement_cancel_bulk_maker_order_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_cancel_bulk_maker_order_internal">cancel_bulk_maker_order_internal</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &amp;<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, maker_order: &amp;<a href="../aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, maker_address: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, unsettled_size: u64, cancellation_reason: <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_cancel_bulk_maker_order_internal">cancel_bulk_maker_order_internal</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &amp;<b>mut</b> Market&lt;M&gt;,
+    maker_order: &amp;OrderMatchDetails&lt;M&gt;,
+    maker_address: <b>address</b>,
+    order_id: OrderId,
+    unsettled_size: u64,
+    cancellation_reason: OrderCancellationReason,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;
+) {
+    <b>let</b> remaining_size = maker_order.get_remaining_size_from_match_details();
+    <b>let</b> price = maker_order.get_price_from_match_details();
+    <b>let</b> is_bid = maker_order.is_bid_from_match_details();
+    <b>let</b> cancelled_size = unsettled_size + remaining_size;
+
+    // Cancel only at the specific price level instead of cancelling the entire bulk order
+    <b>let</b> (_actual_cancelled_size, modified_order) =
+        <b>if</b> (remaining_size != 0) {
+            market.get_order_book_mut().cancel_bulk_order_at_price(
+                maker_address, price, is_bid
+            )
+        } <b>else</b> {
+            // If remaining size is 0, just get the current order state for <a href="../aptos-framework/event.html#0x1_event">event</a> emission
+            (0, market.get_order_book().get_bulk_order(maker_address))
+        };
+
+    callbacks.cleanup_bulk_order_at_price(
+        maker_address,
+        order_id,
+        is_bid,
+        price,
+        cancelled_size
+    );
+
+    // Emit <a href="../aptos-framework/event.html#0x1_event">event</a> <b>with</b> the cancelled price level
+    <b>let</b> (
+        modified_order_request, _order_id, _unique_priority_idx, _creation_time_micros
+    ) = modified_order.destroy_bulk_order();
+    <b>let</b> (
+        _account,
+        order_sequence_number,
+        bid_prices,
+        bid_sizes,
+        ask_prices,
+        ask_sizes,
+        _metadata
+    ) = modified_order_request.destroy_bulk_order_request();
+
+    // Build cancelled price/size vectors for the specific level that was cancelled
+    <b>let</b> (
+        cancelled_bid_prices,
+        cancelled_bid_sizes,
+        cancelled_ask_prices,
+        cancelled_ask_sizes
+    ) =
+        <b>if</b> (is_bid) {
+            (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>[price], <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[cancelled_size], <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[], <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[])
+        } <b>else</b> {
+            (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>[], <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[], <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[price], <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[cancelled_size])
+        };
+
+    market.emit_event_for_bulk_order_modified(
+        order_id,
+        order_sequence_number,
+        maker_address,
+        bid_prices,
+        bid_sizes,
+        ask_prices,
+        ask_sizes,
+        cancelled_bid_prices,
+        cancelled_bid_sizes,
+        cancelled_ask_prices,
+        cancelled_ask_sizes,
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(cancellation_reason)
+    );
+}
+</code></pre>
+
+</details>
+<h2 id="function-cancel_maker_order_internal"><a class="header" href="#function-cancel_maker_order_internal">Function <code>cancel_maker_order_internal</code> <a id="0x7_order_placement_cancel_maker_order_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_cancel_maker_order_internal">cancel_maker_order_internal</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &amp;<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, maker_order: &amp;<a href="../aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, maker_address: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, cancellation_reason: <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>, maker_cancellation_reason: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, unsettled_size: u64, metadata: M, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_cancel_maker_order_internal">cancel_maker_order_internal</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &amp;<b>mut</b> Market&lt;M&gt;,
+    maker_order: &amp;OrderMatchDetails&lt;M&gt;,
+    client_order_id: Option&lt;String&gt;,
+    maker_address: <b>address</b>,
+    order_id: OrderId,
+    cancellation_reason: OrderCancellationReason,
+    maker_cancellation_reason: String,
+    unsettled_size: u64,
+    metadata: M,
+    time_in_force: TimeInForce,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;
+) {
+    <b>if</b> (maker_order.is_bulk_order_from_match_details()) {
+        <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_bulk_maker_order_internal">cancel_bulk_maker_order_internal</a>(
+            market,
+            maker_order,
+            maker_address,
+            order_id,
+            unsettled_size,
+            cancellation_reason,
+            callbacks
+        );
+    };
+    <b>let</b> maker_cancel_size =
+        unsettled_size + maker_order.get_remaining_size_from_match_details();
+    market.emit_event_for_order(
+        order_id,
+        client_order_id,
+        maker_address,
+        maker_order.get_orig_size_from_match_details(),
+        0,
+        maker_cancel_size,
+        maker_order.get_price_from_match_details(),
+        maker_order.is_bid_from_match_details(),
+        <b>false</b>,
+        <a href="market_types.html#0x7_market_types_order_status_cancelled">market_types::order_status_cancelled</a>(),
+        maker_cancellation_reason,
+        metadata,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+        time_in_force,
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(cancellation_reason),
+        callbacks
+    );
+    // If the maker is invalid cancel the maker order and <b>continue</b> <b>to</b> the next maker order
+    <b>if</b> (maker_order.get_remaining_size_from_match_details() != 0) {
+        market.get_order_book_mut().cancel_single_order(maker_address, order_id);
+    };
+    <a href="order_placement.html#0x7_order_placement_cleanup_order_internal">cleanup_order_internal</a>(
+        maker_address,
+        order_id,
+        client_order_id,
+        maker_order.get_book_type_from_match_details(),
+        maker_order.is_bid_from_match_details(),
+        time_in_force,
+        maker_cancel_size,
+        maker_order.get_price_from_match_details(),
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+        metadata,
+        callbacks,
+        <b>false</b> // is_taker is <b>false</b> <b>as</b> this is a maker order
+    );
+}
+</code></pre>
+
+</details>
+<h2 id="function-cancel_taker_order_internal"><a class="header" href="#function-cancel_taker_order_internal">Function <code>cancel_taker_order_internal</code> <a id="0x7_order_placement_cancel_taker_order_internal"></a></a></h2>
+<pre><code>#[lint::skip(#[needless_mutable_reference])]
+<b>fun</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &amp;<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user_addr: <b>address</b>, limit_price: u64, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, orig_size: u64, size_delta: u64, fill_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, match_count: u32, is_bid: bool, cancel_reason: <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>, cancel_details: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;, metadata: M, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, emit_order_open: bool, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, callback_results: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;R&gt;): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &amp;<b>mut</b> Market&lt;M&gt;,
+    user_addr: <b>address</b>,
+    limit_price: u64,
+    order_id: OrderId,
+    client_order_id: Option&lt;String&gt;,
+    orig_size: u64,
+    size_delta: u64,
+    fill_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    match_count: u32,
+    is_bid: bool,
+    cancel_reason: OrderCancellationReason,
+    cancel_details: String,
+    trigger_condition: Option&lt;TriggerCondition&gt;,
+    metadata: M,
+    time_in_force: TimeInForce,
+    emit_order_open: bool,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;,
+    callback_results: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;R&gt;
+): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt; {
+    <b>if</b> (emit_order_open) {
+        market.emit_event_for_order(
+            order_id,
+            client_order_id,
+            user_addr,
+            orig_size,
+            size_delta,
+            orig_size,
+            limit_price,
+            is_bid,
+            <b>true</b>, // is_taker - always <b>true</b> for taker orders
+            <a href="market_types.html#0x7_market_types_order_status_open">market_types::order_status_open</a>(),
+            std::string::utf8(b""),
+            metadata,
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+            time_in_force,
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+            callbacks
+        );
+    };
+    market.emit_event_for_order(
+        order_id,
+        client_order_id,
+        user_addr,
+        orig_size,
+        0,
+        size_delta,
+        limit_price,
+        is_bid,
+        <b>true</b>, // is_taker - always <b>true</b> for taker orders
+        <a href="market_types.html#0x7_market_types_order_status_cancelled">market_types::order_status_cancelled</a>(),
+        cancel_details,
+        metadata,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+        time_in_force,
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(cancel_reason),
+        callbacks
+    );
+    callbacks.cleanup_order(
+        new_clearinghouse_order_info(
+            user_addr,
+            order_id,
+            client_order_id,
+            is_bid,
+            limit_price,
+            time_in_force,
+            single_order_type(),
+            trigger_condition,
+            metadata
+        ),
+        size_delta,
+        <b>true</b> // is_taker - always <b>true</b> for taker orders
+    );
+    OrderMatchResult::V1 {
+        order_id,
+        remaining_size: 0,
+        cancel_reason: <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(cancel_reason),
+        fill_sizes,
+        callback_results,
+        match_count
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-cleanup_order_internal"><a class="header" href="#function-cleanup_order_internal">Function <code>cleanup_order_internal</code> <a id="0x7_order_placement_cleanup_order_internal"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_placement.html#0x7_order_placement_cleanup_order_internal">cleanup_order_internal</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(user_addr: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, order_type: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderType">order_book_types::OrderType</a>, is_bid: bool, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, cleanup_size: u64, price: u64, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;, metadata: M, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, is_taker: bool)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_placement.html#0x7_order_placement_cleanup_order_internal">cleanup_order_internal</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    user_addr: <b>address</b>,
+    order_id: OrderId,
+    client_order_id: Option&lt;String&gt;,
+    order_type: OrderType,
+    is_bid: bool,
+    time_in_force: TimeInForce,
+    cleanup_size: u64,
+    price: u64,
+    trigger_condition: Option&lt;TriggerCondition&gt;,
+    metadata: M,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;,
+    is_taker: bool
+) {
+    <b>if</b> (order_type == single_order_type()) {
+        callbacks.cleanup_order(
+            new_clearinghouse_order_info(
+                user_addr,
+                order_id,
+                client_order_id,
+                is_bid,
+                price,
+                time_in_force,
+                single_order_type(),
+                trigger_condition,
+                metadata
+            ),
+            cleanup_size,
+            is_taker
+        );
+    } <b>else</b> {
+        callbacks.cleanup_bulk_order_at_price(
+            user_addr,
+            order_id,
+            is_bid,
+            price,
+            cleanup_size
+        );
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-settle_single_trade"><a class="header" href="#function-settle_single_trade">Function <code>settle_single_trade</code> <a id="0x7_order_placement_settle_single_trade"></a></a></h2>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_settle_single_trade">settle_single_trade</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &amp;<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user_addr: <b>address</b>, price: u64, orig_size: u64, remaining_size: &amp;<b>mut</b> u64, is_bid: bool, metadata: M, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, fill_sizes: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): (<a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;, <a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="order_placement.html#0x7_order_placement_settle_single_trade">settle_single_trade</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &amp;<b>mut</b> Market&lt;M&gt;,
+    user_addr: <b>address</b>,
+    price: u64,
+    orig_size: u64,
+    remaining_size: &amp;<b>mut</b> u64,
+    is_bid: bool,
+    metadata: M,
+    order_id: OrderId,
+    client_order_id: Option&lt;String&gt;,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;,
+    time_in_force: TimeInForce,
+    fill_sizes: &amp;<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;
+): (Option&lt;OrderCancellationReason&gt;, CallbackResult&lt;R&gt;) {
+    <b>let</b> dead_mans_switch_enabled = market.is_dead_mans_switch_enabled();
+    <b>if</b> (dead_mans_switch_enabled
+        &amp;&amp; !is_order_valid(
+            market.get_dead_mans_switch_tracker(), user_addr, <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+        )) {
+        <b>let</b> taker_cancellation_reason =
+            std::string::utf8(b"Order invalidated due <b>to</b> dead man's switch expiry");
+        <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+            market,
+            user_addr,
+            price,
+            order_id,
+            client_order_id,
+            orig_size,
+            *remaining_size,
+            *fill_sizes,
+            0, // match_count - doesn't matter <b>as</b> we don't <b>use</b> the result.
+            is_bid,
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">market_types::order_cancellation_reason_dead_mans_switch_expired</a>(),
+            taker_cancellation_reason,
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+            metadata,
+            time_in_force,
+            <b>false</b>, // emit_order_open is <b>false</b> <b>as</b> the order was already open
+            callbacks,
+            <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[]
+        );
+        <b>return</b> (
+            <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(
+                <a href="market_types.html#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">market_types::order_cancellation_reason_dead_mans_switch_expired</a>()
+            ),
+            new_callback_result_not_available()
+        );
+    };
+    <b>let</b> result =
+        market.get_order_book_mut().get_single_match_for_taker(
+            price, *remaining_size, is_bid
+        );
+    <b>let</b> (maker_order, maker_matched_size) = result.destroy_order_match();
+    <b>if</b> (!market.is_allowed_self_trade()
+        &amp;&amp; maker_order.get_account_from_match_details() == user_addr) {
+        <a href="order_placement.html#0x7_order_placement_cancel_maker_order_internal">cancel_maker_order_internal</a>(
+            market,
+            &amp;maker_order,
+            maker_order.get_client_order_id_from_match_details(),
+            maker_order.get_account_from_match_details(),
+            maker_order.get_order_id_from_match_details(),
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_disallowed_self_trading">market_types::order_cancellation_reason_disallowed_self_trading</a>(),
+            std::string::utf8(b"Disallowed self trading"),
+            maker_matched_size,
+            maker_order.get_metadata_from_match_details(),
+            maker_order.get_time_in_force_from_match_details(),
+            callbacks
+        );
+        <b>return</b> (<a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), new_callback_result_not_available());
+    };
+    <b>if</b> (dead_mans_switch_enabled
+        &amp;&amp; !is_order_valid(
+            market.get_dead_mans_switch_tracker(),
+            maker_order.get_account_from_match_details(),
+            <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(
+                maker_order.get_creation_time_micros_from_match_details() / 1000000
+            )
+        )) {
+        <a href="order_placement.html#0x7_order_placement_cancel_maker_order_internal">cancel_maker_order_internal</a>(
+            market,
+            &amp;maker_order,
+            maker_order.get_client_order_id_from_match_details(),
+            maker_order.get_account_from_match_details(),
+            maker_order.get_order_id_from_match_details(),
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">market_types::order_cancellation_reason_dead_mans_switch_expired</a>(),
+            std::string::utf8(b"Order invalidated due <b>to</b> dead man's switch expiry"),
+            maker_matched_size,
+            maker_order.get_metadata_from_match_details(),
+            maker_order.get_time_in_force_from_match_details(),
+            callbacks
+        );
+        <b>return</b> (<a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), new_callback_result_not_available());
+    };
+    <b>let</b> fill_id = <a href="../aptos-framework/transaction_context.html#0x1_transaction_context_monotonically_increasing_counter">transaction_context::monotonically_increasing_counter</a>();
+    <b>let</b> settle_result =
+        callbacks.settle_trade(
+            market,
+            new_clearinghouse_order_info(
+                user_addr,
+                order_id,
+                client_order_id,
+                is_bid,
+                price,
+                time_in_force,
+                single_order_type(),
+                <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+                metadata
+            ),
+            new_clearinghouse_order_info(
+                maker_order.get_account_from_match_details(),
+                maker_order.get_order_id_from_match_details(),
+                maker_order.get_client_order_id_from_match_details(),
+                maker_order.is_bid_from_match_details(),
+                maker_order.get_price_from_match_details(),
+                maker_order.get_time_in_force_from_match_details(),
+                maker_order.get_book_type_from_match_details(),
+                <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+                maker_order.get_metadata_from_match_details()
+            ),
+            fill_id,
+            maker_order.get_price_from_match_details(), // Order is always matched at the price of the maker
+            maker_matched_size
+        );
+
+    <b>let</b> unsettled_maker_size = maker_matched_size;
+    <b>let</b> settled_size = settle_result.get_settled_size();
+    <b>if</b> (settled_size &gt; 0) {
+        *remaining_size -= settled_size;
+        unsettled_maker_size -= settled_size;
+        fill_sizes.push_back(settled_size);
+        // Event for taker fill
+        market.emit_event_for_order(
+            order_id,
+            client_order_id,
+            user_addr,
+            orig_size,
+            *remaining_size,
+            settled_size,
+            maker_order.get_price_from_match_details(),
+            is_bid,
+            <b>true</b>,
+            <a href="market_types.html#0x7_market_types_order_status_filled">market_types::order_status_filled</a>(),
+            std::string::utf8(b""),
+            metadata,
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+            time_in_force,
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+            callbacks
+        );
+        // Event for maker fill
+        <b>if</b> (maker_order.is_bulk_order_from_match_details()) {
+            market.emit_event_for_bulk_order_filled(
+                maker_order.get_order_id_from_match_details(),
+                maker_order.get_sequence_number_from_match_details(),
+                maker_order.get_account_from_match_details(),
+                settled_size,
+                maker_order.get_price_from_match_details(),
+                maker_order.get_price_from_match_details(),
+                !is_bid,
+                fill_id
+            );
+        } <b>else</b> {
+            market.emit_event_for_order(
+                maker_order.get_order_id_from_match_details(),
+                maker_order.get_client_order_id_from_match_details(),
+                maker_order.get_account_from_match_details(),
+                maker_order.get_orig_size_from_match_details(),
+                maker_order.get_remaining_size_from_match_details()
+                    + unsettled_maker_size,
+                settled_size,
+                maker_order.get_price_from_match_details(),
+                !is_bid,
+                <b>false</b>,
+                <a href="market_types.html#0x7_market_types_order_status_filled">market_types::order_status_filled</a>(),
+                std::string::utf8(b""),
+                maker_order.get_metadata_from_match_details(),
+                <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+                maker_order.get_time_in_force_from_match_details(),
+                <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+                callbacks
+            );
+        };
+    };
+
+    <b>let</b> maker_cancellation_reason_str = settle_result.get_maker_cancellation_reason();
+    <b>let</b> taker_cancellation_reason_str = settle_result.get_taker_cancellation_reason();
+    <b>if</b> (settled_size &lt; maker_matched_size) {
+        // If the order is partially settled, the expectation is that the clearinghouse
+        // provides cancellation reason for at least one of the orders.
+        <b>assert</b>!(
+            maker_cancellation_reason_str.is_some()
+                || taker_cancellation_reason_str.is_some(),
+            <a href="order_placement.html#0x7_order_placement_ECLEARINGHOUSE_SETTLEMENT_VIOLATION">ECLEARINGHOUSE_SETTLEMENT_VIOLATION</a>
+        );
+    };
+    <b>let</b> taker_cancellation_reason =
+        <b>if</b> (taker_cancellation_reason_str.is_some()) {
+            <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+                market,
+                user_addr,
+                price,
+                order_id,
+                client_order_id,
+                orig_size,
+                *remaining_size,
+                *fill_sizes,
+                0, // match_count - doesn't matter <b>as</b> we don't <b>use</b> the result.
+                is_bid,
+                <a href="market_types.html#0x7_market_types_order_cancellation_reason_clearinghouse_settle_violation">market_types::order_cancellation_reason_clearinghouse_settle_violation</a>(),
+                taker_cancellation_reason_str.destroy_some(),
+                <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+                metadata,
+                time_in_force,
+                <b>false</b>, // emit_order_open is <b>false</b> <b>as</b> the order was already open
+                callbacks,
+                <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[]
+            );
+            <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(
+                <a href="market_types.html#0x7_market_types_order_cancellation_reason_clearinghouse_settle_violation">market_types::order_cancellation_reason_clearinghouse_settle_violation</a>()
+            )
+        } <b>else</b> {
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+        };
+    <b>if</b> (maker_cancellation_reason_str.is_some()) {
+        <a href="order_placement.html#0x7_order_placement_cancel_maker_order_internal">cancel_maker_order_internal</a>(
+            market,
+            &amp;maker_order,
+            maker_order.get_client_order_id_from_match_details(),
+            maker_order.get_account_from_match_details(),
+            maker_order.get_order_id_from_match_details(),
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_clearinghouse_settle_violation">market_types::order_cancellation_reason_clearinghouse_settle_violation</a>(),
+            maker_cancellation_reason_str.destroy_some(),
+            unsettled_maker_size,
+            maker_order.get_metadata_from_match_details(),
+            maker_order.get_time_in_force_from_match_details(),
+            callbacks
+        );
+    } <b>else</b> {
+        <b>if</b> (unsettled_maker_size &gt; 0) {
+            //  we need <b>to</b> re-insert the maker order back into the order book
+            <b>let</b> reinsertion_request =
+                maker_order.new_order_match_details_with_modified_size(
+                    unsettled_maker_size
+                );
+            market.get_order_book_mut().reinsert_order(
+                reinsertion_request, &amp;maker_order
+            );
+        } <b>else</b> <b>if</b> (maker_order.get_remaining_size_from_match_details() == 0) {
+            <a href="order_placement.html#0x7_order_placement_cleanup_order_internal">cleanup_order_internal</a>(
+                maker_order.get_account_from_match_details(),
+                maker_order.get_order_id_from_match_details(),
+                maker_order.get_client_order_id_from_match_details(),
+                maker_order.get_book_type_from_match_details(),
+                !is_bid, // is_bid is inverted for maker orders
+                maker_order.get_time_in_force_from_match_details(),
+                0, // 0 because the order is fully filled
+                maker_order.get_price_from_match_details(),
+                <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+                maker_order.get_metadata_from_match_details(),
+                callbacks,
+                <b>false</b> // is_taker is <b>false</b> for maker orders
+            );
+        }
+    };
+    (taker_cancellation_reason, *settle_result.get_callback_result())
+}
+</code></pre>
+
+</details>
+<h2 id="function-place_order_with_order_id"><a class="header" href="#function-place_order_with_order_id">Function <code>place_order_with_order_id</code> <a id="0x7_order_placement_place_order_with_order_id"></a></a></h2>
+<p>Core function to place an order with a given order id. If the order id is not provided, a new order id is generated.
+The function itself doesn’t do any validation of the user_address, it’s up to the caller to ensure that signer validation
+is done before calling this function if needed.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_place_order_with_order_id">place_order_with_order_id</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &amp;<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user_addr: <b>address</b>, limit_price: u64, orig_size: u64, remaining_size: u64, is_bid: bool, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;, metadata: M, order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, max_match_limit: u32, cancel_on_match_limit: bool, emit_taker_order_open: bool, callbacks: &amp;<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">order_placement::OrderMatchResult</a>&lt;R&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_placement.html#0x7_order_placement_place_order_with_order_id">place_order_with_order_id</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &amp;<b>mut</b> Market&lt;M&gt;,
+    user_addr: <b>address</b>,
+    limit_price: u64,
+    orig_size: u64,
+    remaining_size: u64,
+    is_bid: bool,
+    time_in_force: TimeInForce,
+    trigger_condition: Option&lt;TriggerCondition&gt;,
+    metadata: M,
+    order_id: Option&lt;OrderId&gt;,
+    client_order_id: Option&lt;String&gt;,
+    max_match_limit: u32,
+    cancel_on_match_limit: bool,
+    emit_taker_order_open: bool,
+    callbacks: &amp;MarketClearinghouseCallbacks&lt;M, R&gt;
+): <a href="order_placement.html#0x7_order_placement_OrderMatchResult">OrderMatchResult</a>&lt;R&gt; {
+    <b>assert</b>!(
+        orig_size &gt; 0
+            &amp;&amp; remaining_size &gt; 0
+            &amp;&amp; orig_size &gt;= remaining_size,
+        <a href="order_placement.html#0x7_order_placement_EINVALID_ORDER">EINVALID_ORDER</a>
+    );
+    <b>assert</b>!(max_match_limit &gt; 0, <a href="order_placement.html#0x7_order_placement_EINVALID_ORDER">EINVALID_ORDER</a>);
+    <b>assert</b>!(limit_price &gt; 0, <a href="order_placement.html#0x7_order_placement_EINVALID_ORDER">EINVALID_ORDER</a>);
+    <b>if</b> (client_order_id.is_some()) {
+        <b>assert</b>!(
+            client_order_id.borrow().length() &lt;= <a href="order_placement.html#0x7_order_placement_MAX_CLIENT_ORDER_ID_LENGTH">MAX_CLIENT_ORDER_ID_LENGTH</a>,
+            <a href="order_placement.html#0x7_order_placement_ECLIENT_ORDER_ID_LENGTH_EXCEEDED">ECLIENT_ORDER_ID_LENGTH_EXCEEDED</a>
+        );
+    };
+    <b>if</b> (order_id.is_none()) {
+        // If order id is not provided, generate a new order id
+        order_id = <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(next_order_id());
+    };
+    <b>let</b> order_id = order_id.destroy_some();
+    <b>let</b> callback_results = <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
+    <b>let</b> validation_result =
+        callbacks.validate_order_placement(
+            new_clearinghouse_order_info(
+                user_addr,
+                order_id,
+                client_order_id,
+                is_bid,
+                limit_price,
+                time_in_force,
+                single_order_type(),
+                trigger_condition,
+                metadata
+            ),
+            remaining_size
+        );
+    <b>if</b> (!validation_result.is_validation_result_valid()) {
+        <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+            market,
+            user_addr,
+            limit_price,
+            order_id,
+            client_order_id,
+            orig_size,
+            remaining_size,
+            <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+            0, // match_count
+            is_bid,
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_position_update_violation">market_types::order_cancellation_reason_position_update_violation</a>(),
+            validation_result.get_validation_failure_reason().destroy_some(),
+            trigger_condition,
+            metadata,
+            time_in_force,
+            <b>true</b>, // emit_order_open
+            callbacks,
+            <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[]
+        );
+    };
+
+    <b>if</b> (client_order_id.is_some()) {
+        <b>if</b> (market.get_order_book().client_order_id_exists(
+            user_addr, client_order_id.destroy_some()
+        )) {
+            // Client provided a client order id that already <b>exists</b> in the order book
+            <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+                market,
+                user_addr,
+                limit_price,
+                order_id,
+                client_order_id,
+                orig_size,
+                remaining_size,
+                <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+                0, // match_count
+                is_bid,
+                <a href="market_types.html#0x7_market_types_order_cancellation_reason_duplicate_client_order_id">market_types::order_cancellation_reason_duplicate_client_order_id</a>(),
+                std::string::utf8(b"Duplicate client order id"),
+                trigger_condition,
+                metadata,
+                time_in_force,
+                <b>true</b>, // emit_order_open
+                callbacks,
+                <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[]
+            );
+        };
+
+        <b>if</b> (is_pre_cancelled(
+            market.get_pre_cancellation_tracker_mut(),
+            user_addr,
+            client_order_id.destroy_some()
+        )) {
+            <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+                market,
+                user_addr,
+                limit_price,
+                order_id,
+                client_order_id,
+                orig_size,
+                remaining_size,
+                <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+                0, // match_count
+                is_bid,
+                <a href="market_types.html#0x7_market_types_order_cancellation_reason_order_pre_cancelled">market_types::order_cancellation_reason_order_pre_cancelled</a>(),
+                std::string::utf8(b"Order pre cancelled"),
+                trigger_condition,
+                metadata,
+                time_in_force,
+                <b>true</b>, // emit_order_open
+                callbacks,
+                <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[]
+            );
+        };
+    };
+    <b>let</b> is_taker_order =
+        market.get_order_book().is_taker_order(
+            limit_price, is_bid, trigger_condition
+        );
+
+    <b>if</b> (!is_taker_order) {
+        <b>return</b> <a href="order_placement.html#0x7_order_placement_place_maker_order_internal">place_maker_order_internal</a>(
+            market,
+            user_addr,
+            limit_price,
+            orig_size,
+            remaining_size,
+            <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+            0, // match_count
+            is_bid,
+            time_in_force,
+            trigger_condition,
+            metadata,
+            order_id,
+            client_order_id,
+            emit_taker_order_open, // order_open_emitted
+            callbacks,
+            <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[]
+        );
+    };
+
+    // NOTE: We should always <b>use</b> is_taker: <b>true</b> for this order past this
+    // point so that indexer can consistently track the order's status
+    <b>if</b> (time_in_force == post_only()) {
+        <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+            market,
+            user_addr,
+            limit_price,
+            order_id,
+            client_order_id,
+            orig_size,
+            remaining_size,
+            <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+            0, // match_count
+            is_bid,
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_post_only_violation">market_types::order_cancellation_reason_post_only_violation</a>(),
+            std::string::utf8(b"Post Only violation"),
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+            metadata,
+            time_in_force,
+            <b>true</b>, // emit_order_open
+            callbacks,
+            <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[]
+        );
+    };
+
+    <b>if</b> (emit_taker_order_open) {
+        // We don't emit order open events for orders <b>with</b> trigger conditions <b>as</b> they are not
+        // actually placed in the order book until they are triggered.
+        market.emit_event_for_order(
+            order_id,
+            client_order_id,
+            user_addr,
+            orig_size,
+            remaining_size,
+            orig_size,
+            limit_price,
+            is_bid,
+            is_taker_order,
+            <a href="market_types.html#0x7_market_types_order_status_open">market_types::order_status_open</a>(),
+            std::string::utf8(b""),
+            metadata,
+            trigger_condition,
+            time_in_force,
+            <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+            callbacks
+        );
+    };
+
+    <b>let</b> fill_sizes = <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
+    <b>let</b> match_count = 0;
+    <b>loop</b> {
+        match_count += 1;
+        <b>let</b> (taker_cancellation_reason, callback_result) =
+            <a href="order_placement.html#0x7_order_placement_settle_single_trade">settle_single_trade</a>(
+                market,
+                user_addr,
+                limit_price,
+                orig_size,
+                &amp;<b>mut</b> remaining_size,
+                is_bid,
+                metadata,
+                order_id,
+                client_order_id,
+                callbacks,
+                time_in_force,
+                &amp;<b>mut</b> fill_sizes
+            );
+        <b>let</b> should_stop = callback_result.should_stop_matching();
+        <b>let</b> result = callback_result.extract_results();
+        <b>if</b> (result.is_some()) {
+            callback_results.push_back(result.destroy_some());
+        };
+        <b>if</b> (taker_cancellation_reason.is_some()) {
+            <b>return</b> OrderMatchResult::V1 {
+                order_id,
+                remaining_size: 0, // 0 because the order is cancelled
+                cancel_reason: taker_cancellation_reason,
+                fill_sizes,
+                callback_results,
+                match_count
+            }
+        };
+        <b>if</b> (remaining_size == 0) {
+            <a href="order_placement.html#0x7_order_placement_cleanup_order_internal">cleanup_order_internal</a>(
+                user_addr,
+                order_id,
+                client_order_id,
+                single_order_type(),
+                is_bid,
+                time_in_force,
+                0,
+                limit_price,
+                trigger_condition,
+                metadata,
+                callbacks,
+                <b>true</b>
+            );
+            <b>break</b>;
+        };
+        <b>if</b> (should_stop) {
+            <b>return</b> OrderMatchResult::V1 {
+                order_id,
+                remaining_size,
+                cancel_reason: <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(
+                    order_cancellation_reason_clearinghouse_stopped_matching()
+                ),
+                fill_sizes,
+                callback_results,
+                match_count
+            }
+        };
+        // Check <b>if</b> the next iteration will still match
+        <b>let</b> is_taker_order = market.is_taker_order(
+            limit_price, is_bid, <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+        );
+        <b>if</b> (!is_taker_order) {
+            <b>if</b> (time_in_force == immediate_or_cancel()) {
+                <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+                    market,
+                    user_addr,
+                    limit_price,
+                    order_id,
+                    client_order_id,
+                    orig_size,
+                    remaining_size,
+                    fill_sizes,
+                    match_count,
+                    is_bid,
+                    <a href="market_types.html#0x7_market_types_order_cancellation_reason_ioc_violation">market_types::order_cancellation_reason_ioc_violation</a>(),
+                    std::string::utf8(b"IOC_VIOLATION"),
+                    <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+                    metadata,
+                    time_in_force,
+                    <b>false</b>, // emit_order_open is <b>false</b> <b>as</b> the order was already open
+                    callbacks,
+                    callback_results
+                );
+            } <b>else</b> {
+                // If the order is not a taker order, then we can place it <b>as</b> a maker order
+                <b>return</b> <a href="order_placement.html#0x7_order_placement_place_maker_order_internal">place_maker_order_internal</a>(
+                    market,
+                    user_addr,
+                    limit_price,
+                    orig_size,
+                    remaining_size,
+                    fill_sizes,
+                    match_count,
+                    is_bid,
+                    time_in_force,
+                    <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+                    metadata,
+                    order_id,
+                    client_order_id,
+                    <b>false</b>,
+                    callbacks,
+                    callback_results
+                );
+            };
+        };
+
+        <b>if</b> (match_count &gt;= max_match_limit) {
+            <b>if</b> (cancel_on_match_limit) {
+                <b>return</b> <a href="order_placement.html#0x7_order_placement_cancel_taker_order_internal">cancel_taker_order_internal</a>(
+                    market,
+                    user_addr,
+                    limit_price,
+                    order_id,
+                    client_order_id,
+                    orig_size,
+                    remaining_size,
+                    fill_sizes,
+                    match_count,
+                    is_bid,
+                    <a href="market_types.html#0x7_market_types_order_cancellation_reason_max_fill_limit_violation">market_types::order_cancellation_reason_max_fill_limit_violation</a>(),
+                    std::string::utf8(b"Max fill limit reached"),
+                    <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), // trigger_condition
+                    metadata,
+                    time_in_force,
+                    <b>false</b>, // emit_order_open is <b>false</b> <b>as</b> the order was already open
+                    callbacks,
+                    callback_results
+                );
+            } <b>else</b> {
+                <b>return</b> OrderMatchResult::V1 {
+                    order_id,
+                    remaining_size,
+                    cancel_reason: <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(
+                        <a href="market_types.html#0x7_market_types_order_cancellation_reason_max_fill_limit_violation">market_types::order_cancellation_reason_max_fill_limit_violation</a>()
+                    ),
+                    callback_results,
+                    fill_sizes,
+                    match_count
+                }
+            };
+        };
+    };
+    OrderMatchResult::V1 {
+        order_id,
+        remaining_size,
+        cancel_reason: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        fill_sizes,
+        callback_results,
+        match_count
+    }
+}
+</code></pre>
+
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-experimental/order_operations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-experimental/pending_order_book_index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-experimental/order_operations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-experimental/pending_order_book_index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp-c45f76e8.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

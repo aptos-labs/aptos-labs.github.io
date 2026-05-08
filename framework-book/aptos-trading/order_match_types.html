@@ -1,0 +1,1050 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>order_match_types - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap-384c98b0.css">
+        <link rel="stylesheet" href="../theme/build-stamp-020e146c.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-589e30ea.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-0b791361.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-trading/order_match_types.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-0x5order_match_types"><a class="header" href="#module-0x5order_match_types">Module <code>0x5::order_match_types</code> <a id="0x5_order_match_types"></a></a></h1>
+<ul>
+<li><a href="#0x5_order_match_types_OrderMatchDetails">Enum <code>OrderMatchDetails</code></a>
+<ul>
+<li><a href="#@Fields:_0">Fields:</a></li>
+</ul>
+</li>
+<li><a href="#0x5_order_match_types_OrderMatch">Enum <code>OrderMatch</code></a>
+<ul>
+<li><a href="#@Fields:_1">Fields:</a></li>
+</ul>
+</li>
+<li><a href="#0x5_order_match_types_ActiveMatchedOrder">Enum <code>ActiveMatchedOrder</code></a></li>
+<li><a href="#@Constants_2">Constants</a></li>
+<li><a href="#0x5_order_match_types_new_single_order_match_details">Function <code>new_single_order_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_new_bulk_order_match_details">Function <code>new_bulk_order_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_new_order_match">Function <code>new_order_match</code></a></li>
+<li><a href="#0x5_order_match_types_new_order_match_details_with_modified_size">Function <code>new_order_match_details_with_modified_size</code></a></li>
+<li><a href="#0x5_order_match_types_new_active_matched_order">Function <code>new_active_matched_order</code></a></li>
+<li><a href="#0x5_order_match_types_get_matched_size">Function <code>get_matched_size</code></a></li>
+<li><a href="#0x5_order_match_types_get_account_from_match_details">Function <code>get_account_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_order_id_from_match_details">Function <code>get_order_id_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_unique_priority_idx_from_match_details">Function <code>get_unique_priority_idx_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_price_from_match_details">Function <code>get_price_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_orig_size_from_match_details">Function <code>get_orig_size_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_remaining_size_from_match_details">Function <code>get_remaining_size_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_time_in_force_from_match_details">Function <code>get_time_in_force_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_metadata_from_match_details">Function <code>get_metadata_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_client_order_id_from_match_details">Function <code>get_client_order_id_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_is_bid_from_match_details">Function <code>is_bid_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_book_type_from_match_details">Function <code>get_book_type_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_is_bulk_order_from_match_details">Function <code>is_bulk_order_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_is_single_order_from_match_details">Function <code>is_single_order_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_sequence_number_from_match_details">Function <code>get_sequence_number_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_get_creation_time_micros_from_match_details">Function <code>get_creation_time_micros_from_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_destroy_order_match">Function <code>destroy_order_match</code></a></li>
+<li><a href="#0x5_order_match_types_destroy_single_order_match_details">Function <code>destroy_single_order_match_details</code></a></li>
+<li><a href="#0x5_order_match_types_validate_single_order_reinsertion_request">Function <code>validate_single_order_reinsertion_request</code></a></li>
+<li><a href="#0x5_order_match_types_validate_bulk_order_reinsertion_request">Function <code>validate_bulk_order_reinsertion_request</code></a></li>
+<li><a href="#0x5_order_match_types_destroy_active_matched_order">Function <code>destroy_active_matched_order</code></a></li>
+<li><a href="#0x5_order_match_types_is_active_matched_book_type_single_order">Function <code>is_active_matched_book_type_single_order</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+</code></pre>
+
+<h2 id="enum-ordermatchdetails"><a class="header" href="#enum-ordermatchdetails">Enum <code>OrderMatchDetails</code> <a id="0x5_order_match_types_OrderMatchDetails"></a></a></h2>
+<p>Represents the details of a matched order.</p>
+<p>Contains information about an order that was matched, including its
+identifier, account, priority index, price, sizes, and side.</p>
+<h3 id="fields"><a class="header" href="#fields">Fields: <a id="@Fields:_0"></a></a></h3>
+<ul>
+<li><code>order_id</code>: Unique identifier for the order</li>
+<li><code><a href="../aptos-framework/account.html#0x1_account">account</a></code>: Account that placed the order</li>
+<li><code>unique_priority_idx</code>: Priority index for time-based ordering</li>
+<li><code>price</code>: Price at which the order was matched</li>
+<li><code>orig_size</code>: Original size of the order</li>
+<li><code>remaining_size</code>: Remaining size after the match</li>
+<li><code>is_bid</code>: True if this was a bid order, false if ask order</li>
+</ul>
+<pre><code>enum <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M: <b>copy</b>, drop, store&gt; <b>has</b> <b>copy</b>, drop
+</code></pre>
+
+<details>
+<summary>Variants</summary>
+<details>
+<summary>SingleOrder</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>order_id: <a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code><a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>unique_priority_idx: <a href="order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>price: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>orig_size: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>remaining_size: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>is_bid: bool</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>time_in_force: <a href="order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>creation_time_micros: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>metadata: M</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+</details>
+<details>
+<summary>BulkOrder</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>order_id: <a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code><a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>unique_priority_idx: <a href="order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>price: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>remaining_size: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>is_bid: bool</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>sequence_number: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>creation_time_micros: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>metadata: M</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+</details>
+</details>
+<h2 id="enum-ordermatch"><a class="header" href="#enum-ordermatch">Enum <code>OrderMatch</code> <a id="0x5_order_match_types_OrderMatch"></a></a></h2>
+<p>Represents a single match between a taker order and a maker order.</p>
+<p>Contains the matched order details and the size that was matched in this
+particular match operation.</p>
+<h3 id="fields-1"><a class="header" href="#fields-1">Fields: <a id="@Fields:_1"></a></a></h3>
+<ul>
+<li><code>order</code>: The matched order result</li>
+<li><code>matched_size</code>: The size that was matched in this operation</li>
+</ul>
+<pre><code>enum <a href="order_match_types.html#0x5_order_match_types_OrderMatch">OrderMatch</a>&lt;M: <b>copy</b>, drop, store&gt; <b>has</b> <b>copy</b>, drop
+</code></pre>
+
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>order: <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>matched_size: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+</details>
+</details>
+<h2 id="enum-activematchedorder"><a class="header" href="#enum-activematchedorder">Enum <code>ActiveMatchedOrder</code> <a id="0x5_order_match_types_ActiveMatchedOrder"></a></a></h2>
+<pre><code>enum <a href="order_match_types.html#0x5_order_match_types_ActiveMatchedOrder">ActiveMatchedOrder</a> <b>has</b> <b>copy</b>, drop
+</code></pre>
+
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>order_id: <a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>matched_size: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>remaining_size: u64</code>
+</dt>
+
+<dd>
+ Remaining size of the maker order
+</dd>
+
+<dt>
+<code>order_book_type: <a href="order_book_types.html#0x5_order_book_types_OrderType">order_book_types::OrderType</a></code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+</details>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_2"></a></a></h2>
+<p><a id="0x5_order_match_types_E_REINSERT_ORDER_MISMATCH"></a></p>
+<pre><code><b>const</b> <a href="order_match_types.html#0x5_order_match_types_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>: u64 = 8;
+</code></pre>
+
+<h2 id="function-new_single_order_match_details"><a class="header" href="#function-new_single_order_match_details">Function <code>new_single_order_match_details</code> <a id="0x5_order_match_types_new_single_order_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_single_order_match_details">new_single_order_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(order_id: <a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, unique_priority_idx: <a href="order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>, price: u64, orig_size: u64, remaining_size: u64, is_bid: bool, time_in_force: <a href="order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, creation_time_micros: u64, metadata: M): <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_single_order_match_details">new_single_order_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    order_id: OrderId,
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    client_order_id: Option&lt;String&gt;,
+    unique_priority_idx: IncreasingIdx,
+    price: u64,
+    orig_size: u64,
+    remaining_size: u64,
+    is_bid: bool,
+    time_in_force: TimeInForce,
+    creation_time_micros: u64,
+    metadata: M
+): <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt; {
+    OrderMatchDetails::SingleOrder {
+        order_id,
+        <a href="../aptos-framework/account.html#0x1_account">account</a>,
+        client_order_id,
+        unique_priority_idx,
+        price,
+        orig_size,
+        remaining_size,
+        is_bid,
+        time_in_force,
+        creation_time_micros,
+        metadata
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-new_bulk_order_match_details"><a class="header" href="#function-new_bulk_order_match_details">Function <code>new_bulk_order_match_details</code> <a id="0x5_order_match_types_new_bulk_order_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_bulk_order_match_details">new_bulk_order_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(order_id: <a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, unique_priority_idx: <a href="order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>, price: u64, remaining_size: u64, is_bid: bool, sequence_number: u64, creation_time_micros: u64, metadata: M): <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_bulk_order_match_details">new_bulk_order_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    order_id: OrderId,
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    unique_priority_idx: IncreasingIdx,
+    price: u64,
+    remaining_size: u64,
+    is_bid: bool,
+    sequence_number: u64,
+    creation_time_micros: u64,
+    metadata: M
+): <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt; {
+    OrderMatchDetails::BulkOrder {
+        order_id,
+        <a href="../aptos-framework/account.html#0x1_account">account</a>,
+        unique_priority_idx,
+        price,
+        remaining_size,
+        is_bid,
+        sequence_number,
+        creation_time_micros,
+        metadata
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-new_order_match"><a class="header" href="#function-new_order_match">Function <code>new_order_match</code> <a id="0x5_order_match_types_new_order_match"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_order_match">new_order_match</a>&lt;M: <b>copy</b>, drop, store&gt;(order: <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, matched_size: u64): <a href="order_match_types.html#0x5_order_match_types_OrderMatch">order_match_types::OrderMatch</a>&lt;M&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_order_match">new_order_match</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    order: <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;, matched_size: u64
+): <a href="order_match_types.html#0x5_order_match_types_OrderMatch">OrderMatch</a>&lt;M&gt; {
+    OrderMatch::V1 { order, matched_size }
+}
+</code></pre>
+
+</details>
+<h2 id="function-new_order_match_details_with_modified_size"><a class="header" href="#function-new_order_match_details_with_modified_size">Function <code>new_order_match_details_with_modified_size</code> <a id="0x5_order_match_types_new_order_match_details_with_modified_size"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_order_match_details_with_modified_size">new_order_match_details_with_modified_size</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, remaining_size: u64): <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_order_match_details_with_modified_size">new_order_match_details_with_modified_size</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;, remaining_size: u64
+): <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt; {
+    <b>let</b> res = *self;
+    res.remaining_size = remaining_size;
+    res
+}
+</code></pre>
+
+</details>
+<h2 id="function-new_active_matched_order"><a class="header" href="#function-new_active_matched_order">Function <code>new_active_matched_order</code> <a id="0x5_order_match_types_new_active_matched_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_active_matched_order">new_active_matched_order</a>(order_id: <a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, matched_size: u64, remaining_size: u64, order_book_type: <a href="order_book_types.html#0x5_order_book_types_OrderType">order_book_types::OrderType</a>): <a href="order_match_types.html#0x5_order_match_types_ActiveMatchedOrder">order_match_types::ActiveMatchedOrder</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_new_active_matched_order">new_active_matched_order</a>(
+    order_id: OrderId,
+    matched_size: u64,
+    remaining_size: u64,
+    order_book_type: OrderType
+): <a href="order_match_types.html#0x5_order_match_types_ActiveMatchedOrder">ActiveMatchedOrder</a> {
+    ActiveMatchedOrder::V1 { order_id, matched_size, remaining_size, order_book_type }
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_matched_size"><a class="header" href="#function-get_matched_size">Function <code>get_matched_size</code> <a id="0x5_order_match_types_get_matched_size"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_matched_size">get_matched_size</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatch">order_match_types::OrderMatch</a>&lt;M&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_matched_size">get_matched_size</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatch">OrderMatch</a>&lt;M&gt;): u64 {
+    self.matched_size
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_account_from_match_details"><a class="header" href="#function-get_account_from_match_details">Function <code>get_account_from_match_details</code> <a id="0x5_order_match_types_get_account_from_match_details"></a></a></h2>
+<p>Validates that a reinsertion request is valid for the given original order.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_account_from_match_details">get_account_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): <b>address</b>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_account_from_match_details">get_account_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): <b>address</b> {
+    self.<a href="../aptos-framework/account.html#0x1_account">account</a>
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_order_id_from_match_details"><a class="header" href="#function-get_order_id_from_match_details">Function <code>get_order_id_from_match_details</code> <a id="0x5_order_match_types_get_order_id_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_order_id_from_match_details">get_order_id_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): <a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_order_id_from_match_details">get_order_id_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): OrderId {
+    self.order_id
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_unique_priority_idx_from_match_details"><a class="header" href="#function-get_unique_priority_idx_from_match_details">Function <code>get_unique_priority_idx_from_match_details</code> <a id="0x5_order_match_types_get_unique_priority_idx_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_unique_priority_idx_from_match_details">get_unique_priority_idx_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): <a href="order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_unique_priority_idx_from_match_details">get_unique_priority_idx_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): IncreasingIdx {
+    self.unique_priority_idx
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_price_from_match_details"><a class="header" href="#function-get_price_from_match_details">Function <code>get_price_from_match_details</code> <a id="0x5_order_match_types_get_price_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_price_from_match_details">get_price_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_price_from_match_details">get_price_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): u64 {
+    self.price
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_orig_size_from_match_details"><a class="header" href="#function-get_orig_size_from_match_details">Function <code>get_orig_size_from_match_details</code> <a id="0x5_order_match_types_get_orig_size_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_orig_size_from_match_details">get_orig_size_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_orig_size_from_match_details">get_orig_size_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): u64 {
+    self.orig_size
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_remaining_size_from_match_details"><a class="header" href="#function-get_remaining_size_from_match_details">Function <code>get_remaining_size_from_match_details</code> <a id="0x5_order_match_types_get_remaining_size_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_remaining_size_from_match_details">get_remaining_size_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_remaining_size_from_match_details">get_remaining_size_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): u64 {
+    self.remaining_size
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_time_in_force_from_match_details"><a class="header" href="#function-get_time_in_force_from_match_details">Function <code>get_time_in_force_from_match_details</code> <a id="0x5_order_match_types_get_time_in_force_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_time_in_force_from_match_details">get_time_in_force_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): <a href="order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_time_in_force_from_match_details">get_time_in_force_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): TimeInForce {
+    <b>if</b> (self is OrderMatchDetails::SingleOrder) {
+        self.time_in_force
+    } <b>else</b> {
+        good_till_cancelled()
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_metadata_from_match_details"><a class="header" href="#function-get_metadata_from_match_details">Function <code>get_metadata_from_match_details</code> <a id="0x5_order_match_types_get_metadata_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_metadata_from_match_details">get_metadata_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): M
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_metadata_from_match_details">get_metadata_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): M {
+    self.metadata
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_client_order_id_from_match_details"><a class="header" href="#function-get_client_order_id_from_match_details">Function <code>get_client_order_id_from_match_details</code> <a id="0x5_order_match_types_get_client_order_id_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_client_order_id_from_match_details">get_client_order_id_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_client_order_id_from_match_details">get_client_order_id_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): Option&lt;String&gt; {
+    <b>if</b> (self is OrderMatchDetails::SingleOrder) {
+        self.client_order_id
+    } <b>else</b> {
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_bid_from_match_details"><a class="header" href="#function-is_bid_from_match_details">Function <code>is_bid_from_match_details</code> <a id="0x5_order_match_types_is_bid_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_is_bid_from_match_details">is_bid_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_is_bid_from_match_details">is_bid_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): bool {
+    self.is_bid
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_book_type_from_match_details"><a class="header" href="#function-get_book_type_from_match_details">Function <code>get_book_type_from_match_details</code> <a id="0x5_order_match_types_get_book_type_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_book_type_from_match_details">get_book_type_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): <a href="order_book_types.html#0x5_order_book_types_OrderType">order_book_types::OrderType</a>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_book_type_from_match_details">get_book_type_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): OrderType {
+    <b>if</b> (self is OrderMatchDetails::SingleOrder) {
+        single_order_type()
+    } <b>else</b> {
+        bulk_order_type()
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_bulk_order_from_match_details"><a class="header" href="#function-is_bulk_order_from_match_details">Function <code>is_bulk_order_from_match_details</code> <a id="0x5_order_match_types_is_bulk_order_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_is_bulk_order_from_match_details">is_bulk_order_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_is_bulk_order_from_match_details">is_bulk_order_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): bool {
+    self is OrderMatchDetails::BulkOrder
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_single_order_from_match_details"><a class="header" href="#function-is_single_order_from_match_details">Function <code>is_single_order_from_match_details</code> <a id="0x5_order_match_types_is_single_order_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_is_single_order_from_match_details">is_single_order_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_is_single_order_from_match_details">is_single_order_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): bool {
+    self is OrderMatchDetails::SingleOrder
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_sequence_number_from_match_details"><a class="header" href="#function-get_sequence_number_from_match_details">Function <code>get_sequence_number_from_match_details</code> <a id="0x5_order_match_types_get_sequence_number_from_match_details"></a></a></h2>
+<p>This should only be called on bulk orders, aborts if called for non-bulk order.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_sequence_number_from_match_details">get_sequence_number_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_sequence_number_from_match_details">get_sequence_number_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): u64 {
+    self.sequence_number
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_creation_time_micros_from_match_details"><a class="header" href="#function-get_creation_time_micros_from_match_details">Function <code>get_creation_time_micros_from_match_details</code> <a id="0x5_order_match_types_get_creation_time_micros_from_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_creation_time_micros_from_match_details">get_creation_time_micros_from_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_get_creation_time_micros_from_match_details">get_creation_time_micros_from_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): u64 {
+    self.creation_time_micros
+}
+</code></pre>
+
+</details>
+<h2 id="function-destroy_order_match"><a class="header" href="#function-destroy_order_match">Function <code>destroy_order_match</code> <a id="0x5_order_match_types_destroy_order_match"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_destroy_order_match">destroy_order_match</a>&lt;M: <b>copy</b>, drop, store&gt;(self: <a href="order_match_types.html#0x5_order_match_types_OrderMatch">order_match_types::OrderMatch</a>&lt;M&gt;): (<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, u64)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_destroy_order_match">destroy_order_match</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: <a href="order_match_types.html#0x5_order_match_types_OrderMatch">OrderMatch</a>&lt;M&gt;
+): (<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;, u64) {
+    <b>let</b> OrderMatch::V1 { order, matched_size } = self;
+    (order, matched_size)
+}
+</code></pre>
+
+</details>
+<h2 id="function-destroy_single_order_match_details"><a class="header" href="#function-destroy_single_order_match_details">Function <code>destroy_single_order_match_details</code> <a id="0x5_order_match_types_destroy_single_order_match_details"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_destroy_single_order_match_details">destroy_single_order_match_details</a>&lt;M: <b>copy</b>, drop, store&gt;(self: <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): (<a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, <b>address</b>, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, <a href="order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>, u64, u64, u64, bool, <a href="order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, u64, M)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_destroy_single_order_match_details">destroy_single_order_match_details</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: <a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): (
+    OrderId,
+    <b>address</b>,
+    Option&lt;String&gt;,
+    IncreasingIdx,
+    u64,
+    u64,
+    u64,
+    bool,
+    TimeInForce,
+    u64,
+    M
+) {
+    <b>let</b> OrderMatchDetails::SingleOrder {
+        order_id,
+        <a href="../aptos-framework/account.html#0x1_account">account</a>,
+        client_order_id,
+        unique_priority_idx,
+        price,
+        orig_size,
+        remaining_size,
+        is_bid,
+        time_in_force,
+        creation_time_micros,
+        metadata
+    } = self;
+    (
+        order_id,
+        <a href="../aptos-framework/account.html#0x1_account">account</a>,
+        client_order_id,
+        unique_priority_idx,
+        price,
+        orig_size,
+        remaining_size,
+        is_bid,
+        time_in_force,
+        creation_time_micros,
+        metadata
+    )
+}
+</code></pre>
+
+</details>
+<h2 id="function-validate_single_order_reinsertion_request"><a class="header" href="#function-validate_single_order_reinsertion_request">Function <code>validate_single_order_reinsertion_request</code> <a id="0x5_order_match_types_validate_single_order_reinsertion_request"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_validate_single_order_reinsertion_request">validate_single_order_reinsertion_request</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, other: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_validate_single_order_reinsertion_request">validate_single_order_reinsertion_request</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;, other: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): bool {
+    <b>assert</b>!(self is OrderMatchDetails::SingleOrder, <a href="order_match_types.html#0x5_order_match_types_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>);
+    <b>assert</b>!(other is OrderMatchDetails::SingleOrder, <a href="order_match_types.html#0x5_order_match_types_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>);
+
+    self.order_id == other.order_id
+        &amp;&amp; self.<a href="../aptos-framework/account.html#0x1_account">account</a> == other.<a href="../aptos-framework/account.html#0x1_account">account</a>
+        &amp;&amp; self.unique_priority_idx == other.unique_priority_idx
+        &amp;&amp; self.price == other.price
+        &amp;&amp; self.orig_size == other.orig_size
+        &amp;&amp; self.is_bid == other.is_bid
+}
+</code></pre>
+
+</details>
+<h2 id="function-validate_bulk_order_reinsertion_request"><a class="header" href="#function-validate_bulk_order_reinsertion_request">Function <code>validate_bulk_order_reinsertion_request</code> <a id="0x5_order_match_types_validate_bulk_order_reinsertion_request"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_validate_bulk_order_reinsertion_request">validate_bulk_order_reinsertion_request</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, other: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_validate_bulk_order_reinsertion_request">validate_bulk_order_reinsertion_request</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;, other: &amp;<a href="order_match_types.html#0x5_order_match_types_OrderMatchDetails">OrderMatchDetails</a>&lt;M&gt;
+): bool {
+    <b>assert</b>!(self is OrderMatchDetails::BulkOrder, <a href="order_match_types.html#0x5_order_match_types_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>);
+    <b>assert</b>!(other is OrderMatchDetails::BulkOrder, <a href="order_match_types.html#0x5_order_match_types_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>);
+
+    self.order_id == other.order_id
+        &amp;&amp; self.<a href="../aptos-framework/account.html#0x1_account">account</a> == other.<a href="../aptos-framework/account.html#0x1_account">account</a>
+        &amp;&amp; self.unique_priority_idx == other.unique_priority_idx
+        &amp;&amp; self.price == other.price
+        &amp;&amp; self.is_bid == other.is_bid
+        &amp;&amp; self.sequence_number == other.sequence_number
+}
+</code></pre>
+
+</details>
+<h2 id="function-destroy_active_matched_order"><a class="header" href="#function-destroy_active_matched_order">Function <code>destroy_active_matched_order</code> <a id="0x5_order_match_types_destroy_active_matched_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_destroy_active_matched_order">destroy_active_matched_order</a>(self: <a href="order_match_types.html#0x5_order_match_types_ActiveMatchedOrder">order_match_types::ActiveMatchedOrder</a>): (<a href="order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, u64, u64, <a href="order_book_types.html#0x5_order_book_types_OrderType">order_book_types::OrderType</a>)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_destroy_active_matched_order">destroy_active_matched_order</a>(self: <a href="order_match_types.html#0x5_order_match_types_ActiveMatchedOrder">ActiveMatchedOrder</a>)
+    : (OrderId, u64, u64, OrderType) {
+    <b>let</b> ActiveMatchedOrder::V1 {
+        order_id,
+        matched_size,
+        remaining_size,
+        order_book_type
+    } = self;
+    (order_id, matched_size, remaining_size, order_book_type)
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_active_matched_book_type_single_order"><a class="header" href="#function-is_active_matched_book_type_single_order">Function <code>is_active_matched_book_type_single_order</code> <a id="0x5_order_match_types_is_active_matched_book_type_single_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_is_active_matched_book_type_single_order">is_active_matched_book_type_single_order</a>(self: &amp;<a href="order_match_types.html#0x5_order_match_types_ActiveMatchedOrder">order_match_types::ActiveMatchedOrder</a>): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_match_types.html#0x5_order_match_types_is_active_matched_book_type_single_order">is_active_matched_book_type_single_order</a>(
+    self: &amp;<a href="order_match_types.html#0x5_order_match_types_ActiveMatchedOrder">ActiveMatchedOrder</a>
+): bool {
+    is_single_order_type(&amp;self.order_book_type)
+}
+</code></pre>
+
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-trading/order_book_types.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-trading/single_order_types.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-trading/order_book_types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-trading/single_order_types.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp-c45f76e8.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

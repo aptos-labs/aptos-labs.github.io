@@ -1,0 +1,2111 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>voting - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap-384c98b0.css">
+        <link rel="stylesheet" href="../theme/build-stamp-020e146c.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-589e30ea.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-0b791361.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/voting.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="module-0x1voting"><a class="header" href="#module-0x1voting">Module <code>0x1::voting</code> <a id="0x1_voting"></a></a></h1>
+<p>This is the general Voting module that can be used as part of a DAO Governance. Voting is designed to be used by
+standalone governance modules, who has full control over the voting flow and is responsible for voting power
+calculation and including proper capabilities when creating the proposal so resolution can go through.
+On-chain governance of the Aptos network also uses Voting.</p>
+<p>The voting flow:</p>
+<ol>
+<li>The Voting module can be deployed at a known address (e.g. 0x1 for Aptos on-chain governance)</li>
+<li>The governance module, e.g. AptosGovernance, can be deployed later and define a GovernanceProposal resource type
+that can also contain other information such as Capability resource for authorization.</li>
+<li>The governance module’s owner can then register the ProposalType with Voting. This also hosts the proposal list
+(forum) on the calling account.</li>
+<li>A proposer, through the governance module, can call Voting::create_proposal to create a proposal. create_proposal
+cannot be called directly not through the governance module. A script hash of the resolution script that can later
+be called to execute the proposal is required.</li>
+<li>A voter, through the governance module, can call Voting::vote on a proposal. vote requires passing a &amp;ProposalType
+and thus only the governance module that registers ProposalType can call vote.</li>
+<li>Once the proposal’s expiration time has passed and more than the defined threshold has voted yes on the proposal,
+anyone can call resolve which returns the content of the proposal (of type ProposalType) that can be used to execute.</li>
+<li>Only the resolution script with the same script hash specified in the proposal can call Voting::resolve as part of
+the resolution process.</li>
+</ol>
+<ul>
+<li><a href="#0x1_voting_Proposal">Struct <code>Proposal</code></a></li>
+<li><a href="#0x1_voting_VotingForum">Resource <code>VotingForum</code></a></li>
+<li><a href="#0x1_voting_VotingEvents">Struct <code>VotingEvents</code></a></li>
+<li><a href="#0x1_voting_CreateProposal">Struct <code>CreateProposal</code></a></li>
+<li><a href="#0x1_voting_RegisterForum">Struct <code>RegisterForum</code></a></li>
+<li><a href="#0x1_voting_Vote">Struct <code>Vote</code></a></li>
+<li><a href="#0x1_voting_ResolveProposal">Struct <code>ResolveProposal</code></a></li>
+<li><a href="#0x1_voting_CreateProposalEvent">Struct <code>CreateProposalEvent</code></a></li>
+<li><a href="#0x1_voting_RegisterForumEvent">Struct <code>RegisterForumEvent</code></a></li>
+<li><a href="#0x1_voting_VoteEvent">Struct <code>VoteEvent</code></a></li>
+<li><a href="#0x1_voting_VotePermission">Struct <code>VotePermission</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_voting_check_vote_permission">Function <code>check_vote_permission</code></a></li>
+<li><a href="#0x1_voting_grant_permission">Function <code>grant_permission</code></a></li>
+<li><a href="#0x1_voting_register">Function <code>register</code></a></li>
+<li><a href="#0x1_voting_create_proposal">Function <code>create_proposal</code></a></li>
+<li><a href="#0x1_voting_create_proposal_v2">Function <code>create_proposal_v2</code></a></li>
+<li><a href="#0x1_voting_vote">Function <code>vote</code></a></li>
+<li><a href="#0x1_voting_is_proposal_resolvable">Function <code>is_proposal_resolvable</code></a></li>
+<li><a href="#0x1_voting_resolve">Function <code>resolve</code></a></li>
+<li><a href="#0x1_voting_resolve_proposal_v2">Function <code>resolve_proposal_v2</code></a></li>
+<li><a href="#0x1_voting_next_proposal_id">Function <code>next_proposal_id</code></a></li>
+<li><a href="#0x1_voting_get_proposer">Function <code>get_proposer</code></a></li>
+<li><a href="#0x1_voting_is_voting_closed">Function <code>is_voting_closed</code></a></li>
+<li><a href="#0x1_voting_can_be_resolved_early">Function <code>can_be_resolved_early</code></a></li>
+<li><a href="#0x1_voting_get_proposal_metadata">Function <code>get_proposal_metadata</code></a></li>
+<li><a href="#0x1_voting_get_proposal_metadata_value">Function <code>get_proposal_metadata_value</code></a></li>
+<li><a href="#0x1_voting_get_proposal_state">Function <code>get_proposal_state</code></a></li>
+<li><a href="#0x1_voting_get_proposal_creation_secs">Function <code>get_proposal_creation_secs</code></a></li>
+<li><a href="#0x1_voting_get_proposal_expiration_secs">Function <code>get_proposal_expiration_secs</code></a></li>
+<li><a href="#0x1_voting_get_execution_hash">Function <code>get_execution_hash</code></a></li>
+<li><a href="#0x1_voting_get_min_vote_threshold">Function <code>get_min_vote_threshold</code></a></li>
+<li><a href="#0x1_voting_get_early_resolution_vote_threshold">Function <code>get_early_resolution_vote_threshold</code></a></li>
+<li><a href="#0x1_voting_get_votes">Function <code>get_votes</code></a></li>
+<li><a href="#0x1_voting_is_resolved">Function <code>is_resolved</code></a></li>
+<li><a href="#0x1_voting_get_resolution_time_secs">Function <code>get_resolution_time_secs</code></a></li>
+<li><a href="#0x1_voting_is_multi_step_proposal_in_execution">Function <code>is_multi_step_proposal_in_execution</code></a></li>
+<li><a href="#0x1_voting_is_voting_period_over">Function <code>is_voting_period_over</code></a></li>
+<li><a href="#0x1_voting_get_proposal">Function <code>get_proposal</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#high-level-req">High-level Requirements</a></li>
+<li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_register">Function <code>register</code></a></li>
+<li><a href="#@Specification_1_create_proposal">Function <code>create_proposal</code></a></li>
+<li><a href="#@Specification_1_create_proposal_v2">Function <code>create_proposal_v2</code></a></li>
+<li><a href="#@Specification_1_vote">Function <code>vote</code></a></li>
+<li><a href="#@Specification_1_is_proposal_resolvable">Function <code>is_proposal_resolvable</code></a></li>
+<li><a href="#@Specification_1_resolve">Function <code>resolve</code></a></li>
+<li><a href="#@Specification_1_resolve_proposal_v2">Function <code>resolve_proposal_v2</code></a></li>
+<li><a href="#@Specification_1_next_proposal_id">Function <code>next_proposal_id</code></a></li>
+<li><a href="#@Specification_1_get_proposer">Function <code>get_proposer</code></a></li>
+<li><a href="#@Specification_1_is_voting_closed">Function <code>is_voting_closed</code></a></li>
+<li><a href="#@Specification_1_can_be_resolved_early">Function <code>can_be_resolved_early</code></a></li>
+<li><a href="#@Specification_1_get_proposal_metadata">Function <code>get_proposal_metadata</code></a></li>
+<li><a href="#@Specification_1_get_proposal_metadata_value">Function <code>get_proposal_metadata_value</code></a></li>
+<li><a href="#@Specification_1_get_proposal_state">Function <code>get_proposal_state</code></a></li>
+<li><a href="#@Specification_1_get_proposal_creation_secs">Function <code>get_proposal_creation_secs</code></a></li>
+<li><a href="#@Specification_1_get_proposal_expiration_secs">Function <code>get_proposal_expiration_secs</code></a></li>
+<li><a href="#@Specification_1_get_execution_hash">Function <code>get_execution_hash</code></a></li>
+<li><a href="#@Specification_1_get_min_vote_threshold">Function <code>get_min_vote_threshold</code></a></li>
+<li><a href="#@Specification_1_get_early_resolution_vote_threshold">Function <code>get_early_resolution_vote_threshold</code></a></li>
+<li><a href="#@Specification_1_get_votes">Function <code>get_votes</code></a></li>
+<li><a href="#@Specification_1_is_resolved">Function <code>is_resolved</code></a></li>
+<li><a href="#@Specification_1_get_resolution_time_secs">Function <code>get_resolution_time_secs</code></a></li>
+<li><a href="#@Specification_1_is_multi_step_proposal_in_execution">Function <code>is_multi_step_proposal_in_execution</code></a></li>
+<li><a href="#@Specification_1_is_voting_period_over">Function <code>is_voting_period_over</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="account.html#0x1_account">0x1::account</a>;
+<b>use</b> <a href="../move-stdlib/bcs.html#0x1_bcs">0x1::bcs</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="event.html#0x1_event">0x1::event</a>;
+<b>use</b> <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs">0x1::from_bcs</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map">0x1::simple_map</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="../aptos-stdlib/table.html#0x1_table">0x1::table</a>;
+<b>use</b> <a href="timestamp.html#0x1_timestamp">0x1::timestamp</a>;
+<b>use</b> <a href="transaction_context.html#0x1_transaction_context">0x1::transaction_context</a>;
+<b>use</b> <a href="../aptos-stdlib/type_info.html#0x1_type_info">0x1::type_info</a>;
+</code></pre>
+
+<h2 id="struct-proposal"><a class="header" href="#struct-proposal">Struct <code>Proposal</code> <a id="0x1_voting_Proposal"></a></a></h2>
+<p>Extra metadata (e.g. description, code url) can be part of the ProposalType struct.</p>
+<pre><code><b>struct</b> <a href="voting.html#0x1_voting_Proposal">Proposal</a>&lt;ProposalType: store&gt; <b>has</b> store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>proposer: <b>address</b></code>
+</dt>
+
+<dd>
+ Required. The address of the proposer.
+</dd>
+
+<dt>
+<code>execution_content: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;ProposalType&gt;</code>
+</dt>
+
+<dd>
+ Required. Should contain enough information to execute later, for example the required capability.
+ This is stored as an option so we can return it to governance when the proposal is resolved.
+</dd>
+
+<dt>
+<code>metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+
+<dd>
+ Optional. Value is serialized value of an attribute.
+ Currently, we have three attributes that are used by the voting flow.
+ 1. RESOLVABLE_TIME_METADATA_KEY: this is uesed to record the resolvable time to ensure that resolution has to be done non-atomically.
+ 2. IS_MULTI_STEP_PROPOSAL_KEY: this is used to track if a proposal is single-step or multi-step.
+ 3. IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY: this attribute only applies to multi-step proposals. A single-step proposal will not have
+ this field in its metadata map. The value is used to indicate if a multi-step proposal is in execution. If yes, we will disable further
+ voting for this multi-step proposal.
+</dd>
+
+<dt>
+<code>creation_time_secs: u64</code>
+</dt>
+
+<dd>
+ Timestamp when the proposal was created.
+</dd>
+
+<dt>
+<code>execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+ Required. The hash for the execution script module. Only the same exact script module can resolve this
+ proposal.
+</dd>
+
+<dt>
+<code>min_vote_threshold: u128</code>
+</dt>
+
+<dd>
+ A proposal is only resolved if expiration has passed and the number of votes is above threshold.
+</dd>
+
+<dt>
+<code>expiration_secs: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;</code>
+</dt>
+
+<dd>
+ Optional. Early resolution threshold. If specified, the proposal can be resolved early if the total
+ number of yes or no votes passes this threshold.
+ For example, this can be set to 50% of the total supply of the voting token, so if &gt; 50% vote yes or no,
+ the proposal can be resolved before expiration.
+</dd>
+
+<dt>
+<code>yes_votes: u128</code>
+</dt>
+
+<dd>
+ Number of votes for each outcome.
+ u128 since the voting power is already u64 and can add up to more than u64 can hold.
+</dd>
+
+<dt>
+<code>no_votes: u128</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>is_resolved: bool</code>
+</dt>
+
+<dd>
+ Whether the proposal has been resolved.
+</dd>
+
+<dt>
+<code>resolution_time_secs: u64</code>
+</dt>
+
+<dd>
+ Resolution timestamp if the proposal has been resolved. 0 otherwise.
+</dd>
+
+</dl>
+
+</details>
+<h2 id="resource-votingforum"><a class="header" href="#resource-votingforum">Resource <code>VotingForum</code> <a id="0x1_voting_VotingForum"></a></a></h2>
+<pre><code><b>struct</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType: store&gt; <b>has</b> key
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>proposals: <a href="../aptos-stdlib/table.html#0x1_table_Table">table::Table</a>&lt;u64, <a href="voting.html#0x1_voting_Proposal">voting::Proposal</a>&lt;ProposalType&gt;&gt;</code>
+</dt>
+
+<dd>
+ Use Table for execution optimization instead of Vector for gas cost since Vector is read entirely into memory
+ during execution while only relevant Table entries are.
+</dd>
+
+<dt>
+<code>events: <a href="voting.html#0x1_voting_VotingEvents">voting::VotingEvents</a></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>next_proposal_id: u64</code>
+</dt>
+
+<dd>
+ Unique identifier for a proposal. This allows for 2 * 10**19 proposals.
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-votingevents"><a class="header" href="#struct-votingevents">Struct <code>VotingEvents</code> <a id="0x1_voting_VotingEvents"></a></a></h2>
+<pre><code><b>struct</b> <a href="voting.html#0x1_voting_VotingEvents">VotingEvents</a> <b>has</b> store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>create_proposal_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="voting.html#0x1_voting_CreateProposalEvent">voting::CreateProposalEvent</a>&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>register_forum_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="voting.html#0x1_voting_RegisterForumEvent">voting::RegisterForumEvent</a>&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>resolve_proposal_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="voting.html#0x1_voting_ResolveProposal">voting::ResolveProposal</a>&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>vote_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="voting.html#0x1_voting_VoteEvent">voting::VoteEvent</a>&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-createproposal"><a class="header" href="#struct-createproposal">Struct <code>CreateProposal</code> <a id="0x1_voting_CreateProposal"></a></a></h2>
+<pre><code>#[<a href="event.html#0x1_event">event</a>]
+<b>struct</b> <a href="voting.html#0x1_voting_CreateProposal">CreateProposal</a> <b>has</b> drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>proposal_id: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>expiration_secs: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>min_vote_threshold: u128</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-registerforum"><a class="header" href="#struct-registerforum">Struct <code>RegisterForum</code> <a id="0x1_voting_RegisterForum"></a></a></h2>
+<pre><code>#[<a href="event.html#0x1_event">event</a>]
+<b>struct</b> <a href="voting.html#0x1_voting_RegisterForum">RegisterForum</a> <b>has</b> drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>hosting_account: <b>address</b></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>proposal_type_info: <a href="../aptos-stdlib/type_info.html#0x1_type_info_TypeInfo">type_info::TypeInfo</a></code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-vote"><a class="header" href="#struct-vote">Struct <code>Vote</code> <a id="0x1_voting_Vote"></a></a></h2>
+<pre><code>#[<a href="event.html#0x1_event">event</a>]
+<b>struct</b> <a href="voting.html#0x1_voting_Vote">Vote</a> <b>has</b> drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>proposal_id: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>num_votes: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-resolveproposal"><a class="header" href="#struct-resolveproposal">Struct <code>ResolveProposal</code> <a id="0x1_voting_ResolveProposal"></a></a></h2>
+<pre><code>#[<a href="event.html#0x1_event">event</a>]
+<b>struct</b> <a href="voting.html#0x1_voting_ResolveProposal">ResolveProposal</a> <b>has</b> drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>proposal_id: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>yes_votes: u128</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>no_votes: u128</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>resolved_early: bool</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-createproposalevent"><a class="header" href="#struct-createproposalevent">Struct <code>CreateProposalEvent</code> <a id="0x1_voting_CreateProposalEvent"></a></a></h2>
+<pre><code><b>struct</b> <a href="voting.html#0x1_voting_CreateProposalEvent">CreateProposalEvent</a> <b>has</b> drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>proposal_id: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>expiration_secs: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>min_vote_threshold: u128</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-registerforumevent"><a class="header" href="#struct-registerforumevent">Struct <code>RegisterForumEvent</code> <a id="0x1_voting_RegisterForumEvent"></a></a></h2>
+<pre><code><b>struct</b> <a href="voting.html#0x1_voting_RegisterForumEvent">RegisterForumEvent</a> <b>has</b> drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>hosting_account: <b>address</b></code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>proposal_type_info: <a href="../aptos-stdlib/type_info.html#0x1_type_info_TypeInfo">type_info::TypeInfo</a></code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-voteevent"><a class="header" href="#struct-voteevent">Struct <code>VoteEvent</code> <a id="0x1_voting_VoteEvent"></a></a></h2>
+<pre><code><b>struct</b> <a href="voting.html#0x1_voting_VoteEvent">VoteEvent</a> <b>has</b> drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>proposal_id: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+<dt>
+<code>num_votes: u64</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="struct-votepermission"><a class="header" href="#struct-votepermission">Struct <code>VotePermission</code> <a id="0x1_voting_VotePermission"></a></a></h2>
+<pre><code><b>struct</b> <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>dummy_field: bool</code>
+</dt>
+
+<dd>
+</dd>
+
+</dl>
+
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_voting_EINVALID_MIN_VOTE_THRESHOLD"></a></p>
+<p>Minimum vote threshold cannot be higher than early resolution threshold.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EINVALID_MIN_VOTE_THRESHOLD">EINVALID_MIN_VOTE_THRESHOLD</a>: u64 = 7;
+</code></pre>
+
+<p><a id="0x1_voting_EMULTI_STEP_PROPOSAL_CANNOT_USE_SINGLE_STEP_RESOLVE_FUNCTION"></a></p>
+<p>If a proposal is multi-step, we need to use <code><a href="voting.html#0x1_voting_resolve_proposal_v2">resolve_proposal_v2</a>()</code> to resolve it.
+If we use <code><a href="voting.html#0x1_voting_resolve">resolve</a>()</code> to resolve a multi-step proposal, it will fail with EMULTI_STEP_PROPOSAL_CANNOT_USE_SINGLE_STEP_RESOLVE_FUNCTION.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EMULTI_STEP_PROPOSAL_CANNOT_USE_SINGLE_STEP_RESOLVE_FUNCTION">EMULTI_STEP_PROPOSAL_CANNOT_USE_SINGLE_STEP_RESOLVE_FUNCTION</a>: u64 = 10;
+</code></pre>
+
+<p><a id="0x1_voting_EMULTI_STEP_PROPOSAL_IN_EXECUTION"></a></p>
+<p>Cannot vote if the specified multi-step proposal is in execution.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EMULTI_STEP_PROPOSAL_IN_EXECUTION">EMULTI_STEP_PROPOSAL_IN_EXECUTION</a>: u64 = 9;
+</code></pre>
+
+<p><a id="0x1_voting_ENO_VOTE_PERMISSION"></a></p>
+<p>Cannot call <code><a href="voting.html#0x1_voting_is_multi_step_proposal_in_execution">is_multi_step_proposal_in_execution</a>()</code> on single-step proposals.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_ENO_VOTE_PERMISSION">ENO_VOTE_PERMISSION</a>: u64 = 13;
+</code></pre>
+
+<p><a id="0x1_voting_EPROPOSAL_ALREADY_RESOLVED"></a></p>
+<p>Proposal cannot be resolved more than once</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EPROPOSAL_ALREADY_RESOLVED">EPROPOSAL_ALREADY_RESOLVED</a>: u64 = 3;
+</code></pre>
+
+<p><a id="0x1_voting_EPROPOSAL_CANNOT_BE_RESOLVED"></a></p>
+<p>Proposal cannot be resolved. Either voting duration has not passed, not enough votes, or fewer yes than no votes</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EPROPOSAL_CANNOT_BE_RESOLVED">EPROPOSAL_CANNOT_BE_RESOLVED</a>: u64 = 2;
+</code></pre>
+
+<p><a id="0x1_voting_EPROPOSAL_EMPTY_EXECUTION_HASH"></a></p>
+<p>Proposal cannot contain an empty execution script hash</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EPROPOSAL_EMPTY_EXECUTION_HASH">EPROPOSAL_EMPTY_EXECUTION_HASH</a>: u64 = 4;
+</code></pre>
+
+<p><a id="0x1_voting_EPROPOSAL_EXECUTION_HASH_NOT_MATCHING"></a></p>
+<p>Current script’s execution hash does not match the specified proposal’s</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EPROPOSAL_EXECUTION_HASH_NOT_MATCHING">EPROPOSAL_EXECUTION_HASH_NOT_MATCHING</a>: u64 = 1;
+</code></pre>
+
+<p><a id="0x1_voting_EPROPOSAL_IS_SINGLE_STEP"></a></p>
+<p>Cannot call <code><a href="voting.html#0x1_voting_is_multi_step_proposal_in_execution">is_multi_step_proposal_in_execution</a>()</code> on single-step proposals.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EPROPOSAL_IS_SINGLE_STEP">EPROPOSAL_IS_SINGLE_STEP</a>: u64 = 12;
+</code></pre>
+
+<p><a id="0x1_voting_EPROPOSAL_VOTING_ALREADY_ENDED"></a></p>
+<p>Proposal’s voting period has already ended.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EPROPOSAL_VOTING_ALREADY_ENDED">EPROPOSAL_VOTING_ALREADY_ENDED</a>: u64 = 5;
+</code></pre>
+
+<p><a id="0x1_voting_ERESOLUTION_CANNOT_BE_ATOMIC"></a></p>
+<p>Resolution of a proposal cannot happen atomically in the same transaction as the last vote.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_ERESOLUTION_CANNOT_BE_ATOMIC">ERESOLUTION_CANNOT_BE_ATOMIC</a>: u64 = 8;
+</code></pre>
+
+<p><a id="0x1_voting_ESINGLE_STEP_PROPOSAL_CANNOT_HAVE_NEXT_EXECUTION_HASH"></a></p>
+<p>If we call <code><a href="voting.html#0x1_voting_resolve_proposal_v2">resolve_proposal_v2</a>()</code> to resolve a single-step proposal, the <code>next_execution_hash</code> parameter should be an empty vector.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_ESINGLE_STEP_PROPOSAL_CANNOT_HAVE_NEXT_EXECUTION_HASH">ESINGLE_STEP_PROPOSAL_CANNOT_HAVE_NEXT_EXECUTION_HASH</a>: u64 = 11;
+</code></pre>
+
+<p><a id="0x1_voting_EVOTING_FORUM_ALREADY_REGISTERED"></a></p>
+<p>Voting forum has already been registered.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EVOTING_FORUM_ALREADY_REGISTERED">EVOTING_FORUM_ALREADY_REGISTERED</a>: u64 = 6;
+</code></pre>
+
+<p><a id="0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY"></a></p>
+<p>Key used to track if the multi-step proposal is in execution / resolving in progress.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [73, 83, 95, 77, 85, 76, 84, 73, 95, 83, 84, 69, 80, 95, 80, 82, 79, 80, 79, 83, 65, 76, 95, 73, 78, 95, 69, 88, 69, 67, 85, 84, 73, 79, 78];
+</code></pre>
+
+<p><a id="0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY"></a></p>
+<p>Key used to track if the proposal is multi-step</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [73, 83, 95, 77, 85, 76, 84, 73, 95, 83, 84, 69, 80, 95, 80, 82, 79, 80, 79, 83, 65, 76, 95, 75, 69, 89];
+</code></pre>
+
+<p><a id="0x1_voting_PROPOSAL_STATE_FAILED"></a></p>
+<p>Proposal has failed because either the min vote threshold is not met or majority voted no.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_PROPOSAL_STATE_FAILED">PROPOSAL_STATE_FAILED</a>: u64 = 3;
+</code></pre>
+
+<p><a id="0x1_voting_PROPOSAL_STATE_PENDING"></a></p>
+<p>ProposalStateEnum representing proposal state.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_PROPOSAL_STATE_PENDING">PROPOSAL_STATE_PENDING</a>: u64 = 0;
+</code></pre>
+
+<p><a id="0x1_voting_PROPOSAL_STATE_SUCCEEDED"></a></p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_PROPOSAL_STATE_SUCCEEDED">PROPOSAL_STATE_SUCCEEDED</a>: u64 = 1;
+</code></pre>
+
+<p><a id="0x1_voting_RESOLVABLE_TIME_METADATA_KEY"></a></p>
+<p>Key used to track the resolvable time in the proposal’s metadata.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [82, 69, 83, 79, 76, 86, 65, 66, 76, 69, 95, 84, 73, 77, 69, 95, 77, 69, 84, 65, 68, 65, 84, 65, 95, 75, 69, 89];
+</code></pre>
+
+<h2 id="function-check_vote_permission"><a class="header" href="#function-check_vote_permission">Function <code>check_vote_permission</code> <a id="0x1_voting_check_vote_permission"></a></a></h2>
+<p>Permissions</p>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_check_vote_permission">check_vote_permission</a>(s: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="voting.html#0x1_voting_check_vote_permission">check_vote_permission</a>(s: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>assert</b>!(
+        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> {}),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="voting.html#0x1_voting_ENO_VOTE_PERMISSION">ENO_VOTE_PERMISSION</a>),
+    );
+}
+</code></pre>
+
+</details>
+<h2 id="function-grant_permission"><a class="header" href="#function-grant_permission">Function <code>grant_permission</code> <a id="0x1_voting_grant_permission"></a></a></h2>
+<p>Grant permission to vote on behalf of the master signer.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_grant_permission">grant_permission</a>(master: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_grant_permission">grant_permission</a>(master: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> {})
+}
+</code></pre>
+
+</details>
+<h2 id="function-register"><a class="header" href="#function-register">Function <code>register</code> <a id="0x1_voting_register"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_register">register</a>&lt;ProposalType: store&gt;(<a href="account.html#0x1_account">account</a>: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_register">register</a>&lt;ProposalType: store&gt;(<a href="account.html#0x1_account">account</a>: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <a href="voting.html#0x1_voting_check_vote_permission">check_vote_permission</a>(<a href="account.html#0x1_account">account</a>);
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+    <b>assert</b>!(!<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr), <a href="../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="voting.html#0x1_voting_EVOTING_FORUM_ALREADY_REGISTERED">EVOTING_FORUM_ALREADY_REGISTERED</a>));
+
+    <b>let</b> voting_forum = <a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt; {
+        next_proposal_id: 0,
+        proposals: <a href="../aptos-stdlib/table.html#0x1_table_new">table::new</a>&lt;u64, <a href="voting.html#0x1_voting_Proposal">Proposal</a>&lt;ProposalType&gt;&gt;(),
+        events: <a href="voting.html#0x1_voting_VotingEvents">VotingEvents</a> {
+            create_proposal_events: <a href="account.html#0x1_account_new_event_handle">account::new_event_handle</a>&lt;<a href="voting.html#0x1_voting_CreateProposalEvent">CreateProposalEvent</a>&gt;(<a href="account.html#0x1_account">account</a>),
+            register_forum_events: <a href="account.html#0x1_account_new_event_handle">account::new_event_handle</a>&lt;<a href="voting.html#0x1_voting_RegisterForumEvent">RegisterForumEvent</a>&gt;(<a href="account.html#0x1_account">account</a>),
+            resolve_proposal_events: <a href="account.html#0x1_account_new_event_handle">account::new_event_handle</a>&lt;<a href="voting.html#0x1_voting_ResolveProposal">ResolveProposal</a>&gt;(<a href="account.html#0x1_account">account</a>),
+            vote_events: <a href="account.html#0x1_account_new_event_handle">account::new_event_handle</a>&lt;<a href="voting.html#0x1_voting_VoteEvent">VoteEvent</a>&gt;(<a href="account.html#0x1_account">account</a>),
+        }
+    };
+
+    <a href="event.html#0x1_event_emit">event::emit</a>(
+        <a href="voting.html#0x1_voting_RegisterForum">RegisterForum</a> {
+            hosting_account: addr,
+            proposal_type_info: <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;ProposalType&gt;(),
+        },
+    );
+
+    <b>move_to</b>(<a href="account.html#0x1_account">account</a>, voting_forum);
+}
+</code></pre>
+
+</details>
+<h2 id="function-create_proposal"><a class="header" href="#function-create_proposal">Function <code>create_proposal</code> <a id="0x1_voting_create_proposal"></a></a></h2>
+<p>Create a single-step proposal with the given parameters</p>
+<p>@param voting_forum_address The forum’s address where the proposal will be stored.
+@param execution_content The execution content that will be given back at resolution time. This can contain
+data such as a capability resource used to scope the execution.
+@param execution_hash The hash for the execution script module. Only the same exact script module can resolve
+this proposal.
+@param min_vote_threshold The minimum number of votes needed to consider this proposal successful.
+@param expiration_secs The time in seconds at which the proposal expires and can potentially be resolved.
+@param early_resolution_vote_threshold The vote threshold for early resolution of this proposal.
+@param metadata A simple_map that stores information about this proposal.
+@return The proposal id.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_create_proposal">create_proposal</a>&lt;ProposalType: store&gt;(proposer: <b>address</b>, voting_forum_address: <b>address</b>, execution_content: ProposalType, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, min_vote_threshold: u128, expiration_secs: u64, early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_create_proposal">create_proposal</a>&lt;ProposalType: store&gt;(
+    proposer: <b>address</b>,
+    voting_forum_address: <b>address</b>,
+    execution_content: ProposalType,
+    execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    min_vote_threshold: u128,
+    expiration_secs: u64,
+    early_resolution_vote_threshold: Option&lt;u128&gt;,
+    metadata: SimpleMap&lt;String, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+): u64 <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <a href="voting.html#0x1_voting_create_proposal_v2">create_proposal_v2</a>(
+        proposer,
+        voting_forum_address,
+        execution_content,
+        execution_hash,
+        min_vote_threshold,
+        expiration_secs,
+        early_resolution_vote_threshold,
+        metadata,
+        <b>false</b>
+    )
+}
+</code></pre>
+
+</details>
+<h2 id="function-create_proposal_v2"><a class="header" href="#function-create_proposal_v2">Function <code>create_proposal_v2</code> <a id="0x1_voting_create_proposal_v2"></a></a></h2>
+<p>Create a single-step or a multi-step proposal with the given parameters</p>
+<p>@param voting_forum_address The forum’s address where the proposal will be stored.
+@param execution_content The execution content that will be given back at resolution time. This can contain
+data such as a capability resource used to scope the execution.
+@param execution_hash The sha-256 hash for the execution script module. Only the same exact script module can
+resolve this proposal.
+@param min_vote_threshold The minimum number of votes needed to consider this proposal successful.
+@param expiration_secs The time in seconds at which the proposal expires and can potentially be resolved.
+@param early_resolution_vote_threshold The vote threshold for early resolution of this proposal.
+@param metadata A simple_map that stores information about this proposal.
+@param is_multi_step_proposal A bool value that indicates if the proposal is single-step or multi-step.
+@return The proposal id.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_create_proposal_v2">create_proposal_v2</a>&lt;ProposalType: store&gt;(proposer: <b>address</b>, voting_forum_address: <b>address</b>, execution_content: ProposalType, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, min_vote_threshold: u128, expiration_secs: u64, early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, is_multi_step_proposal: bool): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_create_proposal_v2">create_proposal_v2</a>&lt;ProposalType: store&gt;(
+    proposer: <b>address</b>,
+    voting_forum_address: <b>address</b>,
+    execution_content: ProposalType,
+    execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    min_vote_threshold: u128,
+    expiration_secs: u64,
+    early_resolution_vote_threshold: Option&lt;u128&gt;,
+    metadata: SimpleMap&lt;String, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+    is_multi_step_proposal: bool,
+): u64 <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>if</b> (early_resolution_vote_threshold.is_some()) {
+        <b>assert</b>!(
+            min_vote_threshold &lt;= *early_resolution_vote_threshold.borrow(),
+            <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="voting.html#0x1_voting_EINVALID_MIN_VOTE_THRESHOLD">EINVALID_MIN_VOTE_THRESHOLD</a>),
+        );
+    };
+    // Make sure the execution <b>script</b>'s <a href="../move-stdlib/hash.html#0x1_hash">hash</a> is not empty.
+    <b>assert</b>!(execution_hash.length() &gt; 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="voting.html#0x1_voting_EPROPOSAL_EMPTY_EXECUTION_HASH">EPROPOSAL_EMPTY_EXECUTION_HASH</a>));
+
+    <b>let</b> voting_forum = <b>borrow_global_mut</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> proposal_id = voting_forum.next_proposal_id;
+    voting_forum.next_proposal_id += 1;
+
+    // Add a flag <b>to</b> indicate <b>if</b> this proposal is single-step or multi-step.
+    metadata.add(utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>), to_bytes(&amp;is_multi_step_proposal));
+
+    <b>let</b> is_multi_step_in_execution_key = utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+    <b>if</b> (is_multi_step_proposal) {
+        // If the given proposal is a multi-step proposal, we will add a flag <b>to</b> indicate <b>if</b> this multi-step proposal is in execution.
+        // This value is by default <b>false</b>. We turn this value <b>to</b> <b>true</b> when we start executing the multi-step proposal. This value
+        // will be used <b>to</b> disable further <a href="voting.html#0x1_voting">voting</a> after we started executing the multi-step proposal.
+        metadata.add(is_multi_step_in_execution_key, to_bytes(&amp;<b>false</b>));
+        // If the proposal is a single-step proposal, we check <b>if</b> the metadata passed by the client <b>has</b> the <a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a> key.
+        // If they have the key, we will remove it, because a single-step proposal that doesn't need this key.
+    } <b>else</b> <b>if</b> (metadata.contains_key(&amp;is_multi_step_in_execution_key)) {
+        metadata.remove(&amp;is_multi_step_in_execution_key);
+    };
+
+    voting_forum.proposals.add(proposal_id, <a href="voting.html#0x1_voting_Proposal">Proposal</a> {
+        proposer,
+        creation_time_secs: <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>(),
+        execution_content: <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>&lt;ProposalType&gt;(execution_content),
+        execution_hash,
+        metadata,
+        min_vote_threshold,
+        expiration_secs,
+        early_resolution_vote_threshold,
+        yes_votes: 0,
+        no_votes: 0,
+        is_resolved: <b>false</b>,
+        resolution_time_secs: 0,
+    });
+
+    <a href="event.html#0x1_event_emit">event::emit</a>(
+        <a href="voting.html#0x1_voting_CreateProposal">CreateProposal</a> {
+            proposal_id,
+            early_resolution_vote_threshold,
+            execution_hash,
+            expiration_secs,
+            metadata,
+            min_vote_threshold,
+        },
+    );
+    proposal_id
+}
+</code></pre>
+
+</details>
+<h2 id="function-vote"><a class="header" href="#function-vote">Function <code>vote</code> <a id="0x1_voting_vote"></a></a></h2>
+<p>Vote on the given proposal.</p>
+<p>@param _proof Required so only the governance module that defines ProposalType can initiate voting.
+This guarantees that voting eligibility and voting power are controlled by the right governance.
+@param voting_forum_address The address of the forum where the proposals are stored.
+@param proposal_id The proposal id.
+@param num_votes Number of votes. Voting power should be calculated by governance.
+@param should_pass Whether the votes are for yes or no.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_vote">vote</a>&lt;ProposalType: store&gt;(_proof: &amp;ProposalType, voting_forum_address: <b>address</b>, proposal_id: u64, num_votes: u64, should_pass: bool)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_vote">vote</a>&lt;ProposalType: store&gt;(
+    _proof: &amp;ProposalType,
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+    num_votes: u64,
+    should_pass: bool,
+) <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> voting_forum = <b>borrow_global_mut</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> proposal = voting_forum.proposals.borrow_mut(proposal_id);
+    // Voting might still be possible after the proposal <b>has</b> enough yes votes <b>to</b> be resolved early. This would only
+    // lead <b>to</b> possible proposal resolution failure <b>if</b> the resolve early threshold is not definitive (e.g. &lt; 50% + 1
+    // of the total <a href="voting.html#0x1_voting">voting</a> token's supply). In this case, more <a href="voting.html#0x1_voting">voting</a> might actually still be desirable.
+    // Governance mechanisms built on this <a href="voting.html#0x1_voting">voting</a> <b>module</b> can <b>apply</b> additional rules on when <a href="voting.html#0x1_voting">voting</a> is closed <b>as</b>
+    // appropriate.
+    <b>assert</b>!(!<a href="voting.html#0x1_voting_is_voting_period_over">is_voting_period_over</a>(proposal), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="voting.html#0x1_voting_EPROPOSAL_VOTING_ALREADY_ENDED">EPROPOSAL_VOTING_ALREADY_ENDED</a>));
+    <b>assert</b>!(!proposal.is_resolved, <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="voting.html#0x1_voting_EPROPOSAL_ALREADY_RESOLVED">EPROPOSAL_ALREADY_RESOLVED</a>));
+    // Assert this proposal is single-step, or <b>if</b> the proposal is multi-step, it is not in execution yet.
+    <b>assert</b>!(!proposal.metadata.contains_key(&amp;utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>))
+        || *proposal.metadata.borrow(&amp;utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>)) == to_bytes(
+        &amp;<b>false</b>
+    ),
+        <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="voting.html#0x1_voting_EMULTI_STEP_PROPOSAL_IN_EXECUTION">EMULTI_STEP_PROPOSAL_IN_EXECUTION</a>));
+
+    <b>if</b> (should_pass) {
+        proposal.yes_votes += (num_votes <b>as</b> u128);
+    } <b>else</b> {
+        proposal.no_votes += (num_votes <b>as</b> u128);
+    };
+
+    // Record the resolvable time <b>to</b> ensure that resolution <b>has</b> <b>to</b> be done non-atomically.
+    <b>let</b> timestamp_secs_bytes = to_bytes(&amp;<a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>());
+    <b>let</b> key = utf8(<a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>);
+    <b>if</b> (proposal.metadata.contains_key(&amp;key)) {
+        *proposal.metadata.borrow_mut(&amp;key) = timestamp_secs_bytes;
+    } <b>else</b> {
+        proposal.metadata.add(key, timestamp_secs_bytes);
+    };
+
+    <a href="event.html#0x1_event_emit">event::emit</a>(<a href="voting.html#0x1_voting_Vote">Vote</a> { proposal_id, num_votes });
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_proposal_resolvable"><a class="header" href="#function-is_proposal_resolvable">Function <code>is_proposal_resolvable</code> <a id="0x1_voting_is_proposal_resolvable"></a></a></h2>
+<p>Common checks on if a proposal is resolvable, regardless if the proposal is single-step or multi-step.</p>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_is_proposal_resolvable">is_proposal_resolvable</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_is_proposal_resolvable">is_proposal_resolvable</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+) <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal_state = <a href="voting.html#0x1_voting_get_proposal_state">get_proposal_state</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    <b>assert</b>!(proposal_state == <a href="voting.html#0x1_voting_PROPOSAL_STATE_SUCCEEDED">PROPOSAL_STATE_SUCCEEDED</a>, <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="voting.html#0x1_voting_EPROPOSAL_CANNOT_BE_RESOLVED">EPROPOSAL_CANNOT_BE_RESOLVED</a>));
+
+    <b>let</b> voting_forum = <b>borrow_global_mut</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> proposal = voting_forum.proposals.borrow_mut(proposal_id);
+    <b>assert</b>!(!proposal.is_resolved, <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="voting.html#0x1_voting_EPROPOSAL_ALREADY_RESOLVED">EPROPOSAL_ALREADY_RESOLVED</a>));
+
+    // We need <b>to</b> make sure that the resolution is happening in
+    // a separate transaction from the last vote <b>to</b> guard against <a href="../aptos-stdlib/any.html#0x1_any">any</a> potential flashloan attacks.
+    <b>let</b> resolvable_time = to_u64(*proposal.metadata.borrow(&amp;utf8(<a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>)));
+    <b>assert</b>!(<a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>() &gt; resolvable_time, <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="voting.html#0x1_voting_ERESOLUTION_CANNOT_BE_ATOMIC">ERESOLUTION_CANNOT_BE_ATOMIC</a>));
+
+    <b>assert</b>!(
+        <a href="transaction_context.html#0x1_transaction_context_get_script_hash">transaction_context::get_script_hash</a>() == proposal.execution_hash,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="voting.html#0x1_voting_EPROPOSAL_EXECUTION_HASH_NOT_MATCHING">EPROPOSAL_EXECUTION_HASH_NOT_MATCHING</a>),
+    );
+}
+</code></pre>
+
+</details>
+<h2 id="function-resolve"><a class="header" href="#function-resolve">Function <code>resolve</code> <a id="0x1_voting_resolve"></a></a></h2>
+<p>Resolve a single-step proposal with given id. Can only be done if there are at least as many votes as min required and
+there are more yes votes than no. If either of these conditions is not met, this will revert.</p>
+<p>@param voting_forum_address The address of the forum where the proposals are stored.
+@param proposal_id The proposal id.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_resolve">resolve</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): ProposalType
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_resolve">resolve</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): ProposalType <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <a href="voting.html#0x1_voting_is_proposal_resolvable">is_proposal_resolvable</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+
+    <b>let</b> voting_forum = <b>borrow_global_mut</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> proposal = voting_forum.proposals.borrow_mut(proposal_id);
+
+    // Assert that the specified proposal is not a multi-step proposal.
+    <b>let</b> multi_step_key = utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
+    <b>let</b> has_multi_step_key = proposal.metadata.contains_key(&amp;multi_step_key);
+    <b>if</b> (has_multi_step_key) {
+        <b>let</b> is_multi_step_proposal = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_to_bool">from_bcs::to_bool</a>(*proposal.metadata.borrow(&amp;multi_step_key));
+        <b>assert</b>!(
+            !is_multi_step_proposal,
+            <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="voting.html#0x1_voting_EMULTI_STEP_PROPOSAL_CANNOT_USE_SINGLE_STEP_RESOLVE_FUNCTION">EMULTI_STEP_PROPOSAL_CANNOT_USE_SINGLE_STEP_RESOLVE_FUNCTION</a>)
+        );
+    };
+
+    <b>let</b> resolved_early = <a href="voting.html#0x1_voting_can_be_resolved_early">can_be_resolved_early</a>(proposal);
+    proposal.is_resolved = <b>true</b>;
+    proposal.resolution_time_secs = <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>();
+
+    <a href="event.html#0x1_event_emit">event::emit</a>(
+        <a href="voting.html#0x1_voting_ResolveProposal">ResolveProposal</a> {
+            proposal_id,
+            yes_votes: proposal.yes_votes,
+            no_votes: proposal.no_votes,
+            resolved_early,
+        },
+    );
+
+    proposal.execution_content.extract()
+}
+</code></pre>
+
+</details>
+<h2 id="function-resolve_proposal_v2"><a class="header" href="#function-resolve_proposal_v2">Function <code>resolve_proposal_v2</code> <a id="0x1_voting_resolve_proposal_v2"></a></a></h2>
+<p>Resolve a single-step or a multi-step proposal with the given id.
+Can only be done if there are at least as many votes as min required and
+there are more yes votes than no. If either of these conditions is not met, this will revert.</p>
+<p>@param voting_forum_address The address of the forum where the proposals are stored.
+@param proposal_id The proposal id.
+@param next_execution_hash The next execution hash if the given proposal is multi-step.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_resolve_proposal_v2">resolve_proposal_v2</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64, next_execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_resolve_proposal_v2">resolve_proposal_v2</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+    next_execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+) <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <a href="voting.html#0x1_voting_is_proposal_resolvable">is_proposal_resolvable</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+
+    <b>let</b> voting_forum = <b>borrow_global_mut</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> proposal = voting_forum.proposals.borrow_mut(proposal_id);
+
+    // Update the <a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a> key <b>to</b> indicate that the multi-step proposal is in execution.
+    <b>let</b> multi_step_in_execution_key = utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+    <b>if</b> (proposal.metadata.contains_key(&amp;multi_step_in_execution_key)) {
+        <b>let</b> is_multi_step_proposal_in_execution_value = proposal.metadata.borrow_mut(&amp;multi_step_in_execution_key);
+        *is_multi_step_proposal_in_execution_value = to_bytes(&amp;<b>true</b>);
+    };
+
+    <b>let</b> multi_step_key = utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
+    <b>let</b> is_multi_step = proposal.metadata.contains_key(&amp;multi_step_key) &amp;&amp; <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_to_bool">from_bcs::to_bool</a>(
+        *proposal.metadata.borrow(&amp;multi_step_key)
+    );
+    <b>let</b> next_execution_hash_is_empty = next_execution_hash.length() == 0;
+
+    // Assert that <b>if</b> this proposal is single-step, the `next_execution_hash` parameter is empty.
+    <b>assert</b>!(
+        is_multi_step || next_execution_hash_is_empty,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="voting.html#0x1_voting_ESINGLE_STEP_PROPOSAL_CANNOT_HAVE_NEXT_EXECUTION_HASH">ESINGLE_STEP_PROPOSAL_CANNOT_HAVE_NEXT_EXECUTION_HASH</a>)
+    );
+
+    // If the `next_execution_hash` parameter is empty, it means that either
+    // - this proposal is a single-step proposal, or
+    // - this proposal is multi-step and we're currently resolving the last step in the multi-step proposal.
+    // We can mark that this proposal is resolved.
+    <b>if</b> (next_execution_hash_is_empty) {
+        proposal.is_resolved = <b>true</b>;
+        proposal.resolution_time_secs = <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>();
+
+        // Set the `<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>` value <b>to</b> <b>false</b> upon successful resolution of the last step of a multi-step proposal.
+        <b>if</b> (is_multi_step) {
+            <b>let</b> is_multi_step_proposal_in_execution_value = proposal.metadata.borrow_mut(&amp;multi_step_in_execution_key);
+            *is_multi_step_proposal_in_execution_value = to_bytes(&amp;<b>false</b>);
+        };
+    } <b>else</b> {
+        // If the current step is not the last step,
+        // <b>update</b> the proposal's execution <a href="../move-stdlib/hash.html#0x1_hash">hash</a> on-chain <b>to</b> the execution <a href="../move-stdlib/hash.html#0x1_hash">hash</a> of the next step.
+        proposal.execution_hash = next_execution_hash;
+    };
+
+    // For single-step proposals, we emit one `<a href="voting.html#0x1_voting_ResolveProposal">ResolveProposal</a>` <a href="event.html#0x1_event">event</a> per proposal.
+    // For multi-step proposals, we emit one `<a href="voting.html#0x1_voting_ResolveProposal">ResolveProposal</a>` <a href="event.html#0x1_event">event</a> per step in the multi-step proposal. This means
+    // that we emit multiple `<a href="voting.html#0x1_voting_ResolveProposal">ResolveProposal</a>` events for the same multi-step proposal.
+    <b>let</b> resolved_early = <a href="voting.html#0x1_voting_can_be_resolved_early">can_be_resolved_early</a>(proposal);
+    <a href="event.html#0x1_event_emit">event::emit</a>(
+        <a href="voting.html#0x1_voting_ResolveProposal">ResolveProposal</a> {
+            proposal_id,
+            yes_votes: proposal.yes_votes,
+            no_votes: proposal.no_votes,
+            resolved_early,
+        },
+    );
+}
+</code></pre>
+
+</details>
+<h2 id="function-next_proposal_id"><a class="header" href="#function-next_proposal_id">Function <code>next_proposal_id</code> <a id="0x1_voting_next_proposal_id"></a></a></h2>
+<p>Return the next unassigned proposal id</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_next_proposal_id">next_proposal_id</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_next_proposal_id">next_proposal_id</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, ): u64 <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> voting_forum = <b>borrow_global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    voting_forum.next_proposal_id
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_proposer"><a class="header" href="#function-get_proposer">Function <code>get_proposer</code> <a id="0x1_voting_get_proposer"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposer">get_proposer</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): <b>address</b>
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposer">get_proposer</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64
+): <b>address</b> <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.proposer
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_voting_closed"><a class="header" href="#function-is_voting_closed">Function <code>is_voting_closed</code> <a id="0x1_voting_is_voting_closed"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_voting_closed">is_voting_closed</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_voting_closed">is_voting_closed</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64
+): bool <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    <a href="voting.html#0x1_voting_can_be_resolved_early">can_be_resolved_early</a>(proposal) || <a href="voting.html#0x1_voting_is_voting_period_over">is_voting_period_over</a>(proposal)
+}
+</code></pre>
+
+</details>
+<h2 id="function-can_be_resolved_early"><a class="header" href="#function-can_be_resolved_early">Function <code>can_be_resolved_early</code> <a id="0x1_voting_can_be_resolved_early"></a></a></h2>
+<p>Return true if the proposal has reached early resolution threshold (if specified).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_can_be_resolved_early">can_be_resolved_early</a>&lt;ProposalType: store&gt;(proposal: &amp;<a href="voting.html#0x1_voting_Proposal">voting::Proposal</a>&lt;ProposalType&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_can_be_resolved_early">can_be_resolved_early</a>&lt;ProposalType: store&gt;(proposal: &amp;<a href="voting.html#0x1_voting_Proposal">Proposal</a>&lt;ProposalType&gt;): bool {
+    <b>if</b> (proposal.early_resolution_vote_threshold.is_some()) {
+        <b>let</b> early_resolution_threshold = *proposal.early_resolution_vote_threshold.borrow();
+        <b>if</b> (proposal.yes_votes &gt;= early_resolution_threshold || proposal.no_votes &gt;= early_resolution_threshold) {
+            <b>return</b> <b>true</b>
+        };
+    };
+    <b>false</b>
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_proposal_metadata"><a class="header" href="#function-get_proposal_metadata">Function <code>get_proposal_metadata</code> <a id="0x1_voting_get_proposal_metadata"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_metadata">get_proposal_metadata</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_metadata">get_proposal_metadata</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): SimpleMap&lt;String, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt; <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.metadata
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_proposal_metadata_value"><a class="header" href="#function-get_proposal_metadata_value">Function <code>get_proposal_metadata_value</code> <a id="0x1_voting_get_proposal_metadata_value"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_metadata_value">get_proposal_metadata_value</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64, metadata_key: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_metadata_value">get_proposal_metadata_value</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+    metadata_key: String,
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    *proposal.metadata.borrow(&amp;metadata_key)
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_proposal_state"><a class="header" href="#function-get_proposal_state">Function <code>get_proposal_state</code> <a id="0x1_voting_get_proposal_state"></a></a></h2>
+<p>Return the state of the proposal with given id.</p>
+<p>@param voting_forum_address The address of the forum where the proposals are stored.
+@param proposal_id The proposal id.
+@return Proposal state as an enum value.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_state">get_proposal_state</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_state">get_proposal_state</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): u64 <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>if</b> (<a href="voting.html#0x1_voting_is_voting_closed">is_voting_closed</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id)) {
+        <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+        <b>let</b> yes_votes = proposal.yes_votes;
+        <b>let</b> no_votes = proposal.no_votes;
+
+        <b>if</b> (yes_votes &gt; no_votes &amp;&amp; yes_votes + no_votes &gt;= proposal.min_vote_threshold) {
+            <a href="voting.html#0x1_voting_PROPOSAL_STATE_SUCCEEDED">PROPOSAL_STATE_SUCCEEDED</a>
+        } <b>else</b> {
+            <a href="voting.html#0x1_voting_PROPOSAL_STATE_FAILED">PROPOSAL_STATE_FAILED</a>
+        }
+    } <b>else</b> {
+        <a href="voting.html#0x1_voting_PROPOSAL_STATE_PENDING">PROPOSAL_STATE_PENDING</a>
+    }
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_proposal_creation_secs"><a class="header" href="#function-get_proposal_creation_secs">Function <code>get_proposal_creation_secs</code> <a id="0x1_voting_get_proposal_creation_secs"></a></a></h2>
+<p>Return the proposal’s creation time.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_creation_secs">get_proposal_creation_secs</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_creation_secs">get_proposal_creation_secs</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): u64 <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.creation_time_secs
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_proposal_expiration_secs"><a class="header" href="#function-get_proposal_expiration_secs">Function <code>get_proposal_expiration_secs</code> <a id="0x1_voting_get_proposal_expiration_secs"></a></a></h2>
+<p>Return the proposal’s expiration time.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_expiration_secs">get_proposal_expiration_secs</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_expiration_secs">get_proposal_expiration_secs</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): u64 <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.expiration_secs
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_execution_hash"><a class="header" href="#function-get_execution_hash">Function <code>get_execution_hash</code> <a id="0x1_voting_get_execution_hash"></a></a></h2>
+<p>Return the proposal’s execution hash.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_execution_hash">get_execution_hash</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_execution_hash">get_execution_hash</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.execution_hash
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_min_vote_threshold"><a class="header" href="#function-get_min_vote_threshold">Function <code>get_min_vote_threshold</code> <a id="0x1_voting_get_min_vote_threshold"></a></a></h2>
+<p>Return the proposal’s minimum vote threshold</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_min_vote_threshold">get_min_vote_threshold</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u128
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_min_vote_threshold">get_min_vote_threshold</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): u128 <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.min_vote_threshold
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_early_resolution_vote_threshold"><a class="header" href="#function-get_early_resolution_vote_threshold">Function <code>get_early_resolution_vote_threshold</code> <a id="0x1_voting_get_early_resolution_vote_threshold"></a></a></h2>
+<p>Return the proposal’s early resolution minimum vote threshold (optionally set)</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_early_resolution_vote_threshold">get_early_resolution_vote_threshold</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_early_resolution_vote_threshold">get_early_resolution_vote_threshold</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): Option&lt;u128&gt; <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.early_resolution_vote_threshold
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_votes"><a class="header" href="#function-get_votes">Function <code>get_votes</code> <a id="0x1_voting_get_votes"></a></a></h2>
+<p>Return the proposal’s current vote count (yes_votes, no_votes)</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_votes">get_votes</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): (u128, u128)
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_votes">get_votes</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): (u128, u128) <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    (proposal.yes_votes, proposal.no_votes)
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_resolved"><a class="header" href="#function-is_resolved">Function <code>is_resolved</code> <a id="0x1_voting_is_resolved"></a></a></h2>
+<p>Return true if the governance proposal has already been resolved.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_resolved">is_resolved</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_resolved">is_resolved</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): bool <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.is_resolved
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_resolution_time_secs"><a class="header" href="#function-get_resolution_time_secs">Function <code>get_resolution_time_secs</code> <a id="0x1_voting_get_resolution_time_secs"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_resolution_time_secs">get_resolution_time_secs</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_resolution_time_secs">get_resolution_time_secs</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): u64 <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> proposal = <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    proposal.resolution_time_secs
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_multi_step_proposal_in_execution"><a class="header" href="#function-is_multi_step_proposal_in_execution">Function <code>is_multi_step_proposal_in_execution</code> <a id="0x1_voting_is_multi_step_proposal_in_execution"></a></a></h2>
+<p>Return true if the multi-step governance proposal is in execution.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_multi_step_proposal_in_execution">is_multi_step_proposal_in_execution</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_multi_step_proposal_in_execution">is_multi_step_proposal_in_execution</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): bool <b>acquires</b> <a href="voting.html#0x1_voting_VotingForum">VotingForum</a> {
+    <b>let</b> voting_forum = <b>borrow_global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> proposal = voting_forum.proposals.borrow(proposal_id);
+    <b>let</b> is_multi_step_in_execution_key = utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+    <b>assert</b>!(
+        proposal.metadata.contains_key(&amp;is_multi_step_in_execution_key),
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="voting.html#0x1_voting_EPROPOSAL_IS_SINGLE_STEP">EPROPOSAL_IS_SINGLE_STEP</a>)
+    );
+    <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_to_bool">from_bcs::to_bool</a>(*proposal.metadata.borrow(&amp;is_multi_step_in_execution_key))
+}
+</code></pre>
+
+</details>
+<h2 id="function-is_voting_period_over"><a class="header" href="#function-is_voting_period_over">Function <code>is_voting_period_over</code> <a id="0x1_voting_is_voting_period_over"></a></a></h2>
+<p>Return true if the voting period of the given proposal has already ended.</p>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_is_voting_period_over">is_voting_period_over</a>&lt;ProposalType: store&gt;(proposal: &amp;<a href="voting.html#0x1_voting_Proposal">voting::Proposal</a>&lt;ProposalType&gt;): bool
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_is_voting_period_over">is_voting_period_over</a>&lt;ProposalType: store&gt;(proposal: &amp;<a href="voting.html#0x1_voting_Proposal">Proposal</a>&lt;ProposalType&gt;): bool {
+    <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>() &gt; proposal.expiration_secs
+}
+</code></pre>
+
+</details>
+<h2 id="function-get_proposal"><a class="header" href="#function-get_proposal">Function <code>get_proposal</code> <a id="0x1_voting_get_proposal"></a></a></h2>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): &amp;<a href="voting.html#0x1_voting_Proposal">voting::Proposal</a>&lt;ProposalType&gt;
+</code></pre>
+
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="voting.html#0x1_voting_get_proposal">get_proposal</a>&lt;ProposalType: store&gt;(
+    voting_forum_address: <b>address</b>,
+    proposal_id: u64,
+): &amp;<a href="voting.html#0x1_voting_Proposal">Proposal</a>&lt;ProposalType&gt; {
+    <b>let</b> voting_forum = <b>borrow_global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    voting_forum.proposals.borrow(proposal_id)
+}
+</code></pre>
+
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="high-level-requirements"><a class="header" href="#high-level-requirements">High-level Requirements <a id="high-level-req"></a></a></h3>
+<table>
+<tr>
+<th>No.</th><th>Requirement</th><th>Criticality</th><th>Implementation</th><th>Enforcement</th>
+</tr>
+
+<tr>
+<td>1</td>
+<td>The proposal ID in a voting forum is unique and always increases monotonically with each new proposal created for that voting forum.</td>
+<td>High</td>
+<td>The create_proposal and create_proposal_v2 create a new proposal with a unique ID derived from the voting_forum's next_proposal_id incrementally.</td>
+<td>Formally verified via <a href="#high-level-req-1">create_proposal</a>.</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>While voting, it ensures that only the governance module that defines ProposalType may initiate voting and that the proposal under vote exists in the specified voting forum.</td>
+<td>Critical</td>
+<td>The vote function verifies the eligibility and validity of a proposal before allowing voting. It ensures that only the correct governance module initiates voting. The function checks if the proposal is currently eligible for voting by confirming it has not resolved and the voting period has not ended.</td>
+<td>Formally verified via <a href="#high-level-req-2">vote</a>.</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>After resolving a single-step proposal, the corresponding proposal is guaranteed to be marked as successfully resolved.</td>
+<td>High</td>
+<td>Upon invoking the resolve function on a proposal, it undergoes a series of checks to ensure its validity. These include verifying if the proposal exists, is a single-step proposal, and meets the criteria for resolution. If the checks pass, the proposal's is_resolved flag becomes true, indicating a successful resolution.</td>
+<td>Formally verified via <a href="#high-level-req-3">resolve</a>.</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>In the context of v2 proposal resolving, both single-step and multi-step proposals are accurately handled. It ensures that for single-step proposals, the next execution hash is empty and resolves the proposal, while for multi-step proposals, it guarantees that the next execution hash corresponds to the hash of the next step, maintaining the integrity of the proposal execution sequence.</td>
+<td>Medium</td>
+<td>The function resolve_proposal_v2 correctly handles both single-step and multi-step proposals. For single-step proposals, it ensures that the next_execution_hash parameter is empty and resolves the proposal. For multi-step proposals, it ensures that the next_execution_hash parameter contains the hash of the next step.</td>
+<td>Formally verified via <a href="#high-level-req-4">resolve_proposal_v2</a>.</td>
+</tr>
+
+</table>
+
+<h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
+<pre><code><b>pragma</b> verify = <b>true</b>;
+<b>pragma</b> aborts_if_is_partial;
+</code></pre>
+
+<p><a id="0x1_voting_AbortsIfPermissionedSigner"></a></p>
+<pre><code><b>schema</b> <a href="voting.html#0x1_voting_AbortsIfPermissionedSigner">AbortsIfPermissionedSigner</a> {
+    s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
+    <b>let</b> perm = <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> {};
+    <b>aborts_if</b> !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">permissioned_signer::spec_check_permission_exists</a>(s, perm);
+}
+</code></pre>
+
+<h3 id="function-register-1"><a class="header" href="#function-register-1">Function <code>register</code> <a id="@Specification_1_register"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_register">register</a>&lt;ProposalType: store&gt;(<a href="account.html#0x1_account">account</a>: &amp;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr);
+<b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;ProposalType&gt;();
+<b>ensures</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr);
+</code></pre>
+
+<h3 id="function-create_proposal-1"><a class="header" href="#function-create_proposal-1">Function <code>create_proposal</code> <a id="@Specification_1_create_proposal"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_create_proposal">create_proposal</a>&lt;ProposalType: store&gt;(proposer: <b>address</b>, voting_forum_address: <b>address</b>, execution_content: ProposalType, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, min_vote_threshold: u128, expiration_secs: u64, early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): u64
+</code></pre>
+
+<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>include</b> <a href="voting.html#0x1_voting_CreateProposalAbortsIfAndEnsures">CreateProposalAbortsIfAndEnsures</a>&lt;ProposalType&gt;{is_multi_step_proposal: <b>false</b>};
+// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
+<b>ensures</b> result == <b>old</b>(<b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address)).next_proposal_id;
+</code></pre>
+
+<h3 id="function-create_proposal_v2-1"><a class="header" href="#function-create_proposal_v2-1">Function <code>create_proposal_v2</code> <a id="@Specification_1_create_proposal_v2"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_create_proposal_v2">create_proposal_v2</a>&lt;ProposalType: store&gt;(proposer: <b>address</b>, voting_forum_address: <b>address</b>, execution_content: ProposalType, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, min_vote_threshold: u128, expiration_secs: u64, early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, is_multi_step_proposal: bool): u64
+</code></pre>
+
+<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>include</b> <a href="voting.html#0x1_voting_CreateProposalAbortsIfAndEnsures">CreateProposalAbortsIfAndEnsures</a>&lt;ProposalType&gt;;
+<b>ensures</b> result == <b>old</b>(<b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address)).next_proposal_id;
+</code></pre>
+
+<p><a id="0x1_voting_CreateProposalAbortsIfAndEnsures"></a></p>
+<pre><code><b>schema</b> <a href="voting.html#0x1_voting_CreateProposalAbortsIfAndEnsures">CreateProposalAbortsIfAndEnsures</a>&lt;ProposalType&gt; {
+    voting_forum_address: <b>address</b>;
+    execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+    min_vote_threshold: u128;
+    early_resolution_vote_threshold: Option&lt;u128&gt;;
+    metadata: SimpleMap&lt;String, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;;
+    is_multi_step_proposal: bool;
+    <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> proposal_id = voting_forum.next_proposal_id;
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>aborts_if</b> <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(voting_forum.proposals,proposal_id);
+    <b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(early_resolution_vote_threshold) &amp;&amp; min_vote_threshold &gt; <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(early_resolution_vote_threshold);
+    <b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
+    <b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+    <b>aborts_if</b> len(execution_hash) == 0;
+    <b>let</b> execution_key = std::string::spec_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
+    <b>aborts_if</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(metadata, execution_key);
+    <b>aborts_if</b> voting_forum.next_proposal_id + 1 &gt; MAX_U64;
+    <b>let</b> is_multi_step_in_execution_key = std::string::spec_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+    <b>aborts_if</b> is_multi_step_proposal &amp;&amp; <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(metadata, is_multi_step_in_execution_key);
+    <b>let</b> <b>post</b> post_voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> <b>post</b> post_metadata = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(post_voting_forum.proposals, proposal_id).metadata;
+    <b>ensures</b> post_voting_forum.next_proposal_id == voting_forum.next_proposal_id + 1;
+    <b>ensures</b> <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(post_voting_forum.proposals, proposal_id);
+    <b>ensures</b> <b>if</b> (is_multi_step_proposal) {
+        <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(post_metadata, is_multi_step_in_execution_key) == std::bcs::serialize(<b>false</b>)
+    } <b>else</b> {
+        !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(post_metadata, is_multi_step_in_execution_key)
+    };
+}
+</code></pre>
+
+<h3 id="function-vote-1"><a class="header" href="#function-vote-1">Function <code>vote</code> <a id="@Specification_1_vote"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_vote">vote</a>&lt;ProposalType: store&gt;(_proof: &amp;ProposalType, voting_forum_address: <b>address</b>, proposal_id: u64, num_votes: u64, should_pass: bool)
+</code></pre>
+
+<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(voting_forum.proposals, proposal_id);
+<b>aborts_if</b> <a href="voting.html#0x1_voting_is_voting_period_over">is_voting_period_over</a>(proposal);
+<b>aborts_if</b> proposal.is_resolved;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+<b>let</b> execution_key = std::string::spec_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+<b>aborts_if</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, execution_key) &amp;&amp;
+          <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata, execution_key) != std::bcs::serialize(<b>false</b>);
+<b>aborts_if</b> <b>if</b> (should_pass) { proposal.yes_votes + num_votes &gt; MAX_U128 } <b>else</b> { proposal.no_votes + num_votes &gt; MAX_U128 };
+<b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>);
+<b>let</b> <b>post</b> post_voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> <b>post</b> post_proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(post_voting_forum.proposals, proposal_id);
+<b>ensures</b> <b>if</b> (should_pass) {
+    post_proposal.yes_votes == proposal.yes_votes + num_votes
+} <b>else</b> {
+    post_proposal.no_votes == proposal.no_votes + num_votes
+};
+<b>let</b> timestamp_secs_bytes = std::bcs::serialize(<a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>());
+<b>let</b> key = std::string::spec_utf8(<a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>);
+<b>ensures</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(post_proposal.metadata, key) == timestamp_secs_bytes;
+</code></pre>
+
+<h3 id="function-is_proposal_resolvable-1"><a class="header" href="#function-is_proposal_resolvable-1">Function <code>is_proposal_resolvable</code> <a id="@Specification_1_is_proposal_resolvable"></a></a></h3>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_is_proposal_resolvable">is_proposal_resolvable</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64)
+</code></pre>
+
+<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
+</code></pre>
+
+<p><a id="0x1_voting_IsProposalResolvableAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt; {
+    voting_forum_address: <b>address</b>;
+    proposal_id: u64;
+    <b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+    <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+    <b>let</b> voting_closed = <a href="voting.html#0x1_voting_spec_is_voting_closed">spec_is_voting_closed</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+    <b>aborts_if</b> voting_closed &amp;&amp; (proposal.yes_votes &lt;= proposal.no_votes || proposal.yes_votes + proposal.no_votes &lt; proposal.min_vote_threshold);
+    <b>aborts_if</b> !voting_closed;
+    <b>aborts_if</b> proposal.is_resolved;
+    <b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>);
+    <b>aborts_if</b> !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, std::string::spec_utf8(<a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>));
+    <b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;u64&gt;(<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata, std::string::spec_utf8(<a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>)));
+    <b>aborts_if</b> <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() &lt;= <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;u64&gt;(<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata, std::string::spec_utf8(<a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>)));
+    <b>aborts_if</b> <a href="transaction_context.html#0x1_transaction_context_spec_get_script_hash">transaction_context::spec_get_script_hash</a>() != proposal.execution_hash;
+}
+</code></pre>
+
+<h3 id="function-resolve-1"><a class="header" href="#function-resolve-1">Function <code>resolve</code> <a id="@Specification_1_resolve"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_resolve">resolve</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): ProposalType
+</code></pre>
+
+<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
+<b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>let</b> multi_step_key = std::string::spec_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
+<b>let</b> has_multi_step_key = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, multi_step_key);
+<b>aborts_if</b> has_multi_step_key &amp;&amp; !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;bool&gt;(<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata, multi_step_key));
+<b>aborts_if</b> has_multi_step_key &amp;&amp; <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;bool&gt;(<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata, multi_step_key));
+<b>let</b> <b>post</b> post_voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> <b>post</b> post_proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(post_voting_forum.proposals, proposal_id);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+// This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
+<b>ensures</b> post_proposal.is_resolved == <b>true</b>;
+<b>ensures</b> post_proposal.resolution_time_secs == <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>();
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(proposal.execution_content);
+<b>ensures</b> result == <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(proposal.execution_content);
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(post_proposal.execution_content);
+</code></pre>
+
+<h3 id="function-resolve_proposal_v2-1"><a class="header" href="#function-resolve_proposal_v2-1">Function <code>resolve_proposal_v2</code> <a id="@Specification_1_resolve_proposal_v2"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_resolve_proposal_v2">resolve_proposal_v2</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64, next_execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+
+<pre><code><b>pragma</b> verify_duration_estimate = 300;
+<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>let</b> <b>post</b> post_voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> <b>post</b> post_proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(post_voting_forum.proposals, proposal_id);
+<b>let</b> multi_step_in_execution_key = std::string::spec_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+<b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+<b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
+<b>ensures</b> (<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, multi_step_in_execution_key) &amp;&amp; len(next_execution_hash) != 0) ==&gt;
+    <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(post_proposal.metadata, multi_step_in_execution_key) == std::bcs::serialize(<b>true</b>);
+<b>ensures</b> (<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, multi_step_in_execution_key) &amp;&amp;
+    (len(next_execution_hash) == 0 &amp;&amp; !is_multi_step)) ==&gt;
+    <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(post_proposal.metadata, multi_step_in_execution_key) == std::bcs::serialize(<b>true</b>);
+<b>let</b> multi_step_key = std::string::spec_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
+<b>aborts_if</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, multi_step_key) &amp;&amp;
+    !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;bool&gt;(<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata, multi_step_key));
+<b>let</b> is_multi_step = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, multi_step_key) &amp;&amp;
+    <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>(<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata, multi_step_key));
+<b>aborts_if</b> !is_multi_step &amp;&amp; len(next_execution_hash) != 0;
+<b>aborts_if</b> len(next_execution_hash) == 0 &amp;&amp; !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>aborts_if</b> len(next_execution_hash) == 0 &amp;&amp; is_multi_step &amp;&amp; !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, multi_step_in_execution_key);
+// This enforces <a id="high-level-req-4" href="#high-level-req">high-level requirement 4</a>:
+<b>ensures</b> len(next_execution_hash) == 0 ==&gt; post_proposal.resolution_time_secs == <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>();
+<b>ensures</b> len(next_execution_hash) == 0 ==&gt; post_proposal.is_resolved == <b>true</b>;
+<b>ensures</b> (len(next_execution_hash) == 0 &amp;&amp; is_multi_step) ==&gt; <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(post_proposal.metadata, multi_step_in_execution_key) == std::bcs::serialize(<b>false</b>);
+<b>ensures</b> len(next_execution_hash) != 0 ==&gt; post_proposal.execution_hash == next_execution_hash;
+</code></pre>
+
+<h3 id="function-next_proposal_id-1"><a class="header" href="#function-next_proposal_id-1">Function <code>next_proposal_id</code> <a id="@Specification_1_next_proposal_id"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_next_proposal_id">next_proposal_id</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>): u64
+</code></pre>
+
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>ensures</b> result == <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address).next_proposal_id;
+</code></pre>
+
+<h3 id="function-get_proposer-1"><a class="header" href="#function-get_proposer-1">Function <code>get_proposer</code> <a id="@Specification_1_get_proposer"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposer">get_proposer</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): <b>address</b>
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result == proposal.proposer;
+</code></pre>
+
+<h3 id="function-is_voting_closed-1"><a class="header" href="#function-is_voting_closed-1">Function <code>is_voting_closed</code> <a id="@Specification_1_is_voting_closed"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_voting_closed">is_voting_closed</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool
+</code></pre>
+
+<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>ensures</b> result == <a href="voting.html#0x1_voting_spec_is_voting_closed">spec_is_voting_closed</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+</code></pre>
+
+<p><a id="0x1_voting_spec_is_voting_closed"></a></p>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_spec_is_voting_closed">spec_is_voting_closed</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool {
+   <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+   <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+   <a href="voting.html#0x1_voting_spec_can_be_resolved_early">spec_can_be_resolved_early</a>&lt;ProposalType&gt;(proposal) || <a href="voting.html#0x1_voting_is_voting_period_over">is_voting_period_over</a>(proposal)
+}
+</code></pre>
+
+<h3 id="function-can_be_resolved_early-1"><a class="header" href="#function-can_be_resolved_early-1">Function <code>can_be_resolved_early</code> <a id="@Specification_1_can_be_resolved_early"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_can_be_resolved_early">can_be_resolved_early</a>&lt;ProposalType: store&gt;(proposal: &amp;<a href="voting.html#0x1_voting_Proposal">voting::Proposal</a>&lt;ProposalType&gt;): bool
+</code></pre>
+
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="voting.html#0x1_voting_spec_can_be_resolved_early">spec_can_be_resolved_early</a>&lt;ProposalType&gt;(proposal);
+</code></pre>
+
+<p><a id="0x1_voting_spec_can_be_resolved_early"></a></p>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_spec_can_be_resolved_early">spec_can_be_resolved_early</a>&lt;ProposalType: store&gt;(proposal: <a href="voting.html#0x1_voting_Proposal">Proposal</a>&lt;ProposalType&gt;): bool {
+   <b>if</b> (<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(proposal.early_resolution_vote_threshold)) {
+       <b>let</b> early_resolution_threshold = <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(proposal.early_resolution_vote_threshold);
+       <b>if</b> (proposal.yes_votes &gt;= early_resolution_threshold || proposal.no_votes &gt;= early_resolution_threshold) {
+           <b>true</b>
+       } <b>else</b>{
+           <b>false</b>
+       }
+   } <b>else</b> {
+       <b>false</b>
+   }
+}
+</code></pre>
+
+<p><a id="0x1_voting_spec_get_proposal_state"></a></p>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_spec_get_proposal_state">spec_get_proposal_state</a>&lt;ProposalType&gt;(
+   voting_forum_address: <b>address</b>,
+   proposal_id: u64,
+   voting_forum: <a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;
+): u64 {
+   <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+   <b>let</b> voting_closed = <a href="voting.html#0x1_voting_spec_is_voting_closed">spec_is_voting_closed</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+   <b>let</b> proposal_vote_cond = (proposal.yes_votes &gt; proposal.no_votes &amp;&amp; proposal.yes_votes + proposal.no_votes &gt;= proposal.min_vote_threshold);
+   <b>if</b> (voting_closed &amp;&amp; proposal_vote_cond) {
+       <a href="voting.html#0x1_voting_PROPOSAL_STATE_SUCCEEDED">PROPOSAL_STATE_SUCCEEDED</a>
+   } <b>else</b> <b>if</b> (voting_closed &amp;&amp; !proposal_vote_cond) {
+       <a href="voting.html#0x1_voting_PROPOSAL_STATE_FAILED">PROPOSAL_STATE_FAILED</a>
+   } <b>else</b> {
+       <a href="voting.html#0x1_voting_PROPOSAL_STATE_PENDING">PROPOSAL_STATE_PENDING</a>
+   }
+}
+</code></pre>
+
+<p><a id="0x1_voting_spec_get_proposal_expiration_secs"></a></p>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_spec_get_proposal_expiration_secs">spec_get_proposal_expiration_secs</a>&lt;ProposalType: store&gt;(
+   voting_forum_address: <b>address</b>,
+   proposal_id: u64,
+): u64 {
+   <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+   <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+   proposal.expiration_secs
+}
+</code></pre>
+
+<h3 id="function-get_proposal_metadata-1"><a class="header" href="#function-get_proposal_metadata-1">Function <code>get_proposal_metadata</code> <a id="@Specification_1_get_proposal_metadata"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_metadata">get_proposal_metadata</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result == proposal.metadata;
+</code></pre>
+
+<h3 id="function-get_proposal_metadata_value-1"><a class="header" href="#function-get_proposal_metadata_value-1">Function <code>get_proposal_metadata_value</code> <a id="@Specification_1_get_proposal_metadata_value"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_metadata_value">get_proposal_metadata_value</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64, metadata_key: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>aborts_if</b> !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata, metadata_key);
+<b>ensures</b> result == <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata, metadata_key);
+</code></pre>
+
+<h3 id="function-get_proposal_state-1"><a class="header" href="#function-get_proposal_state-1">Function <code>get_proposal_state</code> <a id="@Specification_1_get_proposal_state"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_state">get_proposal_state</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
+</code></pre>
+
+<pre><code><b>pragma</b> addition_overflow_unchecked;
+<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>ensures</b> result == <a href="voting.html#0x1_voting_spec_get_proposal_state">spec_get_proposal_state</a>(voting_forum_address, proposal_id, voting_forum);
+</code></pre>
+
+<h3 id="function-get_proposal_creation_secs-1"><a class="header" href="#function-get_proposal_creation_secs-1">Function <code>get_proposal_creation_secs</code> <a id="@Specification_1_get_proposal_creation_secs"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_creation_secs">get_proposal_creation_secs</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result == proposal.creation_time_secs;
+</code></pre>
+
+<h3 id="function-get_proposal_expiration_secs-1"><a class="header" href="#function-get_proposal_expiration_secs-1">Function <code>get_proposal_expiration_secs</code> <a id="@Specification_1_get_proposal_expiration_secs"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_expiration_secs">get_proposal_expiration_secs</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>ensures</b> result == <a href="voting.html#0x1_voting_spec_get_proposal_expiration_secs">spec_get_proposal_expiration_secs</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+</code></pre>
+
+<h3 id="function-get_execution_hash-1"><a class="header" href="#function-get_execution_hash-1">Function <code>get_execution_hash</code> <a id="@Specification_1_get_execution_hash"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_execution_hash">get_execution_hash</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result == proposal.execution_hash;
+</code></pre>
+
+<h3 id="function-get_min_vote_threshold-1"><a class="header" href="#function-get_min_vote_threshold-1">Function <code>get_min_vote_threshold</code> <a id="@Specification_1_get_min_vote_threshold"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_min_vote_threshold">get_min_vote_threshold</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u128
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result == proposal.min_vote_threshold;
+</code></pre>
+
+<h3 id="function-get_early_resolution_vote_threshold-1"><a class="header" href="#function-get_early_resolution_vote_threshold-1">Function <code>get_early_resolution_vote_threshold</code> <a id="@Specification_1_get_early_resolution_vote_threshold"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_early_resolution_vote_threshold">get_early_resolution_vote_threshold</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result == proposal.early_resolution_vote_threshold;
+</code></pre>
+
+<h3 id="function-get_votes-1"><a class="header" href="#function-get_votes-1">Function <code>get_votes</code> <a id="@Specification_1_get_votes"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_votes">get_votes</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): (u128, u128)
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result_1 == proposal.yes_votes;
+<b>ensures</b> result_2 == proposal.no_votes;
+</code></pre>
+
+<h3 id="function-is_resolved-1"><a class="header" href="#function-is_resolved-1">Function <code>is_resolved</code> <a id="@Specification_1_is_resolved"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_resolved">is_resolved</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result == proposal.is_resolved;
+</code></pre>
+
+<p><a id="0x1_voting_AbortsIfNotContainProposalID"></a></p>
+<pre><code><b>schema</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt; {
+    proposal_id: u64;
+    voting_forum_address: <b>address</b>;
+    <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+    <b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(voting_forum.proposals, proposal_id);
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+}
+</code></pre>
+
+<h3 id="function-get_resolution_time_secs-1"><a class="header" href="#function-get_resolution_time_secs-1">Function <code>get_resolution_time_secs</code> <a id="@Specification_1_get_resolution_time_secs"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_resolution_time_secs">get_resolution_time_secs</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
+<b>ensures</b> result == proposal.resolution_time_secs;
+</code></pre>
+
+<h3 id="function-is_multi_step_proposal_in_execution-1"><a class="header" href="#function-is_multi_step_proposal_in_execution-1">Function <code>is_multi_step_proposal_in_execution</code> <a id="@Specification_1_is_multi_step_proposal_in_execution"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_multi_step_proposal_in_execution">is_multi_step_proposal_in_execution</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool
+</code></pre>
+
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
+<b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals,proposal_id);
+<b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+<b>let</b> execution_key = std::string::spec_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
+<b>aborts_if</b> !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(proposal.metadata,execution_key);
+<b>let</b> is_multi_step_in_execution_key = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(proposal.metadata,execution_key);
+<b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;bool&gt;(is_multi_step_in_execution_key);
+<b>ensures</b> result == <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;bool&gt;(is_multi_step_in_execution_key);
+</code></pre>
+
+<h3 id="function-is_voting_period_over-1"><a class="header" href="#function-is_voting_period_over-1">Function <code>is_voting_period_over</code> <a id="@Specification_1_is_voting_period_over"></a></a></h3>
+<pre><code><b>fun</b> <a href="voting.html#0x1_voting_is_voting_period_over">is_voting_period_over</a>&lt;ProposalType: store&gt;(proposal: &amp;<a href="voting.html#0x1_voting_Proposal">voting::Proposal</a>&lt;ProposalType&gt;): bool
+</code></pre>
+
+<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (<a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() &gt; proposal.expiration_secs);
+</code></pre>
+
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/vesting.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-token-objects/aptos_token.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/vesting.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-token-objects/aptos_token.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp-c45f76e8.js"></script>
+
+
+
+    </div>
+    </body>
+</html>
