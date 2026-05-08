@@ -38,10 +38,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-498629fe.js";
+            window.path_to_searchindex_js = "searchindex-6e8b510a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-6e99fc23.js"></script>
+        <script src="toc-b1ca6be7.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -6340,6 +6340,520 @@ Please use `aptos move coverage -h` for more detailed source or bytecode test co
 <pre><code class="language-shellscript filename=&quot;Terminal&quot;">$ aptos move coverage -h
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="cli-overview"><a class="header" href="#cli-overview">CLI Overview</a></h1>
+<p>The <code>aptos</code> command-line tool ships every developer-facing utility for working with Move on Aptos. Compiling, testing, publishing, calling functions, debugging — they all live under <code>aptos move</code>.</p>
+<p>This chapter covers the flags that appear across many <code>aptos move</code> subcommands. The chapters that follow describe the individual subcommands and only call out the flags that are specific to each.</p>
+<p>For the authoritative list of flags on any subcommand, run:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move &lt;subcommand&gt; --help
+</code></pre>
+<h2 id="a-typical-move-project-flow"><a class="header" href="#a-typical-move-project-flow">A typical Move project flow</a></h2>
+<p>Most developers move through these subcommands in roughly this order:</p>
+<ol>
+<li><code>aptos move init</code> — scaffold a new package.</li>
+<li><code>aptos move compile</code> — compile sources to bytecode.</li>
+<li><code>aptos move test</code> — run unit tests; add <code>--coverage</code> to record line coverage.</li>
+<li><code>aptos move lint</code> and <code>aptos move fmt</code> — style and quality gates before commit.</li>
+<li><code>aptos move publish</code> (or <code>deploy-object</code> for code objects) — push to a network.</li>
+<li><code>aptos move run</code>, <code>view</code>, or <code>simulate</code> — invoke the published code.</li>
+</ol>
+<h2 id="package-options"><a class="header" href="#package-options">Package options</a></h2>
+<p>The flags below come from <code>MovePackageOptions</code> and are accepted by most package-related subcommands: <code>compile</code>, <code>compile-script</code>, <code>test</code>, <code>lint</code>, <code>fmt</code>, <code>prove</code>, <code>document</code>, <code>clean</code>, <code>publish</code>, <code>deploy-object</code>, <code>upgrade-object</code>, <code>verify-package</code>, <code>disassemble</code>, and <code>decompile</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Root of the Move package (the directory containing <code>Move.toml</code>). Defaults to the current directory.</td></tr>
+<tr><td><code>--output-dir &lt;PATH&gt;</code></td><td>Where to write build artifacts. Defaults to <code>&lt;package-dir&gt;/build</code>.</td></tr>
+<tr><td><code>--named-addresses &lt;NAME=ADDR,...&gt;</code></td><td>Bind named addresses declared in <code>Move.toml</code>. Example: <code>--named-addresses alice=0x1234,bob=0x5678</code>.</td></tr>
+<tr><td><code>--dev</code></td><td>Use <code>[dev-addresses]</code> and <code>[dev-dependencies]</code> from <code>Move.toml</code>. Implied during <code>test</code>.</td></tr>
+<tr><td><code>--override-std &lt;NETWORK&gt;</code></td><td>Pin the standard library version to a specific network: <code>mainnet</code>, <code>testnet</code>, or <code>devnet</code>. Useful when third-party dependencies disagree on framework versions.</td></tr>
+<tr><td><code>--skip-fetch-latest-git-deps</code></td><td>Don’t refresh git dependencies. Lets the build proceed offline.</td></tr>
+<tr><td><code>--language-version &lt;X&gt;</code></td><td>Target Move language version (e.g., <code>2.4</code>). Defaults to the latest stable.</td></tr>
+<tr><td><code>--compiler-version &lt;X&gt;</code></td><td>Target compiler version. Must be at least 2. Defaults to the latest stable.</td></tr>
+<tr><td><code>--bytecode-version &lt;N&gt;</code></td><td>Target bytecode version. Inferred from <code>--language-version</code> if omitted.</td></tr>
+<tr><td><code>--skip-attribute-checks</code></td><td>Don’t error on unknown <code>#[...]</code> attributes in source.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="transaction-options"><a class="header" href="#transaction-options">Transaction options</a></h2>
+<p>The flags below are accepted by every subcommand that submits a transaction: <code>publish</code>, <code>deploy-object</code>, <code>upgrade-object</code>, <code>run</code>, <code>run-script</code>, <code>view</code>, <code>simulate</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--profile &lt;NAME&gt;</code></td><td>Use a named profile from <code>~/.aptos/config.yaml</code> (account address, key, network URL). Profiles are created with <code>aptos init</code>.</td></tr>
+<tr><td><code>--url &lt;URL&gt;</code></td><td>Override the REST endpoint from the profile.</td></tr>
+<tr><td><code>--sender-account &lt;ADDR&gt;</code></td><td>Override the sender address (useful when the authentication key has been rotated).</td></tr>
+<tr><td><code>--max-gas &lt;N&gt;</code></td><td>Cap the transaction’s gas.</td></tr>
+<tr><td><code>--gas-unit-price &lt;N&gt;</code></td><td>Set the gas unit price in Octa.</td></tr>
+<tr><td><code>--assume-yes</code> / <code>-y</code></td><td>Skip interactive confirmations.</td></tr>
+<tr><td><code>--local</code></td><td>Simulate the transaction locally instead of submitting it.</td></tr>
+<tr><td><code>--profile-gas</code></td><td>Locally simulate and emit a gas-usage flamegraph.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="output-and-exit-code"><a class="header" href="#output-and-exit-code">Output and exit code</a></h2>
+<p><code>aptos move</code> emits JSON to stdout on success and a non-zero exit code on failure. Most subcommands accept the standard Aptos CLI flags <code>--output-yaml</code> (human-readable YAML) and <code>--output-json</code> (default).</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="develop"><a class="header" href="#develop">Develop</a></h1>
+<p>Subcommands used during local development: scaffolding, building, testing, formatting, and inspecting bytecode. Most accept the <a href="#package-options">shared package options</a>; only command-specific flags are listed below.</p>
+<h2 id="aptos-move-init"><a class="header" href="#aptos-move-init"><code>aptos move init</code></a></h2>
+<p>Scaffold a new Move package: creates <code>Move.toml</code>, an empty <code>sources/</code> directory, and a <code>tests/</code> directory.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move init --name my_package
+aptos move init --name my_package --template hello-blockchain
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--name &lt;NAME&gt;</code></td><td>Package name (required).</td></tr>
+<tr><td><code>--template &lt;TEMPLATE&gt;</code></td><td>Pre-populate with a template, e.g., <code>hello-blockchain</code>.</td></tr>
+<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Where to create the package. Defaults to the current directory.</td></tr>
+<tr><td><code>--named-addresses &lt;NAME=ADDR,...&gt;</code></td><td>Pre-fill named addresses in <code>Move.toml</code>. Use <code>_</code> as a placeholder for unassigned addresses.</td></tr>
+</tbody>
+</table>
+</div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/create-package">Create Package</a>, <a href="https://aptos.dev/build/cli/start-from-template">Start a Move package from a template</a>.</em></p>
+<h2 id="aptos-move-compile-alias-build"><a class="header" href="#aptos-move-compile-alias-build"><code>aptos move compile</code> (alias: <code>build</code>)</a></h2>
+<p>Compile a Move package to bytecode, writing artifacts under <code>&lt;package-dir&gt;/build/</code>.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move compile
+aptos move compile --named-addresses example=0x42 --save-metadata
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--save-metadata</code></td><td>Also write package metadata to <code>build/</code>. Required when constructing publish payloads manually.</td></tr>
+<tr><td><code>--included-artifacts &lt;none|sparse|all&gt;</code></td><td>Which artifacts to embed. <code>none</code> = bytecode only; <code>sparse</code> (default) = enough to reconstruct sources; <code>all</code> = everything. Drives publishing gas cost.</td></tr>
+<tr><td><code>--fetch-deps-only</code></td><td>Resolve and fetch dependencies, but skip the actual compile.</td></tr>
+</tbody>
+</table>
+</div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/compiling">Compiling (Move)</a>.</em></p>
+<h2 id="aptos-move-compile-script-alias-build-script"><a class="header" href="#aptos-move-compile-script-alias-build-script"><code>aptos move compile-script</code> (alias: <code>build-script</code>)</a></h2>
+<p>Compile a single <code>script { ... }</code> source file into a transaction script blob and report its hash.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move compile-script --package-dir my_script_pkg
+</code></pre>
+<p>The package must contain exactly one script source. Use the resulting <code>.mv</code> with <a href="#aptos-move-run-script"><code>aptos move run-script</code></a>.</p>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/scripts/compiling-scripts">Compiling Move Scripts</a>.</em></p>
+<h2 id="aptos-move-test"><a class="header" href="#aptos-move-test"><code>aptos move test</code></a></h2>
+<p>Run all functions annotated with <code>#[test]</code> in the package. Test code under <code>tests/</code> and inside <code>#[test_only]</code> modules is included automatically.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move test
+aptos move test --filter coin                 # only tests whose name contains "coin"
+aptos move test --coverage                    # record line coverage to .coverage_map.mvcov
+aptos move test --fail-fast                   # stop after first failing test
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--filter &lt;STR&gt;</code> / <code>-f &lt;STR&gt;</code></td><td>Run only tests whose fully-qualified name contains <code>STR</code>.</td></tr>
+<tr><td><code>--coverage</code></td><td>Record bytecode coverage. Pair with <code>aptos move coverage</code>.</td></tr>
+<tr><td><code>--instructions &lt;N&gt;</code> / <code>-i &lt;N&gt;</code></td><td>Maximum instructions per test (default <code>100000</code>).</td></tr>
+<tr><td><code>--ignore-compile-warnings</code></td><td>Don’t fail if the build emits warnings.</td></tr>
+<tr><td><code>--dump</code></td><td>Dump storage state on failure.</td></tr>
+<tr><td><code>--fail-fast</code></td><td>Abort on first failure.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="aptos-move-coverage"><a class="header" href="#aptos-move-coverage"><code>aptos move coverage</code></a></h2>
+<p>Inspect coverage data recorded by <code>test --coverage</code>. Three subcommands:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move coverage summary             # per-module coverage percentage
+aptos move coverage summary --summarize-functions
+aptos move coverage source --module my_module
+aptos move coverage bytecode --module my_module
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Subcommand</th><th>Output</th></tr>
+</thead>
+<tbody>
+<tr><td><code>summary</code></td><td>Per-module coverage. <code>--csv</code> switches to CSV; <code>--summarize-functions</code> adds per-function detail.</td></tr>
+<tr><td><code>source</code></td><td>Annotates Move source with coverage indicators.</td></tr>
+<tr><td><code>bytecode</code></td><td>Annotates a disassembled module with coverage indicators.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="aptos-move-prove"><a class="header" href="#aptos-move-prove"><code>aptos move prove</code></a></h2>
+<p>Run the <a href="#move-specification-language">Move Prover</a> against the package’s spec blocks.</p>
+<p>The prover relies on two external binaries — <code>boogie</code> and <code>z3</code> — which the CLI doesn’t bundle. Install (or update) them once before running <code>prove</code>:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos update prover-dependencies
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move prove
+aptos move prove --filter Counter --vc-timeout 60
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--filter &lt;STR&gt;</code> / <code>-f &lt;STR&gt;</code></td><td>Limit verification to modules whose file name matches.</td></tr>
+<tr><td><code>--only &lt;FN&gt;</code> / <code>-o &lt;FN&gt;</code></td><td>Verify only the named function (e.g., <code>mod::increment</code> or just <code>increment</code>).</td></tr>
+<tr><td><code>--verbosity &lt;LEVEL&gt;</code> / <code>-v</code></td><td>Diagnostic verbosity: <code>error</code>, <code>warn</code>, <code>info</code>, <code>debug</code>.</td></tr>
+<tr><td><code>--proc-cores &lt;N&gt;</code></td><td>Parallelism for verification conditions.</td></tr>
+<tr><td><code>--vc-timeout &lt;SECS&gt;</code></td><td>Per-function SMT solver timeout (soft).</td></tr>
+<tr><td><code>--random-seed &lt;N&gt;</code></td><td>Pin the prover’s random seed .</td></tr>
+<tr><td><code>--check-inconsistency</code></td><td>Smoke-check that specs aren’t contradicting themselves.</td></tr>
+<tr><td><code>--dump</code></td><td>Dump intermediate step results (bytecode, generated SMT, Z3 trace, …) to files alongside the package. Useful when debugging a verification failure.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="aptos-move-lint"><a class="header" href="#aptos-move-lint"><code>aptos move lint</code></a></h2>
+<p>Run the Move linter, which surfaces stylistic and correctness warnings beyond what the compiler itself reports.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move lint
+aptos move lint --checks strict
+aptos move lint --checks "strict,-needless_visibility,cyclomatic_complexity"
+aptos move lint --list-checks            # show every available lint, grouped by tier
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--checks &lt;SPEC&gt;</code></td><td>Comma-separated list of tiers (<code>default</code>, <code>strict</code>, <code>experimental</code>, <code>all</code>) and individual lints. Prefix a name with <code>-</code> to exclude it.</td></tr>
+<tr><td><code>--list-checks</code></td><td>Print all available lints grouped by tier, then exit.</td></tr>
+</tbody>
+</table>
+</div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/linter">Aptos Move Lint</a>.</em></p>
+<h2 id="aptos-move-fmt"><a class="header" href="#aptos-move-fmt"><code>aptos move fmt</code></a></h2>
+<p>Format Move source files in place using <code>movefmt</code>.</p>
+<p><code>movefmt</code> is a separate binary that the CLI doesn’t bundle. Install (or update) it once before running <code>fmt</code>:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos update movefmt
+</code></pre>
+<p>Then:</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move fmt                                 # rewrite files in place
+aptos move fmt --emit-mode diff                # show a diff instead
+aptos move fmt --emit-mode std-out             # print to stdout
+aptos move fmt --file-path src/foo.move src/bar.move
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--emit-mode &lt;MODE&gt;</code></td><td>One of <code>overwrite</code> (default), <code>new-file</code>, <code>std-out</code>, <code>diff</code>.</td></tr>
+<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Format every <code>.move</code> file in the package. Mutually exclusive with <code>--file-path</code>.</td></tr>
+<tr><td><code>--file-path &lt;PATH&gt;...</code></td><td>Format a specific list of files.</td></tr>
+<tr><td><code>--config-path &lt;PATH&gt;</code></td><td>Use a specific <code>movefmt.toml</code> instead of searching.</td></tr>
+<tr><td><code>--config &lt;KEY=VAL,...&gt;</code></td><td>Override individual config entries from the command line.</td></tr>
+</tbody>
+</table>
+</div>
+<p><em>See also: <a href="https://aptos.dev/build/cli/formatting-move-contracts">Formatting Move Contracts</a>.</em></p>
+<h2 id="aptos-move-document-alias-doc"><a class="header" href="#aptos-move-document-alias-doc"><code>aptos move document</code> (alias: <code>doc</code>)</a></h2>
+<p>Generate Markdown documentation from <code>///</code> doc-comments and spec blocks. Output lands in <code>&lt;package-dir&gt;/build/&lt;package&gt;/doc/</code>.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move document
+aptos move document --include-impl
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--include-impl</code></td><td>Include function implementations in the rendered docs (otherwise they’re collapsed to signatures).</td></tr>
+<tr><td><code>--landing-page-template &lt;PATH&gt;</code></td><td>Use a custom landing-page template.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="aptos-move-clean"><a class="header" href="#aptos-move-clean"><code>aptos move clean</code></a></h2>
+<p>Remove the <code>build/</code> directory and other derived artifacts from a package. Prompts before deletion unless <code>--assume-yes</code> is set.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move clean
+aptos move clean --assume-yes
+</code></pre>
+<h2 id="aptos-move-disassemble"><a class="header" href="#aptos-move-disassemble"><code>aptos move disassemble</code></a></h2>
+<p>Render Move bytecode as readable assembly (<code>.mv.masm</code>). Useful for inspecting downloaded packages or build output. Exactly one of <code>--package-dir</code> or <code>--bytecode-path</code> must be provided.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;"># A directory of .mv files (e.g., from `aptos move download --bytecode`)
+aptos move disassemble --package-dir MyPkg/bytecode_modules
+
+# A single .mv file
+aptos move disassemble --bytecode-path build/MyPkg/bytecode_modules/my_module.mv
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Process every <code>.mv</code> in the directory.</td></tr>
+<tr><td><code>--bytecode-path &lt;PATH&gt;</code></td><td>Process a single <code>.mv</code> file.</td></tr>
+<tr><td><code>--is-script</code></td><td>Treat the input as a transaction script rather than a module.</td></tr>
+<tr><td><code>--code-coverage-path &lt;PATH&gt;</code></td><td>Annotate the output with coverage from a <code>.mvcov</code> file.</td></tr>
+<tr><td><code>--print-metadata-only</code></td><td>Print only the bytecode/metadata version, then exit (with <code>--bytecode-path</code>).</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="aptos-move-decompile"><a class="header" href="#aptos-move-decompile"><code>aptos move decompile</code></a></h2>
+<p>Decompile bytecode toward Move source (<code>.mv.move</code>). Same input shape as <code>disassemble</code>. The output is a best-effort approximation of the original source — useful for understanding on-chain code whose source isn’t available.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move decompile --package-dir MyPkg/bytecode_modules
+aptos move decompile --bytecode-path some_module.mv
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="publish"><a class="header" href="#publish">Publish</a></h1>
+<p>Subcommands that publish a Move package to a network. All of them accept the <a href="#package-options">shared package options</a> and <a href="#transaction-options">shared transaction options</a>; only the command-specific flags are listed below.</p>
+<h2 id="picking-a-publication-pattern"><a class="header" href="#picking-a-publication-pattern">Picking a publication pattern</a></h2>
+<p>Two patterns are supported side by side; pick based on how you want the package’s address to behave:</p>
+<ul>
+<li><strong>Account publishing</strong> (<code>publish</code> / <code>deploy</code>): the modules live at the <strong>signer’s account address</strong>. Simplest pattern. Upgrades happen by re-publishing from the same account. The signer owns upgrade authority and can’t transfer it.</li>
+<li><strong>Code-object publishing</strong> (<code>deploy-object</code> / <code>upgrade-object</code>): the modules live at a <strong>separate, derived object address</strong>. Upgrade authority is held in a code object and can be transferred. Use this when modules need an address independent of any single account.</li>
+</ul>
+<p>For code review and reproducibility, <a href="#aptos-move-verify-package"><code>verify-package</code></a> checks that on-chain bytecode matches a local source tree.</p>
+<h2 id="aptos-move-publish-alias-deploy"><a class="header" href="#aptos-move-publish-alias-deploy"><code>aptos move publish</code> (alias: <code>deploy</code>)</a></h2>
+<p>Publish a package to the signer’s account.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move publish --profile devnet
+aptos move publish --named-addresses example=0x42 --included-artifacts sparse
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--included-artifacts &lt;none|sparse|all&gt;</code></td><td>What to embed in the on-chain package metadata (drives gas cost). Default <code>sparse</code>.</td></tr>
+<tr><td><code>--override-size-check</code></td><td>Skip the local size pre-check. Doesn’t bypass on-chain size limits.</td></tr>
+<tr><td><code>--chunked-publish</code></td><td>Publish in chunks via the <code>large_packages</code> framework module. Use for packages exceeding the single-transaction size limit.</td></tr>
+<tr><td><code>--chunk-size &lt;BYTES&gt;</code></td><td>Override chunk size for chunked publishing.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Re-publishing this command upgrades the package in place, subject to the <a href="#modules-packages-and-imports">package upgrade rules</a>.</p>
+<p><em>See also: <a href="https://aptos.dev/build/cli/working-with-move-contracts">Working With Move Contracts</a>, <a href="#modules-packages-and-imports">Package Upgrades</a>.</em></p>
+<h2 id="aptos-move-deploy-object"><a class="header" href="#aptos-move-deploy-object"><code>aptos move deploy-object</code></a></h2>
+<p>Publish the package as a <strong>code object</strong> at a freshly derived object address. The chosen named address (passed by <code>--address-name</code>) is auto-bound to that object’s address before compile.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move deploy-object \
+  --address-name example \
+  --profile devnet
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--address-name &lt;NAME&gt;</code></td><td>The named address in <code>Move.toml</code> whose binding will be set to the new object’s address.</td></tr>
+<tr><td><code>--included-artifacts</code>, <code>--override-size-check</code>, <code>--chunked-publish</code>, <code>--chunk-size</code></td><td>Same as <code>publish</code>.</td></tr>
+</tbody>
+</table>
+</div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/deployment">Object Code Deployment</a>, <a href="#modules-packages-and-imports">Package Upgrades</a>.</em></p>
+<h2 id="aptos-move-upgrade-object"><a class="header" href="#aptos-move-upgrade-object"><code>aptos move upgrade-object</code></a></h2>
+<p>Upgrade a package previously published with <code>deploy-object</code>. The original <code>--address-name</code> is rebound to the existing object address (passed via <code>--object-address</code>) so the rebuild produces the same module ids. The new bytecode must satisfy the <a href="#modules-packages-and-imports">package upgrade rules</a> against the version currently on-chain.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move upgrade-object \
+  --address-name example \
+  --object-address 0xABC...123 \
+  --profile devnet
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--address-name &lt;NAME&gt;</code></td><td>Same named address used at deploy time.</td></tr>
+<tr><td><code>--object-address &lt;ADDR&gt;</code></td><td>Address of the existing code object.</td></tr>
+<tr><td><code>--included-artifacts</code>, <code>--override-size-check</code>, <code>--chunked-publish</code>, <code>--chunk-size</code></td><td>Same as <code>publish</code>.</td></tr>
+</tbody>
+</table>
+</div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/deployment">Object Code Deployment</a>, <a href="#modules-packages-and-imports">Package Upgrades</a>.</em></p>
+<h2 id="aptos-move-verify-package"><a class="header" href="#aptos-move-verify-package"><code>aptos move verify-package</code></a></h2>
+<p>Build the package locally and verify that the on-chain copy matches.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move verify-package --account 0xABC...123
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--account &lt;ADDR&gt;</code></td><td>Address of the on-chain package to verify against.</td></tr>
+<tr><td><code>--included-artifacts &lt;none|sparse|all&gt;</code></td><td>Match what was used at publish time.</td></tr>
+</tbody>
+</table>
+</div>
+<p>A package published with <code>upgrade_policy = "arbitrary"</code> cannot be verified — its content can change at any time, so the verifier refuses to depend on it.</p>
+<h2 id="aptos-move-build-publish-payload"><a class="header" href="#aptos-move-build-publish-payload"><code>aptos move build-publish-payload</code></a></h2>
+<p>Compile the package and write a serialized publish-transaction payload to a JSON file. Used for offline signing, governance proposals, and chunked-publish workflows.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move build-publish-payload \
+  --json-output-file payload.json \
+  --included-artifacts sparse
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--json-output-file &lt;PATH&gt;</code></td><td>Where to write the payload JSON.</td></tr>
+<tr><td>Plus all <code>publish</code> flags.</td><td></td></tr>
+</tbody>
+</table>
+</div>
+<p>The resulting JSON can be submitted later with <code>aptos governance</code> or signed offline.</p>
+<h2 id="aptos-move-clear-staging-area"><a class="header" href="#aptos-move-clear-staging-area"><code>aptos move clear-staging-area</code></a></h2>
+<p>Remove the staging-area resource left on-chain by an aborted chunked publish. Run this when a <code>--chunked-publish</code> flow fails partway and you want to start over.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move clear-staging-area --profile devnet
+</code></pre>
+<p>No command-specific flags beyond the <a href="#transaction-options">transaction options</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="run"><a class="header" href="#run">Run</a></h1>
+<p>Subcommands for invoking already-published code on-chain or against a local simulator. Most of them accept the <a href="#transaction-options">shared transaction options</a>; only command-specific flags are listed below.</p>
+<h2 id="aptos-move-run"><a class="header" href="#aptos-move-run"><code>aptos move run</code></a></h2>
+<p>Call an entry function as a transaction.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move run \
+  --function-id 0x42::counter::increment \
+  --args address:0xABC u64:1 \
+  --profile devnet
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--function-id &lt;ADDR::MOD::FN&gt;</code></td><td>Fully qualified entry function name.</td></tr>
+<tr><td><code>--type-args &lt;TYPE&gt;...</code></td><td>Type arguments separated by spaces, e.g., <code>--type-args 0x1::aptos_coin::AptosCoin</code>.</td></tr>
+<tr><td><code>--args &lt;TYPED-ARG&gt;...</code></td><td>Arguments as <code>&lt;TYPE&gt;:&lt;VALUE&gt;</code> pairs, separated by spaces. Supported types: <code>address</code>, <code>bool</code>, <code>hex</code>, <code>string</code>, <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>, <code>u256</code>, <code>raw</code>. Vectors use JSON array syntax: <code>'u64:[1,2,3]'</code>.</td></tr>
+<tr><td><code>--json-file &lt;PATH&gt;</code></td><td>Read function id, type args, and args from a JSON file instead of the command line.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="aptos-move-run-script"><a class="header" href="#aptos-move-run-script"><code>aptos move run-script</code></a></h2>
+<p>Run a transaction script. Either pass a precompiled <code>.mv</code> (<code>--compiled-script-path</code>) or a source file the CLI will compile first (<code>--script-path</code>, or via a script package’s <code>--package-dir</code>).</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;"># Compile + run a script package
+aptos move run-script \
+  --package-dir my_script_pkg \
+  --args u64:42
+
+# Run a precompiled script
+aptos move run-script \
+  --compiled-script-path build/MyPkg/bytecode_scripts/my_script.mv \
+  --args u64:42
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--script-path &lt;PATH&gt;</code></td><td>Path to a <code>.move</code> script source. The CLI compiles it before submitting.</td></tr>
+<tr><td><code>--compiled-script-path &lt;PATH&gt;</code></td><td>Path to a pre-compiled <code>.mv</code> script.</td></tr>
+<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Compile a script package, then run it.</td></tr>
+<tr><td><code>--args &lt;TYPED-ARG&gt;...</code> / <code>--type-args &lt;TYPE&gt;...</code></td><td>Same shape as <code>aptos move run</code>.</td></tr>
+</tbody>
+</table>
+</div>
+<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/scripts/running-scripts">Running Move Scripts</a>.</em></p>
+<h2 id="aptos-move-view"><a class="header" href="#aptos-move-view"><code>aptos move view</code></a></h2>
+<p>Call a <code>#[view]</code> function. View functions don’t change state and don’t submit a transaction; the result is read directly from the fullnode.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move view \
+  --function-id 0x42::counter::get_count \
+  --args address:0xABC \
+  --profile devnet
+</code></pre>
+<p>Same arg/type-arg shape as <code>aptos move run</code>. The output is a JSON array of return values.</p>
+<h2 id="aptos-move-simulate"><a class="header" href="#aptos-move-simulate"><code>aptos move simulate</code></a></h2>
+<p>Simulate a transaction without committing it. Useful for estimating gas, checking aborts, and previewing effects.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move simulate \
+  --function-id 0x42::counter::increment \
+  --args address:0xABC u64:1 \
+  --profile devnet
+
+aptos move simulate \
+  --function-id 0x42::counter::increment \
+  --args address:0xABC u64:1 \
+  --local                                # local VM instead of remote simulation
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--local</code></td><td>Simulate in a local VM (using the latest state pulled from the network), instead of asking the fullnode to simulate.</td></tr>
+<tr><td>Plus the same <code>--function-id</code> / <code>--type-args</code> / <code>--args</code> shape as <code>run</code>.</td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="aptos-move-replay"><a class="header" href="#aptos-move-replay"><code>aptos move replay</code></a></h2>
+<p>Re-execute a historical transaction in a local VM. Lets you reproduce, benchmark, and gas-profile committed transactions.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move replay --network mainnet --txn-id 12345678
+aptos move replay --network testnet --txn-id 87654321 --profile-gas
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--network &lt;NET&gt;</code></td><td>One of <code>mainnet</code>, <code>testnet</code>, <code>devnet</code>, or a <code>&lt;URL&gt;</code> to a fullnode.</td></tr>
+<tr><td><code>--txn-id &lt;N&gt;</code></td><td>Transaction “version” (the monotonically increasing sequence; sometimes called the txn id).</td></tr>
+<tr><td><code>--benchmark</code></td><td>Time the replay and report wall-clock numbers.</td></tr>
+<tr><td><code>--profile-gas</code></td><td>Generate a gas-usage report from the replay.</td></tr>
+<tr><td><code>--fold-unique-stack</code></td><td>Fold call graphs by stack trace in the gas report (smaller output). Requires <code>--profile-gas</code>.</td></tr>
+</tbody>
+</table>
+</div>
+<p><em>See also: <a href="https://aptos.dev/build/cli/replay-past-transactions">Replaying Past Transactions</a>.</em></p>
+<h2 id="aptos-move-list"><a class="header" href="#aptos-move-list"><code>aptos move list</code></a></h2>
+<p>List on-chain packages owned by an account.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move list --account 0xABC...123 --profile devnet
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--account &lt;ADDR&gt;</code></td><td>Address whose packages to list.</td></tr>
+<tr><td><code>--query &lt;packages&gt;</code></td><td>Currently only <code>packages</code> is supported.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The output enumerates each package with its upgrade policy, upgrade number, source digest, and constituent module names.</p>
+<h2 id="aptos-move-download"><a class="header" href="#aptos-move-download"><code>aptos move download</code></a></h2>
+<p>Download a published package’s source (or bytecode) from a network into a local directory. Pair with <a href="#aptos-move-disassemble"><code>disassemble</code></a> or <a href="#aptos-move-decompile"><code>decompile</code></a> for inspection.</p>
+<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move download \
+  --account 0xABC...123 \
+  --package MyPkg \
+  --output-dir ./downloads \
+  --profile mainnet
+
+# Bytecode-only download (use with disassemble/decompile)
+aptos move download --account 0xABC --package MyPkg --bytecode
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--account &lt;ADDR&gt;</code></td><td>Account that hosts the package.</td></tr>
+<tr><td><code>--package &lt;NAME&gt;</code></td><td>Package name as registered on-chain.</td></tr>
+<tr><td><code>--output-dir &lt;PATH&gt;</code></td><td>Where to write the package. Defaults to the current directory.</td></tr>
+<tr><td><code>--bytecode</code> / <code>-b</code></td><td>Also download the compiled <code>.mv</code> files (not just sources).</td></tr>
+<tr><td><code>--print-metadata</code></td><td>Print the package’s on-chain metadata before saving.</td></tr>
+</tbody>
+</table>
+</div>
+<p>A package published with <code>upgrade_policy = "arbitrary"</code> cannot be downloaded — depending on it isn’t safe.</p>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="move-specification-language"><a class="header" href="#move-specification-language">Move Specification Language</a></h1>
 <p>This chapter describes the <em>Move specification language (MSL)</em>, a subset of the
 <a href="https://aptos.dev/build/smart-contracts">Move</a> language that supports specification of the
@@ -8373,519 +8887,206 @@ spec bump {
 </ul>
 <p>A typical workflow combines both: AI-based tools propose candidate specifications (including loop invariants), and the WP engine fills in the precise arithmetic and frame conditions. The result is then verified by the Move Prover to ensure soundness.</p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="cli-overview"><a class="header" href="#cli-overview">CLI Overview</a></h1>
-<p>The <code>aptos</code> command-line tool ships every developer-facing utility for working with Move on Aptos. Compiling, testing, publishing, calling functions, debugging — they all live under <code>aptos move</code>.</p>
-<p>This chapter covers the flags that appear across many <code>aptos move</code> subcommands. The chapters that follow describe the individual subcommands and only call out the flags that are specific to each.</p>
-<p>For the authoritative list of flags on any subcommand, run:</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move &lt;subcommand&gt; --help
+<h1 id="move-prover-user-guide"><a class="header" href="#move-prover-user-guide">Move Prover User Guide</a></h1>
+<p>This is the user guide for the Move prover. This document does not describe the
+<a href="#move-specification-language">Move specification language</a>, but accompanies it. For the
+underlying CLI invocation see <a href="#aptos-move-prove"><code>aptos move prove</code></a>.</p>
+<h2 id="running-the-prover"><a class="header" href="#running-the-prover">Running the Prover</a></h2>
+<p>The prover is invoked via the Aptos CLI from inside a Move package directory:</p>
+<pre><code class="language-shell">aptos move prove                  # verify the package in the current directory
+aptos move prove --package-dir &lt;path&gt;
 </code></pre>
-<h2 id="a-typical-move-project-flow"><a class="header" href="#a-typical-move-project-flow">A typical Move project flow</a></h2>
-<p>Most developers move through these subcommands in roughly this order:</p>
-<ol>
-<li><code>aptos move init</code> — scaffold a new package.</li>
-<li><code>aptos move compile</code> — compile sources to bytecode.</li>
-<li><code>aptos move test</code> — run unit tests; add <code>--coverage</code> to record line coverage.</li>
-<li><code>aptos move lint</code> and <code>aptos move fmt</code> — style and quality gates before commit.</li>
-<li><code>aptos move publish</code> (or <code>deploy-object</code> for code objects) — push to a network.</li>
-<li><code>aptos move run</code>, <code>view</code>, or <code>simulate</code> — invoke the published code.</li>
-</ol>
-<h2 id="package-options"><a class="header" href="#package-options">Package options</a></h2>
-<p>The flags below come from <code>MovePackageOptions</code> and are accepted by most package-related subcommands: <code>compile</code>, <code>compile-script</code>, <code>test</code>, <code>lint</code>, <code>fmt</code>, <code>prove</code>, <code>document</code>, <code>clean</code>, <code>publish</code>, <code>deploy-object</code>, <code>upgrade-object</code>, <code>verify-package</code>, <code>disassemble</code>, and <code>decompile</code>.</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Root of the Move package (the directory containing <code>Move.toml</code>). Defaults to the current directory.</td></tr>
-<tr><td><code>--output-dir &lt;PATH&gt;</code></td><td>Where to write build artifacts. Defaults to <code>&lt;package-dir&gt;/build</code>.</td></tr>
-<tr><td><code>--named-addresses &lt;NAME=ADDR,...&gt;</code></td><td>Bind named addresses declared in <code>Move.toml</code>. Example: <code>--named-addresses alice=0x1234,bob=0x5678</code>.</td></tr>
-<tr><td><code>--dev</code></td><td>Use <code>[dev-addresses]</code> and <code>[dev-dependencies]</code> from <code>Move.toml</code>. Implied during <code>test</code>.</td></tr>
-<tr><td><code>--override-std &lt;NETWORK&gt;</code></td><td>Pin the standard library version to a specific network: <code>mainnet</code>, <code>testnet</code>, or <code>devnet</code>. Useful when third-party dependencies disagree on framework versions.</td></tr>
-<tr><td><code>--skip-fetch-latest-git-deps</code></td><td>Don’t refresh git dependencies. Lets the build proceed offline.</td></tr>
-<tr><td><code>--language-version &lt;X&gt;</code></td><td>Target Move language version (e.g., <code>2.4</code>). Defaults to the latest stable.</td></tr>
-<tr><td><code>--compiler-version &lt;X&gt;</code></td><td>Target compiler version. Must be at least 2. Defaults to the latest stable.</td></tr>
-<tr><td><code>--bytecode-version &lt;N&gt;</code></td><td>Target bytecode version. Inferred from <code>--language-version</code> if omitted.</td></tr>
-<tr><td><code>--skip-attribute-checks</code></td><td>Don’t error on unknown <code>#[...]</code> attributes in source.</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="transaction-options"><a class="header" href="#transaction-options">Transaction options</a></h2>
-<p>The flags below are accepted by every subcommand that submits a transaction: <code>publish</code>, <code>deploy-object</code>, <code>upgrade-object</code>, <code>run</code>, <code>run-script</code>, <code>view</code>, <code>simulate</code>.</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--profile &lt;NAME&gt;</code></td><td>Use a named profile from <code>~/.aptos/config.yaml</code> (account address, key, network URL). Profiles are created with <code>aptos init</code>.</td></tr>
-<tr><td><code>--url &lt;URL&gt;</code></td><td>Override the REST endpoint from the profile.</td></tr>
-<tr><td><code>--sender-account &lt;ADDR&gt;</code></td><td>Override the sender address (useful when the authentication key has been rotated).</td></tr>
-<tr><td><code>--max-gas &lt;N&gt;</code></td><td>Cap the transaction’s gas.</td></tr>
-<tr><td><code>--gas-unit-price &lt;N&gt;</code></td><td>Set the gas unit price in Octa.</td></tr>
-<tr><td><code>--assume-yes</code> / <code>-y</code></td><td>Skip interactive confirmations.</td></tr>
-<tr><td><code>--local</code></td><td>Simulate the transaction locally instead of submitting it.</td></tr>
-<tr><td><code>--profile-gas</code></td><td>Locally simulate and emit a gas-usage flamegraph.</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="output-and-exit-code"><a class="header" href="#output-and-exit-code">Output and exit code</a></h2>
-<p><code>aptos move</code> emits JSON to stdout on success and a non-zero exit code on failure. Most subcommands accept the standard Aptos CLI flags <code>--output-yaml</code> (human-readable YAML) and <code>--output-json</code> (default).</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="develop"><a class="header" href="#develop">Develop</a></h1>
-<p>Subcommands used during local development: scaffolding, building, testing, formatting, and inspecting bytecode. Most accept the <a href="#package-options">shared package options</a>; only command-specific flags are listed below.</p>
-<h2 id="aptos-move-init"><a class="header" href="#aptos-move-init"><code>aptos move init</code></a></h2>
-<p>Scaffold a new Move package: creates <code>Move.toml</code>, an empty <code>sources/</code> directory, and a <code>tests/</code> directory.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move init --name my_package
-aptos move init --name my_package --template hello-blockchain
+<p>Before running the prover for the first time, install the external dependencies
+it relies on (<code>boogie</code> and <code>z3</code>):</p>
+<pre><code class="language-shell">aptos update prover-dependencies
 </code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--name &lt;NAME&gt;</code></td><td>Package name (required).</td></tr>
-<tr><td><code>--template &lt;TEMPLATE&gt;</code></td><td>Pre-populate with a template, e.g., <code>hello-blockchain</code>.</td></tr>
-<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Where to create the package. Defaults to the current directory.</td></tr>
-<tr><td><code>--named-addresses &lt;NAME=ADDR,...&gt;</code></td><td>Pre-fill named addresses in <code>Move.toml</code>. Use <code>_</code> as a placeholder for unassigned addresses.</td></tr>
-</tbody>
-</table>
-</div>
-<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/create-package">Create Package</a>, <a href="https://aptos.dev/build/cli/start-from-template">Start a Move package from a template</a>.</em></p>
-<h2 id="aptos-move-compile-alias-build"><a class="header" href="#aptos-move-compile-alias-build"><code>aptos move compile</code> (alias: <code>build</code>)</a></h2>
-<p>Compile a Move package to bytecode, writing artifacts under <code>&lt;package-dir&gt;/build/</code>.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move compile
-aptos move compile --named-addresses example=0x42 --save-metadata
+<h3 id="target-filtering"><a class="header" href="#target-filtering">Target Filtering</a></h3>
+<p>By default, <code>aptos move prove</code> verifies all source files of a package. During
+iterative development of larger packages it is often more effective to focus
+verification on particular files. Use the <code>--filter</code> (alias <code>-f</code>) option:</p>
+<pre><code class="language-shell">aptos move prove --filter DiemConfig
 </code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--save-metadata</code></td><td>Also write package metadata to <code>build/</code>. Required when constructing publish payloads manually.</td></tr>
-<tr><td><code>--included-artifacts &lt;none|sparse|all&gt;</code></td><td>Which artifacts to embed. <code>none</code> = bytecode only; <code>sparse</code> (default) = enough to reconstruct sources; <code>all</code> = everything. Drives publishing gas cost.</td></tr>
-<tr><td><code>--fetch-deps-only</code></td><td>Resolve and fetch dependencies, but skip the actual compile.</td></tr>
-</tbody>
-</table>
-</div>
-<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/compiling">Compiling (Move)</a>.</em></p>
-<h2 id="aptos-move-compile-script-alias-build-script"><a class="header" href="#aptos-move-compile-script-alias-build-script"><code>aptos move compile-script</code> (alias: <code>build-script</code>)</a></h2>
-<p>Compile a single <code>script { ... }</code> source file into a transaction script blob and report its hash.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move compile-script --package-dir my_script_pkg
+<p>If the string passed to <code>--filter</code> is contained anywhere in the file name of a
+source, that source will be included for verification.</p>
+<blockquote>
+<p>NOTE: the Move prover ensures that there is no semantic difference between
+verifying modules one-by-one or all at once. However, if your goal is to
+verify all modules, doing it in a single <code>aptos move prove</code> run is
+significantly faster than running once per module.</p>
+</blockquote>
+<h3 id="prover-options"><a class="header" href="#prover-options">Prover Options</a></h3>
+<p>The prover accepts a number of options that the CLI passes through directly.
+Common ones surface as named flags (<code>--vc-timeout</code>, <code>--random-seed</code>,
+<code>--trace</code>, etc.); for the full list run</p>
+<pre><code class="language-shell">aptos move prove --help
 </code></pre>
-<p>The package must contain exactly one script source. Use the resulting <code>.mv</code> with <a href="#aptos-move-run-script"><code>aptos move run-script</code></a>.</p>
-<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/scripts/compiling-scripts">Compiling Move Scripts</a>.</em></p>
-<h2 id="aptos-move-test"><a class="header" href="#aptos-move-test"><code>aptos move test</code></a></h2>
-<p>Run all functions annotated with <code>#[test]</code> in the package. Test code under <code>tests/</code> and inside <code>#[test_only]</code> modules is included automatically.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move test
-aptos move test --filter coin                 # only tests whose name contains "coin"
-aptos move test --coverage                    # record line coverage to .coverage_map.mvcov
-aptos move test --fail-fast                   # stop after first failing test
+<p>The most commonly used option is <code>--trace</code>, which makes the prover produce
+richer diagnosis when it encounters errors:</p>
+<pre><code class="language-shell">aptos move prove --filter DiemConfig --trace
 </code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--filter &lt;STR&gt;</code> / <code>-f &lt;STR&gt;</code></td><td>Run only tests whose fully-qualified name contains <code>STR</code>.</td></tr>
-<tr><td><code>--coverage</code></td><td>Record bytecode coverage. Pair with <code>aptos move coverage</code>.</td></tr>
-<tr><td><code>--instructions &lt;N&gt;</code> / <code>-i &lt;N&gt;</code></td><td>Maximum instructions per test (default <code>100000</code>).</td></tr>
-<tr><td><code>--ignore-compile-warnings</code></td><td>Don’t fail if the build emits warnings.</td></tr>
-<tr><td><code>--dump</code></td><td>Dump storage state on failure.</td></tr>
-<tr><td><code>--fail-fast</code></td><td>Abort on first failure.</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="aptos-move-coverage"><a class="header" href="#aptos-move-coverage"><code>aptos move coverage</code></a></h2>
-<p>Inspect coverage data recorded by <code>test --coverage</code>. Three subcommands:</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move coverage summary             # per-module coverage percentage
-aptos move coverage summary --summarize-functions
-aptos move coverage source --module my_module
-aptos move coverage bytecode --module my_module
+<h3 id="prover-configuration-file"><a class="header" href="#prover-configuration-file">Prover Configuration File</a></h3>
+<p>You can also create a prover configuration file named <code>Prover.toml</code> next to
+your <code>Move.toml</code>. For example, to enable tracing by default for a package use a
+<code>Prover.toml</code> containing:</p>
+<pre><code class="language-toml">[prover]
+auto_trace_level = "VerifiedFunction"
 </code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Subcommand</th><th>Output</th></tr>
-</thead>
-<tbody>
-<tr><td><code>summary</code></td><td>Per-module coverage. <code>--csv</code> switches to CSV; <code>--summarize-functions</code> adds per-function detail.</td></tr>
-<tr><td><code>source</code></td><td>Annotates Move source with coverage indicators.</td></tr>
-<tr><td><code>bytecode</code></td><td>Annotates a disassembled module with coverage indicators.</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="aptos-move-prove"><a class="header" href="#aptos-move-prove"><code>aptos move prove</code></a></h2>
-<p>Run the <a href="#move-specification-language">Move Prover</a> against the package’s spec blocks.</p>
-<p>The prover relies on two external binaries — <code>boogie</code> and <code>z3</code> — which the CLI doesn’t bundle. Install (or update) them once before running <code>prove</code>:</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos update prover-dependencies
-</code></pre>
-<p>Then:</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move prove
-aptos move prove --filter Counter --vc-timeout 60
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--filter &lt;STR&gt;</code> / <code>-f &lt;STR&gt;</code></td><td>Limit verification to modules whose file name matches.</td></tr>
-<tr><td><code>--only &lt;FN&gt;</code> / <code>-o &lt;FN&gt;</code></td><td>Verify only the named function (e.g., <code>mod::increment</code> or just <code>increment</code>).</td></tr>
-<tr><td><code>--verbosity &lt;LEVEL&gt;</code> / <code>-v</code></td><td>Diagnostic verbosity: <code>error</code>, <code>warn</code>, <code>info</code>, <code>debug</code>.</td></tr>
-<tr><td><code>--proc-cores &lt;N&gt;</code></td><td>Parallelism for verification conditions.</td></tr>
-<tr><td><code>--vc-timeout &lt;SECS&gt;</code></td><td>Per-function SMT solver timeout (soft).</td></tr>
-<tr><td><code>--random-seed &lt;N&gt;</code></td><td>Pin the prover’s random seed .</td></tr>
-<tr><td><code>--check-inconsistency</code></td><td>Smoke-check that specs aren’t contradicting themselves.</td></tr>
-<tr><td><code>--dump</code></td><td>Dump intermediate step results (bytecode, generated SMT, Z3 trace, …) to files alongside the package. Useful when debugging a verification failure.</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="aptos-move-lint"><a class="header" href="#aptos-move-lint"><code>aptos move lint</code></a></h2>
-<p>Run the Move linter, which surfaces stylistic and correctness warnings beyond what the compiler itself reports.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move lint
-aptos move lint --checks strict
-aptos move lint --checks "strict,-needless_visibility,cyclomatic_complexity"
-aptos move lint --list-checks            # show every available lint, grouped by tier
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--checks &lt;SPEC&gt;</code></td><td>Comma-separated list of tiers (<code>default</code>, <code>strict</code>, <code>experimental</code>, <code>all</code>) and individual lints. Prefix a name with <code>-</code> to exclude it.</td></tr>
-<tr><td><code>--list-checks</code></td><td>Print all available lints grouped by tier, then exit.</td></tr>
-</tbody>
-</table>
-</div>
-<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/linter">Aptos Move Lint</a>.</em></p>
-<h2 id="aptos-move-fmt"><a class="header" href="#aptos-move-fmt"><code>aptos move fmt</code></a></h2>
-<p>Format Move source files in place using <code>movefmt</code>.</p>
-<p><code>movefmt</code> is a separate binary that the CLI doesn’t bundle. Install (or update) it once before running <code>fmt</code>:</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos update movefmt
-</code></pre>
-<p>Then:</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move fmt                                 # rewrite files in place
-aptos move fmt --emit-mode diff                # show a diff instead
-aptos move fmt --emit-mode std-out             # print to stdout
-aptos move fmt --file-path src/foo.move src/bar.move
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--emit-mode &lt;MODE&gt;</code></td><td>One of <code>overwrite</code> (default), <code>new-file</code>, <code>std-out</code>, <code>diff</code>.</td></tr>
-<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Format every <code>.move</code> file in the package. Mutually exclusive with <code>--file-path</code>.</td></tr>
-<tr><td><code>--file-path &lt;PATH&gt;...</code></td><td>Format a specific list of files.</td></tr>
-<tr><td><code>--config-path &lt;PATH&gt;</code></td><td>Use a specific <code>movefmt.toml</code> instead of searching.</td></tr>
-<tr><td><code>--config &lt;KEY=VAL,...&gt;</code></td><td>Override individual config entries from the command line.</td></tr>
-</tbody>
-</table>
-</div>
-<p><em>See also: <a href="https://aptos.dev/build/cli/formatting-move-contracts">Formatting Move Contracts</a>.</em></p>
-<h2 id="aptos-move-document-alias-doc"><a class="header" href="#aptos-move-document-alias-doc"><code>aptos move document</code> (alias: <code>doc</code>)</a></h2>
-<p>Generate Markdown documentation from <code>///</code> doc-comments and spec blocks. Output lands in <code>&lt;package-dir&gt;/build/&lt;package&gt;/doc/</code>.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move document
-aptos move document --include-impl
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--include-impl</code></td><td>Include function implementations in the rendered docs (otherwise they’re collapsed to signatures).</td></tr>
-<tr><td><code>--landing-page-template &lt;PATH&gt;</code></td><td>Use a custom landing-page template.</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="aptos-move-clean"><a class="header" href="#aptos-move-clean"><code>aptos move clean</code></a></h2>
-<p>Remove the <code>build/</code> directory and other derived artifacts from a package. Prompts before deletion unless <code>--assume-yes</code> is set.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move clean
-aptos move clean --assume-yes
-</code></pre>
-<h2 id="aptos-move-disassemble"><a class="header" href="#aptos-move-disassemble"><code>aptos move disassemble</code></a></h2>
-<p>Render Move bytecode as readable assembly (<code>.mv.masm</code>). Useful for inspecting downloaded packages or build output. Exactly one of <code>--package-dir</code> or <code>--bytecode-path</code> must be provided.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;"># A directory of .mv files (e.g., from `aptos move download --bytecode`)
-aptos move disassemble --package-dir MyPkg/bytecode_modules
+<p>The most commonly used options are documented by the example toml below, which
+you can copy and adjust for your needs (the displayed values are the
+defaults):</p>
+<pre><code class="language-toml"># Verbosity level
+# Possible values: "ERROR", "WARN", "INFO", "DEBUG". Each level subsumes the output of the previous one.
+verbosity_level = "INFO"
 
-# A single .mv file
-aptos move disassemble --bytecode-path build/MyPkg/bytecode_modules/my_module.mv
+[prover]
+# Set auto-tracing level, which enhances the diagnosis the prover produces on verification errors.
+# Possible values: "Off", "VerifiedFunction", "AllFunctions"
+auto_trace_level = "Off"
+
+# Minimal severity level for diagnosis to be reported.
+# Possible values: "Error", "Warning", "Note"
+report_severity = "Warning"
+
+[backend]
+# Timeout in seconds for the solver backend. Note that this is a soft timeout and may not always
+# be respected.
+vc_timeout = 40
+
+# Random seed for the solver backend. Different seeds can result in different verification run times,
+# as the solver uses heuristics.
+random_seed = 1
+
+# The number of processor cores to assume for concurrent check of verification conditions.
+proc_cores = 4
 </code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Process every <code>.mv</code> in the directory.</td></tr>
-<tr><td><code>--bytecode-path &lt;PATH&gt;</code></td><td>Process a single <code>.mv</code> file.</td></tr>
-<tr><td><code>--is-script</code></td><td>Treat the input as a transaction script rather than a module.</td></tr>
-<tr><td><code>--code-coverage-path &lt;PATH&gt;</code></td><td>Annotate the output with coverage from a <code>.mvcov</code> file.</td></tr>
-<tr><td><code>--print-metadata-only</code></td><td>Print only the bytecode/metadata version, then exit (with <code>--bytecode-path</code>).</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="aptos-move-decompile"><a class="header" href="#aptos-move-decompile"><code>aptos move decompile</code></a></h2>
-<p>Decompile bytecode toward Move source (<code>.mv.move</code>). Same input shape as <code>disassemble</code>. The output is a best-effort approximation of the original source — useful for understanding on-chain code whose source isn’t available.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move decompile --package-dir MyPkg/bytecode_modules
-aptos move decompile --bytecode-path some_module.mv
+<blockquote>
+<p>HINT: for local verification, you may want to set <code>proc_cores</code> to an aggressive
+number (your actual cores) to speed up the turn-around cycle.</p>
+</blockquote>
+<blockquote>
+<p>NOTE: To dump all available toml options, run <code>aptos move prove --print-config</code>.
+The dump will, however, contain many more unrelated and potentially defunct
+experimental options.</p>
+</blockquote>
+<h3 id="prover-tests"><a class="header" href="#prover-tests">Prover Tests</a></h3>
+<p>The prover can also be run from a Rust testsuite — for example, to use
+verification as a submit blocker. Add a Rust file to your testsuite (e.g.
+<code>&lt;crate&gt;/tests/move_verification_test.rs</code>). Assuming the crate contains two
+Move packages at relative paths <code>foo</code> and <code>bar</code>, the Rust source would look
+like:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use move_cli::package::prover::ProverTest;
+
+#[test]
+fn prove_foo() {
+    ProverTest::create("foo").run()
+}
+
+#[test]
+fn prove_bar() {
+    ProverTest::create("bar").run()
+}
+<span class="boring">}</span></code></pre>
+<p>There are multiple ways to configure the test, for example by setting specific
+options for the prover to use. See the <code>ProverTest</code> type for details.</p>
+<h2 id="prover-diagnosis"><a class="header" href="#prover-diagnosis">Prover Diagnosis</a></h2>
+<p>When the prover finds a verification error it prints out diagnosis in a style
+similar to a compiler or a debugger. We explain the different types of
+diagnoses below, based on the following running example:</p>
+<pre><code class="language-move">module 0x42::counter {
+    struct Counter has key {
+        value: u8,
+    }
+
+    public fun increment(a: address) acquires Counter {
+        Counter[a].value = Counter[a].value + 1;
+    }
+
+    spec increment {
+        aborts_if !exists&lt;Counter&gt;(a);
+        ensures global&lt;Counter&gt;(a).value == old(global&lt;Counter&gt;(a)).value + 1;
+    }
+}
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="publish"><a class="header" href="#publish">Publish</a></h1>
-<p>Subcommands that publish a Move package to a network. All of them accept the <a href="#package-options">shared package options</a> and <a href="#transaction-options">shared transaction options</a>; only the command-specific flags are listed below.</p>
-<h2 id="picking-a-publication-pattern"><a class="header" href="#picking-a-publication-pattern">Picking a publication pattern</a></h2>
-<p>Two patterns are supported side by side; pick based on how you want the package’s address to behave:</p>
+<p>We will modify this example as we demonstrate different types of diagnoses.</p>
+<h3 id="unexpected-abort"><a class="header" href="#unexpected-abort">Unexpected Abort</a></h3>
+<p>If we run the Move prover on the above example, we get the following error:</p>
+<pre><code>error: abort not covered by any of the `aborts_if` clauses
+
+   ┌── tutorial.move:6:3 ───
+   │
+ 6 │ ╭   public fun increment(a: address) acquires Counter {
+ 7 │ │       Counter[a].value = Counter[a].value + 1;
+ 8 │ │   }
+   │ ╰───^
+   ·
+ 7 │       Counter[a].value = Counter[a].value + 1;
+   │                                            - abort happened here
+   │
+   =     at tutorial.move:6:3: increment (entry)
+   =     at tutorial.move:7:15: increment
+   =         a = 0x5,
+   =     at tutorial.move:7:36: increment (ABORTED)
+</code></pre>
+<p>The prover has generated a counter-example which leads to an overflow when
+adding <code>1</code> to a value of <code>255</code> for a <code>u8</code>. This happens when the function
+specification states something about abort behavior, but the condition under
+which the function actually aborts is not covered by the specification. With
+<code>aborts_if !exists&lt;Counter&gt;(a)</code> we only cover the case where the resource does
+not exist — not the overflow.</p>
+<p>Let’s fix that by adding the missing condition:</p>
+<pre><code class="language-move">spec increment {
+    aborts_if global&lt;Counter&gt;(a).value == 255;
+}
+</code></pre>
+<p>With this added, the prover will succeed without any errors.</p>
+<h3 id="postcondition-failure"><a class="header" href="#postcondition-failure">Postcondition Failure</a></h3>
+<p>Now let’s inject an error into the <code>ensures</code> condition of the example:</p>
+<pre><code class="language-move">spec increment {
+    ensures global&lt;Counter&gt;(a).value == /*old*/(global&lt;Counter&gt;(a).value) + 1;
+}
+</code></pre>
+<p>The prover produces the following diagnosis:</p>
+<pre><code>error:  A postcondition might not hold on this return path.
+
+    ┌── tutorial.move:14:7 ───
+    │
+ 14 │       ensures global&lt;Counter&gt;(a).value == global&lt;Counter&gt;(a).value + 1;
+    │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    │
+    =     at tutorial.move:6:3: increment (entry)
+    =     at tutorial.move:7:15: increment
+    =         a = 0x5,
+    =     at tutorial.move:6:3: increment
+    =     at tutorial.move:6:3: increment (exit)
+</code></pre>
+<p>While we know what the error is — we just injected it — looking at the printed
+information makes it not particularly obvious. This is because we don’t
+directly see on which values the <code>ensures</code> condition was actually evaluated. To
+see this, use the <code>--trace</code> option; this is not enabled by default because it
+makes the verification problem slightly harder for the solver.</p>
+<p>Instead of, or in addition to, the <code>--trace</code> option, you can use the builtin
+function <code>TRACE(exp)</code> in conditions to explicitly mark expressions whose value
+should be printed on verification failures.</p>
+<blockquote>
+<p>NOTE: expressions which depend on quantified symbols cannot be traced. Also,
+expressions appearing in specification functions can currently not be
+traced.</p>
+</blockquote>
+<h2 id="debugging-the-prover"><a class="header" href="#debugging-the-prover">Debugging the Prover</a></h2>
+<p>The Move prover is an evolving tool with bugs and deficiencies. Sometimes it is
+necessary to debug a problem based on the output it passes to the underlying
+backends. The following options help:</p>
 <ul>
-<li><strong>Account publishing</strong> (<code>publish</code> / <code>deploy</code>): the modules live at the <strong>signer’s account address</strong>. Simplest pattern. Upgrades happen by re-publishing from the same account. The signer owns upgrade authority and can’t transfer it.</li>
-<li><strong>Code-object publishing</strong> (<code>deploy-object</code> / <code>upgrade-object</code>): the modules live at a <strong>separate, derived object address</strong>. Upgrade authority is held in a code object and can be transferred. Use this when modules need an address independent of any single account.</li>
+<li><code>--keep</code> (<code>-k</code>) — keeps the generated Boogie code in <code>output.bpl</code>, and the
+errors Boogie reported in <code>output.bpl.log</code>.</li>
+<li><code>--dump-bytecode</code> — dumps the original Move bytecode plus the prover bytecode
+as it is transformed during compilation.</li>
+<li><code>-C backend.generate_smt=true</code> — generates, for each verification problem, a
+file in the smtlib format. The file is named after the verified function and
+contains the output Boogie passes on to Z3 or other connected SMT solvers.</li>
 </ul>
-<p>For code review and reproducibility, <a href="#aptos-move-verify-package"><code>verify-package</code></a> checks that on-chain bytecode matches a local source tree.</p>
-<h2 id="aptos-move-publish-alias-deploy"><a class="header" href="#aptos-move-publish-alias-deploy"><code>aptos move publish</code> (alias: <code>deploy</code>)</a></h2>
-<p>Publish a package to the signer’s account.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move publish --profile devnet
-aptos move publish --named-addresses example=0x42 --included-artifacts sparse
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--included-artifacts &lt;none|sparse|all&gt;</code></td><td>What to embed in the on-chain package metadata (drives gas cost). Default <code>sparse</code>.</td></tr>
-<tr><td><code>--override-size-check</code></td><td>Skip the local size pre-check. Doesn’t bypass on-chain size limits.</td></tr>
-<tr><td><code>--chunked-publish</code></td><td>Publish in chunks via the <code>large_packages</code> framework module. Use for packages exceeding the single-transaction size limit.</td></tr>
-<tr><td><code>--chunk-size &lt;BYTES&gt;</code></td><td>Override chunk size for chunked publishing.</td></tr>
-</tbody>
-</table>
-</div>
-<p>Re-publishing this command upgrades the package in place, subject to the <a href="#modules-packages-and-imports">package upgrade rules</a>.</p>
-<p><em>See also: <a href="https://aptos.dev/build/cli/working-with-move-contracts">Working With Move Contracts</a>, <a href="#modules-packages-and-imports">Package Upgrades</a>.</em></p>
-<h2 id="aptos-move-deploy-object"><a class="header" href="#aptos-move-deploy-object"><code>aptos move deploy-object</code></a></h2>
-<p>Publish the package as a <strong>code object</strong> at a freshly derived object address. The chosen named address (passed by <code>--address-name</code>) is auto-bound to that object’s address before compile.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move deploy-object \
-  --address-name example \
-  --profile devnet
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--address-name &lt;NAME&gt;</code></td><td>The named address in <code>Move.toml</code> whose binding will be set to the new object’s address.</td></tr>
-<tr><td><code>--included-artifacts</code>, <code>--override-size-check</code>, <code>--chunked-publish</code>, <code>--chunk-size</code></td><td>Same as <code>publish</code>.</td></tr>
-</tbody>
-</table>
-</div>
-<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/deployment">Object Code Deployment</a>, <a href="#modules-packages-and-imports">Package Upgrades</a>.</em></p>
-<h2 id="aptos-move-upgrade-object"><a class="header" href="#aptos-move-upgrade-object"><code>aptos move upgrade-object</code></a></h2>
-<p>Upgrade a package previously published with <code>deploy-object</code>. The original <code>--address-name</code> is rebound to the existing object address (passed via <code>--object-address</code>) so the rebuild produces the same module ids. The new bytecode must satisfy the <a href="#modules-packages-and-imports">package upgrade rules</a> against the version currently on-chain.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move upgrade-object \
-  --address-name example \
-  --object-address 0xABC...123 \
-  --profile devnet
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--address-name &lt;NAME&gt;</code></td><td>Same named address used at deploy time.</td></tr>
-<tr><td><code>--object-address &lt;ADDR&gt;</code></td><td>Address of the existing code object.</td></tr>
-<tr><td><code>--included-artifacts</code>, <code>--override-size-check</code>, <code>--chunked-publish</code>, <code>--chunk-size</code></td><td>Same as <code>publish</code>.</td></tr>
-</tbody>
-</table>
-</div>
-<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/deployment">Object Code Deployment</a>, <a href="#modules-packages-and-imports">Package Upgrades</a>.</em></p>
-<h2 id="aptos-move-verify-package"><a class="header" href="#aptos-move-verify-package"><code>aptos move verify-package</code></a></h2>
-<p>Build the package locally and verify that the on-chain copy matches.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move verify-package --account 0xABC...123
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--account &lt;ADDR&gt;</code></td><td>Address of the on-chain package to verify against.</td></tr>
-<tr><td><code>--included-artifacts &lt;none|sparse|all&gt;</code></td><td>Match what was used at publish time.</td></tr>
-</tbody>
-</table>
-</div>
-<p>A package published with <code>upgrade_policy = "arbitrary"</code> cannot be verified — its content can change at any time, so the verifier refuses to depend on it.</p>
-<h2 id="aptos-move-build-publish-payload"><a class="header" href="#aptos-move-build-publish-payload"><code>aptos move build-publish-payload</code></a></h2>
-<p>Compile the package and write a serialized publish-transaction payload to a JSON file. Used for offline signing, governance proposals, and chunked-publish workflows.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move build-publish-payload \
-  --json-output-file payload.json \
-  --included-artifacts sparse
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--json-output-file &lt;PATH&gt;</code></td><td>Where to write the payload JSON.</td></tr>
-<tr><td>Plus all <code>publish</code> flags.</td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p>The resulting JSON can be submitted later with <code>aptos governance</code> or signed offline.</p>
-<h2 id="aptos-move-clear-staging-area"><a class="header" href="#aptos-move-clear-staging-area"><code>aptos move clear-staging-area</code></a></h2>
-<p>Remove the staging-area resource left on-chain by an aborted chunked publish. Run this when a <code>--chunked-publish</code> flow fails partway and you want to start over.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move clear-staging-area --profile devnet
-</code></pre>
-<p>No command-specific flags beyond the <a href="#transaction-options">transaction options</a>.</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="run"><a class="header" href="#run">Run</a></h1>
-<p>Subcommands for invoking already-published code on-chain or against a local simulator. Most of them accept the <a href="#transaction-options">shared transaction options</a>; only command-specific flags are listed below.</p>
-<h2 id="aptos-move-run"><a class="header" href="#aptos-move-run"><code>aptos move run</code></a></h2>
-<p>Call an entry function as a transaction.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move run \
-  --function-id 0x42::counter::increment \
-  --args address:0xABC u64:1 \
-  --profile devnet
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--function-id &lt;ADDR::MOD::FN&gt;</code></td><td>Fully qualified entry function name.</td></tr>
-<tr><td><code>--type-args &lt;TYPE&gt;...</code></td><td>Type arguments separated by spaces, e.g., <code>--type-args 0x1::aptos_coin::AptosCoin</code>.</td></tr>
-<tr><td><code>--args &lt;TYPED-ARG&gt;...</code></td><td>Arguments as <code>&lt;TYPE&gt;:&lt;VALUE&gt;</code> pairs, separated by spaces. Supported types: <code>address</code>, <code>bool</code>, <code>hex</code>, <code>string</code>, <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>, <code>u256</code>, <code>raw</code>. Vectors use JSON array syntax: <code>'u64:[1,2,3]'</code>.</td></tr>
-<tr><td><code>--json-file &lt;PATH&gt;</code></td><td>Read function id, type args, and args from a JSON file instead of the command line.</td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="aptos-move-run-script"><a class="header" href="#aptos-move-run-script"><code>aptos move run-script</code></a></h2>
-<p>Run a transaction script. Either pass a precompiled <code>.mv</code> (<code>--compiled-script-path</code>) or a source file the CLI will compile first (<code>--script-path</code>, or via a script package’s <code>--package-dir</code>).</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;"># Compile + run a script package
-aptos move run-script \
-  --package-dir my_script_pkg \
-  --args u64:42
-
-# Run a precompiled script
-aptos move run-script \
-  --compiled-script-path build/MyPkg/bytecode_scripts/my_script.mv \
-  --args u64:42
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--script-path &lt;PATH&gt;</code></td><td>Path to a <code>.move</code> script source. The CLI compiles it before submitting.</td></tr>
-<tr><td><code>--compiled-script-path &lt;PATH&gt;</code></td><td>Path to a pre-compiled <code>.mv</code> script.</td></tr>
-<tr><td><code>--package-dir &lt;PATH&gt;</code></td><td>Compile a script package, then run it.</td></tr>
-<tr><td><code>--args &lt;TYPED-ARG&gt;...</code> / <code>--type-args &lt;TYPE&gt;...</code></td><td>Same shape as <code>aptos move run</code>.</td></tr>
-</tbody>
-</table>
-</div>
-<p><em>See also: <a href="https://aptos.dev/build/smart-contracts/scripts/running-scripts">Running Move Scripts</a>.</em></p>
-<h2 id="aptos-move-view"><a class="header" href="#aptos-move-view"><code>aptos move view</code></a></h2>
-<p>Call a <code>#[view]</code> function. View functions don’t change state and don’t submit a transaction; the result is read directly from the fullnode.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move view \
-  --function-id 0x42::counter::get_count \
-  --args address:0xABC \
-  --profile devnet
-</code></pre>
-<p>Same arg/type-arg shape as <code>aptos move run</code>. The output is a JSON array of return values.</p>
-<h2 id="aptos-move-simulate"><a class="header" href="#aptos-move-simulate"><code>aptos move simulate</code></a></h2>
-<p>Simulate a transaction without committing it. Useful for estimating gas, checking aborts, and previewing effects.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move simulate \
-  --function-id 0x42::counter::increment \
-  --args address:0xABC u64:1 \
-  --profile devnet
-
-aptos move simulate \
-  --function-id 0x42::counter::increment \
-  --args address:0xABC u64:1 \
-  --local                                # local VM instead of remote simulation
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--local</code></td><td>Simulate in a local VM (using the latest state pulled from the network), instead of asking the fullnode to simulate.</td></tr>
-<tr><td>Plus the same <code>--function-id</code> / <code>--type-args</code> / <code>--args</code> shape as <code>run</code>.</td><td></td></tr>
-</tbody>
-</table>
-</div>
-<h2 id="aptos-move-replay"><a class="header" href="#aptos-move-replay"><code>aptos move replay</code></a></h2>
-<p>Re-execute a historical transaction in a local VM. Lets you reproduce, benchmark, and gas-profile committed transactions.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move replay --network mainnet --txn-id 12345678
-aptos move replay --network testnet --txn-id 87654321 --profile-gas
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--network &lt;NET&gt;</code></td><td>One of <code>mainnet</code>, <code>testnet</code>, <code>devnet</code>, or a <code>&lt;URL&gt;</code> to a fullnode.</td></tr>
-<tr><td><code>--txn-id &lt;N&gt;</code></td><td>Transaction “version” (the monotonically increasing sequence; sometimes called the txn id).</td></tr>
-<tr><td><code>--benchmark</code></td><td>Time the replay and report wall-clock numbers.</td></tr>
-<tr><td><code>--profile-gas</code></td><td>Generate a gas-usage report from the replay.</td></tr>
-<tr><td><code>--fold-unique-stack</code></td><td>Fold call graphs by stack trace in the gas report (smaller output). Requires <code>--profile-gas</code>.</td></tr>
-</tbody>
-</table>
-</div>
-<p><em>See also: <a href="https://aptos.dev/build/cli/replay-past-transactions">Replaying Past Transactions</a>.</em></p>
-<h2 id="aptos-move-list"><a class="header" href="#aptos-move-list"><code>aptos move list</code></a></h2>
-<p>List on-chain packages owned by an account.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move list --account 0xABC...123 --profile devnet
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--account &lt;ADDR&gt;</code></td><td>Address whose packages to list.</td></tr>
-<tr><td><code>--query &lt;packages&gt;</code></td><td>Currently only <code>packages</code> is supported.</td></tr>
-</tbody>
-</table>
-</div>
-<p>The output enumerates each package with its upgrade policy, upgrade number, source digest, and constituent module names.</p>
-<h2 id="aptos-move-download"><a class="header" href="#aptos-move-download"><code>aptos move download</code></a></h2>
-<p>Download a published package’s source (or bytecode) from a network into a local directory. Pair with <a href="#aptos-move-disassemble"><code>disassemble</code></a> or <a href="#aptos-move-decompile"><code>decompile</code></a> for inspection.</p>
-<pre><code class="language-shellscript filename=&quot;Terminal&quot;">aptos move download \
-  --account 0xABC...123 \
-  --package MyPkg \
-  --output-dir ./downloads \
-  --profile mainnet
-
-# Bytecode-only download (use with disassemble/decompile)
-aptos move download --account 0xABC --package MyPkg --bytecode
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Flag</th><th>Meaning</th></tr>
-</thead>
-<tbody>
-<tr><td><code>--account &lt;ADDR&gt;</code></td><td>Account that hosts the package.</td></tr>
-<tr><td><code>--package &lt;NAME&gt;</code></td><td>Package name as registered on-chain.</td></tr>
-<tr><td><code>--output-dir &lt;PATH&gt;</code></td><td>Where to write the package. Defaults to the current directory.</td></tr>
-<tr><td><code>--bytecode</code> / <code>-b</code></td><td>Also download the compiled <code>.mv</code> files (not just sources).</td></tr>
-<tr><td><code>--print-metadata</code></td><td>Print the package’s on-chain metadata before saving.</td></tr>
-</tbody>
-</table>
-</div>
-<p>A package published with <code>upgrade_policy = "arbitrary"</code> cannot be downloaded — depending on it isn’t safe.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="libraries"><a class="header" href="#libraries">Libraries</a></h1>
 <p>Aptos provides multiple useful libraries for developers. The complete up-to-date
