@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-6e8b510a.js";
+            window.path_to_searchindex_js = "searchindex-c8068fcd.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b1ca6be7.js"></script>
@@ -757,8 +757,8 @@ structs must have the <code>store</code> ability. See the <a href="./generics-an
 </code></pre>
 <p>Enum types can also have the <code>key</code> ability and appear as roots of data in global storage. A common usage of enums in this context is versioning of data:</p>
 <pre><code class="language-move">enum VersionedData has key {
-  V1{name: String}
-  V2{name: String, age: u64}
+  V1{name: String},
+  V2{name: String, age: u64},
 }
 </code></pre>
 <p>Similar to structs, enum types can be generic and take positional arguments. For example, the type below represents a generic result type, where the variant constructors use positional instead of named arguments (see also <a href="./structs-and-enums.html#positional-structs">positional structs</a>).</p>
@@ -825,15 +825,15 @@ if (data is VersionedData::V1) { .. }
 <h3 id="selecting-from-enum-values"><a class="header" href="#selecting-from-enum-values">Selecting From Enum Values</a></h3>
 <p>It is possible to directly select a field from an enum value. Recall the definition of versioned data:</p>
 <pre><code class="language-move">enum VersionedData has key {
-  V1{name: String}
-  V2{name: String, age: u64}
+  V1{name: String},
+  V2{name: String, age: u64},
 }
 </code></pre>
 <p>One can write code as below to directly select the fields of variants:</p>
 <pre><code class="language-move">let s: String;
 let data1 = VersionedData::V1{name: s};
 let data2 = VersionedData::V2{name: s, age: 20};
-assert!(data1.name == data2.name)
+assert!(data1.name == data2.name);
 assert!(data2.age == 20);
 </code></pre>
 <p>Notice that field selection aborts if the enum value has no variant with the given field. This is the case for <code>data1.age</code>.
@@ -841,8 +841,8 @@ The abort code used for this case is <code>0xCA26CBD9BE0B0001</code>. In terms o
 category <code>std::error::INTERNAL</code> and reason <code>1</code>.</p>
 <p>Field selection is only possible if the field is uniquely named and typed throughout all variants. Thus, the following yields a compile-time error:</p>
 <pre><code class="language-move">enum VersionedData has key {
-  V1{name: String}
-  V2{name: u64}
+  V1{name: String},
+  V2{name: u64},
 }
 
 data.name
@@ -935,14 +935,14 @@ module 0x42::user {
 </code></pre>
 <p>This type could be upgraded to the version we used so far in this text:</p>
 <pre><code class="language-move">enum VersionedData has key {
-  V1{name: String}
-  V2{name: String, age: u64}
+  V1{name: String},
+  V2{name: String, age: u64},
 }
 </code></pre>
 <p>The following upgrade would not be allowed, since the order of variants must be preserved:</p>
 <pre><code class="language-move">enum VersionedData has key {
-  V2{name: String, age: u64}   // not a compatible upgrade
-  V1{name: String}
+  V2{name: String, age: u64},   // not a compatible upgrade
+  V1{name: String},
 }
 </code></pre>
 <h2 id="struct-and-enum-visibility"><a class="header" href="#struct-and-enum-visibility">Struct and Enum Visibility</a></h2>
@@ -990,11 +990,16 @@ public enum VersionedData has key { V1 { name: vector&lt;u8&gt; } }
 }
 </code></pre>
 <h3 id="upgradability"><a class="header" href="#upgradability">Upgradability</a></h3>
-<p>Visibility can be broadened in a package upgrade but not narrowed:</p>
+<p>In a package upgrade, struct and enum visibility may change in the
+following ways. The general principle is that no transition is allowed
+which would break code outside the defining package: <code>public</code> can never
+be narrowed, but transitions among the package-internal levels are safe
+because their consumers live inside the same package and are republished
+atomically with the upgrade.</p>
 <ul>
 <li>A private type can be upgraded to <code>package</code>, <code>friend</code>, or <code>public</code>.</li>
 <li>A <code>friend</code> or <code>package</code> type can be upgraded to <code>public</code>.</li>
-<li>A <code>friend</code> or <code>package</code> type can be downgraded back to private.</li>
+<li>A <code>friend</code> or <code>package</code> type can be narrowed back to private.</li>
 </ul>
 
                     </main>
