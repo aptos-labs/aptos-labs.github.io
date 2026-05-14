@@ -29,7 +29,7 @@
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="theme/build-stamp-020e146c.css">
-        <link rel="stylesheet" href="theme/content-width-98fb5789.css">
+        <link rel="stylesheet" href="theme/content-width-f3d662e5.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c8068fcd.js";
+            window.path_to_searchindex_js = "searchindex-41124df0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b1ca6be7.js"></script>
@@ -350,37 +350,41 @@ they will be of <code>bv</code> types in all instances of the function or the st
 </ul>
 <h2 id="built-in-functions"><a class="header" href="#built-in-functions">Built-in functions</a></h2>
 <p>MSL supports a number of built-in constants and functions. Most of them are not available in the Move
-language:</p>
-<ul>
-<li><code>MAX_U8: num</code>, <code>MAX_U64: num</code>, <code>MAX_U128: num</code> return the maximum value of the corresponding
-type.</li>
-<li><code>exists&lt;T&gt;(address): bool</code> returns true if the resource <code>T</code> exists at the address.</li>
-<li><code>global&lt;T&gt;(address): T</code> returns the resource value at the address.</li>
-<li><code>len&lt;T&gt;(vector&lt;T&gt;): num</code> returns the length of the vector.</li>
-<li><code>update&lt;T&gt;(vector&lt;T&gt;, num, T): vector&lt;T&gt;</code> returns a new vector with the element replaced at the
-given index.</li>
-<li><code>vec&lt;T&gt;(): vector&lt;T&gt;</code> returns an empty vector.</li>
-<li><code>vec&lt;T&gt;(x): vector&lt;T&gt;</code> returns a singleton vector.</li>
-<li><code>concat&lt;T&gt;(vector&lt;T&gt;, vector&lt;T&gt;): vector&lt;T&gt;</code> returns the concatenation of the parameters.</li>
-<li><code>contains&lt;T&gt;(vector&lt;T&gt;, T): bool</code> returns true if the element is in the vector.</li>
-<li><code>index_of&lt;T&gt;(vector&lt;T&gt;, T): num</code> returns the index of the element in the vector, or the length of
-the vector if it does not contain it.</li>
-<li><code>range&lt;T&gt;(vector&lt;T&gt;): range</code> returns the index range of the vector.</li>
-<li><code>in_range&lt;T&gt;(vector&lt;T&gt;, num): bool</code> returns true if the number is in the index range of the
-vector.</li>
-<li><code>in_range&lt;T&gt;(range, num): bool</code> returns true if the number is in the range.</li>
-<li><code>update_field(S, F, T): S</code> updates a field in a struct, preserving the values of other fields,
-where <code>S</code> is some struct, <code>F</code> the name of a field in <code>S</code>, and <code>T</code> a value for this field.</li>
-<li><code>old(T): T</code> delivers the value of the passed argument at point of entry into a Move function. This
-is allowed in
-<code>ensures</code> post-conditions,
-inline spec blocks (with additional restrictions), and
-certain forms of invariants, as discussed later.</li>
-<li><code>TRACE(T): T</code> is semantically the identity function and causes visualization of the argument’s
-value in error messages created by the prover.</li>
-<li><code>int2bv(v)</code> explicitly converts an integer <code>v</code> into its <code>bv</code> representation.</li>
-<li><code>bv2int(b)</code> explicitly converts a <code>bv</code> integer <code>b</code> into the <code>num</code> representation. However, its use is not encouraged due to efficiency issues.</li>
-</ul>
+language. The two-state mutation predicates (<code>publish</code>, <code>remove</code>, <code>update</code>) are only meaningful in
+contexts that compare pre- and post-state, such as <code>ensures</code> clauses.</p>
+<div class="signature-table">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>bv2int(b)</code></td><td>Explicitly converts a <code>bv</code> integer <code>b</code> into the <code>num</code> representation. Use is discouraged due to efficiency.</td></tr>
+<tr><td><code>concat&lt;T&gt;(vector&lt;T&gt;, vector&lt;T&gt;): vector&lt;T&gt;</code></td><td>Concatenation of the two vectors.</td></tr>
+<tr><td><code>contains&lt;T&gt;(vector&lt;T&gt;, T): bool</code></td><td>True if the element is in the vector.</td></tr>
+<tr><td><code>exists&lt;T&gt;(address): bool</code></td><td>True if the resource <code>T</code> exists at the address.</td></tr>
+<tr><td><code>global&lt;T&gt;(address): T</code></td><td>The resource value at the address.</td></tr>
+<tr><td><code>index_of&lt;T&gt;(vector&lt;T&gt;, T): num</code></td><td>Index of the element in the vector, or the length of the vector if absent.</td></tr>
+<tr><td><code>in_range&lt;T&gt;(range, num): bool</code></td><td>True if the number is in the range.</td></tr>
+<tr><td><code>in_range&lt;T&gt;(vector&lt;T&gt;, num): bool</code></td><td>True if the number is a valid index of the vector.</td></tr>
+<tr><td><code>int2bv(v)</code></td><td>Explicitly converts an integer <code>v</code> into its <code>bv</code> representation.</td></tr>
+<tr><td><code>len&lt;T&gt;(vector&lt;T&gt;): num</code></td><td>Length of the vector.</td></tr>
+<tr><td><code>MAX_U8</code>, <code>MAX_U16</code>, <code>MAX_U32</code>, <code>MAX_U64</code>, <code>MAX_U128</code>, <code>MAX_U256: num</code></td><td>Maximum value of the corresponding integer type.</td></tr>
+<tr><td><code>old(T): T</code></td><td>Value of the argument at the point of entry into the Move function. Allowed in <code>ensures</code> post-conditions, inline spec blocks (with restrictions), and certain forms of invariants.</td></tr>
+<tr><td><code>publish&lt;T: key&gt;(address, T): bool</code></td><td>Two-state: true iff resource <code>T</code> did not exist at the address in the pre-state and exists with the given value in the post-state.</td></tr>
+<tr><td><code>range&lt;T&gt;(vector&lt;T&gt;): range</code></td><td>Index range of the vector.</td></tr>
+<tr><td><code>remove&lt;T: key&gt;(address): bool</code></td><td>Two-state: true iff resource <code>T</code> existed at the address in the pre-state and does not exist in the post-state.</td></tr>
+<tr><td><code>TRACE(T): T</code></td><td>Identity function that causes visualization of the argument’s value in prover error messages.</td></tr>
+<tr><td><code>update&lt;T: key&gt;(address, T): bool</code></td><td>Two-state: true iff resource <code>T</code> existed at the address in the pre-state and has the given value in the post-state.</td></tr>
+<tr><td><code>update&lt;T&gt;(vector&lt;T&gt;, num, T): vector&lt;T&gt;</code></td><td>New vector with the element replaced at the given index.</td></tr>
+<tr><td><code>update_field(S, F, T): S</code></td><td>Updates a field in a struct, preserving the values of other fields. <code>S</code> is some struct, <code>F</code> the name of a field in <code>S</code>, and <code>T</code> a value for the field.</td></tr>
+<tr><td><code>vec&lt;T&gt;(): vector&lt;T&gt;</code></td><td>Empty vector.</td></tr>
+<tr><td><code>vec&lt;T&gt;(x): vector&lt;T&gt;</code></td><td>Singleton vector containing <code>x</code>.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
 <p>Built-in functions live in an unnamed outer scope of a module. If the module defines a function <code>len</code>,
 then this definition will shadow that of the according built-in function. To access the built-in
 function in such a situation, one can use the notation <code>::len(v)</code>.</p>

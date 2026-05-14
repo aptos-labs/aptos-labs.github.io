@@ -29,7 +29,7 @@
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="theme/build-stamp-020e146c.css">
-        <link rel="stylesheet" href="theme/content-width-98fb5789.css">
+        <link rel="stylesheet" href="theme/content-width-f3d662e5.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c8068fcd.js";
+            window.path_to_searchindex_js = "searchindex-41124df0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b1ca6be7.js"></script>
@@ -296,6 +296,7 @@ spec test_known {
 }
 </code></pre>
 <p>The existence of <code>result_of&lt;f&gt;(args)</code> implies that <code>f</code> is deterministic — it denotes the unique value <code>y</code> satisfying <code>ensures_of&lt;f&gt;(args, y)</code>. This is why <code>result_of</code> also establishes functional behavior: if <code>ensures_of&lt;f&gt;(x, y1)</code> and <code>ensures_of&lt;f&gt;(x, y2)</code> both hold, then <code>y1 == y2 == result_of&lt;f&gt;(x)</code>.</p>
+<p><code>result_of&lt;f&gt;(args)</code> has the return type of <code>f</code>. For void callees, <code>result_of</code> is invalid; use <code>ensures_of</code> instead. For closures with <code>&amp;mut</code> parameters, see <a href="#mutable-reference-parameters">Mutable Reference Parameters</a>.</p>
 <h3 id="inline-closure-specifications"><a class="header" href="#inline-closure-specifications">Inline Closure Specifications</a></h3>
 <p>When a closure is passed to an opaque higher-order function, the prover needs to know the closure’s specification to reason about it. Closures can carry inline specifications using the <code>spec { ... }</code> syntax:</p>
 <pre><code class="language-move">fun test_guarded_apply(x: u64): u64 {
@@ -330,29 +331,27 @@ spec test_opaque {
 </code></pre>
 <p>This approach enables modular verification: the implementation of <code>apply_opaque</code> is verified once against its specification, and callers are verified against the specification without seeing the implementation.</p>
 <h3 id="mutable-reference-parameters"><a class="header" href="#mutable-reference-parameters">Mutable Reference Parameters</a></h3>
-<p>Behavioral predicates extend to closures with mutable reference parameters. When a function takes <code>&amp;mut T</code>, it effectively has two outputs: the explicit return value and the modified reference. The predicates account for both:</p>
+<p>Behavioral predicates extend to closures with mutable reference parameters. A <code>&amp;mut T</code> argument appears <strong>once</strong> in a behavioral-predicate call — the prover supplies both the pre-state and post-state of the argument to the underlying predicate automatically:</p>
+<pre><code class="language-move">fun apply_mut(f: |&amp;mut u64| u64, x: &amp;mut u64): u64 { f(x) }
+spec apply_mut {
+    ensures result == result_of&lt;f&gt;(x);
+}
+</code></pre>
+<p><code>result_of&lt;f&gt;(x_mut)</code> has the same type as the procedure’s <code>result</code>, so <code>result == result_of&lt;f&gt;(x_mut)</code> type-checks directly. The <code>&amp;mut</code> post-state of <code>x</code> is constrained deterministically: when <code>f</code> is functional in its inputs, <code>x</code>’s post-state is uniquely determined by its pre-state.</p>
+<p><code>ensures_of&lt;f&gt;(x_mut, r)</code> is the relational form. It is equivalent to <code>r == result_of&lt;f&gt;(x_mut)</code> for non-void deterministic callees, and is the only choice for void callees:</p>
 <pre><code class="language-move">fun apply_void_mut(f: |&amp;mut u64|, x: &amp;mut u64) { f(x) }
 spec apply_void_mut {
-    // For void return with &amp;mut param, result_of returns the modified value
-    ensures x == result_of&lt;f&gt;(old(x));
-}
-
-fun apply_mut(f: |&amp;mut u64| u64, x: &amp;mut u64): u64 { f(x) }
-spec apply_mut {
-    // For non-void return with &amp;mut, ensures_of takes (input, result, modified_param)
-    ensures ensures_of&lt;f&gt;(old(x), result, x);
+    // Void `f` has no return — `result_of` is rejected. `ensures_of`
+    // relates pre- and post-state of `x`.
+    ensures ensures_of&lt;f&gt;(x);
 }
 </code></pre>
-<p>When a closure both returns a value and modifies a <code>&amp;mut</code> parameter, <code>result_of</code> returns a tuple <code>(explicit_result, modified_value)</code>:</p>
-<pre><code class="language-move">fun apply_mut_result(f: |&amp;mut u64| u64, x: &amp;mut u64): u64 { f(x) }
-spec apply_mut_result {
-    ensures (result, x) == result_of&lt;f&gt;(old(x));
+<p>For multi-return closures with <code>&amp;mut</code> parameters, <code>result_of&lt;f&gt;</code> returns the declared return tuple. The <code>&amp;mut</code> post-state is still pinned automatically:</p>
+<pre><code class="language-move">fun apply_two_results(f: |&amp;mut u64| (u64, u64), x: &amp;mut u64): (u64, u64) {
+    f(x)
 }
-</code></pre>
-<p>Tuple components can be extracted with let expressions:</p>
-<pre><code class="language-move">spec apply_mut_extract {
-    ensures result == {let (r, _p) = result_of&lt;f&gt;(old(x)); r};
-    ensures x == {let (_r, p) = result_of&lt;f&gt;(old(x)); p};
+spec apply_two_results {
+    ensures (result_1, result_2) == result_of&lt;f&gt;(x);
 }
 </code></pre>
 <h3 id="behavioral-predicates-with-loops"><a class="header" href="#behavioral-predicates-with-loops">Behavioral Predicates with Loops</a></h3>

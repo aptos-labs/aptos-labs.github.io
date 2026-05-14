@@ -30,7 +30,7 @@
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="theme/build-stamp-020e146c.css">
-        <link rel="stylesheet" href="theme/content-width-98fb5789.css">
+        <link rel="stylesheet" href="theme/content-width-f3d662e5.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c8068fcd.js";
+            window.path_to_searchindex_js = "searchindex-41124df0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b1ca6be7.js"></script>
@@ -5682,8 +5682,10 @@ to the programmer (except in possible decreased time or gas cost).</li>
 the current function and one for the entire transaction.</p>
 <p>More information on <a href="#functions"><code>return</code> can be found in the linked section</a>.</p>
 <h2 id="abort"><a class="header" href="#abort"><code>abort</code></a></h2>
-<p><code>abort</code> is an expression that takes one argument: an <strong>abort code</strong> of type <code>u64</code>. For example:</p>
+<p><code>abort</code> is an expression that takes one argument, which is either an <strong>abort code</strong> of type <code>u64</code> or
+an <strong>abort message</strong> of type <code>vector&lt;u8&gt;</code> (since Move 2.4). For example:</p>
 <pre><code class="language-move">abort 42
+abort b"something went wrong"
 </code></pre>
 <p>The <code>abort</code> expression halts execution of the current function and reverts all changes made to global
 state by the current transaction. There is no mechanism for “catching” or otherwise handling an
@@ -5720,20 +5722,44 @@ that all numbers in the vector are less than the specified <code>bound</code>, a
   }
 }
 </code></pre>
+<h3 id="abort-messages"><a class="header" href="#abort-messages">Abort messages</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>Instead of a numeric code, <code>abort</code> accepts an expression of type <code>vector&lt;u8&gt;</code> carrying a
+human-readable message. The VM imposes two requirements on the message, checked when the <code>abort</code> is
+executed; failing either causes the transaction to fail with a VM error instead of the user-supplied
+message:</p>
+<ul>
+<li>The message must be valid UTF-8; otherwise the transaction fails with <code>INVALID_ABORT_MESSAGE</code>.</li>
+<li>The message must be at most 1024 bytes long; otherwise the transaction fails with
+<code>ABORT_MESSAGE_LIMIT_EXCEEDED</code>.</li>
+</ul>
+<p>When an <code>abort</code> is reached with a message, the VM still reports a module address and a <code>u64</code> abort
+code, and additionally surfaces the message string in the transaction’s error information. The code
+in this case is fixed by the compiler to the well-known <em>unspecified</em> abort code
+<code>0xCA26CBD9BE0B0000</code>. In terms of the <code>std::error</code> convention, this code has category
+<code>std::error::INTERNAL</code> and reason <code>0</code>; it carries no information of its own and signals that the
+attached message is the diagnostic to read.</p>
+<p>To build a message from runtime values, format a <code>String</code> with the formatting functions in
+<code>std::string_utils</code> and convert it to bytes with <code>String::into_bytes</code>. For example:</p>
+<pre><code class="language-move">abort std::string_utils::format1(&amp;b"insufficient balance: needed {}", amount).into_bytes()
+</code></pre>
+<p>In practice, the <code>assert!</code> family of macros (described below) handles this boilerplate for you and
+is usually the more convenient choice.</p>
 <h3 id="assert"><a class="header" href="#assert"><code>assert</code></a></h3>
-<p><code>assert</code> is a builtin, macro-like operation provided by the Move compiler. It takes two arguments, a
-condition of type <code>bool</code> and a code of type <code>u64</code></p>
-<pre><code class="language-move">assert!(condition: bool, code: u64)
-assert!(condition: bool) // Since Move 2.0
+<p><code>assert</code> is a builtin, macro-like operation provided by the Move compiler. It checks a boolean
+condition and, when the condition is false, aborts the transaction with the supplied diagnostic.
+The macro supports four forms, differing in what diagnostic is attached to the abort:</p>
+<pre><code class="language-move">assert!(condition: bool)
+assert!(condition: bool, code: u64)
+assert!(condition: bool, message: vector&lt;u8&gt;)
+assert!(condition: bool, fmt: vector&lt;u8&gt;, arg1: T1, ..., argN: TN) // 1 ≤ N ≤ 4
 </code></pre>
 <p>Since the operation is a macro, it must be invoked with the <code>!</code>. This is to convey that the
 arguments to <code>assert</code> are call-by-expression. In other words, <code>assert</code> is not a normal function and
-does not exist at the bytecode level. It is replaced inside the compiler with</p>
+does not exist at the bytecode level. For example, the form <code>assert!(condition, code)</code>
+is replaced inside the compiler with</p>
 <pre><code class="language-move">if (condition) () else abort code
 </code></pre>
-<p>Since Move 2.0, <code>assert</code> without an error code is supported. If this assert is used, the
-abort code <code>0xCA26CBD9BE0B0000</code> is generated. In terms of the <code>std::error</code> convention, this code has
-category <code>std::error::INTERNAL</code> and reason <code>0</code>.</p>
 <p><code>assert</code> is more commonly used than just <code>abort</code> by itself. The <code>abort</code> examples above can be
 rewritten using <code>assert</code></p>
 <pre><code class="language-move">script {
@@ -5767,15 +5793,84 @@ always evaluated. For example:</p>
 <pre><code class="language-move">if (true) () else (1 / 0)
 </code></pre>
 <p>So the arithmetic expression is never evaluated!</p>
+<h4 id="assert-without-an-abort-code"><a class="header" href="#assert-without-an-abort-code"><code>assert</code> without an abort code</a></h4>
+<p><em>Since language version 2.0</em></p>
+<p>The abort code may be omitted entirely:</p>
+<pre><code class="language-move">assert!(balance &gt;= amount);
+</code></pre>
+<p>In this case the macro aborts with the well-known <em>unspecified</em> abort code <code>0xCA26CBD9BE0B0000</code>
+(see <a href="#abort-messages">above</a>).</p>
+<h4 id="assert-with-a-message"><a class="header" href="#assert-with-a-message"><code>assert</code> with a message</a></h4>
+<p><em>Since language version 2.4</em></p>
+<p>The second argument to <code>assert!</code> may also be a <code>vector&lt;u8&gt;</code> literal containing an abort message:</p>
+<pre><code class="language-move">assert!(balance &gt;= amount, b"insufficient balance");
+</code></pre>
+<p>The compiler distinguishes the code form from the message form by the type of the second argument
+(<code>u64</code> vs <code>vector&lt;u8&gt;</code>). On failure, the macro aborts with the message using the unspecified abort
+code <code>0xCA26CBD9BE0B0000</code>; the message itself is what conveys diagnostic information.</p>
+<h4 id="assert-with-a-formatted-message"><a class="header" href="#assert-with-a-formatted-message"><code>assert</code> with a formatted message</a></h4>
+<p><em>Since language version 2.4</em></p>
+<p>The macro also accepts a format string followed by 1–4 arguments that are interpolated at runtime:</p>
+<pre><code class="language-move">assert!(idx &lt; len, b"index {} out of bounds for vector of length {}", idx, len);
+</code></pre>
+<p>This form expands to:</p>
+<pre><code class="language-move">// assert!(cond, fmt, arg1, ..., argN)
+if (cond) () else abort std::string::into_bytes(
+    std::string_utils::formatN(&amp;fmt, arg1, ..., argN)
+)
+</code></pre>
+<p>The format string uses <code>{}</code> as the placeholder for each argument; <code>{{</code> and <code>}}</code> produce literal
+braces. Up to four arguments are supported, and the number of placeholders must match the number of
+arguments; otherwise the compiler reports an error. Any type with the <code>drop</code> ability may be passed
+as an argument, and is rendered by <code>std::string_utils</code>.</p>
+<h3 id="assert_eq-and-assert_ne"><a class="header" href="#assert_eq-and-assert_ne"><code>assert_eq</code> and <code>assert_ne</code></a></h3>
+<p><em>Since language version 2.4</em></p>
+<p><code>assert_eq!</code> and <code>assert_ne!</code> are convenience macros for equality and inequality assertions. They
+evaluate each operand exactly once and, on failure, abort with a message that includes both values.
+These are modelled on the macros of the same name in Rust.</p>
+<pre><code class="language-move">assert_eq!(left, right)
+assert_eq!(left, right, message: vector&lt;u8&gt;)
+assert_eq!(left, right, fmt: vector&lt;u8&gt;, arg1: T1, ..., argN: TN) // 1 ≤ N ≤ 4
+
+assert_ne!(left, right)
+assert_ne!(left, right, message: vector&lt;u8&gt;)
+assert_ne!(left, right, fmt: vector&lt;u8&gt;, arg1: T1, ..., argN: TN) // 1 ≤ N ≤ 4
+</code></pre>
+<p>The two-argument form expands roughly to:</p>
+<pre><code class="language-move">let ($left, $right) = (left, right);
+if ($left == $right) () else abort std::string::into_bytes(
+    std::string_utils::format2(
+        &amp;b"assertion `left == right` failed\n  left: {}\n right: {}",
+        $left, $right,
+    )
+)
+</code></pre>
+<p>If, for example, <code>assert_eq!(1, 2)</code> fails, the transaction aborts with the message:</p>
+<pre><code class="language-text">assertion `left == right` failed
+  left: 1
+ right: 2
+</code></pre>
+<p>When a custom message is supplied, it is rendered (via <code>string::utf8</code>) into the assertion message:</p>
+<pre><code class="language-move">assert_eq!(actual, expected, b"custom error message")
+</code></pre>
+<p>The formatted-message form interpolates the arguments into the user-supplied format string before
+embedding it:</p>
+<pre><code class="language-move">assert_eq!(actual, expected, b"mismatch for key {}", key)
+</code></pre>
+<p><code>assert_ne!</code> behaves identically except that the condition is <code>$left != $right</code> and the message
+reads <code>assertion `left != right` failed</code>.</p>
+<p>The two operands are evaluated eagerly and exactly once; any user-supplied format arguments are
+only evaluated when the assertion fails. All failures use the unspecified abort code
+<code>0xCA26CBD9BE0B0000</code>; the diagnostic value is in the attached message.</p>
 <h3 id="abort-codes-in-the-move-vm"><a class="header" href="#abort-codes-in-the-move-vm">Abort codes in the Move VM</a></h3>
 <p>When using <code>abort</code>, it is important to understand how the <code>u64</code> code will be used by the VM.</p>
 <p>Normally, after successful execution, the Move VM produces a change-set for the changes made to
 global storage (added/removed resources, updates to existing resources, etc.).</p>
-<p>If an <code>abort</code> is reached, the VM will instead indicate an error. Included in that error will be two
-pieces of information:</p>
+<p>If an <code>abort</code> is reached, the VM will instead indicate an error. Included in that error will be:</p>
 <ul>
 <li>The module that produced the abort (address and name)</li>
-<li>The abort code.</li>
+<li>The abort code, and</li>
+<li>The abort message, if one was provided (Move 2.4+).</li>
 </ul>
 <p>For example</p>
 <pre><code class="language-move">module 0x42::example {
@@ -5792,6 +5887,10 @@ script {
 </code></pre>
 <p>If a transaction, such as the script <code>always_aborts</code> above, calls <code>0x2::example::aborts</code>, the VM
 would produce an error that indicated the module <code>0x2::example</code> and the code <code>42</code>.</p>
+<p>For aborts carrying a message, the VM additionally validates that the message is valid UTF-8 and at
+most 1024 bytes long. A message that fails either check causes the transaction to fail with a VM
+error of <code>INVALID_ABORT_MESSAGE</code> or <code>ABORT_MESSAGE_LIMIT_EXCEEDED</code>, respectively, instead of the
+user-supplied abort message.</p>
 <p>This can be useful for having multiple aborts being grouped together inside a module.</p>
 <p>In this example, the module has two separate error codes used in multiple functions</p>
 <pre><code class="language-move">module 0x42::example {
@@ -7027,37 +7126,41 @@ they will be of <code>bv</code> types in all instances of the function or the st
 </ul>
 <h2 id="built-in-functions"><a class="header" href="#built-in-functions">Built-in functions</a></h2>
 <p>MSL supports a number of built-in constants and functions. Most of them are not available in the Move
-language:</p>
-<ul>
-<li><code>MAX_U8: num</code>, <code>MAX_U64: num</code>, <code>MAX_U128: num</code> return the maximum value of the corresponding
-type.</li>
-<li><code>exists&lt;T&gt;(address): bool</code> returns true if the resource <code>T</code> exists at the address.</li>
-<li><code>global&lt;T&gt;(address): T</code> returns the resource value at the address.</li>
-<li><code>len&lt;T&gt;(vector&lt;T&gt;): num</code> returns the length of the vector.</li>
-<li><code>update&lt;T&gt;(vector&lt;T&gt;, num, T): vector&lt;T&gt;</code> returns a new vector with the element replaced at the
-given index.</li>
-<li><code>vec&lt;T&gt;(): vector&lt;T&gt;</code> returns an empty vector.</li>
-<li><code>vec&lt;T&gt;(x): vector&lt;T&gt;</code> returns a singleton vector.</li>
-<li><code>concat&lt;T&gt;(vector&lt;T&gt;, vector&lt;T&gt;): vector&lt;T&gt;</code> returns the concatenation of the parameters.</li>
-<li><code>contains&lt;T&gt;(vector&lt;T&gt;, T): bool</code> returns true if the element is in the vector.</li>
-<li><code>index_of&lt;T&gt;(vector&lt;T&gt;, T): num</code> returns the index of the element in the vector, or the length of
-the vector if it does not contain it.</li>
-<li><code>range&lt;T&gt;(vector&lt;T&gt;): range</code> returns the index range of the vector.</li>
-<li><code>in_range&lt;T&gt;(vector&lt;T&gt;, num): bool</code> returns true if the number is in the index range of the
-vector.</li>
-<li><code>in_range&lt;T&gt;(range, num): bool</code> returns true if the number is in the range.</li>
-<li><code>update_field(S, F, T): S</code> updates a field in a struct, preserving the values of other fields,
-where <code>S</code> is some struct, <code>F</code> the name of a field in <code>S</code>, and <code>T</code> a value for this field.</li>
-<li><code>old(T): T</code> delivers the value of the passed argument at point of entry into a Move function. This
-is allowed in
-<code>ensures</code> post-conditions,
-inline spec blocks (with additional restrictions), and
-certain forms of invariants, as discussed later.</li>
-<li><code>TRACE(T): T</code> is semantically the identity function and causes visualization of the argument’s
-value in error messages created by the prover.</li>
-<li><code>int2bv(v)</code> explicitly converts an integer <code>v</code> into its <code>bv</code> representation.</li>
-<li><code>bv2int(b)</code> explicitly converts a <code>bv</code> integer <code>b</code> into the <code>num</code> representation. However, its use is not encouraged due to efficiency issues.</li>
-</ul>
+language. The two-state mutation predicates (<code>publish</code>, <code>remove</code>, <code>update</code>) are only meaningful in
+contexts that compare pre- and post-state, such as <code>ensures</code> clauses.</p>
+<div class="signature-table">
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Signature</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>bv2int(b)</code></td><td>Explicitly converts a <code>bv</code> integer <code>b</code> into the <code>num</code> representation. Use is discouraged due to efficiency.</td></tr>
+<tr><td><code>concat&lt;T&gt;(vector&lt;T&gt;, vector&lt;T&gt;): vector&lt;T&gt;</code></td><td>Concatenation of the two vectors.</td></tr>
+<tr><td><code>contains&lt;T&gt;(vector&lt;T&gt;, T): bool</code></td><td>True if the element is in the vector.</td></tr>
+<tr><td><code>exists&lt;T&gt;(address): bool</code></td><td>True if the resource <code>T</code> exists at the address.</td></tr>
+<tr><td><code>global&lt;T&gt;(address): T</code></td><td>The resource value at the address.</td></tr>
+<tr><td><code>index_of&lt;T&gt;(vector&lt;T&gt;, T): num</code></td><td>Index of the element in the vector, or the length of the vector if absent.</td></tr>
+<tr><td><code>in_range&lt;T&gt;(range, num): bool</code></td><td>True if the number is in the range.</td></tr>
+<tr><td><code>in_range&lt;T&gt;(vector&lt;T&gt;, num): bool</code></td><td>True if the number is a valid index of the vector.</td></tr>
+<tr><td><code>int2bv(v)</code></td><td>Explicitly converts an integer <code>v</code> into its <code>bv</code> representation.</td></tr>
+<tr><td><code>len&lt;T&gt;(vector&lt;T&gt;): num</code></td><td>Length of the vector.</td></tr>
+<tr><td><code>MAX_U8</code>, <code>MAX_U16</code>, <code>MAX_U32</code>, <code>MAX_U64</code>, <code>MAX_U128</code>, <code>MAX_U256: num</code></td><td>Maximum value of the corresponding integer type.</td></tr>
+<tr><td><code>old(T): T</code></td><td>Value of the argument at the point of entry into the Move function. Allowed in <code>ensures</code> post-conditions, inline spec blocks (with restrictions), and certain forms of invariants.</td></tr>
+<tr><td><code>publish&lt;T: key&gt;(address, T): bool</code></td><td>Two-state: true iff resource <code>T</code> did not exist at the address in the pre-state and exists with the given value in the post-state.</td></tr>
+<tr><td><code>range&lt;T&gt;(vector&lt;T&gt;): range</code></td><td>Index range of the vector.</td></tr>
+<tr><td><code>remove&lt;T: key&gt;(address): bool</code></td><td>Two-state: true iff resource <code>T</code> existed at the address in the pre-state and does not exist in the post-state.</td></tr>
+<tr><td><code>TRACE(T): T</code></td><td>Identity function that causes visualization of the argument’s value in prover error messages.</td></tr>
+<tr><td><code>update&lt;T: key&gt;(address, T): bool</code></td><td>Two-state: true iff resource <code>T</code> existed at the address in the pre-state and has the given value in the post-state.</td></tr>
+<tr><td><code>update&lt;T&gt;(vector&lt;T&gt;, num, T): vector&lt;T&gt;</code></td><td>New vector with the element replaced at the given index.</td></tr>
+<tr><td><code>update_field(S, F, T): S</code></td><td>Updates a field in a struct, preserving the values of other fields. <code>S</code> is some struct, <code>F</code> the name of a field in <code>S</code>, and <code>T</code> a value for the field.</td></tr>
+<tr><td><code>vec&lt;T&gt;(): vector&lt;T&gt;</code></td><td>Empty vector.</td></tr>
+<tr><td><code>vec&lt;T&gt;(x): vector&lt;T&gt;</code></td><td>Singleton vector containing <code>x</code>.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
 <p>Built-in functions live in an unnamed outer scope of a module. If the module defines a function <code>len</code>,
 then this definition will shadow that of the according built-in function. To access the built-in
 function in such a situation, one can use the notation <code>::len(v)</code>.</p>
@@ -8037,6 +8140,7 @@ spec test_known {
 }
 </code></pre>
 <p>The existence of <code>result_of&lt;f&gt;(args)</code> implies that <code>f</code> is deterministic — it denotes the unique value <code>y</code> satisfying <code>ensures_of&lt;f&gt;(args, y)</code>. This is why <code>result_of</code> also establishes functional behavior: if <code>ensures_of&lt;f&gt;(x, y1)</code> and <code>ensures_of&lt;f&gt;(x, y2)</code> both hold, then <code>y1 == y2 == result_of&lt;f&gt;(x)</code>.</p>
+<p><code>result_of&lt;f&gt;(args)</code> has the return type of <code>f</code>. For void callees, <code>result_of</code> is invalid; use <code>ensures_of</code> instead. For closures with <code>&amp;mut</code> parameters, see <a href="#mutable-reference-parameters">Mutable Reference Parameters</a>.</p>
 <h3 id="inline-closure-specifications"><a class="header" href="#inline-closure-specifications">Inline Closure Specifications</a></h3>
 <p>When a closure is passed to an opaque higher-order function, the prover needs to know the closure’s specification to reason about it. Closures can carry inline specifications using the <code>spec { ... }</code> syntax:</p>
 <pre><code class="language-move">fun test_guarded_apply(x: u64): u64 {
@@ -8071,29 +8175,27 @@ spec test_opaque {
 </code></pre>
 <p>This approach enables modular verification: the implementation of <code>apply_opaque</code> is verified once against its specification, and callers are verified against the specification without seeing the implementation.</p>
 <h3 id="mutable-reference-parameters"><a class="header" href="#mutable-reference-parameters">Mutable Reference Parameters</a></h3>
-<p>Behavioral predicates extend to closures with mutable reference parameters. When a function takes <code>&amp;mut T</code>, it effectively has two outputs: the explicit return value and the modified reference. The predicates account for both:</p>
+<p>Behavioral predicates extend to closures with mutable reference parameters. A <code>&amp;mut T</code> argument appears <strong>once</strong> in a behavioral-predicate call — the prover supplies both the pre-state and post-state of the argument to the underlying predicate automatically:</p>
+<pre><code class="language-move">fun apply_mut(f: |&amp;mut u64| u64, x: &amp;mut u64): u64 { f(x) }
+spec apply_mut {
+    ensures result == result_of&lt;f&gt;(x);
+}
+</code></pre>
+<p><code>result_of&lt;f&gt;(x_mut)</code> has the same type as the procedure’s <code>result</code>, so <code>result == result_of&lt;f&gt;(x_mut)</code> type-checks directly. The <code>&amp;mut</code> post-state of <code>x</code> is constrained deterministically: when <code>f</code> is functional in its inputs, <code>x</code>’s post-state is uniquely determined by its pre-state.</p>
+<p><code>ensures_of&lt;f&gt;(x_mut, r)</code> is the relational form. It is equivalent to <code>r == result_of&lt;f&gt;(x_mut)</code> for non-void deterministic callees, and is the only choice for void callees:</p>
 <pre><code class="language-move">fun apply_void_mut(f: |&amp;mut u64|, x: &amp;mut u64) { f(x) }
 spec apply_void_mut {
-    // For void return with &amp;mut param, result_of returns the modified value
-    ensures x == result_of&lt;f&gt;(old(x));
-}
-
-fun apply_mut(f: |&amp;mut u64| u64, x: &amp;mut u64): u64 { f(x) }
-spec apply_mut {
-    // For non-void return with &amp;mut, ensures_of takes (input, result, modified_param)
-    ensures ensures_of&lt;f&gt;(old(x), result, x);
+    // Void `f` has no return — `result_of` is rejected. `ensures_of`
+    // relates pre- and post-state of `x`.
+    ensures ensures_of&lt;f&gt;(x);
 }
 </code></pre>
-<p>When a closure both returns a value and modifies a <code>&amp;mut</code> parameter, <code>result_of</code> returns a tuple <code>(explicit_result, modified_value)</code>:</p>
-<pre><code class="language-move">fun apply_mut_result(f: |&amp;mut u64| u64, x: &amp;mut u64): u64 { f(x) }
-spec apply_mut_result {
-    ensures (result, x) == result_of&lt;f&gt;(old(x));
+<p>For multi-return closures with <code>&amp;mut</code> parameters, <code>result_of&lt;f&gt;</code> returns the declared return tuple. The <code>&amp;mut</code> post-state is still pinned automatically:</p>
+<pre><code class="language-move">fun apply_two_results(f: |&amp;mut u64| (u64, u64), x: &amp;mut u64): (u64, u64) {
+    f(x)
 }
-</code></pre>
-<p>Tuple components can be extracted with let expressions:</p>
-<pre><code class="language-move">spec apply_mut_extract {
-    ensures result == {let (r, _p) = result_of&lt;f&gt;(old(x)); r};
-    ensures x == {let (_r, p) = result_of&lt;f&gt;(old(x)); p};
+spec apply_two_results {
+    ensures (result_1, result_2) == result_of&lt;f&gt;(x);
 }
 </code></pre>
 <h3 id="behavioral-predicates-with-loops"><a class="header" href="#behavioral-predicates-with-loops">Behavioral Predicates with Loops</a></h3>
@@ -9210,6 +9312,7 @@ module 0x42::example { // double slash can be anywhere
 <h2 id="move-24"><a class="header" href="#move-24">Move 2.4</a></h2>
 <p>The Move 2.4 language release adds the following features to Move:</p>
 <ul>
+<li><strong>Abort Messages</strong>: The <code>abort</code> expression and the <code>assert!</code> macro now accept a <code>vector&lt;u8&gt;</code> message (validated as UTF-8 at runtime) in addition to the existing <code>u64</code> code, and <code>assert!</code> supports formatted messages that interpolate runtime values. Two new macros, <code>assert_eq!</code> and <code>assert_ne!</code>, check that two values are equal (resp. unequal) and, on failure, abort with a descriptive message that identifies the values involved. See the <a href="#abort-messages">reference doc here</a>.</li>
 <li><strong>Struct and Enum Visibility Modifiers</strong>: Structs and enums can now be declared with <code>public</code>, <code>package</code>, or <code>friend</code> visibility modifiers. This allows external modules to construct, destruct, pattern-match, and access or modify fields of the type, lifting the previous restriction that limited all such operations to the defining module. See the reference docs for <a href="#struct-visibility">structs</a> and <a href="#enum-visibility">enums</a>.</li>
 <li><strong>Compositional Specifications for the Move Prover</strong>: The Move Specification Language gains a set of compositional constructs supporting higher-order functions, frame conditions, intermediate-state reasoning, and proof guidance. See the reference docs for <a href="#behavioral-predicates">Behavioral Predicates</a>, <a href="#access-specifiers-and-frame-conditions">Access Specifiers and Frame Conditions</a>, <a href="#state-labels">State Labels</a>, <a href="#two-state-specification-functions">Two-State Specification Functions</a>, <a href="#proofs-and-lemmas">Proofs and Lemmas</a>, and <a href="#specification-inference">Specification Inference</a>.</li>
 </ul>

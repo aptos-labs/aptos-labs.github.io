@@ -29,7 +29,7 @@
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="theme/build-stamp-020e146c.css">
-        <link rel="stylesheet" href="theme/content-width-98fb5789.css">
+        <link rel="stylesheet" href="theme/content-width-f3d662e5.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c8068fcd.js";
+            window.path_to_searchindex_js = "searchindex-41124df0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b1ca6be7.js"></script>
@@ -187,8 +187,10 @@
 the current function and one for the entire transaction.</p>
 <p>More information on <a href="./functions.html"><code>return</code> can be found in the linked section</a>.</p>
 <h2 id="abort"><a class="header" href="#abort"><code>abort</code></a></h2>
-<p><code>abort</code> is an expression that takes one argument: an <strong>abort code</strong> of type <code>u64</code>. For example:</p>
+<p><code>abort</code> is an expression that takes one argument, which is either an <strong>abort code</strong> of type <code>u64</code> or
+an <strong>abort message</strong> of type <code>vector&lt;u8&gt;</code> (since Move 2.4). For example:</p>
 <pre><code class="language-move">abort 42
+abort b"something went wrong"
 </code></pre>
 <p>The <code>abort</code> expression halts execution of the current function and reverts all changes made to global
 state by the current transaction. There is no mechanism for “catching” or otherwise handling an
@@ -225,20 +227,44 @@ that all numbers in the vector are less than the specified <code>bound</code>, a
   }
 }
 </code></pre>
+<h3 id="abort-messages"><a class="header" href="#abort-messages">Abort messages</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>Instead of a numeric code, <code>abort</code> accepts an expression of type <code>vector&lt;u8&gt;</code> carrying a
+human-readable message. The VM imposes two requirements on the message, checked when the <code>abort</code> is
+executed; failing either causes the transaction to fail with a VM error instead of the user-supplied
+message:</p>
+<ul>
+<li>The message must be valid UTF-8; otherwise the transaction fails with <code>INVALID_ABORT_MESSAGE</code>.</li>
+<li>The message must be at most 1024 bytes long; otherwise the transaction fails with
+<code>ABORT_MESSAGE_LIMIT_EXCEEDED</code>.</li>
+</ul>
+<p>When an <code>abort</code> is reached with a message, the VM still reports a module address and a <code>u64</code> abort
+code, and additionally surfaces the message string in the transaction’s error information. The code
+in this case is fixed by the compiler to the well-known <em>unspecified</em> abort code
+<code>0xCA26CBD9BE0B0000</code>. In terms of the <code>std::error</code> convention, this code has category
+<code>std::error::INTERNAL</code> and reason <code>0</code>; it carries no information of its own and signals that the
+attached message is the diagnostic to read.</p>
+<p>To build a message from runtime values, format a <code>String</code> with the formatting functions in
+<code>std::string_utils</code> and convert it to bytes with <code>String::into_bytes</code>. For example:</p>
+<pre><code class="language-move">abort std::string_utils::format1(&amp;b"insufficient balance: needed {}", amount).into_bytes()
+</code></pre>
+<p>In practice, the <code>assert!</code> family of macros (described below) handles this boilerplate for you and
+is usually the more convenient choice.</p>
 <h3 id="assert"><a class="header" href="#assert"><code>assert</code></a></h3>
-<p><code>assert</code> is a builtin, macro-like operation provided by the Move compiler. It takes two arguments, a
-condition of type <code>bool</code> and a code of type <code>u64</code></p>
-<pre><code class="language-move">assert!(condition: bool, code: u64)
-assert!(condition: bool) // Since Move 2.0
+<p><code>assert</code> is a builtin, macro-like operation provided by the Move compiler. It checks a boolean
+condition and, when the condition is false, aborts the transaction with the supplied diagnostic.
+The macro supports four forms, differing in what diagnostic is attached to the abort:</p>
+<pre><code class="language-move">assert!(condition: bool)
+assert!(condition: bool, code: u64)
+assert!(condition: bool, message: vector&lt;u8&gt;)
+assert!(condition: bool, fmt: vector&lt;u8&gt;, arg1: T1, ..., argN: TN) // 1 ≤ N ≤ 4
 </code></pre>
 <p>Since the operation is a macro, it must be invoked with the <code>!</code>. This is to convey that the
 arguments to <code>assert</code> are call-by-expression. In other words, <code>assert</code> is not a normal function and
-does not exist at the bytecode level. It is replaced inside the compiler with</p>
+does not exist at the bytecode level. For example, the form <code>assert!(condition, code)</code>
+is replaced inside the compiler with</p>
 <pre><code class="language-move">if (condition) () else abort code
 </code></pre>
-<p>Since Move 2.0, <code>assert</code> without an error code is supported. If this assert is used, the
-abort code <code>0xCA26CBD9BE0B0000</code> is generated. In terms of the <code>std::error</code> convention, this code has
-category <code>std::error::INTERNAL</code> and reason <code>0</code>.</p>
 <p><code>assert</code> is more commonly used than just <code>abort</code> by itself. The <code>abort</code> examples above can be
 rewritten using <code>assert</code></p>
 <pre><code class="language-move">script {
@@ -272,15 +298,84 @@ always evaluated. For example:</p>
 <pre><code class="language-move">if (true) () else (1 / 0)
 </code></pre>
 <p>So the arithmetic expression is never evaluated!</p>
+<h4 id="assert-without-an-abort-code"><a class="header" href="#assert-without-an-abort-code"><code>assert</code> without an abort code</a></h4>
+<p><em>Since language version 2.0</em></p>
+<p>The abort code may be omitted entirely:</p>
+<pre><code class="language-move">assert!(balance &gt;= amount);
+</code></pre>
+<p>In this case the macro aborts with the well-known <em>unspecified</em> abort code <code>0xCA26CBD9BE0B0000</code>
+(see <a href="#abort-messages">above</a>).</p>
+<h4 id="assert-with-a-message"><a class="header" href="#assert-with-a-message"><code>assert</code> with a message</a></h4>
+<p><em>Since language version 2.4</em></p>
+<p>The second argument to <code>assert!</code> may also be a <code>vector&lt;u8&gt;</code> literal containing an abort message:</p>
+<pre><code class="language-move">assert!(balance &gt;= amount, b"insufficient balance");
+</code></pre>
+<p>The compiler distinguishes the code form from the message form by the type of the second argument
+(<code>u64</code> vs <code>vector&lt;u8&gt;</code>). On failure, the macro aborts with the message using the unspecified abort
+code <code>0xCA26CBD9BE0B0000</code>; the message itself is what conveys diagnostic information.</p>
+<h4 id="assert-with-a-formatted-message"><a class="header" href="#assert-with-a-formatted-message"><code>assert</code> with a formatted message</a></h4>
+<p><em>Since language version 2.4</em></p>
+<p>The macro also accepts a format string followed by 1–4 arguments that are interpolated at runtime:</p>
+<pre><code class="language-move">assert!(idx &lt; len, b"index {} out of bounds for vector of length {}", idx, len);
+</code></pre>
+<p>This form expands to:</p>
+<pre><code class="language-move">// assert!(cond, fmt, arg1, ..., argN)
+if (cond) () else abort std::string::into_bytes(
+    std::string_utils::formatN(&amp;fmt, arg1, ..., argN)
+)
+</code></pre>
+<p>The format string uses <code>{}</code> as the placeholder for each argument; <code>{{</code> and <code>}}</code> produce literal
+braces. Up to four arguments are supported, and the number of placeholders must match the number of
+arguments; otherwise the compiler reports an error. Any type with the <code>drop</code> ability may be passed
+as an argument, and is rendered by <code>std::string_utils</code>.</p>
+<h3 id="assert_eq-and-assert_ne"><a class="header" href="#assert_eq-and-assert_ne"><code>assert_eq</code> and <code>assert_ne</code></a></h3>
+<p><em>Since language version 2.4</em></p>
+<p><code>assert_eq!</code> and <code>assert_ne!</code> are convenience macros for equality and inequality assertions. They
+evaluate each operand exactly once and, on failure, abort with a message that includes both values.
+These are modelled on the macros of the same name in Rust.</p>
+<pre><code class="language-move">assert_eq!(left, right)
+assert_eq!(left, right, message: vector&lt;u8&gt;)
+assert_eq!(left, right, fmt: vector&lt;u8&gt;, arg1: T1, ..., argN: TN) // 1 ≤ N ≤ 4
+
+assert_ne!(left, right)
+assert_ne!(left, right, message: vector&lt;u8&gt;)
+assert_ne!(left, right, fmt: vector&lt;u8&gt;, arg1: T1, ..., argN: TN) // 1 ≤ N ≤ 4
+</code></pre>
+<p>The two-argument form expands roughly to:</p>
+<pre><code class="language-move">let ($left, $right) = (left, right);
+if ($left == $right) () else abort std::string::into_bytes(
+    std::string_utils::format2(
+        &amp;b"assertion `left == right` failed\n  left: {}\n right: {}",
+        $left, $right,
+    )
+)
+</code></pre>
+<p>If, for example, <code>assert_eq!(1, 2)</code> fails, the transaction aborts with the message:</p>
+<pre><code class="language-text">assertion `left == right` failed
+  left: 1
+ right: 2
+</code></pre>
+<p>When a custom message is supplied, it is rendered (via <code>string::utf8</code>) into the assertion message:</p>
+<pre><code class="language-move">assert_eq!(actual, expected, b"custom error message")
+</code></pre>
+<p>The formatted-message form interpolates the arguments into the user-supplied format string before
+embedding it:</p>
+<pre><code class="language-move">assert_eq!(actual, expected, b"mismatch for key {}", key)
+</code></pre>
+<p><code>assert_ne!</code> behaves identically except that the condition is <code>$left != $right</code> and the message
+reads <code>assertion `left != right` failed</code>.</p>
+<p>The two operands are evaluated eagerly and exactly once; any user-supplied format arguments are
+only evaluated when the assertion fails. All failures use the unspecified abort code
+<code>0xCA26CBD9BE0B0000</code>; the diagnostic value is in the attached message.</p>
 <h3 id="abort-codes-in-the-move-vm"><a class="header" href="#abort-codes-in-the-move-vm">Abort codes in the Move VM</a></h3>
 <p>When using <code>abort</code>, it is important to understand how the <code>u64</code> code will be used by the VM.</p>
 <p>Normally, after successful execution, the Move VM produces a change-set for the changes made to
 global storage (added/removed resources, updates to existing resources, etc.).</p>
-<p>If an <code>abort</code> is reached, the VM will instead indicate an error. Included in that error will be two
-pieces of information:</p>
+<p>If an <code>abort</code> is reached, the VM will instead indicate an error. Included in that error will be:</p>
 <ul>
 <li>The module that produced the abort (address and name)</li>
-<li>The abort code.</li>
+<li>The abort code, and</li>
+<li>The abort message, if one was provided (Move 2.4+).</li>
 </ul>
 <p>For example</p>
 <pre><code class="language-move">module 0x42::example {
@@ -297,6 +392,10 @@ script {
 </code></pre>
 <p>If a transaction, such as the script <code>always_aborts</code> above, calls <code>0x2::example::aborts</code>, the VM
 would produce an error that indicated the module <code>0x2::example</code> and the code <code>42</code>.</p>
+<p>For aborts carrying a message, the VM additionally validates that the message is valid UTF-8 and at
+most 1024 bytes long. A message that fails either check causes the transaction to fail with a VM
+error of <code>INVALID_ABORT_MESSAGE</code> or <code>ABORT_MESSAGE_LIMIT_EXCEEDED</code>, respectively, instead of the
+user-supplied abort message.</p>
 <p>This can be useful for having multiple aborts being grouped together inside a module.</p>
 <p>In this example, the module has two separate error codes used in multiple functions</p>
 <pre><code class="language-move">module 0x42::example {
