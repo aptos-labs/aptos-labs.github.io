@@ -11,8 +11,32 @@ sub-directories that are populated from other repositories.
 
 | Path | Source repository | Pushed by |
 |---|---|---|
-| [`/move-book/`](https://aptos-labs.github.io/move-book/) | [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) — `third_party/move/documentation/book` | `book/deploy.sh` in aptos-core |
-| [`/framework-book/`](https://aptos-labs.github.io/framework-book/) | [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) — `third_party/move/documentation/framework-book` | `framework-book/deploy.sh` in aptos-core |
+| [`/move-book/`](https://aptos-labs.github.io/move-book/) | [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) — `third_party/move/documentation/book` | [Publish documentation](.github/workflows/publish-documentation.yml) workflow in this repo (always **latest** / `main` sources) |
+| [`/framework-book/`](https://aptos-labs.github.io/framework-book/) | [`aptos-labs/aptos-framework`](https://github.com/aptos-labs/aptos-framework) branch **`main`**, with book tooling from [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) | Same workflow; root URL mirrors **`main`** |
+| [`/framework-book/main/`](https://aptos-labs.github.io/framework-book/main/) … [`/devnet/`](https://aptos-labs.github.io/framework-book/devnet/) | `aptos-framework` branch per path segment (`main`, `mainnet`, `testnet`, `devnet`) | Same workflow; `aptos-experimental` still comes from **aptos-core** |
+
+Maintainers can still use `book/deploy.sh` and `framework-book/deploy.sh` in **aptos-core** for ad-hoc publishes, but the org site is intended to track **Publish documentation** so the layout above stays consistent.
+
+### Automated publish (GitHub Actions)
+
+Workflow: [`.github/workflows/publish-documentation.yml`](.github/workflows/publish-documentation.yml).
+
+- **Triggers:** `workflow_dispatch`, nightly `schedule`, and `repository_dispatch` with type `publish-docs` (call from other repos with a token that has `contents` write access here).
+- **Triggering from another repo** (`repository_dispatch`):
+
+  ```bash
+  curl -sS -X POST \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer YOUR_PAT" \
+    https://api.github.com/repos/aptos-labs/aptos-labs.github.io/dispatches \
+    -d '{"event_type":"publish-docs","client_payload":{"aptos_core_ref":"main"}}'
+  ```
+
+  Omit `client_payload` or leave `aptos_core_ref` unset to default to `main`.
+- **Behavior:** clones `aptos-core` at `main` (or the ref you pass on dispatch), builds the Move book into `/move-book/`, then for each framework channel clones [`aptos-labs/aptos-framework`](https://github.com/aptos-labs/aptos-framework) at `main` / `mainnet` / `testnet` / `devnet`, overlays those packages into `aptos-core/aptos-move/framework/`, runs `framework-book/build.sh`, and rsyncs HTML into `/framework-book/` (for **`main`** only), `/framework-book/main/`, `/framework-book/mainnet/`, etc. Missing optional branches are skipped with a warning.
+- **Credentials:** the default `GITHUB_TOKEN` from `actions/checkout` is enough **unless** `main` is protected in a way that blocks machine pushes; in that case add a fine‑grained PAT as a secret and pass it to `actions/checkout` (see GitHub docs for “push with contents write”).
+
+Local dry run (no commit/push): `DRY_RUN=1 ./scripts/publish-documentation.sh` from a clone of this repo (requires Rust, `mdbook`, and Aptos build dependencies).
 
 ## Updating the landing page
 

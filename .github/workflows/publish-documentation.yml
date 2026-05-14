@@ -1,0 +1,85 @@
+name: Publish documentation
+
+# Builds the Move book (aptos-core tip) and the Framework book for each
+# aptos-framework branch (main, mainnet, testnet, devnet), then commits the
+# static output into this repository (move-book/, framework-book/, …).
+on:
+  workflow_dispatch:
+    inputs:
+      aptos_core_ref:
+        description: aptos-core git ref for book tooling (Rust, framework-book builder)
+        required: false
+        default: main
+  schedule:
+    # Daily 06:15 UTC — adjust as needed.
+    - cron: "15 6 * * *"
+  repository_dispatch:
+    types: [publish-docs]
+
+concurrency:
+  group: publish-documentation
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    # Forks keep the same workflow file but must not push with our credentials model.
+    if: github.repository == 'aptos-labs/aptos-labs.github.io'
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Resolve APTOS_CORE_REF
+        env:
+          INPUT_REF: ${{ github.event.inputs.aptos_core_ref }}
+          PAYLOAD_REF: ${{ github.event.client_payload.aptos_core_ref }}
+        run: |
+          R="$INPUT_REF"
+          [[ -n "$R" ]] || R="$PAYLOAD_REF"
+          [[ -n "$R" ]] || R="main"
+          echo "APTOS_CORE_REF=$R" >> "$GITHUB_ENV"
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential pkg-config libssl-dev protobuf-compiler cmake \
+            libclang-dev llvm libudev-dev
+
+      - name: Clone aptos-core
+        run: |
+          mkdir -p .publish-cache
+          rm -rf .publish-cache/aptos-core
+          git clone --depth 1 --branch "$APTOS_CORE_REF" \
+            https://github.com/aptos-labs/aptos-core.git .publish-cache/aptos-core
+
+      - name: Install Rust (pinned by aptos-core)
+        run: |
+          channel=$(grep -E '^channel' .publish-cache/aptos-core/rust-toolchain.toml | head -1 | sed -E 's/^channel = "([^"]+)".*/\1/')
+          echo "Using Rust toolchain $channel"
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain "$channel" --profile minimal
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: Cache Cargo outputs
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: .publish-cache/aptos-core
+
+      - name: Install mdbook
+        run: cargo install mdbook --version 0.4.48
+
+      - name: Build and publish books
+        env:
+          SITE_ROOT: ${{ github.workspace }}
+          APTOS_CORE_ROOT: ${{ github.workspace }}/.publish-cache/aptos-core
+          DRY_RUN: "0"
+          DOCS_PUBLISH_BRANCH: ${{ github.event.repository.default_branch }}
+        run: bash ./scripts/publish-documentation.sh
