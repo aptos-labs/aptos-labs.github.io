@@ -33,7 +33,7 @@ and crawlers to consume:
 |---|---|
 | `index.md` | Markdown representation of the landing page (advertised from `index.html` as `<link rel="alternate" type="text/markdown">` and listed in `sitemap.xml`). |
 | `_headers` | RFC 8288 `Link` response headers and a `Content-Type: text/markdown` rule for `/index.md`. Honored by Cloudflare Pages and Netlify; **GitHub Pages ignores this file**, so the same metadata is also encoded as `<link>` elements in `index.html` and as Content-Signal directives in `robots.txt`. |
-| `robots.txt` | Includes [Content Signals](https://contentsignals.org/) (`Content-Signal: search=yes, ai-train=no, ai-input=no`) declaring AI usage preferences alongside the standard crawler policy. |
+| `robots.txt` | Includes a [`Content-Signal`](https://contentsignals.org/) directive declaring AI usage preferences alongside the standard crawler policy. See the file itself for the current policy. |
 
 ### Limitations on GitHub Pages
 
