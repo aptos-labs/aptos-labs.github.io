@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-41124df0.js";
+            window.path_to_searchindex_js = "searchindex-a27d1de9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b1ca6be7.js"></script>
@@ -814,6 +814,91 @@ let v = match (r) {
 assert!(v == 1);
 </code></pre>
 <p>Notice that in the above example, the last match clause (<code>_</code>) covers both patterns <code>Ok(Err(_))</code> and <code>Err(_)</code>. Although at execution time, the earlier clauses match <code>Ok(Err(c))</code> for all values of <code>c</code>, the compiler cannot be sure all cases are covered due to the conditionals: conditions in match expressions are not considered when tracking coverage. Thus the first two clauses in the match expression above are not sufficient for match completeness, and an additional clause is required to avoid a compiler error.</p>
+<h3 id="match-expression-extensions"><a class="header" href="#match-expression-extensions">Match Expression Extensions</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>In addition to the general-purpose <code>match</code> extensions (primitive discriminators, range patterns, and matching through references to primitive values) documented under <a href="./conditionals-and-loops.html#match-expressions">Match Expressions</a>, Move 2.4 adds further extensions that apply specifically to struct and enum patterns:</p>
+<ul>
+<li>literal and range patterns nested inside struct and enum variant patterns;</li>
+<li>matching through <code>&amp;</code> or <code>&amp;mut</code> references to struct and enum values, including nested literals;</li>
+<li>mixed-tuple matches: a tuple match in which some positions are primitive and others are not.</li>
+</ul>
+<h4 id="literals-and-ranges-nested-in-struct-and-enum-patterns"><a class="header" href="#literals-and-ranges-nested-in-struct-and-enum-patterns">Literals and Ranges Nested in Struct and Enum Patterns</a></h4>
+<p>Primitive literals and range patterns may appear nested inside struct patterns and inside enum variant patterns, mixed freely with variable bindings and <code>_</code> wildcards. This is true for both named-field and positional variants:</p>
+<pre><code class="language-move">enum Inner has drop { A(u64), B }
+enum Outer has drop { W(Inner), X }
+
+fun deep(o: Outer): u64 {
+    match (o) {
+        Outer::W(Inner::A(1)) =&gt; 100,
+        Outer::W(Inner::A(_)) =&gt; 200,
+        Outer::W(Inner::B)    =&gt; 300,
+        Outer::X              =&gt; 400,
+    }
+}
+
+struct S has drop { x: u64, y: u64 }
+
+fun split(s: S): u64 {
+    match (s) {
+        S { x: 1, y }    =&gt; y + 100,
+        S { x: _, y: _ } =&gt; 0,
+    }
+}
+
+enum Pair has drop { P(u64, u64), Q }
+
+fun pair_match(p: Pair): u64 {
+    match (p) {
+        Pair::P(1, 2)    =&gt; 10,
+        Pair::P(x, 2)    =&gt; x + 100,
+        Pair::P(_, _)    =&gt; 20,
+        Pair::Q          =&gt; 30,
+    }
+}
+</code></pre>
+<p><a href="./conditionals-and-loops.html#range-patterns">Range patterns</a> work in the same positions:</p>
+<pre><code class="language-move">enum E has drop { V1(u64), V2 }
+
+fun bucket(e: E): u64 {
+    match (e) {
+        E::V1(0..100)    =&gt; 1,
+        E::V1(100..=999) =&gt; 2,
+        E::V1(_)         =&gt; 3,
+        E::V2            =&gt; 4,
+    }
+}
+</code></pre>
+<h4 id="matching-through-references-to-structs-and-enums"><a class="header" href="#matching-through-references-to-structs-and-enums">Matching Through References to Structs and Enums</a></h4>
+<p>A <code>match</code> expression may take an immutable or mutable reference to a struct or enum value as its discriminator. The variant or field patterns may include nested literals and ranges. Variable bindings inside such a pattern capture references to the inner fields, so arm bodies dereference them as usual:</p>
+<pre><code class="language-move">enum Pair has drop { P(u64, u64), Q }
+
+fun ref_match(p: &amp;Pair): u64 {
+    match (p) {
+        Pair::P(1, 2)    =&gt; 10,
+        Pair::P(x, 2)    =&gt; *x + 100, // x: &amp;u64
+        Pair::P(_, _)    =&gt; 20,
+        Pair::Q          =&gt; 30,
+    }
+}
+</code></pre>
+<p><code>&amp;mut</code> discriminators are supported in the same way.</p>
+<h4 id="mixed-tuple-discriminators"><a class="header" href="#mixed-tuple-discriminators">Mixed-Tuple Discriminators</a></h4>
+<p>Discriminators can now be tuples in which some positions are primitive and others are not, i.e., a <em>mixed-tuple match</em>.</p>
+<pre><code class="language-move">enum Data has drop { V1(u8), V2(u8) }
+
+fun make_pair(x: u8): (Data, u8) {
+    (Data::V1(x), x)
+}
+
+fun classify(x: u8): u8 {
+    match (make_pair(x)) {
+        (Data::V1(a), 1)          =&gt; a + 10,
+        (Data::V2(a), 2)          =&gt; a + 20,
+        (Data::V1(a), y) if y &gt; 3 =&gt; a + y,
+        _                         =&gt; 99,
+    }
+}
+</code></pre>
 <h3 id="testing-enum-variants"><a class="header" href="#testing-enum-variants">Testing Enum Variants</a></h3>
 <p>With the <code>is</code> operator, one can examine whether a given enum value is of a given variant:</p>
 <pre><code class="language-move">let data: VersionedData;
@@ -1054,6 +1139,8 @@ atomically with the upgrade.</p>
 
         <!-- Custom JS scripts -->
         <script src="theme/build-stamp-c45f76e8.js"></script>
+        <script src="theme/highlightjs-move-bc1bec70.js"></script>
+        <script src="theme/move-init-c73be6fb.js"></script>
 
 
 

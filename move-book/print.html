@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-41124df0.js";
+            window.path_to_searchindex_js = "searchindex-a27d1de9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b1ca6be7.js"></script>
@@ -2677,6 +2677,91 @@ let v = match (r) {
 assert!(v == 1);
 </code></pre>
 <p>Notice that in the above example, the last match clause (<code>_</code>) covers both patterns <code>Ok(Err(_))</code> and <code>Err(_)</code>. Although at execution time, the earlier clauses match <code>Ok(Err(c))</code> for all values of <code>c</code>, the compiler cannot be sure all cases are covered due to the conditionals: conditions in match expressions are not considered when tracking coverage. Thus the first two clauses in the match expression above are not sufficient for match completeness, and an additional clause is required to avoid a compiler error.</p>
+<h3 id="match-expression-extensions"><a class="header" href="#match-expression-extensions">Match Expression Extensions</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>In addition to the general-purpose <code>match</code> extensions (primitive discriminators, range patterns, and matching through references to primitive values) documented under <a href="#match-expressions">Match Expressions</a>, Move 2.4 adds further extensions that apply specifically to struct and enum patterns:</p>
+<ul>
+<li>literal and range patterns nested inside struct and enum variant patterns;</li>
+<li>matching through <code>&amp;</code> or <code>&amp;mut</code> references to struct and enum values, including nested literals;</li>
+<li>mixed-tuple matches: a tuple match in which some positions are primitive and others are not.</li>
+</ul>
+<h4 id="literals-and-ranges-nested-in-struct-and-enum-patterns"><a class="header" href="#literals-and-ranges-nested-in-struct-and-enum-patterns">Literals and Ranges Nested in Struct and Enum Patterns</a></h4>
+<p>Primitive literals and range patterns may appear nested inside struct patterns and inside enum variant patterns, mixed freely with variable bindings and <code>_</code> wildcards. This is true for both named-field and positional variants:</p>
+<pre><code class="language-move">enum Inner has drop { A(u64), B }
+enum Outer has drop { W(Inner), X }
+
+fun deep(o: Outer): u64 {
+    match (o) {
+        Outer::W(Inner::A(1)) =&gt; 100,
+        Outer::W(Inner::A(_)) =&gt; 200,
+        Outer::W(Inner::B)    =&gt; 300,
+        Outer::X              =&gt; 400,
+    }
+}
+
+struct S has drop { x: u64, y: u64 }
+
+fun split(s: S): u64 {
+    match (s) {
+        S { x: 1, y }    =&gt; y + 100,
+        S { x: _, y: _ } =&gt; 0,
+    }
+}
+
+enum Pair has drop { P(u64, u64), Q }
+
+fun pair_match(p: Pair): u64 {
+    match (p) {
+        Pair::P(1, 2)    =&gt; 10,
+        Pair::P(x, 2)    =&gt; x + 100,
+        Pair::P(_, _)    =&gt; 20,
+        Pair::Q          =&gt; 30,
+    }
+}
+</code></pre>
+<p><a href="#range-patterns">Range patterns</a> work in the same positions:</p>
+<pre><code class="language-move">enum E has drop { V1(u64), V2 }
+
+fun bucket(e: E): u64 {
+    match (e) {
+        E::V1(0..100)    =&gt; 1,
+        E::V1(100..=999) =&gt; 2,
+        E::V1(_)         =&gt; 3,
+        E::V2            =&gt; 4,
+    }
+}
+</code></pre>
+<h4 id="matching-through-references-to-structs-and-enums"><a class="header" href="#matching-through-references-to-structs-and-enums">Matching Through References to Structs and Enums</a></h4>
+<p>A <code>match</code> expression may take an immutable or mutable reference to a struct or enum value as its discriminator. The variant or field patterns may include nested literals and ranges. Variable bindings inside such a pattern capture references to the inner fields, so arm bodies dereference them as usual:</p>
+<pre><code class="language-move">enum Pair has drop { P(u64, u64), Q }
+
+fun ref_match(p: &amp;Pair): u64 {
+    match (p) {
+        Pair::P(1, 2)    =&gt; 10,
+        Pair::P(x, 2)    =&gt; *x + 100, // x: &amp;u64
+        Pair::P(_, _)    =&gt; 20,
+        Pair::Q          =&gt; 30,
+    }
+}
+</code></pre>
+<p><code>&amp;mut</code> discriminators are supported in the same way.</p>
+<h4 id="mixed-tuple-discriminators"><a class="header" href="#mixed-tuple-discriminators">Mixed-Tuple Discriminators</a></h4>
+<p>Discriminators can now be tuples in which some positions are primitive and others are not, i.e., a <em>mixed-tuple match</em>.</p>
+<pre><code class="language-move">enum Data has drop { V1(u8), V2(u8) }
+
+fun make_pair(x: u8): (Data, u8) {
+    (Data::V1(x), x)
+}
+
+fun classify(x: u8): u8 {
+    match (make_pair(x)) {
+        (Data::V1(a), 1)          =&gt; a + 10,
+        (Data::V2(a), 2)          =&gt; a + 20,
+        (Data::V1(a), y) if y &gt; 3 =&gt; a + y,
+        _                         =&gt; 99,
+    }
+}
+</code></pre>
 <h3 id="testing-enum-variants"><a class="header" href="#testing-enum-variants">Testing Enum Variants</a></h3>
 <p>With the <code>is</code> operator, one can examine whether a given enum value is of a given variant:</p>
 <pre><code class="language-move">let data: VersionedData;
@@ -4075,8 +4160,91 @@ with underscores <code>_</code> between each word.</p>
 <p>This naming restriction of starting with <code>A</code> to <code>Z</code> is in place to give room for future language
 features. It may or may not be removed later.</p>
 <h2 id="visibility"><a class="header" href="#visibility">Visibility</a></h2>
-<p><code>public</code> constants are not currently supported. <code>const</code> values can be used only in the declaring
-module.</p>
+<p><em>Since language version 2.4</em></p>
+<p>By default, a constant is module-private: it can be read only inside the module that declares it.
+Move 2.4 introduces explicit visibility modifiers that allow constants to be read from other
+modules.</p>
+<h3 id="visibility-levels-1"><a class="header" href="#visibility-levels-1">Visibility Levels</a></h3>
+<p>Three modifiers are available, mirroring the function visibility keywords:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Modifier</th><th>Accessible from</th></tr>
+</thead>
+<tbody>
+<tr><td><code>public</code></td><td>Any module</td></tr>
+<tr><td><code>package</code></td><td>All modules in the same package (same address)</td></tr>
+<tr><td><code>friend</code></td><td>Modules declared as <code>friend</code> in the defining module</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>public(package)</code> and <code>public(friend)</code> are accepted as aliases for <code>package</code> and <code>friend</code>
+respectively, but are discouraged and will be deprecated. Prefer the shorthand forms.</p>
+<pre><code class="language-move">module 0x42::m {
+    friend 0x42::n;
+
+    public const PUB: u64 = 10;
+    package const PKG: u64 = 20;
+    friend const FRD: u64 = 30;
+    const PRIV: u64 = 40; // module-private (default)
+}
+
+module 0x42::n {
+    use 0x42::m;
+
+    public fun read(): u64 {
+        m::PUB + m::PKG + m::FRD // all valid: same package, and `n` is a friend of `m`
+    }
+}
+
+module 0x43::other {
+    use 0x42::m;
+
+    public fun read(): u64 {
+        m::PUB         // valid: `public` is accessible from any module
+        // m::PKG      // ERROR: different package
+        // m::FRD      // ERROR: `other` is not a friend of `m`
+        // m::PRIV     // ERROR: module-private
+    }
+}
+</code></pre>
+<h3 id="performance-consideration-1"><a class="header" href="#performance-consideration-1">Performance Consideration</a></h3>
+<p>Cross-module constant reads are currently compiled into a synthetic accessor function call rather
+than a direct <code>LdConst</code> bytecode instruction. Thus, they are not a zero-cost abstraction yet: they
+are more expensive than the equivalent read inside the defining module. This is expected to change
+in the future with VM improvements. In the meantime, use visibility modifiers only when the
+cross-module access is genuinely needed.</p>
+<h3 id="upgrade-behavior"><a class="header" href="#upgrade-behavior">Upgrade Behavior</a></h3>
+<p>Non-private constants can have their value changed in a module upgrade. Because cross-module reads
+go through the synthetic accessor function, consuming modules automatically observe the new value
+after the defining module is upgraded — they do not need to be recompiled or republished.</p>
+<h3 id="restrictions-2"><a class="header" href="#restrictions-2">Restrictions</a></h3>
+<ul>
+<li>
+<p>Visibility modifiers are not allowed on constants declared inside a <code>script { ... }</code> block.</p>
+</li>
+<li>
+<p>A cross-module constant read cannot appear in another constant’s initializer. Same-module
+references are fine:</p>
+<pre><code class="language-move">module 0x42::m {
+    public const A: u64 = 10;
+    const B: u64 = A + 1; // OK: same module
+}
+
+module 0x42::n {
+    use 0x42::m;
+    public const C: u64 = m::A + 1; // ERROR: cross-module const read in a const initializer
+}
+</code></pre>
+</li>
+<li>
+<p>A <code>friend</code> or <code>package</code> constant cannot be read inside a <code>public</code> or <code>friend</code> <code>inline</code> function.
+Such an inline function can be expanded into a module that lacks the required visibility, which
+would leave an inaccessible accessor call in the caller’s bytecode. Private <code>inline</code> functions
+and <code>package inline</code> functions are unaffected, because their expansions cannot escape the
+visibility scope.</p>
+</li>
+</ul>
 <h2 id="valid-expressions"><a class="header" href="#valid-expressions">Valid Expressions</a></h2>
 <p>Currently, constants are limited to the primitive types <code>bool</code>, <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>, <code>u256</code>, <code>address</code>, and
 <code>vector&lt;u8&gt;</code>. Future support for other <code>vector</code> values (besides the “string”-style literals) will
@@ -6011,6 +6179,109 @@ value on some branches, but not all. For example:</p>
 <blockquote>
 <p><em>else-clause</em> → <strong>else</strong> <em>expression</em></p>
 </blockquote>
+<h2 id="match-expressions"><a class="header" href="#match-expressions">Match Expressions</a></h2>
+<p>A <code>match</code> expression is a multi-way conditional. It evaluates the <em>discriminator</em> in parentheses, then tries each arm in textual order; the first arm whose <em>pattern</em> matches and whose optional <code>if</code> <em>guard</em> holds is taken. Each arm has the form <code>pattern =&gt; body</code> (with an optional <code>if guard</code> between the pattern and <code>=&gt;</code>).</p>
+<pre><code class="language-move">/// Map an HTTP status code to a human-readable message.
+fun status_message(code: u16): vector&lt;u8&gt; {
+    match (code) {
+        200 =&gt; b"OK",
+        404 =&gt; b"Not Found",
+        500 =&gt; b"Server Error",
+        _   =&gt; b"Unknown",
+    }
+}
+</code></pre>
+<p>Match expressions were first introduced in Move 2.0 for enum values: see <a href="#matching-enum-values">Matching Enum Values</a> for the enum-specific patterns. Move 2.4 extends <code>match</code> to primitive values, range patterns, and references to primitive values, as described below. Additional struct- and enum-specific extensions (literal and range patterns nested inside variant patterns, struct/enum references, and mixed-tuple discriminators) are documented under <a href="#match-expression-extensions">Match Expression Extensions</a>.</p>
+<h3 id="matching-primitive-values"><a class="header" href="#matching-primitive-values">Matching Primitive Values</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>The discriminator of a <code>match</code> expression may be of types: a <code>bool</code>, any signed or unsigned integer, or <code>vector&lt;u8&gt;</code> (byte-strings). The corresponding arm patterns are written using the usual literal syntax:</p>
+<pre><code class="language-move">fun describe_command(s: vector&lt;u8&gt;): u64 {
+    match (s) {
+        b"start" =&gt; 1,
+        b"stop"  =&gt; 2,
+        x"00"    =&gt; 3,
+        _        =&gt; 0,
+    }
+}
+</code></pre>
+<p>Tuples of primitives are also supported, and may freely mix literals with variable bindings or <code>_</code> wildcards in the individual positions:</p>
+<pre><code class="language-move">fun combine(p: u8, q: u8): u8 {
+    match ((p, q)) {
+        (0, 0) =&gt; 0,
+        (0, 1) =&gt; 1,
+        (1, 0) =&gt; 2,
+        (1, 1) =&gt; 3,
+        _      =&gt; 255,
+    }
+}
+</code></pre>
+<p>Note that <code>address</code> is not supported as a primitive discriminator.</p>
+<h3 id="range-patterns"><a class="header" href="#range-patterns">Range Patterns</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>A range pattern matches a contiguous interval of integer values in a single arm. Both bounds are integer literals (signed integer literals may carry a unary minus, as in <code>-5..5</code>). The following forms are accepted:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Pattern</th><th>Matches when</th></tr>
+</thead>
+<tbody>
+<tr><td><code>lo..hi</code></td><td><code>lo &lt;= x &amp;&amp; x &lt; hi</code></td></tr>
+<tr><td><code>lo..=hi</code></td><td><code>lo &lt;= x &amp;&amp; x &lt;= hi</code></td></tr>
+<tr><td><code>..hi</code></td><td><code>x &lt; hi</code></td></tr>
+<tr><td><code>..=hi</code></td><td><code>x &lt;= hi</code></td></tr>
+<tr><td><code>lo..</code></td><td><code>lo &lt;= x</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>A bare <code>..</code> is <strong>not</strong> a range pattern; inside struct or variant patterns it keeps its existing meaning as the <a href="#partial-patterns">partial-field wildcard</a>.</p>
+<p>For the purposes of exhaustiveness analysis, a literal pattern is treated as a singleton range, so adjacent literals and ranges can together cover the full domain of an integer type without any <code>_</code> arm:</p>
+<pre><code class="language-move">fun classify(x: u8): u64 {
+    match (x) {
+        0         =&gt; 0,
+        1..=127   =&gt; 1,
+        128..=255 =&gt; 2,
+    }
+}
+</code></pre>
+<p>Range patterns work on every integer type, including signed types that cross zero:</p>
+<pre><code class="language-move">fun sign(x: i32): u8 {
+    match (x) {
+        ..0  =&gt; 0, // negative
+        0    =&gt; 1, // zero
+        1..  =&gt; 2, // positive
+    }
+}
+</code></pre>
+<p>Empty or inverted ranges are rejected at compile time:</p>
+<pre><code class="language-move">// All errors: empty range pattern.
+match (x) { 5..5    =&gt; 1, _ =&gt; 0 }
+match (x) { 10..5   =&gt; 1, _ =&gt; 0 }
+match (x) { 10..=5  =&gt; 1, _ =&gt; 0 }
+</code></pre>
+<p>Range patterns may also appear nested inside struct or enum variant patterns — see <a href="#match-expression-extensions">Match Expression Extensions</a>.</p>
+<h3 id="matching-through-references"><a class="header" href="#matching-through-references">Matching Through References</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>A <code>match</code> expression may take an immutable or mutable reference to a primitive value as its discriminator. The arm patterns are written using the same literal and range syntax as for the value form:</p>
+<pre><code class="language-move">fun bool_ref(b: &amp;bool): u64 {
+    match (b) { true =&gt; 1, false =&gt; 0 }
+}
+
+fun bytes_ref(bs: &amp;vector&lt;u8&gt;): u64 {
+    match (bs) { b"hi" =&gt; 1, _ =&gt; 0 }
+}
+
+fun int_ref(x: &amp;u64): u64 {
+    match (x) { 0..10 =&gt; 1, _ =&gt; 0 }
+}
+</code></pre>
+<p><code>&amp;mut</code> discriminators are supported in the same way. References to struct and enum values may also serve as discriminators — see <a href="#match-expression-extensions">Match Expression Extensions</a>.</p>
+<h3 id="literal-and-range-patterns-outside-match"><a class="header" href="#literal-and-range-patterns-outside-match">Literal and Range Patterns Outside <code>match</code></a></h3>
+<p>Literal and range patterns are only legal inside <code>match</code> arms; they are rejected in <code>let</code> bindings, assignments, and lambda parameters, because those positions are irrefutable and must match every value of their type.</p>
+<pre><code class="language-move">// All errors: literal and range patterns are not allowed here.
+let S { x: 1 } = S { x: 1 };
+let 1u64 = 1;
+let f = |1u64| 0;
+</code></pre>
 <h2 id="while-for-and-loop"><a class="header" href="#while-for-and-loop">While, For, and Loop</a></h2>
 <p>Move offers three constructs for looping: <code>while</code>, <code>for</code>, and <code>loop</code>.</p>
 <h3 id="while-loops"><a class="header" href="#while-loops"><code>while</code> loops</a></h3>
@@ -9314,6 +9585,7 @@ module 0x42::example { // double slash can be anywhere
 <ul>
 <li><strong>Abort Messages</strong>: The <code>abort</code> expression and the <code>assert!</code> macro now accept a <code>vector&lt;u8&gt;</code> message (validated as UTF-8 at runtime) in addition to the existing <code>u64</code> code, and <code>assert!</code> supports formatted messages that interpolate runtime values. Two new macros, <code>assert_eq!</code> and <code>assert_ne!</code>, check that two values are equal (resp. unequal) and, on failure, abort with a descriptive message that identifies the values involved. See the <a href="#abort-messages">reference doc here</a>.</li>
 <li><strong>Struct and Enum Visibility Modifiers</strong>: Structs and enums can now be declared with <code>public</code>, <code>package</code>, or <code>friend</code> visibility modifiers. This allows external modules to construct, destruct, pattern-match, and access or modify fields of the type, lifting the previous restriction that limited all such operations to the defining module. See the reference docs for <a href="#struct-visibility">structs</a> and <a href="#enum-visibility">enums</a>.</li>
+<li><strong>Match Expression Extensions</strong>: <code>match</code> expressions are no longer restricted to enum variant patterns. They now accept primitive discriminators (booleans, all signed and unsigned integer types, and byte strings of type <code>vector&lt;u8&gt;</code>), range patterns of the form <code>lo..hi</code>, <code>lo..=hi</code>, <code>..hi</code>, <code>..=hi</code>, and <code>lo..</code> on integer types, and matching through <code>&amp;</code> and <code>&amp;mut</code> references — see <a href="#match-expressions">Match Expressions</a>. On struct and enum patterns specifically, literal and range patterns may appear nested inside variant or field patterns: see <a href="#match-expression-extensions">Match Expression Extensions</a>.</li>
 <li><strong>Compositional Specifications for the Move Prover</strong>: The Move Specification Language gains a set of compositional constructs supporting higher-order functions, frame conditions, intermediate-state reasoning, and proof guidance. See the reference docs for <a href="#behavioral-predicates">Behavioral Predicates</a>, <a href="#access-specifiers-and-frame-conditions">Access Specifiers and Frame Conditions</a>, <a href="#state-labels">State Labels</a>, <a href="#two-state-specification-functions">Two-State Specification Functions</a>, <a href="#proofs-and-lemmas">Proofs and Lemmas</a>, and <a href="#specification-inference">Specification Inference</a>.</li>
 </ul>
 <h2 id="move-23"><a class="header" href="#move-23">Move 2.3</a></h2>
@@ -9421,6 +9693,8 @@ module 0x42::example { // double slash can be anywhere
 
         <!-- Custom JS scripts -->
         <script src="theme/build-stamp-c45f76e8.js"></script>
+        <script src="theme/highlightjs-move-bc1bec70.js"></script>
+        <script src="theme/move-init-c73be6fb.js"></script>
 
         <script>
         window.addEventListener('load', function() {

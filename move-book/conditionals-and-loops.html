@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-41124df0.js";
+            window.path_to_searchindex_js = "searchindex-a27d1de9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b1ca6be7.js"></script>
@@ -251,6 +251,109 @@
 <blockquote>
 <p><em>else-clause</em> → <strong>else</strong> <em>expression</em></p>
 </blockquote>
+<h2 id="match-expressions"><a class="header" href="#match-expressions">Match Expressions</a></h2>
+<p>A <code>match</code> expression is a multi-way conditional. It evaluates the <em>discriminator</em> in parentheses, then tries each arm in textual order; the first arm whose <em>pattern</em> matches and whose optional <code>if</code> <em>guard</em> holds is taken. Each arm has the form <code>pattern =&gt; body</code> (with an optional <code>if guard</code> between the pattern and <code>=&gt;</code>).</p>
+<pre><code class="language-move">/// Map an HTTP status code to a human-readable message.
+fun status_message(code: u16): vector&lt;u8&gt; {
+    match (code) {
+        200 =&gt; b"OK",
+        404 =&gt; b"Not Found",
+        500 =&gt; b"Server Error",
+        _   =&gt; b"Unknown",
+    }
+}
+</code></pre>
+<p>Match expressions were first introduced in Move 2.0 for enum values: see <a href="./structs-and-enums.html#matching-enum-values">Matching Enum Values</a> for the enum-specific patterns. Move 2.4 extends <code>match</code> to primitive values, range patterns, and references to primitive values, as described below. Additional struct- and enum-specific extensions (literal and range patterns nested inside variant patterns, struct/enum references, and mixed-tuple discriminators) are documented under <a href="./structs-and-enums.html#match-expression-extensions">Match Expression Extensions</a>.</p>
+<h3 id="matching-primitive-values"><a class="header" href="#matching-primitive-values">Matching Primitive Values</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>The discriminator of a <code>match</code> expression may be of types: a <code>bool</code>, any signed or unsigned integer, or <code>vector&lt;u8&gt;</code> (byte-strings). The corresponding arm patterns are written using the usual literal syntax:</p>
+<pre><code class="language-move">fun describe_command(s: vector&lt;u8&gt;): u64 {
+    match (s) {
+        b"start" =&gt; 1,
+        b"stop"  =&gt; 2,
+        x"00"    =&gt; 3,
+        _        =&gt; 0,
+    }
+}
+</code></pre>
+<p>Tuples of primitives are also supported, and may freely mix literals with variable bindings or <code>_</code> wildcards in the individual positions:</p>
+<pre><code class="language-move">fun combine(p: u8, q: u8): u8 {
+    match ((p, q)) {
+        (0, 0) =&gt; 0,
+        (0, 1) =&gt; 1,
+        (1, 0) =&gt; 2,
+        (1, 1) =&gt; 3,
+        _      =&gt; 255,
+    }
+}
+</code></pre>
+<p>Note that <code>address</code> is not supported as a primitive discriminator.</p>
+<h3 id="range-patterns"><a class="header" href="#range-patterns">Range Patterns</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>A range pattern matches a contiguous interval of integer values in a single arm. Both bounds are integer literals (signed integer literals may carry a unary minus, as in <code>-5..5</code>). The following forms are accepted:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Pattern</th><th>Matches when</th></tr>
+</thead>
+<tbody>
+<tr><td><code>lo..hi</code></td><td><code>lo &lt;= x &amp;&amp; x &lt; hi</code></td></tr>
+<tr><td><code>lo..=hi</code></td><td><code>lo &lt;= x &amp;&amp; x &lt;= hi</code></td></tr>
+<tr><td><code>..hi</code></td><td><code>x &lt; hi</code></td></tr>
+<tr><td><code>..=hi</code></td><td><code>x &lt;= hi</code></td></tr>
+<tr><td><code>lo..</code></td><td><code>lo &lt;= x</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>A bare <code>..</code> is <strong>not</strong> a range pattern; inside struct or variant patterns it keeps its existing meaning as the <a href="./structs-and-enums.html#partial-patterns">partial-field wildcard</a>.</p>
+<p>For the purposes of exhaustiveness analysis, a literal pattern is treated as a singleton range, so adjacent literals and ranges can together cover the full domain of an integer type without any <code>_</code> arm:</p>
+<pre><code class="language-move">fun classify(x: u8): u64 {
+    match (x) {
+        0         =&gt; 0,
+        1..=127   =&gt; 1,
+        128..=255 =&gt; 2,
+    }
+}
+</code></pre>
+<p>Range patterns work on every integer type, including signed types that cross zero:</p>
+<pre><code class="language-move">fun sign(x: i32): u8 {
+    match (x) {
+        ..0  =&gt; 0, // negative
+        0    =&gt; 1, // zero
+        1..  =&gt; 2, // positive
+    }
+}
+</code></pre>
+<p>Empty or inverted ranges are rejected at compile time:</p>
+<pre><code class="language-move">// All errors: empty range pattern.
+match (x) { 5..5    =&gt; 1, _ =&gt; 0 }
+match (x) { 10..5   =&gt; 1, _ =&gt; 0 }
+match (x) { 10..=5  =&gt; 1, _ =&gt; 0 }
+</code></pre>
+<p>Range patterns may also appear nested inside struct or enum variant patterns — see <a href="./structs-and-enums.html#match-expression-extensions">Match Expression Extensions</a>.</p>
+<h3 id="matching-through-references"><a class="header" href="#matching-through-references">Matching Through References</a></h3>
+<p><em>Since language version 2.4</em></p>
+<p>A <code>match</code> expression may take an immutable or mutable reference to a primitive value as its discriminator. The arm patterns are written using the same literal and range syntax as for the value form:</p>
+<pre><code class="language-move">fun bool_ref(b: &amp;bool): u64 {
+    match (b) { true =&gt; 1, false =&gt; 0 }
+}
+
+fun bytes_ref(bs: &amp;vector&lt;u8&gt;): u64 {
+    match (bs) { b"hi" =&gt; 1, _ =&gt; 0 }
+}
+
+fun int_ref(x: &amp;u64): u64 {
+    match (x) { 0..10 =&gt; 1, _ =&gt; 0 }
+}
+</code></pre>
+<p><code>&amp;mut</code> discriminators are supported in the same way. References to struct and enum values may also serve as discriminators — see <a href="./structs-and-enums.html#match-expression-extensions">Match Expression Extensions</a>.</p>
+<h3 id="literal-and-range-patterns-outside-match"><a class="header" href="#literal-and-range-patterns-outside-match">Literal and Range Patterns Outside <code>match</code></a></h3>
+<p>Literal and range patterns are only legal inside <code>match</code> arms; they are rejected in <code>let</code> bindings, assignments, and lambda parameters, because those positions are irrefutable and must match every value of their type.</p>
+<pre><code class="language-move">// All errors: literal and range patterns are not allowed here.
+let S { x: 1 } = S { x: 1 };
+let 1u64 = 1;
+let f = |1u64| 0;
+</code></pre>
 <h2 id="while-for-and-loop"><a class="header" href="#while-for-and-loop">While, For, and Loop</a></h2>
 <p>Move offers three constructs for looping: <code>while</code>, <code>for</code>, and <code>loop</code>.</p>
 <h3 id="while-loops"><a class="header" href="#while-loops"><code>while</code> loops</a></h3>
@@ -529,6 +632,8 @@
 
         <!-- Custom JS scripts -->
         <script src="theme/build-stamp-c45f76e8.js"></script>
+        <script src="theme/highlightjs-move-bc1bec70.js"></script>
+        <script src="theme/move-init-c73be6fb.js"></script>
 
 
 
