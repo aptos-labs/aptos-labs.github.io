@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Build the Move book (always latest from aptos-core) and the Aptos Framework Book
+# Build the Move book (always from aptos-core **main**) and the Aptos Framework Book
 # for each aptos-framework branch, then sync static output into this repository.
 #
 # Defaults assume the Aptos Labs org Pages layout:
-#   move-book/              <- tip of aptos-core (Move book sources)
+#   move-book/              <- aptos-core **main** (Move book sources)
 #   framework-book/         <- same content as aptos-framework branch "main"
 #   framework-book/main/    <- duplicate of main for explicit channel URLs
 #   framework-book/mainnet/ <- aptos-framework branch mainnet
@@ -11,12 +11,14 @@
 #   framework-book/devnet/  <- aptos-framework branch devnet (skipped if missing)
 #
 # Environment:
-#   SITE_ROOT          Root of aptos-labs.github.io checkout (default: parent of scripts/)
-#   APTOS_CORE_ROOT    Existing aptos-core clone (default: SITE_ROOT/.publish-cache/aptos-core)
-#   APTOS_CORE_REF     Used only when cloning aptos-core (default: main)
+#   SITE_ROOT             Root of aptos-labs.github.io checkout (default: parent of scripts/)
+#   APTOS_CORE_ROOT       aptos-core clone used for framework-book tooling (default: SITE_ROOT/.publish-cache/aptos-core)
+#   APTOS_CORE_REF        Ref for tooling clone when (re)creating APTOS_CORE_ROOT (default: main)
+#   APTOS_MOVE_BOOK_ROOT  Optional separate aptos-core clone for Move book; must be **main** when set.
+#                         If unset and APTOS_CORE_REF is main, Move book uses APTOS_CORE_ROOT.
 #   APTOS_FRAMEWORK_REPO  Git URL for aptos-framework (default: github aptos-labs)
-#   DRY_RUN            If 1, build and rsync into SITE_ROOT but skip git commit/push
-#   CARGO_BUILD_JOBS   Optional; lower to reduce memory (e.g. 2 on CI)
+#   DRY_RUN               If 1, build and rsync into SITE_ROOT but skip git commit/push
+#   CARGO_BUILD_JOBS      Optional; lower to reduce memory (e.g. 2 on CI)
 #
 # Requires: git, rsync, mdbook, cargo, standard Aptos build deps (pkg-config, openssl, cmake, clang, …).
 
@@ -26,15 +28,56 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SITE_ROOT="${SITE_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 APTOS_CORE_ROOT="${APTOS_CORE_ROOT:-$SITE_ROOT/.publish-cache/aptos-core}"
 APTOS_CORE_REF="${APTOS_CORE_REF:-main}"
+APTOS_MOVE_BOOK_ROOT="${APTOS_MOVE_BOOK_ROOT:-}"
 APTOS_FRAMEWORK_REPO="${APTOS_FRAMEWORK_REPO:-https://github.com/aptos-labs/aptos-framework.git}"
+APTOS_CORE_URL="${APTOS_CORE_URL:-https://github.com/aptos-labs/aptos-core.git}"
 DRY_RUN="${DRY_RUN:-0}"
 
 FRAMEWORK_CHANNELS=(main mainnet testnet devnet)
-# Packages published from the standalone aptos-framework repo into aptos-core's tree.
 OVERLAY_PACKAGES=(move-stdlib aptos-stdlib aptos-framework aptos-token-objects aptos-trading)
 
-BOOK_TOOLING_DIR="$APTOS_CORE_ROOT/third_party/move/documentation/framework-book"
-MOVE_BOOK_DIR="$APTOS_CORE_ROOT/third_party/move/documentation/book"
+validate_git_ref() {
+  local r=$1 name=$2
+  if [[ "$r" == *$'\n'* || "$r" == *$'\r'* ]]; then
+    echo "error: $name must not contain newlines" >&2
+    return 1
+  fi
+  if [[ -z "$r" || "$r" == *..* ]]; then
+    echo "error: invalid $name (allowed: alnum, /, ., _, -): $r" >&2
+    return 1
+  fi
+  if [[ ! "$r" =~ ^[a-zA-Z0-9/_./-]+$ ]]; then
+    echo "error: invalid $name (allowed: alnum, /, ., _, -): $r" >&2
+    return 1
+  fi
+}
+
+# Shallow clone at $ref when missing or not at remote tip (avoids stale cached checkouts).
+ensure_shallow_repo() {
+  local root=$1 url=$2 ref=$3
+  validate_git_ref "$ref" "git ref"
+  local want
+  want="$(git ls-remote "$url" "refs/heads/$ref" 2>/dev/null | awk 'NR==1 { print $1; exit }')"
+  if [[ -z "$want" ]]; then
+    want="$(git ls-remote "$url" "refs/tags/$ref" 2>/dev/null | awk 'NR==1 { print $1; exit }')"
+  fi
+  if [[ -z "$want" ]]; then
+    echo "error: ref '$ref' not found on $(basename "$url" .git)" >&2
+    return 1
+  fi
+  if [[ -d "$root/.git" ]]; then
+    local have
+    have="$(git -C "$root" rev-parse HEAD 2>/dev/null || true)"
+    if [[ "$have" == "$want" ]]; then
+      echo "==> $root already at $ref ($want)"
+      return 0
+    fi
+  fi
+  echo "==> (Re)cloning $url @ $ref -> $root"
+  mkdir -p "$(dirname "$root")"
+  rm -rf "$root"
+  git clone --depth 1 --branch "$ref" "$url" "$root"
+}
 
 stamp_html() {
   local html_dir=$1
@@ -77,12 +120,28 @@ if [[ ! -f "$SITE_ROOT/README.md" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$APTOS_CORE_ROOT/Cargo.toml" ]]; then
-  mkdir -p "$(dirname "$APTOS_CORE_ROOT")"
-  echo "==> Cloning aptos-core ($APTOS_CORE_REF) -> $APTOS_CORE_ROOT"
-  rm -rf "$APTOS_CORE_ROOT"
-  git clone --depth 1 --branch "$APTOS_CORE_REF" https://github.com/aptos-labs/aptos-core.git "$APTOS_CORE_ROOT"
+validate_git_ref "$APTOS_CORE_REF" "APTOS_CORE_REF"
+
+# Move book always tracks aptos-core branch main.
+MOVE_BOOK_REF="main"
+if [[ -n "${APTOS_MOVE_BOOK_ROOT:-}" ]]; then
+  MOVE_BOOK_ROOT="$APTOS_MOVE_BOOK_ROOT"
+else
+  MOVE_BOOK_ROOT="$APTOS_CORE_ROOT"
 fi
+
+ensure_shallow_repo "$APTOS_CORE_ROOT" "$APTOS_CORE_URL" "$APTOS_CORE_REF"
+ensure_shallow_repo "$MOVE_BOOK_ROOT" "$APTOS_CORE_URL" "$MOVE_BOOK_REF"
+
+if [[ "$MOVE_BOOK_ROOT" != "$APTOS_CORE_ROOT" ]]; then
+  if [[ "$APTOS_CORE_REF" == "main" ]]; then
+    echo "error: redundant APTOS_MOVE_BOOK_ROOT when APTOS_CORE_REF is main" >&2
+    exit 1
+  fi
+fi
+
+BOOK_TOOLING_DIR="$APTOS_CORE_ROOT/third_party/move/documentation/framework-book"
+MOVE_BOOK_DIR="$MOVE_BOOK_ROOT/third_party/move/documentation/book"
 
 command -v mdbook >/dev/null || {
   echo "error: mdbook not found in PATH" >&2
@@ -93,51 +152,61 @@ command -v cargo >/dev/null || {
   exit 1
 }
 
-CORE_SHA="$(git -C "$APTOS_CORE_ROOT" rev-parse --short HEAD)"
+TOOLING_SHA="$(git -C "$APTOS_CORE_ROOT" rev-parse --short HEAD)"
+MOVE_SHA="$(git -C "$MOVE_BOOK_ROOT" rev-parse --short HEAD)"
 BUILD_TIME="$(date -u +'%Y-%m-%d %H:%M UTC')"
 
-echo "==> Building Move on Aptos book (tip from aptos-core $CORE_SHA)"
+echo "==> Building Move on Aptos book (aptos-core main @ $MOVE_SHA)"
 mdbook build "$MOVE_BOOK_DIR"
-stamp_html "$MOVE_BOOK_DIR/html" "$BUILD_TIME (aptos-core $CORE_SHA move-book tip)"
+stamp_html "$MOVE_BOOK_DIR/html" "$BUILD_TIME (aptos-core $MOVE_SHA move-book main tip)"
 mkdir -p "$SITE_ROOT/move-book"
 rsync -a --delete "$MOVE_BOOK_DIR/html/" "$SITE_ROOT/move-book/"
+
+# Stage all framework channels, then rsync once so partial failures do not delete sibling channels.
+FW_STAGING="$(mktemp -d "${TMPDIR:-/tmp}/fw-book-staging.XXXXXX")"
+cleanup_fw_staging() {
+  rm -rf "$FW_STAGING"
+}
+trap cleanup_fw_staging EXIT
 
 for channel in "${FRAMEWORK_CHANNELS[@]}"; do
   echo "==> Framework book channel: $channel"
   fw_tmp="$(mktemp -d "${TMPDIR:-/tmp}/aptos-fw-${channel}.XXXXXX")"
-
-  if ! git clone --depth 1 -b "$channel" "$APTOS_FRAMEWORK_REPO" "$fw_tmp/fw" 2>/dev/null; then
+  if ! (
+    set -euo pipefail
+    git clone --depth 1 -b "$channel" "$APTOS_FRAMEWORK_REPO" "$fw_tmp/fw"
+    FW_SHA="$(git -C "$fw_tmp/fw" rev-parse --short HEAD)"
+    restore_framework_tree
+    clean_framework_book_generated
+    overlay_standalone_framework "$fw_tmp/fw"
+    echo "==> Running framework-book build ($channel @ $FW_SHA)"
+    cd "$BOOK_TOOLING_DIR" && ./build.sh
+    label="$BUILD_TIME (aptos-framework $channel $FW_SHA; tooling aptos-core $TOOLING_SHA)"
+    stamp_html "$BOOK_TOOLING_DIR/html" "$label"
+    if [[ "$channel" == "main" ]]; then
+      mkdir -p "$FW_STAGING" "$FW_STAGING/main"
+      rsync -a --delete "$BOOK_TOOLING_DIR/html/" "$FW_STAGING/"
+      rsync -a --delete "$BOOK_TOOLING_DIR/html/" "$FW_STAGING/main/"
+    else
+      mkdir -p "$FW_STAGING/$channel"
+      rsync -a --delete "$BOOK_TOOLING_DIR/html/" "$FW_STAGING/$channel/"
+    fi
+  ); then
     rm -rf "$fw_tmp"
     if [[ "$channel" == "main" ]]; then
-      echo "error: could not clone aptos-framework branch main" >&2
+      echo "error: framework book build failed for main" >&2
       exit 1
     fi
-    echo "warn: skip channel $channel (branch missing or clone failed)" >&2
+    echo "warn: skip channel $channel (clone or build failed)" >&2
     continue
   fi
-
-  FW_SHA="$(git -C "$fw_tmp/fw" rev-parse --short HEAD)"
-  restore_framework_tree
-  clean_framework_book_generated
-  overlay_standalone_framework "$fw_tmp/fw"
-
-  echo "==> Running framework-book build ($channel @ $FW_SHA)"
-  (cd "$BOOK_TOOLING_DIR" && ./build.sh)
-
-  label="$BUILD_TIME (aptos-framework $channel $FW_SHA; tooling aptos-core $CORE_SHA)"
-  stamp_html "$BOOK_TOOLING_DIR/html" "$label"
-
-  if [[ "$channel" == "main" ]]; then
-    mkdir -p "$SITE_ROOT/framework-book" "$SITE_ROOT/framework-book/main"
-    rsync -a --delete "$BOOK_TOOLING_DIR/html/" "$SITE_ROOT/framework-book/"
-    rsync -a --delete "$BOOK_TOOLING_DIR/html/" "$SITE_ROOT/framework-book/main/"
-  else
-    mkdir -p "$SITE_ROOT/framework-book/$channel"
-    rsync -a --delete "$BOOK_TOOLING_DIR/html/" "$SITE_ROOT/framework-book/$channel/"
-  fi
-
   rm -rf "$fw_tmp"
 done
+
+mkdir -p "$SITE_ROOT/framework-book"
+rsync -a --delete "$FW_STAGING/" "$SITE_ROOT/framework-book/"
+trap - EXIT
+rm -rf "$FW_STAGING"
 
 if [[ "$DRY_RUN" == "1" ]]; then
   echo "==> DRY_RUN=1: skipping git commit/push"
@@ -157,7 +226,8 @@ if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
 fi
 
 git commit -m "docs: republish move-book + multi-channel framework-book" \
-  -m "Move book: aptos-core ${CORE_SHA}. Framework: channels ${FRAMEWORK_CHANNELS[*]} (aptos-framework repo branches; aptos-experimental from aptos-core)."
+  -m "Move book: aptos-core ${MOVE_SHA} (main). Framework tooling: ${TOOLING_SHA}. Channels: ${FRAMEWORK_CHANNELS[*]} (aptos-framework branches; aptos-experimental from tooling checkout)."
+
 echo "==> Pushing site update"
 PUBLISH_BRANCH="${DOCS_PUBLISH_BRANCH:-main}"
 git push origin "HEAD:${PUBLISH_BRANCH}"
