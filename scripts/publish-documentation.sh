@@ -14,8 +14,10 @@
 #   SITE_ROOT             Root of aptos-labs.github.io checkout (default: parent of scripts/)
 #   APTOS_CORE_ROOT       aptos-core clone used for framework-book tooling (default: SITE_ROOT/.publish-cache/aptos-core)
 #   APTOS_CORE_REF        Ref for tooling clone when (re)creating APTOS_CORE_ROOT (default: main)
-#   APTOS_MOVE_BOOK_ROOT  Optional separate aptos-core clone for Move book; must be **main** when set.
-#                         If unset and APTOS_CORE_REF is main, Move book uses APTOS_CORE_ROOT.
+#   APTOS_MOVE_BOOK_ROOT  Optional separate aptos-core clone for Move book (branch **main**).
+#                         If unset: when APTOS_CORE_REF is **main**, Move book uses APTOS_CORE_ROOT;
+#                         otherwise defaults to SITE_ROOT/.publish-cache/aptos-core-move-book so
+#                         tooling and Move sources stay on different checkouts.
 #   APTOS_FRAMEWORK_REPO  Git URL for aptos-framework (default: github aptos-labs)
 #   DRY_RUN               If 1, build and rsync into SITE_ROOT but skip git commit/push
 #   CARGO_BUILD_JOBS      Optional; lower to reduce memory (e.g. 2 on CI)
@@ -122,22 +124,22 @@ fi
 
 validate_git_ref "$APTOS_CORE_REF" "APTOS_CORE_REF"
 
-# Move book always tracks aptos-core branch main.
+# Move book always tracks aptos-core branch main (separate clone when tooling ref != main).
 MOVE_BOOK_REF="main"
 if [[ -n "${APTOS_MOVE_BOOK_ROOT:-}" ]]; then
   MOVE_BOOK_ROOT="$APTOS_MOVE_BOOK_ROOT"
-else
+elif [[ "$APTOS_CORE_REF" == "main" ]]; then
   MOVE_BOOK_ROOT="$APTOS_CORE_ROOT"
+else
+  MOVE_BOOK_ROOT="$SITE_ROOT/.publish-cache/aptos-core-move-book"
 fi
 
 ensure_shallow_repo "$APTOS_CORE_ROOT" "$APTOS_CORE_URL" "$APTOS_CORE_REF"
 ensure_shallow_repo "$MOVE_BOOK_ROOT" "$APTOS_CORE_URL" "$MOVE_BOOK_REF"
 
-if [[ "$MOVE_BOOK_ROOT" != "$APTOS_CORE_ROOT" ]]; then
-  if [[ "$APTOS_CORE_REF" == "main" ]]; then
-    echo "error: redundant APTOS_MOVE_BOOK_ROOT when APTOS_CORE_REF is main" >&2
-    exit 1
-  fi
+if [[ "$APTOS_CORE_REF" == "main" && -n "${APTOS_MOVE_BOOK_ROOT:-}" && "$APTOS_MOVE_BOOK_ROOT" != "$APTOS_CORE_ROOT" ]]; then
+  echo "error: APTOS_MOVE_BOOK_ROOT is unnecessary when APTOS_CORE_REF is main (use a single checkout)" >&2
+  exit 1
 fi
 
 BOOK_TOOLING_DIR="$APTOS_CORE_ROOT/third_party/move/documentation/framework-book"
@@ -169,6 +171,20 @@ cleanup_fw_staging() {
 }
 trap cleanup_fw_staging EXIT
 
+# Preserve previously published channel trees when a channel fails mid-run: seed staging
+# from production, then use rsync `protect` when refreshing the root layout from `main`.
+if [[ -d "$SITE_ROOT/framework-book" ]]; then
+  echo "==> Seeding framework-book staging from current site output"
+  rsync -a "$SITE_ROOT/framework-book/" "$FW_STAGING/"
+fi
+
+ROOT_CHANNEL_PROTECT=(
+  '--filter=protect main/'
+  '--filter=protect mainnet/'
+  '--filter=protect testnet/'
+  '--filter=protect devnet/'
+)
+
 for channel in "${FRAMEWORK_CHANNELS[@]}"; do
   echo "==> Framework book channel: $channel"
   fw_tmp="$(mktemp -d "${TMPDIR:-/tmp}/aptos-fw-${channel}.XXXXXX")"
@@ -185,7 +201,8 @@ for channel in "${FRAMEWORK_CHANNELS[@]}"; do
     stamp_html "$BOOK_TOOLING_DIR/html" "$label"
     if [[ "$channel" == "main" ]]; then
       mkdir -p "$FW_STAGING" "$FW_STAGING/main"
-      rsync -a --delete "$BOOK_TOOLING_DIR/html/" "$FW_STAGING/"
+      # Do not delete sibling channel directories under the site root while updating main HTML.
+      rsync -a --delete "${ROOT_CHANNEL_PROTECT[@]}" "$BOOK_TOOLING_DIR/html/" "$FW_STAGING/"
       rsync -a --delete "$BOOK_TOOLING_DIR/html/" "$FW_STAGING/main/"
     else
       mkdir -p "$FW_STAGING/$channel"

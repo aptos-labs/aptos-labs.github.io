@@ -53,7 +53,11 @@ jobs:
             echo "::error::aptos_core_ref must not contain newline characters"
             exit 1
           fi
-          if [[ "$R" == *..* ]] || ! [[ "$R" =~ ^[a-zA-Z0-9/_./-]+$ ]]; then
+          if [[ "$R" == *..* ]]; then
+            echo "::error::aptos_core_ref has invalid characters (allowed: alnum, /, ., _, -)"
+            exit 1
+          fi
+          if ! [[ "$R" =~ ^[a-zA-Z0-9/_./-]+$ ]]; then
             echo "::error::aptos_core_ref has invalid characters (allowed: alnum, /, ., _, -)"
             exit 1
           fi
