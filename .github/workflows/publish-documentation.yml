@@ -1,0 +1,114 @@
+name: Publish documentation
+
+# Builds the Move book from aptos-core **main** and the Framework book for each
+# aptos-framework branch (main, mainnet, testnet, devnet), then commits the
+# static output into this repository (move-book/, framework-book/, …).
+# Optional `aptos_core_ref` / `client_payload.aptos_core_ref` selects the
+# aptos-core checkout for framework-book tooling only (validated; Move book uses main).
+on:
+  workflow_dispatch:
+    inputs:
+      aptos_core_ref:
+        description: aptos-core git ref for framework-book Rust tooling only (Move book always uses main)
+        required: false
+        default: main
+  schedule:
+    # Daily 06:15 UTC — adjust as needed.
+    - cron: "15 6 * * *"
+  repository_dispatch:
+    types: [publish-docs]
+
+concurrency:
+  group: publish-documentation
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    # Forks keep the same workflow file but must not push with our credentials model.
+    if: github.repository == 'aptos-labs/aptos-labs.github.io'
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      # Pinned SHAs reduce supply-chain risk for a publishing workflow.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Resolve and validate APTOS_CORE_REF
+        env:
+          INPUT_REF: ${{ github.event.inputs.aptos_core_ref }}
+          PAYLOAD_REF: ${{ github.event.client_payload.aptos_core_ref }}
+        run: |
+          set -euo pipefail
+          R="$INPUT_REF"
+          [[ -n "$R" ]] || R="$PAYLOAD_REF"
+          [[ -n "$R" ]] || R="main"
+          if [[ "$R" == *$'\n'* || "$R" == *$'\r'* ]]; then
+            echo "::error::aptos_core_ref must not contain newline characters"
+            exit 1
+          fi
+          if [[ "$R" == *..* ]]; then
+            echo "::error::aptos_core_ref has invalid characters (allowed: alnum, /, ., _, -)"
+            exit 1
+          fi
+          if ! [[ "$R" =~ ^[a-zA-Z0-9/_./-]+$ ]]; then
+            echo "::error::aptos_core_ref has invalid characters (allowed: alnum, /, ., _, -)"
+            exit 1
+          fi
+          echo "APTOS_CORE_REF=$R" >> "$GITHUB_ENV"
+          if [[ "$R" != "main" ]]; then
+            echo "APTOS_MOVE_BOOK_ROOT=${GITHUB_WORKSPACE}/.publish-cache/aptos-core-move-book" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential pkg-config libssl-dev protobuf-compiler cmake \
+            libclang-dev llvm libudev-dev
+
+      - name: Clone aptos-core (framework-book tooling)
+        run: |
+          set -euo pipefail
+          mkdir -p .publish-cache
+          rm -rf .publish-cache/aptos-core
+          git clone --depth 1 --branch "$APTOS_CORE_REF" \
+            https://github.com/aptos-labs/aptos-core.git .publish-cache/aptos-core
+
+      - name: Clone aptos-core main (Move book only)
+        if: env.APTOS_CORE_REF != 'main'
+        run: |
+          set -euo pipefail
+          rm -rf .publish-cache/aptos-core-move-book
+          git clone --depth 1 --branch main \
+            https://github.com/aptos-labs/aptos-core.git .publish-cache/aptos-core-move-book
+
+      - name: Install Rust (pinned by tooling aptos-core)
+        run: |
+          set -euo pipefail
+          channel=$(grep -E '^channel' .publish-cache/aptos-core/rust-toolchain.toml | head -1 | sed -E 's/^channel = "([^"]+)".*/\1/')
+          echo "Using Rust toolchain $channel"
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain "$channel" --profile minimal
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: Cache Cargo outputs
+        uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae # v2.7.9
+        with:
+          workspaces: .publish-cache/aptos-core
+
+      - name: Install mdbook
+        run: cargo install mdbook --locked --version 0.4.48
+
+      - name: Build and publish books
+        env:
+          SITE_ROOT: ${{ github.workspace }}
+          APTOS_CORE_ROOT: ${{ github.workspace }}/.publish-cache/aptos-core
+          DRY_RUN: "0"
+          DOCS_PUBLISH_BRANCH: ${{ github.event.repository.default_branch }}
+        run: bash ./scripts/publish-documentation.sh

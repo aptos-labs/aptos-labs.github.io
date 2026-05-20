@@ -11,8 +11,32 @@ sub-directories that are populated from other repositories.
 
 | Path | Source repository | Pushed by |
 |---|---|---|
-| [`/move-book/`](https://aptos-labs.github.io/move-book/) | [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) — `third_party/move/documentation/book` | `book/deploy.sh` in aptos-core |
-| [`/framework-book/`](https://aptos-labs.github.io/framework-book/) | [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) — `third_party/move/documentation/framework-book` | `framework-book/deploy.sh` in aptos-core |
+| [`/move-book/`](https://aptos-labs.github.io/move-book/) | [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) — `third_party/move/documentation/book` on **`main`** | [Publish documentation](.github/workflows/publish-documentation.yml) (Move book **always** uses aptos-core `main`; `aptos_core_ref` affects framework tooling only) |
+| [`/framework-book/`](https://aptos-labs.github.io/framework-book/) | [`aptos-labs/aptos-framework`](https://github.com/aptos-labs/aptos-framework) branch **`main`**, with book tooling from [`aptos-labs/aptos-core`](https://github.com/aptos-labs/aptos-core) | Same workflow; root URL mirrors **`main`** |
+| [`/framework-book/main/`](https://aptos-labs.github.io/framework-book/main/) … [`/devnet/`](https://aptos-labs.github.io/framework-book/devnet/) | `aptos-framework` branch per path segment (`main`, `mainnet`, `testnet`, `devnet`) | Same workflow; `aptos-experimental` comes from the **tooling** aptos-core checkout |
+
+Maintainers can still use `book/deploy.sh` and `framework-book/deploy.sh` in **aptos-core** for ad-hoc publishes, but the org site is intended to track **Publish documentation** so the layout above stays consistent.
+
+### Automated publish (GitHub Actions)
+
+Workflow: [`.github/workflows/publish-documentation.yml`](.github/workflows/publish-documentation.yml).
+
+- **Triggers:** `workflow_dispatch`, nightly `schedule`, and `repository_dispatch` with type `publish-docs` (call from other repos with a token that has `contents` write access here).
+- **Triggering from another repo** (`repository_dispatch`):
+
+  ```bash
+  curl -sS -X POST \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer YOUR_PAT" \
+    https://api.github.com/repos/aptos-labs/aptos-labs.github.io/dispatches \
+    -d '{"event_type":"publish-docs","client_payload":{"aptos_core_ref":"main"}}'
+  ```
+
+  Omit `client_payload` or leave `aptos_core_ref` unset to default to `main`. Values are validated (no newlines; strict allow-list) before use.
+- **Behavior:** clones aptos-core at `aptos_core_ref` for **framework-book tooling**; when that ref is not `main`, clones a second aptos-core checkout at **`main`** for the Move book only (locally, the script defaults that checkout to `SITE_ROOT/.publish-cache/aptos-core-move-book` so it never reclones tooling over `main`). Builds `/move-book/` from the **main** checkout, then for each framework channel clones [`aptos-labs/aptos-framework`](https://github.com/aptos-labs/aptos-framework), overlays into `aptos-move/framework/`, and runs `framework-book/build.sh`. Staging **seeds** from the current `/framework-book/` site output; syncing the `main` HTML into the staged root uses rsync **`protect`** filters for `main/`, `mainnet/`, `testnet/`, and `devnet/` so a skipped or failed optional channel does not wipe previously published siblings. One final `rsync --delete` publishes the staged tree. Missing optional branches are skipped with a warning. Third-party Actions are pinned to commit SHAs.
+- **Credentials:** the default `GITHUB_TOKEN` from `actions/checkout` is enough **unless** `main` is protected in a way that blocks machine pushes; in that case add a fine‑grained PAT as a secret and pass it to `actions/checkout` (see GitHub docs for “push with contents write”).
+
+Local dry run (no commit/push): `DRY_RUN=1 ./scripts/publish-documentation.sh` from a clone of this repo (requires Rust, `mdbook`, and Aptos build dependencies).
 
 ## Updating the landing page
 
