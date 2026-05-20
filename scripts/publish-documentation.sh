@@ -61,6 +61,9 @@ ensure_shallow_repo() {
   local want
   want="$(git ls-remote "$url" "refs/heads/$ref" 2>/dev/null | awk 'NR==1 { print $1; exit }')"
   if [[ -z "$want" ]]; then
+    want="$(git ls-remote "$url" "refs/tags/$ref^{}" 2>/dev/null | awk 'NR==1 { print $1; exit }')"
+  fi
+  if [[ -z "$want" ]]; then
     want="$(git ls-remote "$url" "refs/tags/$ref" 2>/dev/null | awk 'NR==1 { print $1; exit }')"
   fi
   if [[ -z "$want" ]]; then
@@ -134,13 +137,13 @@ else
   MOVE_BOOK_ROOT="$SITE_ROOT/.publish-cache/aptos-core-move-book"
 fi
 
-ensure_shallow_repo "$APTOS_CORE_ROOT" "$APTOS_CORE_URL" "$APTOS_CORE_REF"
-ensure_shallow_repo "$MOVE_BOOK_ROOT" "$APTOS_CORE_URL" "$MOVE_BOOK_REF"
-
 if [[ "$APTOS_CORE_REF" == "main" && -n "${APTOS_MOVE_BOOK_ROOT:-}" && "$APTOS_MOVE_BOOK_ROOT" != "$APTOS_CORE_ROOT" ]]; then
   echo "error: APTOS_MOVE_BOOK_ROOT is unnecessary when APTOS_CORE_REF is main (use a single checkout)" >&2
   exit 1
 fi
+
+ensure_shallow_repo "$APTOS_CORE_ROOT" "$APTOS_CORE_URL" "$APTOS_CORE_REF"
+ensure_shallow_repo "$MOVE_BOOK_ROOT" "$APTOS_CORE_URL" "$MOVE_BOOK_REF"
 
 BOOK_TOOLING_DIR="$APTOS_CORE_ROOT/third_party/move/documentation/framework-book"
 MOVE_BOOK_DIR="$MOVE_BOOK_ROOT/third_party/move/documentation/book"

@@ -7,8 +7,8 @@
 
 - [The Move on Aptos Book](https://aptos-labs.github.io/move-book/) —
   Reference for the Move language as used on Aptos, including the Move
-  Specification Language and Move Prover. Always built from **latest**
-  `aptos-core` `main`.
+  Specification Language and Move Prover. Built from the published
+  `aptos-core` source for this site.
 - [The Aptos Framework Book](https://aptos-labs.github.io/framework-book/) —
   Reference documentation for every on-chain Move module: the Move standard
   library, the Aptos standard library, and the framework packages.
@@ -16,7 +16,7 @@
   [`/framework-book/main/`](https://aptos-labs.github.io/framework-book/main/).
   Other on-chain branches: [`mainnet`](https://aptos-labs.github.io/framework-book/mainnet/),
   [`testnet`](https://aptos-labs.github.io/framework-book/testnet/),
-  [`devnet`](https://aptos-labs.github.io/framework-book/devnet/).
+  `devnet`.
 
 ## External
 
