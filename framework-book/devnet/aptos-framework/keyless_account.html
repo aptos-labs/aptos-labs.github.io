@@ -1,0 +1,757 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>keyless_account - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/keyless_account.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1keyless_account"><a class="header" href="#module-0x1keyless_account">Module <code>0x1::keyless_account</code> <a id="0x1_keyless_account"></a></a></h1>
+<p>This module is responsible for configuring keyless blockchain accounts which were introduced in
+<a href="https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md">AIP-61</a>.</p>
+<ul>
+<li><a href="#0x1_keyless_account_Group">Struct <code>Group</code></a></li>
+<li><a href="#0x1_keyless_account_Groth16VerificationKey">Resource <code>Groth16VerificationKey</code></a></li>
+<li><a href="#0x1_keyless_account_Configuration">Resource <code>Configuration</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_keyless_account_new_groth16_verification_key">Function <code>new_groth16_verification_key</code></a></li>
+<li><a href="#0x1_keyless_account_new_configuration">Function <code>new_configuration</code></a></li>
+<li><a href="#0x1_keyless_account_validate_groth16_vk">Function <code>validate_groth16_vk</code></a></li>
+<li><a href="#0x1_keyless_account_update_groth16_verification_key">Function <code>update_groth16_verification_key</code></a></li>
+<li><a href="#0x1_keyless_account_update_configuration">Function <code>update_configuration</code></a></li>
+<li><a href="#0x1_keyless_account_update_training_wheels">Function <code>update_training_wheels</code></a></li>
+<li><a href="#0x1_keyless_account_update_max_exp_horizon">Function <code>update_max_exp_horizon</code></a></li>
+<li><a href="#0x1_keyless_account_remove_all_override_auds">Function <code>remove_all_override_auds</code></a></li>
+<li><a href="#0x1_keyless_account_add_override_aud">Function <code>add_override_aud</code></a></li>
+<li><a href="#0x1_keyless_account_set_groth16_verification_key_for_next_epoch">Function <code>set_groth16_verification_key_for_next_epoch</code></a></li>
+<li><a href="#0x1_keyless_account_set_configuration_for_next_epoch">Function <code>set_configuration_for_next_epoch</code></a></li>
+<li><a href="#0x1_keyless_account_update_training_wheels_for_next_epoch">Function <code>update_training_wheels_for_next_epoch</code></a></li>
+<li><a href="#0x1_keyless_account_update_max_exp_horizon_for_next_epoch">Function <code>update_max_exp_horizon_for_next_epoch</code></a></li>
+<li><a href="#0x1_keyless_account_remove_all_override_auds_for_next_epoch">Function <code>remove_all_override_auds_for_next_epoch</code></a></li>
+<li><a href="#0x1_keyless_account_add_override_aud_for_next_epoch">Function <code>add_override_aud_for_next_epoch</code></a></li>
+<li><a href="#0x1_keyless_account_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#@Specification_1">Specification</a></li>
+</ul>
+<pre><code><b>use</b> <a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra">0x1::bn254_algebra</a>;
+<b>use</b> <a href="chain_status.html#0x1_chain_status">0x1::chain_status</a>;
+<b>use</b> <a href="config_buffer.html#0x1_config_buffer">0x1::config_buffer</a>;
+<b>use</b> <a href="../aptos-stdlib/crypto_algebra.html#0x1_crypto_algebra">0x1::crypto_algebra</a>;
+<b>use</b> <a href="../aptos-stdlib/ed25519.html#0x1_ed25519">0x1::ed25519</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
+</code></pre>
+<h2 id="struct-group"><a class="header" href="#struct-group">Struct <code>Group</code> <a id="0x1_keyless_account_Group"></a></a></h2>
+<pre><code>#[resource_group(#[scope = <b>global</b>])]
+<b>struct</b> <a href="keyless_account.html#0x1_keyless_account_Group">Group</a>
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>dummy_field: bool</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-groth16verificationkey"><a class="header" href="#resource-groth16verificationkey">Resource <code>Groth16VerificationKey</code> <a id="0x1_keyless_account_Groth16VerificationKey"></a></a></h2>
+<p>The 288-byte Groth16 verification key (VK) for the ZK relation that implements keyless accounts</p>
+<pre><code>#[resource_group_member(#[group = <a href="keyless_account.html#0x1_keyless_account_Group">0x1::keyless_account::Group</a>])]
+<b>struct</b> <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a> <b>has</b> drop, store, key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>alpha_g1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+ 32-byte serialization of <code>alpha * G</code>, where <code>G</code> is the generator of <code>G1</code>.
+</dd>
+<dt>
+<code>beta_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+ 64-byte serialization of <code>alpha * H</code>, where <code>H</code> is the generator of <code>G2</code>.
+</dd>
+<dt>
+<code>gamma_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+ 64-byte serialization of <code>gamma * H</code>, where <code>H</code> is the generator of <code>G2</code>.
+</dd>
+<dt>
+<code>delta_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+ 64-byte serialization of <code>delta * H</code>, where <code>H</code> is the generator of <code>G2</code>.
+</dd>
+<dt>
+<code>gamma_abc_g1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+<dd>
+ <code>\<b>forall</b> i \in {0, ..., \ell}, 64-byte serialization of gamma^{-1} * (beta * a_i + alpha * b_i + c_i) * H</code>, where
+ <code>H</code> is the generator of <code>G1</code> and <code>\ell</code> is 1 for the ZK relation.
+</dd>
+</dl>
+</details>
+<h2 id="resource-configuration"><a class="header" href="#resource-configuration">Resource <code>Configuration</code> <a id="0x1_keyless_account_Configuration"></a></a></h2>
+<pre><code>#[resource_group_member(#[group = <a href="keyless_account.html#0x1_keyless_account_Group">0x1::keyless_account::Group</a>])]
+<b>struct</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> <b>has</b> <b>copy</b>, drop, store, key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>override_aud_vals: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+ An override <code>aud</code> for the identity of a recovery service, which will help users recover their keyless accounts
+ associated with dapps or wallets that have disappeared.
+ IMPORTANT: This recovery service **cannot**, on its own, take over user accounts: a user must first sign in
+ via OAuth in the recovery service in order to allow it to rotate any of that user's keyless accounts.
+<p>Furthermore, the ZKP eventually expires, so there is a limited window within which a malicious recovery
+service could rotate accounts. In the future, we can make this window arbitrarily small by further lowering
+the maximum expiration horizon for ZKPs used for recovery, instead of relying on the <code>max_exp_horizon_secs</code>
+value in this resource.</p>
+<p>If changed: There is no prover service support yet for recovery mode =&gt; ZKPs with override aud's enabled
+will not be served by the prover service =&gt; as long as training wheels are "on," such recovery ZKPs will
+never arrive on chain.
+(Once support is implemented in the prover service, in an abundance of caution, the training wheel check
+should only pass if the override aud in the public statement matches one in this list. Therefore, changes
+to this value should be picked up automatically by the prover service.)</p>
+</dd>
+<dt>
+<code>max_signatures_per_txn: u16</code>
+</dt>
+<dd>
+ No transaction can have more than this many keyless signatures.
+<p>If changed: Only affects the Aptos validators; prover service not impacted.</p>
+</dd>
+<dt>
+<code>max_exp_horizon_secs: u64</code>
+</dt>
+<dd>
+ How far in the future from the JWT's issued-at-time can the EPK expiration date be set?
+ Specifically, validators enforce that the ZKP's expiration horizon is less than this <code>max_exp_horizon_secs</code>
+ value.
+<p>If changed: Only affects the Aptos validators; prover service not impacted.</p>
+</dd>
+<dt>
+<code>training_wheels_pubkey: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+<dd>
+ The training wheels PK, if training wheels are on.
+<p>If changed: Prover service has to be re-deployed with the associated training wheel SK.</p>
+</dd>
+<dt>
+<code>max_commited_epk_bytes: u16</code>
+</dt>
+<dd>
+ The max length of an ephemeral public key supported in our circuit (93 bytes)
+<p>Note: Currently, the circuit derives the JWT's nonce field by hashing the EPK as:</p>
+<pre><code>Poseidon_6(
+  epk_0, epk_1, epk_2,
+  max_commited_epk_bytes,
+  exp_date,
+  epk_blinder
+)
+</code></pre>
+<p>and the public inputs hash by hashing the EPK with other inputs as:</p>
+<pre><code>Poseidon_14(
+  epk_0, epk_1, epk_2,
+  max_commited_epk_bytes,
+  [...]
+)
+</code></pre>
+<p>where <code>max_committed_epk_byte</code> is passed in as one of the witnesses to the circuit. As a result, (some)
+changes to this field could technically be handled by the same circuit: e.g., if we let the epk_i chunks
+exceed 31 bytes, but no more than 32, then <code>max_commited_epk_bytes</code> could now be in (93, 96]. Whether such a
+restricted set of changes is useful remains unclear. Therefore, the verdict will be that...</p>
+<p>If changed: (Likely) requires a circuit change because over-decreasing (or increasing) it leads to fewer (or
+more) EPK chunks. This would break the current way the circuit hashes the nonce and the public inputs.
+=&gt; prover service redeployment.</p>
+</dd>
+<dt>
+<code>max_iss_val_bytes: u16</code>
+</dt>
+<dd>
+ The max length of the value of the JWT's <code>iss</code> field supported in our circuit (e.g., <code>"https://accounts.google.com"</code>)
+<p>If changed: Requires a circuit change because the <code>iss</code> field value is hashed inside the circuit as
+<code>HashBytesToFieldWithLen(MAX_ISS_VALUE_LEN)(iss_value, iss_value_len)</code> where <code>MAX_ISS_VALUE_LEN</code> is a
+circuit constant hard-coded to <code>max_iss_val_bytes</code> (i.e., to 120) =&gt; prover service redeployment..</p>
+</dd>
+<dt>
+<code>max_extra_field_bytes: u16</code>
+</dt>
+<dd>
+ The max length of the JWT field name and value (e.g., <code>"max_age":"18"</code>) supported in our circuit
+<p>If changed: Requires a circuit change because the extra field key-value pair is hashed inside the circuit as
+<code>HashBytesToFieldWithLen(MAX_EXTRA_FIELD_KV_PAIR_LEN)(extra_field, extra_field_len)</code> where
+<code>MAX_EXTRA_FIELD_KV_PAIR_LEN</code> is a circuit constant hard-coded to <code>max_extra_field_bytes</code> (i.e., to 350)
+=&gt; prover service redeployment.</p>
+</dd>
+<dt>
+<code>max_jwt_header_b64_bytes: u32</code>
+</dt>
+<dd>
+ The max length of the base64url-encoded JWT header in bytes supported in our circuit.
+<p>If changed: Requires a circuit change because the JWT header is hashed inside the circuit as
+<code>HashBytesToFieldWithLen(MAX_B64U_JWT_HEADER_W_DOT_LEN)(b64u_jwt_header_w_dot, b64u_jwt_header_w_dot_len)</code>
+where <code>MAX_B64U_JWT_HEADER_W_DOT_LEN</code> is a circuit constant hard-coded to <code>max_jwt_header_b64_bytes</code>
+(i.e., to 350) =&gt; prover service redeployment.</p>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_keyless_account_E_INVALID_BN254_G1_SERIALIZATION"></a></p>
+<p>A serialized BN254 G1 point is invalid.</p>
+<pre><code><b>const</b> <a href="keyless_account.html#0x1_keyless_account_E_INVALID_BN254_G1_SERIALIZATION">E_INVALID_BN254_G1_SERIALIZATION</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_keyless_account_E_INVALID_BN254_G2_SERIALIZATION"></a></p>
+<p>A serialized BN254 G2 point is invalid.</p>
+<pre><code><b>const</b> <a href="keyless_account.html#0x1_keyless_account_E_INVALID_BN254_G2_SERIALIZATION">E_INVALID_BN254_G2_SERIALIZATION</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_keyless_account_E_TRAINING_WHEELS_PK_WRONG_SIZE"></a></p>
+<p>The training wheels PK needs to be 32 bytes long.</p>
+<pre><code><b>const</b> <a href="keyless_account.html#0x1_keyless_account_E_TRAINING_WHEELS_PK_WRONG_SIZE">E_TRAINING_WHEELS_PK_WRONG_SIZE</a>: u64 = 1;
+</code></pre>
+<h2 id="function-new_groth16_verification_key"><a class="header" href="#function-new_groth16_verification_key">Function <code>new_groth16_verification_key</code> <a id="0x1_keyless_account_new_groth16_verification_key"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_new_groth16_verification_key">new_groth16_verification_key</a>(alpha_g1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, beta_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, gamma_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, delta_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, gamma_abc_g1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">keyless_account::Groth16VerificationKey</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_new_groth16_verification_key">new_groth16_verification_key</a>(alpha_g1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+                                        beta_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+                                        gamma_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+                                        delta_g2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+                                        gamma_abc_g1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+): <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a> {
+    <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a> {
+        alpha_g1,
+        beta_g2,
+        gamma_g2,
+        delta_g2,
+        gamma_abc_g1,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_configuration"><a class="header" href="#function-new_configuration">Function <code>new_configuration</code> <a id="0x1_keyless_account_new_configuration"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_new_configuration">new_configuration</a>(override_aud_val: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, max_signatures_per_txn: u16, max_exp_horizon_secs: u64, training_wheels_pubkey: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, max_commited_epk_bytes: u16, max_iss_val_bytes: u16, max_extra_field_bytes: u16, max_jwt_header_b64_bytes: u32): <a href="keyless_account.html#0x1_keyless_account_Configuration">keyless_account::Configuration</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_new_configuration">new_configuration</a>(
+    override_aud_val: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    max_signatures_per_txn: u16,
+    max_exp_horizon_secs: u64,
+    training_wheels_pubkey: Option&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+    max_commited_epk_bytes: u16,
+    max_iss_val_bytes: u16,
+    max_extra_field_bytes: u16,
+    max_jwt_header_b64_bytes: u32
+): <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+        override_aud_vals: override_aud_val,
+        max_signatures_per_txn,
+        max_exp_horizon_secs,
+        training_wheels_pubkey,
+        max_commited_epk_bytes,
+        max_iss_val_bytes,
+        max_extra_field_bytes,
+        max_jwt_header_b64_bytes,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-validate_groth16_vk"><a class="header" href="#function-validate_groth16_vk">Function <code>validate_groth16_vk</code> <a id="0x1_keyless_account_validate_groth16_vk"></a></a></h2>
+<p>Pre-validate the VK to actively-prevent incorrect VKs from being set on-chain.</p>
+<pre><code><b>fun</b> <a href="keyless_account.html#0x1_keyless_account_validate_groth16_vk">validate_groth16_vk</a>(vk: &<a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">keyless_account::Groth16VerificationKey</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="keyless_account.html#0x1_keyless_account_validate_groth16_vk">validate_groth16_vk</a>(vk: &<a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a>) {
+    // Could be leveraged <b>to</b> speed up the VM deserialization of the VK by 2x, since it can <b>assume</b> the points are valid.
+    <b>assert</b>!(<a href="../aptos-stdlib/crypto_algebra.html#0x1_crypto_algebra_deserialize">crypto_algebra::deserialize</a>&lt;<a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_G1">bn254_algebra::G1</a>, <a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_FormatG1Compr">bn254_algebra::FormatG1Compr</a>&gt;(&vk.alpha_g1).is_some(), <a href="keyless_account.html#0x1_keyless_account_E_INVALID_BN254_G1_SERIALIZATION">E_INVALID_BN254_G1_SERIALIZATION</a>);
+    <b>assert</b>!(<a href="../aptos-stdlib/crypto_algebra.html#0x1_crypto_algebra_deserialize">crypto_algebra::deserialize</a>&lt;<a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_G2">bn254_algebra::G2</a>, <a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_FormatG2Compr">bn254_algebra::FormatG2Compr</a>&gt;(&vk.beta_g2).is_some(), <a href="keyless_account.html#0x1_keyless_account_E_INVALID_BN254_G2_SERIALIZATION">E_INVALID_BN254_G2_SERIALIZATION</a>);
+    <b>assert</b>!(<a href="../aptos-stdlib/crypto_algebra.html#0x1_crypto_algebra_deserialize">crypto_algebra::deserialize</a>&lt;<a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_G2">bn254_algebra::G2</a>, <a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_FormatG2Compr">bn254_algebra::FormatG2Compr</a>&gt;(&vk.gamma_g2).is_some(), <a href="keyless_account.html#0x1_keyless_account_E_INVALID_BN254_G2_SERIALIZATION">E_INVALID_BN254_G2_SERIALIZATION</a>);
+    <b>assert</b>!(<a href="../aptos-stdlib/crypto_algebra.html#0x1_crypto_algebra_deserialize">crypto_algebra::deserialize</a>&lt;<a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_G2">bn254_algebra::G2</a>, <a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_FormatG2Compr">bn254_algebra::FormatG2Compr</a>&gt;(&vk.delta_g2).is_some(), <a href="keyless_account.html#0x1_keyless_account_E_INVALID_BN254_G2_SERIALIZATION">E_INVALID_BN254_G2_SERIALIZATION</a>);
+    for (i in 0..vk.gamma_abc_g1.length()) {
+        <b>assert</b>!(<a href="../aptos-stdlib/crypto_algebra.html#0x1_crypto_algebra_deserialize">crypto_algebra::deserialize</a>&lt;<a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_G1">bn254_algebra::G1</a>, <a href="../aptos-stdlib/bn254_algebra.html#0x1_bn254_algebra_FormatG1Compr">bn254_algebra::FormatG1Compr</a>&gt;(vk.gamma_abc_g1.borrow(i)).is_some(), <a href="keyless_account.html#0x1_keyless_account_E_INVALID_BN254_G1_SERIALIZATION">E_INVALID_BN254_G1_SERIALIZATION</a>);
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-update_groth16_verification_key"><a class="header" href="#function-update_groth16_verification_key">Function <code>update_groth16_verification_key</code> <a id="0x1_keyless_account_update_groth16_verification_key"></a></a></h2>
+<p>Sets the Groth16 verification key, only callable during genesis. To call during governance proposals, use
+<code>set_groth16_verification_key_for_next_epoch</code>.</p>
+<p>WARNING: See <code>set_groth16_verification_key_for_next_epoch</code> for caveats.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_groth16_verification_key">update_groth16_verification_key</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, vk: <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">keyless_account::Groth16VerificationKey</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_groth16_verification_key">update_groth16_verification_key</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, vk: <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a>) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+    <a href="chain_status.html#0x1_chain_status_assert_genesis">chain_status::assert_genesis</a>();
+    // There should not be a previous resource set here.
+    <b>move_to</b>(fx, vk);
+}
+</code></pre>
+</details>
+<h2 id="function-update_configuration"><a class="header" href="#function-update_configuration">Function <code>update_configuration</code> <a id="0x1_keyless_account_update_configuration"></a></a></h2>
+<p>Sets the keyless configuration, only callable during genesis. To call during governance proposals, use
+<code>set_configuration_for_next_epoch</code>.</p>
+<p>WARNING: See <code>set_configuration_for_next_epoch</code> for caveats.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_configuration">update_configuration</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="keyless_account.html#0x1_keyless_account_Configuration">keyless_account::Configuration</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_configuration">update_configuration</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+    <a href="chain_status.html#0x1_chain_status_assert_genesis">chain_status::assert_genesis</a>();
+    // There should not be a previous resource set here.
+    <b>move_to</b>(fx, config);
+}
+</code></pre>
+</details>
+<h2 id="function-update_training_wheels"><a class="header" href="#function-update_training_wheels">Function <code>update_training_wheels</code> <a id="0x1_keyless_account_update_training_wheels"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_training_wheels">update_training_wheels</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pk: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_training_wheels">update_training_wheels</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pk: Option&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+    <a href="chain_status.html#0x1_chain_status_assert_genesis">chain_status::assert_genesis</a>();
+
+    <b>if</b> (pk.is_some()) {
+        <b>assert</b>!(pk.borrow().length() == 32, <a href="keyless_account.html#0x1_keyless_account_E_TRAINING_WHEELS_PK_WRONG_SIZE">E_TRAINING_WHEELS_PK_WRONG_SIZE</a>)
+    };
+
+    <b>let</b> config = <b>borrow_global_mut</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx));
+    config.training_wheels_pubkey = pk;
+}
+</code></pre>
+</details>
+<h2 id="function-update_max_exp_horizon"><a class="header" href="#function-update_max_exp_horizon">Function <code>update_max_exp_horizon</code> <a id="0x1_keyless_account_update_max_exp_horizon"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_max_exp_horizon">update_max_exp_horizon</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, max_exp_horizon_secs: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_max_exp_horizon">update_max_exp_horizon</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, max_exp_horizon_secs: u64) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+    <a href="chain_status.html#0x1_chain_status_assert_genesis">chain_status::assert_genesis</a>();
+
+    <b>let</b> config = <b>borrow_global_mut</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx));
+    config.max_exp_horizon_secs = max_exp_horizon_secs;
+}
+</code></pre>
+</details>
+<h2 id="function-remove_all_override_auds"><a class="header" href="#function-remove_all_override_auds">Function <code>remove_all_override_auds</code> <a id="0x1_keyless_account_remove_all_override_auds"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_remove_all_override_auds">remove_all_override_auds</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_remove_all_override_auds">remove_all_override_auds</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+    <a href="chain_status.html#0x1_chain_status_assert_genesis">chain_status::assert_genesis</a>();
+
+    <b>let</b> config = <b>borrow_global_mut</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx));
+    config.override_aud_vals = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+}
+</code></pre>
+</details>
+<h2 id="function-add_override_aud"><a class="header" href="#function-add_override_aud">Function <code>add_override_aud</code> <a id="0x1_keyless_account_add_override_aud"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_add_override_aud">add_override_aud</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, aud: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_add_override_aud">add_override_aud</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, aud: String) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+    <a href="chain_status.html#0x1_chain_status_assert_genesis">chain_status::assert_genesis</a>();
+
+    <b>let</b> config = <b>borrow_global_mut</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx));
+    config.override_aud_vals.push_back(aud);
+}
+</code></pre>
+</details>
+<h2 id="function-set_groth16_verification_key_for_next_epoch"><a class="header" href="#function-set_groth16_verification_key_for_next_epoch">Function <code>set_groth16_verification_key_for_next_epoch</code> <a id="0x1_keyless_account_set_groth16_verification_key_for_next_epoch"></a></a></h2>
+<p>Queues up a change to the Groth16 verification key. The change will only be effective after reconfiguration.
+Only callable via governance proposal.</p>
+<p>WARNING: To mitigate against DoS attacks, a VK change should be done together with a training wheels PK change,
+so that old ZKPs for the old VK cannot be replayed as potentially-valid ZKPs.</p>
+<p>WARNING: If a malicious key is set, this would lead to stolen funds.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_set_groth16_verification_key_for_next_epoch">set_groth16_verification_key_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, vk: <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">keyless_account::Groth16VerificationKey</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_set_groth16_verification_key_for_next_epoch">set_groth16_verification_key_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, vk: <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a>) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+    <a href="config_buffer.html#0x1_config_buffer_upsert">config_buffer::upsert</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a>&gt;(vk);
+}
+</code></pre>
+</details>
+<h2 id="function-set_configuration_for_next_epoch"><a class="header" href="#function-set_configuration_for_next_epoch">Function <code>set_configuration_for_next_epoch</code> <a id="0x1_keyless_account_set_configuration_for_next_epoch"></a></a></h2>
+<p>Queues up a change to the keyless configuration. The change will only be effective after reconfiguration. Only
+callable via governance proposal.</p>
+<p>WARNING: A malicious <code><a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a></code> could lead to DoS attacks, create liveness issues, or enable a malicious
+recovery service provider to phish users' accounts.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_set_configuration_for_next_epoch">set_configuration_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="keyless_account.html#0x1_keyless_account_Configuration">keyless_account::Configuration</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_set_configuration_for_next_epoch">set_configuration_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+    <a href="config_buffer.html#0x1_config_buffer_upsert">config_buffer::upsert</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(config);
+}
+</code></pre>
+</details>
+<h2 id="function-update_training_wheels_for_next_epoch"><a class="header" href="#function-update_training_wheels_for_next_epoch">Function <code>update_training_wheels_for_next_epoch</code> <a id="0x1_keyless_account_update_training_wheels_for_next_epoch"></a></a></h2>
+<p>Convenience method to queue up a change to the training wheels PK. The change will only be effective after
+reconfiguration. Only callable via governance proposal.</p>
+<p>WARNING: If a malicious key is set, this <em>could</em> lead to stolen funds.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_training_wheels_for_next_epoch">update_training_wheels_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pk: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_training_wheels_for_next_epoch">update_training_wheels_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pk: Option&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+
+    // If a PK is being set, validate it first.
+    <b>if</b> (pk.is_some()) {
+        <b>let</b> bytes = *pk.borrow();
+        <b>let</b> vpk = <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_new_validated_public_key_from_bytes">ed25519::new_validated_public_key_from_bytes</a>(bytes);
+        <b>assert</b>!(vpk.is_some(), <a href="keyless_account.html#0x1_keyless_account_E_TRAINING_WHEELS_PK_WRONG_SIZE">E_TRAINING_WHEELS_PK_WRONG_SIZE</a>)
+    };
+
+    <b>let</b> config = <b>if</b> (<a href="config_buffer.html#0x1_config_buffer_does_exist">config_buffer::does_exist</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()) {
+        <a href="config_buffer.html#0x1_config_buffer_extract_v2">config_buffer::extract_v2</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()
+    } <b>else</b> {
+        *<b>borrow_global</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx))
+    };
+
+    config.training_wheels_pubkey = pk;
+
+    <a href="keyless_account.html#0x1_keyless_account_set_configuration_for_next_epoch">set_configuration_for_next_epoch</a>(fx, config);
+}
+</code></pre>
+</details>
+<h2 id="function-update_max_exp_horizon_for_next_epoch"><a class="header" href="#function-update_max_exp_horizon_for_next_epoch">Function <code>update_max_exp_horizon_for_next_epoch</code> <a id="0x1_keyless_account_update_max_exp_horizon_for_next_epoch"></a></a></h2>
+<p>Convenience method to queues up a change to the max expiration horizon. The change will only be effective after
+reconfiguration. Only callable via governance proposal.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_max_exp_horizon_for_next_epoch">update_max_exp_horizon_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, max_exp_horizon_secs: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_update_max_exp_horizon_for_next_epoch">update_max_exp_horizon_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, max_exp_horizon_secs: u64) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+
+    <b>let</b> config = <b>if</b> (<a href="config_buffer.html#0x1_config_buffer_does_exist">config_buffer::does_exist</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()) {
+        <a href="config_buffer.html#0x1_config_buffer_extract_v2">config_buffer::extract_v2</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()
+    } <b>else</b> {
+        *<b>borrow_global</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx))
+    };
+
+    config.max_exp_horizon_secs = max_exp_horizon_secs;
+
+    <a href="keyless_account.html#0x1_keyless_account_set_configuration_for_next_epoch">set_configuration_for_next_epoch</a>(fx, config);
+}
+</code></pre>
+</details>
+<h2 id="function-remove_all_override_auds_for_next_epoch"><a class="header" href="#function-remove_all_override_auds_for_next_epoch">Function <code>remove_all_override_auds_for_next_epoch</code> <a id="0x1_keyless_account_remove_all_override_auds_for_next_epoch"></a></a></h2>
+<p>Convenience method to queue up clearing the set of override <code>aud</code>'s. The change will only be effective after
+reconfiguration. Only callable via governance proposal.</p>
+<p>WARNING: When no override <code>aud</code> is set, recovery of keyless accounts associated with applications that disappeared
+is no longer possible.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_remove_all_override_auds_for_next_epoch">remove_all_override_auds_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_remove_all_override_auds_for_next_epoch">remove_all_override_auds_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+
+    <b>let</b> config = <b>if</b> (<a href="config_buffer.html#0x1_config_buffer_does_exist">config_buffer::does_exist</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()) {
+        <a href="config_buffer.html#0x1_config_buffer_extract_v2">config_buffer::extract_v2</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()
+    } <b>else</b> {
+        *<b>borrow_global</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx))
+    };
+
+    config.override_aud_vals = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+
+    <a href="keyless_account.html#0x1_keyless_account_set_configuration_for_next_epoch">set_configuration_for_next_epoch</a>(fx, config);
+}
+</code></pre>
+</details>
+<h2 id="function-add_override_aud_for_next_epoch"><a class="header" href="#function-add_override_aud_for_next_epoch">Function <code>add_override_aud_for_next_epoch</code> <a id="0x1_keyless_account_add_override_aud_for_next_epoch"></a></a></h2>
+<p>Convenience method to queue up an append to the set of override <code>aud</code>'s. The change will only be effective
+after reconfiguration. Only callable via governance proposal.</p>
+<p>WARNING: If a malicious override <code>aud</code> is set, this <em>could</em> lead to stolen funds.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_add_override_aud_for_next_epoch">add_override_aud_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, aud: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_add_override_aud_for_next_epoch">add_override_aud_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, aud: String) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+
+    <b>let</b> config = <b>if</b> (<a href="config_buffer.html#0x1_config_buffer_does_exist">config_buffer::does_exist</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()) {
+        <a href="config_buffer.html#0x1_config_buffer_extract_v2">config_buffer::extract_v2</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()
+    } <b>else</b> {
+        *<b>borrow_global</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx))
+    };
+
+    config.override_aud_vals.push_back(aud);
+
+    <a href="keyless_account.html#0x1_keyless_account_set_configuration_for_next_epoch">set_configuration_for_next_epoch</a>(fx, config);
+}
+</code></pre>
+</details>
+<h2 id="function-on_new_epoch"><a class="header" href="#function-on_new_epoch">Function <code>on_new_epoch</code> <a id="0x1_keyless_account_on_new_epoch"></a></a></h2>
+<p>Only used in reconfigurations to apply the queued up configuration changes, if there are any.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_on_new_epoch">on_new_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="keyless_account.html#0x1_keyless_account_on_new_epoch">on_new_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a>, <a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(fx);
+
+    <b>if</b> (<a href="config_buffer.html#0x1_config_buffer_does_exist">config_buffer::does_exist</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a>&gt;()) {
+        <b>let</b> vk = <a href="config_buffer.html#0x1_config_buffer_extract_v2">config_buffer::extract_v2</a>();
+        <b>if</b> (<b>exists</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a>&gt;(@aptos_framework)) {
+            *<b>borrow_global_mut</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Groth16VerificationKey">Groth16VerificationKey</a>&gt;(@aptos_framework) = vk;
+        } <b>else</b> {
+            <b>move_to</b>(fx, vk);
+        }
+    };
+
+    <b>if</b> (<a href="config_buffer.html#0x1_config_buffer_does_exist">config_buffer::does_exist</a>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;()) {
+        <b>let</b> config = <a href="config_buffer.html#0x1_config_buffer_extract_v2">config_buffer::extract_v2</a>();
+        <b>if</b> (<b>exists</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(@aptos_framework)) {
+            *<b>borrow_global_mut</b>&lt;<a href="keyless_account.html#0x1_keyless_account_Configuration">Configuration</a>&gt;(@aptos_framework) = config;
+        } <b>else</b> {
+            <b>move_to</b>(fx, config);
+        }
+    };
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<pre><code><b>pragma</b> verify=<b>false</b>;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/jwks.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/managed_coin.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/jwks.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/managed_coin.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

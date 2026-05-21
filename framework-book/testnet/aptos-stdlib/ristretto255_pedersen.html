@@ -1,0 +1,503 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>ristretto255_pedersen - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/ristretto255_pedersen.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1ristretto255_pedersen"><a class="header" href="#module-0x1ristretto255_pedersen">Module <code>0x1::ristretto255_pedersen</code> <a id="0x1_ristretto255_pedersen"></a></a></h1>
+<p>This module implements a Pedersen commitment API, over the Ristretto255 curve, that can be used with the
+Bulletproofs module.</p>
+<p>A Pedersen commitment to a value <code>v</code> under <em>commitment key</em> <code>(g, h)</code> is <code>v * g + r * h</code>, for a random scalar <code>r</code>.</p>
+<ul>
+<li><a href="#0x1_ristretto255_pedersen_Commitment">Struct <code>Commitment</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_ristretto255_pedersen_new_commitment_from_bytes">Function <code>new_commitment_from_bytes</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_to_bytes">Function <code>commitment_to_bytes</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_from_point">Function <code>commitment_from_point</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_from_compressed">Function <code>commitment_from_compressed</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_new_commitment">Function <code>new_commitment</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_new_commitment_with_basepoint">Function <code>new_commitment_with_basepoint</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_new_commitment_for_bulletproof">Function <code>new_commitment_for_bulletproof</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_add">Function <code>commitment_add</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_add_assign">Function <code>commitment_add_assign</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_sub">Function <code>commitment_sub</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_sub_assign">Function <code>commitment_sub_assign</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_clone">Function <code>commitment_clone</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_equals">Function <code>commitment_equals</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_as_point">Function <code>commitment_as_point</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_as_compressed_point">Function <code>commitment_as_compressed_point</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_into_point">Function <code>commitment_into_point</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_commitment_into_compressed_point">Function <code>commitment_into_compressed_point</code></a></li>
+<li><a href="#0x1_ristretto255_pedersen_randomness_base_for_bulletproof">Function <code>randomness_base_for_bulletproof</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="ristretto255.html#0x1_ristretto255">0x1::ristretto255</a>;
+</code></pre>
+<h2 id="struct-commitment"><a class="header" href="#struct-commitment">Struct <code>Commitment</code> <a id="0x1_ristretto255_pedersen_Commitment"></a></a></h2>
+<p>A Pedersen commitment to some value with some randomness.</p>
+<pre><code><b>struct</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> <b>has</b> drop
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>point: <a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_ristretto255_pedersen_BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE"></a></p>
+<p>The default Pedersen randomness base <code>h</code> used in our underlying Bulletproofs library.
+This is obtained by hashing the compressed Ristretto255 basepoint using SHA3-512 (not SHA2-512).</p>
+<pre><code><b>const</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE">BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [140, 146, 64, 180, 86, 169, 230, 220, 101, 195, 119, 161, 4, 141, 116, 95, 148, 160, 140, 219, 127, 68, 203, 205, 123, 70, 243, 64, 72, 135, 17, 52];
+</code></pre>
+<h2 id="function-new_commitment_from_bytes"><a class="header" href="#function-new_commitment_from_bytes">Function <code>new_commitment_from_bytes</code> <a id="0x1_ristretto255_pedersen_new_commitment_from_bytes"></a></a></h2>
+<p>Creates a new public key from a serialized Ristretto255 point.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_new_commitment_from_bytes">new_commitment_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_new_commitment_from_bytes">new_commitment_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): Option&lt;<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>&gt; {
+    <b>let</b> point = <a href="ristretto255.html#0x1_ristretto255_new_point_from_bytes">ristretto255::new_point_from_bytes</a>(bytes);
+    <b>if</b> (point.is_some()) {
+        <b>let</b> comm = <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+            point: point.extract()
+        };
+        std::option::some(comm)
+    } <b>else</b> {
+        std::option::none&lt;<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>&gt;()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_to_bytes"><a class="header" href="#function-commitment_to_bytes">Function <code>commitment_to_bytes</code> <a id="0x1_ristretto255_pedersen_commitment_to_bytes"></a></a></h2>
+<p>Returns a commitment as a serialized byte array</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_to_bytes">commitment_to_bytes</a>(comm: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_to_bytes">commitment_to_bytes</a>(comm: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <a href="ristretto255.html#0x1_ristretto255_point_to_bytes">ristretto255::point_to_bytes</a>(&<a href="ristretto255.html#0x1_ristretto255_point_compress">ristretto255::point_compress</a>(&comm.point))
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_from_point"><a class="header" href="#function-commitment_from_point">Function <code>commitment_from_point</code> <a id="0x1_ristretto255_pedersen_commitment_from_point"></a></a></h2>
+<p>Moves a Ristretto point into a Pedersen commitment.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_from_point">commitment_from_point</a>(point: <a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_from_point">commitment_from_point</a>(point: RistrettoPoint): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+    <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+        point
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_from_compressed"><a class="header" href="#function-commitment_from_compressed">Function <code>commitment_from_compressed</code> <a id="0x1_ristretto255_pedersen_commitment_from_compressed"></a></a></h2>
+<p>Deserializes a commitment from a compressed Ristretto point.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_from_compressed">commitment_from_compressed</a>(point: &<a href="ristretto255.html#0x1_ristretto255_CompressedRistretto">ristretto255::CompressedRistretto</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_from_compressed">commitment_from_compressed</a>(point: &CompressedRistretto): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+    <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+        point: <a href="ristretto255.html#0x1_ristretto255_point_decompress">ristretto255::point_decompress</a>(point)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_commitment"><a class="header" href="#function-new_commitment">Function <code>new_commitment</code> <a id="0x1_ristretto255_pedersen_new_commitment"></a></a></h2>
+<p>Returns a commitment <code>v * val_base + r * rand_base</code> where <code>(val_base, rand_base)</code> is the commitment key.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_new_commitment">new_commitment</a>(v: &<a href="ristretto255.html#0x1_ristretto255_Scalar">ristretto255::Scalar</a>, val_base: &<a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a>, r: &<a href="ristretto255.html#0x1_ristretto255_Scalar">ristretto255::Scalar</a>, rand_base: &<a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_new_commitment">new_commitment</a>(v: &Scalar, val_base: &RistrettoPoint, r: &Scalar, rand_base: &RistrettoPoint): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+    <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+        point: <a href="ristretto255.html#0x1_ristretto255_double_scalar_mul">ristretto255::double_scalar_mul</a>(v, val_base, r, rand_base)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_commitment_with_basepoint"><a class="header" href="#function-new_commitment_with_basepoint">Function <code>new_commitment_with_basepoint</code> <a id="0x1_ristretto255_pedersen_new_commitment_with_basepoint"></a></a></h2>
+<p>Returns a commitment <code>v * G + r * rand_base</code> where <code>G</code> is the Ristretto255 basepoint.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_new_commitment_with_basepoint">new_commitment_with_basepoint</a>(v: &<a href="ristretto255.html#0x1_ristretto255_Scalar">ristretto255::Scalar</a>, r: &<a href="ristretto255.html#0x1_ristretto255_Scalar">ristretto255::Scalar</a>, rand_base: &<a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_new_commitment_with_basepoint">new_commitment_with_basepoint</a>(v: &Scalar, r: &Scalar, rand_base: &RistrettoPoint): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+    <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+        point: <a href="ristretto255.html#0x1_ristretto255_basepoint_double_mul">ristretto255::basepoint_double_mul</a>(r, rand_base, v)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_commitment_for_bulletproof"><a class="header" href="#function-new_commitment_for_bulletproof">Function <code>new_commitment_for_bulletproof</code> <a id="0x1_ristretto255_pedersen_new_commitment_for_bulletproof"></a></a></h2>
+<p>Returns a commitment <code>v * G + r * H</code> where <code>G</code> is the Ristretto255 basepoint and <code>H</code> is the default randomness
+base used in the Bulletproofs library (i.e., <code><a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE">BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE</a></code>).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_new_commitment_for_bulletproof">new_commitment_for_bulletproof</a>(v: &<a href="ristretto255.html#0x1_ristretto255_Scalar">ristretto255::Scalar</a>, r: &<a href="ristretto255.html#0x1_ristretto255_Scalar">ristretto255::Scalar</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_new_commitment_for_bulletproof">new_commitment_for_bulletproof</a>(v: &Scalar, r: &Scalar): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+    <b>let</b> rand_base = <a href="ristretto255.html#0x1_ristretto255_new_point_from_bytes">ristretto255::new_point_from_bytes</a>(<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE">BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE</a>);
+    <b>let</b> rand_base = rand_base.extract();
+
+    <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+        point: <a href="ristretto255.html#0x1_ristretto255_basepoint_double_mul">ristretto255::basepoint_double_mul</a>(r, &rand_base, v)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_add"><a class="header" href="#function-commitment_add">Function <code>commitment_add</code> <a id="0x1_ristretto255_pedersen_commitment_add"></a></a></h2>
+<p>Homomorphically combines two commitments <code>lhs</code> and <code>rhs</code> as <code>lhs + rhs</code>.
+Useful for re-randomizing the commitment or updating the committed value.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_add">commitment_add</a>(lhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_add">commitment_add</a>(lhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+    <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+        point: <a href="ristretto255.html#0x1_ristretto255_point_add">ristretto255::point_add</a>(&lhs.point, &rhs.point)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_add_assign"><a class="header" href="#function-commitment_add_assign">Function <code>commitment_add_assign</code> <a id="0x1_ristretto255_pedersen_commitment_add_assign"></a></a></h2>
+<p>Like <code>commitment_add</code> but assigns <code>lhs = lhs + rhs</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_add_assign">commitment_add_assign</a>(lhs: &<b>mut</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_add_assign">commitment_add_assign</a>(lhs: &<b>mut</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>) {
+    <a href="ristretto255.html#0x1_ristretto255_point_add_assign">ristretto255::point_add_assign</a>(&<b>mut</b> lhs.point, &rhs.point);
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_sub"><a class="header" href="#function-commitment_sub">Function <code>commitment_sub</code> <a id="0x1_ristretto255_pedersen_commitment_sub"></a></a></h2>
+<p>Homomorphically combines two commitments <code>lhs</code> and <code>rhs</code> as <code>lhs - rhs</code>.
+Useful for re-randomizing the commitment or updating the committed value.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_sub">commitment_sub</a>(lhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_sub">commitment_sub</a>(lhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+    <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+        point: <a href="ristretto255.html#0x1_ristretto255_point_sub">ristretto255::point_sub</a>(&lhs.point, &rhs.point)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_sub_assign"><a class="header" href="#function-commitment_sub_assign">Function <code>commitment_sub_assign</code> <a id="0x1_ristretto255_pedersen_commitment_sub_assign"></a></a></h2>
+<p>Like <code>commitment_add</code> but assigns <code>lhs = lhs - rhs</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_sub_assign">commitment_sub_assign</a>(lhs: &<b>mut</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_sub_assign">commitment_sub_assign</a>(lhs: &<b>mut</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>) {
+    <a href="ristretto255.html#0x1_ristretto255_point_sub_assign">ristretto255::point_sub_assign</a>(&<b>mut</b> lhs.point, &rhs.point);
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_clone"><a class="header" href="#function-commitment_clone">Function <code>commitment_clone</code> <a id="0x1_ristretto255_pedersen_commitment_clone"></a></a></h2>
+<p>Creates a copy of this commitment.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_clone">commitment_clone</a>(c: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_clone">commitment_clone</a>(c: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+    <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> {
+        point: <a href="ristretto255.html#0x1_ristretto255_point_clone">ristretto255::point_clone</a>(&c.point)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_equals"><a class="header" href="#function-commitment_equals">Function <code>commitment_equals</code> <a id="0x1_ristretto255_pedersen_commitment_equals"></a></a></h2>
+<p>Returns true if the two commitments are identical: i.e., same value and same randomness.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_equals">commitment_equals</a>(lhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_equals">commitment_equals</a>(lhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>, rhs: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): bool {
+    <a href="ristretto255.html#0x1_ristretto255_point_equals">ristretto255::point_equals</a>(&lhs.point, &rhs.point)
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_as_point"><a class="header" href="#function-commitment_as_point">Function <code>commitment_as_point</code> <a id="0x1_ristretto255_pedersen_commitment_as_point"></a></a></h2>
+<p>Returns the underlying elliptic curve point representing the commitment as an in-memory <code>RistrettoPoint</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_as_point">commitment_as_point</a>(c: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): &<a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_as_point">commitment_as_point</a>(c: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): &RistrettoPoint {
+    &c.point
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_as_compressed_point"><a class="header" href="#function-commitment_as_compressed_point">Function <code>commitment_as_compressed_point</code> <a id="0x1_ristretto255_pedersen_commitment_as_compressed_point"></a></a></h2>
+<p>Returns the Pedersen commitment as a <code>CompressedRistretto</code> point.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_as_compressed_point">commitment_as_compressed_point</a>(c: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): <a href="ristretto255.html#0x1_ristretto255_CompressedRistretto">ristretto255::CompressedRistretto</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_as_compressed_point">commitment_as_compressed_point</a>(c: &<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): CompressedRistretto {
+    point_compress(&c.point)
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_into_point"><a class="header" href="#function-commitment_into_point">Function <code>commitment_into_point</code> <a id="0x1_ristretto255_pedersen_commitment_into_point"></a></a></h2>
+<p>Moves the Commitment into a CompressedRistretto point.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_into_point">commitment_into_point</a>(c: <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): <a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_into_point">commitment_into_point</a>(c: <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): RistrettoPoint {
+    <b>let</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a> { point } = c;
+    point
+}
+</code></pre>
+</details>
+<h2 id="function-commitment_into_compressed_point"><a class="header" href="#function-commitment_into_compressed_point">Function <code>commitment_into_compressed_point</code> <a id="0x1_ristretto255_pedersen_commitment_into_compressed_point"></a></a></h2>
+<p>Moves the Commitment into a <code>CompressedRistretto</code> point.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_into_compressed_point">commitment_into_compressed_point</a>(c: <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">ristretto255_pedersen::Commitment</a>): <a href="ristretto255.html#0x1_ristretto255_CompressedRistretto">ristretto255::CompressedRistretto</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_commitment_into_compressed_point">commitment_into_compressed_point</a>(c: <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_Commitment">Commitment</a>): CompressedRistretto {
+    point_compress(&c.point)
+}
+</code></pre>
+</details>
+<h2 id="function-randomness_base_for_bulletproof"><a class="header" href="#function-randomness_base_for_bulletproof">Function <code>randomness_base_for_bulletproof</code> <a id="0x1_ristretto255_pedersen_randomness_base_for_bulletproof"></a></a></h2>
+<p>Returns the randomness base compatible with the Bulletproofs module.</p>
+<p>Recal that a Bulletproof range proof attests, in zero-knowledge, that a value <code>v</code> inside a Pedersen commitment
+<code>v * g + r * h</code> is sufficiently "small" (e.g., is 32-bits wide). Here, <code>h</code> is referred to as the
+"randomness base" of the commitment scheme.</p>
+<p>Bulletproof has a default choice for <code>g</code> and <code>h</code> and this function returns the default <code>h</code> as used in the
+Bulletproofs Move module.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_randomness_base_for_bulletproof">randomness_base_for_bulletproof</a>(): <a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_randomness_base_for_bulletproof">randomness_base_for_bulletproof</a>(): RistrettoPoint {
+    <a href="ristretto255.html#0x1_ristretto255_new_point_from_bytes">ristretto255::new_point_from_bytes</a>(<a href="ristretto255_pedersen.html#0x1_ristretto255_pedersen_BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE">BULLETPROOF_DEFAULT_PEDERSEN_RAND_BASE</a>).extract()
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/ristretto255_elgamal.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/secp256k1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/ristretto255_elgamal.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/secp256k1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

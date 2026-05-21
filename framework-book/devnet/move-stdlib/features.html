@@ -1,0 +1,2481 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>features - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/move-stdlib/features.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1features"><a class="header" href="#module-0x1features">Module <code>0x1::features</code> <a id="0x1_features"></a></a></h1>
+<p>Defines feature flags for Aptos. Those are used in Aptos specific implementations of features in
+the Move stdlib, the Aptos stdlib, and the Aptos framework.</p>
+<p>============================================================================================
+Feature Flag Definitions</p>
+<p>Each feature flag should come with documentation which justifies the need of the flag.
+Introduction of a new feature flag requires approval of framework owners. Be frugal when
+introducing new feature flags, as too many can make it hard to understand the code.</p>
+<p>Each feature flag should come with a specification of a lifetime:</p>
+<ul>
+<li>
+<p>a <em>transient</em> feature flag is only needed until a related code rollout has happened. This
+is typically associated with the introduction of new native Move functions, and is only used
+from Move code. The owner of this feature is obliged to remove it once this can be done.</p>
+</li>
+<li>
+<p>a <em>permanent</em> feature flag is required to stay around forever. Typically, those flags guard
+behavior in native code, and the behavior with or without the feature need to be preserved
+for playback.</p>
+</li>
+</ul>
+<p>Note that removing a feature flag still requires the function which tests for the feature
+(like <code>code_dependency_check_enabled</code> below) to stay around for compatibility reasons, as it
+is a public function. However, once the feature flag is disabled, those functions can constantly
+return true.</p>
+<ul>
+<li><a href="#0x1_features_Features">Resource <code>Features</code></a></li>
+<li><a href="#0x1_features_PendingFeatures">Resource <code>PendingFeatures</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_features_code_dependency_check_enabled">Function <code>code_dependency_check_enabled</code></a></li>
+<li><a href="#0x1_features_treat_friend_as_private">Function <code>treat_friend_as_private</code></a></li>
+<li><a href="#0x1_features_get_sha_512_and_ripemd_160_feature">Function <code>get_sha_512_and_ripemd_160_feature</code></a></li>
+<li><a href="#0x1_features_sha_512_and_ripemd_160_enabled">Function <code>sha_512_and_ripemd_160_enabled</code></a></li>
+<li><a href="#0x1_features_get_aptos_stdlib_chain_id_feature">Function <code>get_aptos_stdlib_chain_id_feature</code></a></li>
+<li><a href="#0x1_features_aptos_stdlib_chain_id_enabled">Function <code>aptos_stdlib_chain_id_enabled</code></a></li>
+<li><a href="#0x1_features_get_vm_binary_format_v6">Function <code>get_vm_binary_format_v6</code></a></li>
+<li><a href="#0x1_features_allow_vm_binary_format_v6">Function <code>allow_vm_binary_format_v6</code></a></li>
+<li><a href="#0x1_features_get_collect_and_distribute_gas_fees_feature">Function <code>get_collect_and_distribute_gas_fees_feature</code></a></li>
+<li><a href="#0x1_features_collect_and_distribute_gas_fees">Function <code>collect_and_distribute_gas_fees</code></a></li>
+<li><a href="#0x1_features_multi_ed25519_pk_validate_v2_feature">Function <code>multi_ed25519_pk_validate_v2_feature</code></a></li>
+<li><a href="#0x1_features_multi_ed25519_pk_validate_v2_enabled">Function <code>multi_ed25519_pk_validate_v2_enabled</code></a></li>
+<li><a href="#0x1_features_get_blake2b_256_feature">Function <code>get_blake2b_256_feature</code></a></li>
+<li><a href="#0x1_features_blake2b_256_enabled">Function <code>blake2b_256_enabled</code></a></li>
+<li><a href="#0x1_features_get_resource_groups_feature">Function <code>get_resource_groups_feature</code></a></li>
+<li><a href="#0x1_features_resource_groups_enabled">Function <code>resource_groups_enabled</code></a></li>
+<li><a href="#0x1_features_get_multisig_accounts_feature">Function <code>get_multisig_accounts_feature</code></a></li>
+<li><a href="#0x1_features_multisig_accounts_enabled">Function <code>multisig_accounts_enabled</code></a></li>
+<li><a href="#0x1_features_get_delegation_pools_feature">Function <code>get_delegation_pools_feature</code></a></li>
+<li><a href="#0x1_features_delegation_pools_enabled">Function <code>delegation_pools_enabled</code></a></li>
+<li><a href="#0x1_features_get_cryptography_algebra_natives_feature">Function <code>get_cryptography_algebra_natives_feature</code></a></li>
+<li><a href="#0x1_features_cryptography_algebra_enabled">Function <code>cryptography_algebra_enabled</code></a></li>
+<li><a href="#0x1_features_get_bls12_381_strutures_feature">Function <code>get_bls12_381_strutures_feature</code></a></li>
+<li><a href="#0x1_features_bls12_381_structures_enabled">Function <code>bls12_381_structures_enabled</code></a></li>
+<li><a href="#0x1_features_get_periodical_reward_rate_decrease_feature">Function <code>get_periodical_reward_rate_decrease_feature</code></a></li>
+<li><a href="#0x1_features_periodical_reward_rate_decrease_enabled">Function <code>periodical_reward_rate_decrease_enabled</code></a></li>
+<li><a href="#0x1_features_get_partial_governance_voting">Function <code>get_partial_governance_voting</code></a></li>
+<li><a href="#0x1_features_partial_governance_voting_enabled">Function <code>partial_governance_voting_enabled</code></a></li>
+<li><a href="#0x1_features_get_delegation_pool_partial_governance_voting">Function <code>get_delegation_pool_partial_governance_voting</code></a></li>
+<li><a href="#0x1_features_delegation_pool_partial_governance_voting_enabled">Function <code>delegation_pool_partial_governance_voting_enabled</code></a></li>
+<li><a href="#0x1_features_fee_payer_enabled">Function <code>fee_payer_enabled</code></a></li>
+<li><a href="#0x1_features_get_auids">Function <code>get_auids</code></a></li>
+<li><a href="#0x1_features_auids_enabled">Function <code>auids_enabled</code></a></li>
+<li><a href="#0x1_features_get_bulletproofs_feature">Function <code>get_bulletproofs_feature</code></a></li>
+<li><a href="#0x1_features_bulletproofs_enabled">Function <code>bulletproofs_enabled</code></a></li>
+<li><a href="#0x1_features_get_signer_native_format_fix_feature">Function <code>get_signer_native_format_fix_feature</code></a></li>
+<li><a href="#0x1_features_signer_native_format_fix_enabled">Function <code>signer_native_format_fix_enabled</code></a></li>
+<li><a href="#0x1_features_get_module_event_feature">Function <code>get_module_event_feature</code></a></li>
+<li><a href="#0x1_features_module_event_enabled">Function <code>module_event_enabled</code></a></li>
+<li><a href="#0x1_features_get_aggregator_v2_api_feature">Function <code>get_aggregator_v2_api_feature</code></a></li>
+<li><a href="#0x1_features_aggregator_v2_api_enabled">Function <code>aggregator_v2_api_enabled</code></a></li>
+<li><a href="#0x1_features_get_aggregator_snapshots_feature">Function <code>get_aggregator_snapshots_feature</code></a></li>
+<li><a href="#0x1_features_aggregator_snapshots_enabled">Function <code>aggregator_snapshots_enabled</code></a></li>
+<li><a href="#0x1_features_get_sponsored_automatic_account_creation">Function <code>get_sponsored_automatic_account_creation</code></a></li>
+<li><a href="#0x1_features_sponsored_automatic_account_creation_enabled">Function <code>sponsored_automatic_account_creation_enabled</code></a></li>
+<li><a href="#0x1_features_get_concurrent_token_v2_feature">Function <code>get_concurrent_token_v2_feature</code></a></li>
+<li><a href="#0x1_features_concurrent_token_v2_enabled">Function <code>concurrent_token_v2_enabled</code></a></li>
+<li><a href="#0x1_features_get_concurrent_assets_feature">Function <code>get_concurrent_assets_feature</code></a></li>
+<li><a href="#0x1_features_concurrent_assets_enabled">Function <code>concurrent_assets_enabled</code></a></li>
+<li><a href="#0x1_features_get_operator_beneficiary_change_feature">Function <code>get_operator_beneficiary_change_feature</code></a></li>
+<li><a href="#0x1_features_operator_beneficiary_change_enabled">Function <code>operator_beneficiary_change_enabled</code></a></li>
+<li><a href="#0x1_features_get_commission_change_delegation_pool_feature">Function <code>get_commission_change_delegation_pool_feature</code></a></li>
+<li><a href="#0x1_features_commission_change_delegation_pool_enabled">Function <code>commission_change_delegation_pool_enabled</code></a></li>
+<li><a href="#0x1_features_get_bn254_strutures_feature">Function <code>get_bn254_strutures_feature</code></a></li>
+<li><a href="#0x1_features_bn254_structures_enabled">Function <code>bn254_structures_enabled</code></a></li>
+<li><a href="#0x1_features_get_reconfigure_with_dkg_feature">Function <code>get_reconfigure_with_dkg_feature</code></a></li>
+<li><a href="#0x1_features_reconfigure_with_dkg_enabled">Function <code>reconfigure_with_dkg_enabled</code></a></li>
+<li><a href="#0x1_features_get_keyless_accounts_feature">Function <code>get_keyless_accounts_feature</code></a></li>
+<li><a href="#0x1_features_keyless_accounts_enabled">Function <code>keyless_accounts_enabled</code></a></li>
+<li><a href="#0x1_features_get_keyless_but_zkless_accounts_feature">Function <code>get_keyless_but_zkless_accounts_feature</code></a></li>
+<li><a href="#0x1_features_keyless_but_zkless_accounts_feature_enabled">Function <code>keyless_but_zkless_accounts_feature_enabled</code></a></li>
+<li><a href="#0x1_features_get_jwk_consensus_feature">Function <code>get_jwk_consensus_feature</code></a></li>
+<li><a href="#0x1_features_jwk_consensus_enabled">Function <code>jwk_consensus_enabled</code></a></li>
+<li><a href="#0x1_features_get_concurrent_fungible_assets_feature">Function <code>get_concurrent_fungible_assets_feature</code></a></li>
+<li><a href="#0x1_features_concurrent_fungible_assets_enabled">Function <code>concurrent_fungible_assets_enabled</code></a></li>
+<li><a href="#0x1_features_is_object_code_deployment_enabled">Function <code>is_object_code_deployment_enabled</code></a></li>
+<li><a href="#0x1_features_get_max_object_nesting_check_feature">Function <code>get_max_object_nesting_check_feature</code></a></li>
+<li><a href="#0x1_features_max_object_nesting_check_enabled">Function <code>max_object_nesting_check_enabled</code></a></li>
+<li><a href="#0x1_features_get_keyless_accounts_with_passkeys_feature">Function <code>get_keyless_accounts_with_passkeys_feature</code></a></li>
+<li><a href="#0x1_features_keyless_accounts_with_passkeys_feature_enabled">Function <code>keyless_accounts_with_passkeys_feature_enabled</code></a></li>
+<li><a href="#0x1_features_get_multisig_v2_enhancement_feature">Function <code>get_multisig_v2_enhancement_feature</code></a></li>
+<li><a href="#0x1_features_multisig_v2_enhancement_feature_enabled">Function <code>multisig_v2_enhancement_feature_enabled</code></a></li>
+<li><a href="#0x1_features_get_delegation_pool_allowlisting_feature">Function <code>get_delegation_pool_allowlisting_feature</code></a></li>
+<li><a href="#0x1_features_delegation_pool_allowlisting_enabled">Function <code>delegation_pool_allowlisting_enabled</code></a></li>
+<li><a href="#0x1_features_get_module_event_migration_feature">Function <code>get_module_event_migration_feature</code></a></li>
+<li><a href="#0x1_features_module_event_migration_enabled">Function <code>module_event_migration_enabled</code></a></li>
+<li><a href="#0x1_features_get_transaction_context_extension_feature">Function <code>get_transaction_context_extension_feature</code></a></li>
+<li><a href="#0x1_features_transaction_context_extension_enabled">Function <code>transaction_context_extension_enabled</code></a></li>
+<li><a href="#0x1_features_get_coin_to_fungible_asset_migration_feature">Function <code>get_coin_to_fungible_asset_migration_feature</code></a></li>
+<li><a href="#0x1_features_coin_to_fungible_asset_migration_feature_enabled">Function <code>coin_to_fungible_asset_migration_feature_enabled</code></a></li>
+<li><a href="#0x1_features_get_primary_apt_fungible_store_at_user_address_feature">Function <code>get_primary_apt_fungible_store_at_user_address_feature</code></a></li>
+<li><a href="#0x1_features_primary_apt_fungible_store_at_user_address_enabled">Function <code>primary_apt_fungible_store_at_user_address_enabled</code></a></li>
+<li><a href="#0x1_features_aggregator_v2_is_at_least_api_enabled">Function <code>aggregator_v2_is_at_least_api_enabled</code></a></li>
+<li><a href="#0x1_features_get_object_native_derived_address_feature">Function <code>get_object_native_derived_address_feature</code></a></li>
+<li><a href="#0x1_features_object_native_derived_address_enabled">Function <code>object_native_derived_address_enabled</code></a></li>
+<li><a href="#0x1_features_get_dispatchable_fungible_asset_feature">Function <code>get_dispatchable_fungible_asset_feature</code></a></li>
+<li><a href="#0x1_features_dispatchable_fungible_asset_enabled">Function <code>dispatchable_fungible_asset_enabled</code></a></li>
+<li><a href="#0x1_features_get_new_accounts_default_to_fa_apt_store_feature">Function <code>get_new_accounts_default_to_fa_apt_store_feature</code></a></li>
+<li><a href="#0x1_features_new_accounts_default_to_fa_apt_store_enabled">Function <code>new_accounts_default_to_fa_apt_store_enabled</code></a></li>
+<li><a href="#0x1_features_get_operations_default_to_fa_apt_store_feature">Function <code>get_operations_default_to_fa_apt_store_feature</code></a></li>
+<li><a href="#0x1_features_operations_default_to_fa_apt_store_enabled">Function <code>operations_default_to_fa_apt_store_enabled</code></a></li>
+<li><a href="#0x1_features_get_concurrent_fungible_balance_feature">Function <code>get_concurrent_fungible_balance_feature</code></a></li>
+<li><a href="#0x1_features_concurrent_fungible_balance_enabled">Function <code>concurrent_fungible_balance_enabled</code></a></li>
+<li><a href="#0x1_features_get_default_to_concurrent_fungible_balance_feature">Function <code>get_default_to_concurrent_fungible_balance_feature</code></a></li>
+<li><a href="#0x1_features_default_to_concurrent_fungible_balance_enabled">Function <code>default_to_concurrent_fungible_balance_enabled</code></a></li>
+<li><a href="#0x1_features_get_abort_if_multisig_payload_mismatch_feature">Function <code>get_abort_if_multisig_payload_mismatch_feature</code></a></li>
+<li><a href="#0x1_features_abort_if_multisig_payload_mismatch_enabled">Function <code>abort_if_multisig_payload_mismatch_enabled</code></a></li>
+<li><a href="#0x1_features_get_transaction_simulation_enhancement_feature">Function <code>get_transaction_simulation_enhancement_feature</code></a></li>
+<li><a href="#0x1_features_transaction_simulation_enhancement_enabled">Function <code>transaction_simulation_enhancement_enabled</code></a></li>
+<li><a href="#0x1_features_get_collection_owner_feature">Function <code>get_collection_owner_feature</code></a></li>
+<li><a href="#0x1_features_is_collection_owner_enabled">Function <code>is_collection_owner_enabled</code></a></li>
+<li><a href="#0x1_features_get_native_memory_operations_feature">Function <code>get_native_memory_operations_feature</code></a></li>
+<li><a href="#0x1_features_is_native_memory_operations_enabled">Function <code>is_native_memory_operations_enabled</code></a></li>
+<li><a href="#0x1_features_get_permissioned_signer_feature">Function <code>get_permissioned_signer_feature</code></a></li>
+<li><a href="#0x1_features_is_permissioned_signer_enabled">Function <code>is_permissioned_signer_enabled</code></a></li>
+<li><a href="#0x1_features_get_account_abstraction_feature">Function <code>get_account_abstraction_feature</code></a></li>
+<li><a href="#0x1_features_is_account_abstraction_enabled">Function <code>is_account_abstraction_enabled</code></a></li>
+<li><a href="#0x1_features_get_bulletproofs_batch_feature">Function <code>get_bulletproofs_batch_feature</code></a></li>
+<li><a href="#0x1_features_bulletproofs_batch_enabled">Function <code>bulletproofs_batch_enabled</code></a></li>
+<li><a href="#0x1_features_is_derivable_account_abstraction_enabled">Function <code>is_derivable_account_abstraction_enabled</code></a></li>
+<li><a href="#0x1_features_is_domain_account_abstraction_enabled">Function <code>is_domain_account_abstraction_enabled</code></a></li>
+<li><a href="#0x1_features_get_new_accounts_default_to_fa_store_feature">Function <code>get_new_accounts_default_to_fa_store_feature</code></a></li>
+<li><a href="#0x1_features_new_accounts_default_to_fa_store_enabled">Function <code>new_accounts_default_to_fa_store_enabled</code></a></li>
+<li><a href="#0x1_features_get_default_account_resource_feature">Function <code>get_default_account_resource_feature</code></a></li>
+<li><a href="#0x1_features_is_default_account_resource_enabled">Function <code>is_default_account_resource_enabled</code></a></li>
+<li><a href="#0x1_features_get_jwk_consensus_per_key_mode_feature">Function <code>get_jwk_consensus_per_key_mode_feature</code></a></li>
+<li><a href="#0x1_features_is_jwk_consensus_per_key_mode_enabled">Function <code>is_jwk_consensus_per_key_mode_enabled</code></a></li>
+<li><a href="#0x1_features_get_orderless_transactions_feature">Function <code>get_orderless_transactions_feature</code></a></li>
+<li><a href="#0x1_features_orderless_transactions_enabled">Function <code>orderless_transactions_enabled</code></a></li>
+<li><a href="#0x1_features_get_calculate_transaction_fee_for_distribution_feature">Function <code>get_calculate_transaction_fee_for_distribution_feature</code></a></li>
+<li><a href="#0x1_features_is_calculate_transaction_fee_for_distribution_enabled">Function <code>is_calculate_transaction_fee_for_distribution_enabled</code></a></li>
+<li><a href="#0x1_features_get_distribute_transaction_fee_feature">Function <code>get_distribute_transaction_fee_feature</code></a></li>
+<li><a href="#0x1_features_is_distribute_transaction_fee_enabled">Function <code>is_distribute_transaction_fee_enabled</code></a></li>
+<li><a href="#0x1_features_get_monotonically_increasing_counter_feature">Function <code>get_monotonically_increasing_counter_feature</code></a></li>
+<li><a href="#0x1_features_is_monotonically_increasing_counter_enabled">Function <code>is_monotonically_increasing_counter_enabled</code></a></li>
+<li><a href="#0x1_features_get_function_reflection_feature">Function <code>get_function_reflection_feature</code></a></li>
+<li><a href="#0x1_features_is_function_reflection_enabled">Function <code>is_function_reflection_enabled</code></a></li>
+<li><a href="#0x1_features_get_slh_dsa_sha2_128s_signature_feature">Function <code>get_slh_dsa_sha2_128s_signature_feature</code></a></li>
+<li><a href="#0x1_features_slh_dsa_sha2_128s_signature_enabled">Function <code>slh_dsa_sha2_128s_signature_enabled</code></a></li>
+<li><a href="#0x1_features_get_encrypted_transactions_feature">Function <code>get_encrypted_transactions_feature</code></a></li>
+<li><a href="#0x1_features_is_encrypted_transactions_enabled">Function <code>is_encrypted_transactions_enabled</code></a></li>
+<li><a href="#0x1_features_get_transaction_limits_feature">Function <code>get_transaction_limits_feature</code></a></li>
+<li><a href="#0x1_features_is_transaction_limits_enabled">Function <code>is_transaction_limits_enabled</code></a></li>
+<li><a href="#0x1_features_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
+<li><a href="#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
+<li><a href="#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
+<li><a href="#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
+<li><a href="#0x1_features_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#0x1_features_is_enabled">Function <code>is_enabled</code></a></li>
+<li><a href="#0x1_features_set">Function <code>set</code></a></li>
+<li><a href="#0x1_features_contains">Function <code>contains</code></a></li>
+<li><a href="#0x1_features_apply_diff">Function <code>apply_diff</code></a></li>
+<li><a href="#0x1_features_ensure_framework_signer">Function <code>ensure_framework_signer</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_Features">Resource <code>Features</code></a></li>
+<li><a href="#@Specification_1_PendingFeatures">Resource <code>PendingFeatures</code></a></li>
+<li><a href="#@Specification_1_periodical_reward_rate_decrease_enabled">Function <code>periodical_reward_rate_decrease_enabled</code></a></li>
+<li><a href="#@Specification_1_partial_governance_voting_enabled">Function <code>partial_governance_voting_enabled</code></a></li>
+<li><a href="#@Specification_1_module_event_enabled">Function <code>module_event_enabled</code></a></li>
+<li><a href="#@Specification_1_abort_if_multisig_payload_mismatch_enabled">Function <code>abort_if_multisig_payload_mismatch_enabled</code></a></li>
+<li><a href="#@Specification_1_is_default_account_resource_enabled">Function <code>is_default_account_resource_enabled</code></a></li>
+<li><a href="#@Specification_1_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
+<li><a href="#@Specification_1_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
+<li><a href="#@Specification_1_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
+<li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#@Specification_1_is_enabled">Function <code>is_enabled</code></a></li>
+<li><a href="#@Specification_1_set">Function <code>set</code></a></li>
+<li><a href="#@Specification_1_contains">Function <code>contains</code></a></li>
+<li><a href="#@Specification_1_apply_diff">Function <code>apply_diff</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+<h2 id="resource-features"><a class="header" href="#resource-features">Resource <code>Features</code> <a id="0x1_features_Features"></a></a></h2>
+<p>The enabled features, represented by a bitset stored on chain.</p>
+<pre><code><b>struct</b> <a href="features.html#0x1_features_Features">Features</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="features.html#0x1_features">features</a>: <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-pendingfeatures"><a class="header" href="#resource-pendingfeatures">Resource <code>PendingFeatures</code> <a id="0x1_features_PendingFeatures"></a></a></h2>
+<p>This resource holds the feature vec updates received in the current epoch.
+On epoch change, the updates take effect and this buffer is cleared.</p>
+<pre><code><b>struct</b> <a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="features.html#0x1_features">features</a>: <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH"></a></p>
+<p>Whether the multisig v2 fix is enabled. Once enabled, the multisig transaction execution will explicitly
+abort if the provided payload does not match the payload stored on-chain.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH">ABORT_IF_MULTISIG_PAYLOAD_MISMATCH</a>: u64 = 70;
+</code></pre>
+<p><a id="0x1_features_ACCOUNT_ABSTRACTION"></a></p>
+<p>Whether the account abstraction is enabled.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_ACCOUNT_ABSTRACTION">ACCOUNT_ABSTRACTION</a>: u64 = 85;
+</code></pre>
+<p><a id="0x1_features_APTOS_STD_CHAIN_ID_NATIVES"></a></p>
+<p>Whether the new <code>aptos_stdlib::type_info::chain_id()</code> native for fetching the chain ID is enabled.
+This is needed because of the introduction of a new native function.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_APTOS_STD_CHAIN_ID_NATIVES">APTOS_STD_CHAIN_ID_NATIVES</a>: u64 = 4;
+</code></pre>
+<p><a id="0x1_features_APTOS_UNIQUE_IDENTIFIERS"></a></p>
+<p>Whether enable MOVE functions to call create_auid method to create AUIDs.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_APTOS_UNIQUE_IDENTIFIERS">APTOS_UNIQUE_IDENTIFIERS</a>: u64 = 23;
+</code></pre>
+<p><a id="0x1_features_BLAKE2B_256_NATIVE"></a></p>
+<p>Whether the new BLAKE2B-256 hash function native is enabled.
+This is needed because of the introduction of new native function(s).
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_BLAKE2B_256_NATIVE">BLAKE2B_256_NATIVE</a>: u64 = 8;
+</code></pre>
+<p><a id="0x1_features_BLS12_381_STRUCTURES"></a></p>
+<p>Whether the generic algebra implementation for BLS12381 operations are enabled.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_BLS12_381_STRUCTURES">BLS12_381_STRUCTURES</a>: u64 = 13;
+</code></pre>
+<p><a id="0x1_features_BN254_STRUCTURES"></a></p>
+<p>Whether the generic algebra implementation for BN254 operations are enabled.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_BN254_STRUCTURES">BN254_STRUCTURES</a>: u64 = 43;
+</code></pre>
+<p><a id="0x1_features_BULLETPROOFS_BATCH_NATIVES"></a></p>
+<p>Whether the batch Bulletproofs native functions are available. This is needed because of the introduction of a new native function.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_BULLETPROOFS_BATCH_NATIVES">BULLETPROOFS_BATCH_NATIVES</a>: u64 = 87;
+</code></pre>
+<p><a id="0x1_features_BULLETPROOFS_NATIVES"></a></p>
+<p>Whether the Bulletproofs zero-knowledge range proof module is enabled, and the related native function is
+available. This is needed because of the introduction of a new native function.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_BULLETPROOFS_NATIVES">BULLETPROOFS_NATIVES</a>: u64 = 24;
+</code></pre>
+<p><a id="0x1_features_CALCULATE_TRANSACTION_FEE_FOR_DISTRIBUTION"></a></p>
+<p>Whether to calculate the transaction fee for distribution.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_CALCULATE_TRANSACTION_FEE_FOR_DISTRIBUTION">CALCULATE_TRANSACTION_FEE_FOR_DISTRIBUTION</a>: u64 = 96;
+</code></pre>
+<p><a id="0x1_features_CHARGE_INVARIANT_VIOLATION"></a></p>
+<p>Charge invariant violation error.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_CHARGE_INVARIANT_VIOLATION">CHARGE_INVARIANT_VIOLATION</a>: u64 = 20;
+</code></pre>
+<p><a id="0x1_features_CODE_DEPENDENCY_CHECK"></a></p>
+<p>Whether validation of package dependencies is enabled, and the related native function is
+available. This is needed because of introduction of a new native function.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_CODE_DEPENDENCY_CHECK">CODE_DEPENDENCY_CHECK</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_features_COIN_TO_FUNGIBLE_ASSET_MIGRATION"></a></p>
+<p>Whether migration from coin to fungible asset feature is enabled.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_COIN_TO_FUNGIBLE_ASSET_MIGRATION">COIN_TO_FUNGIBLE_ASSET_MIGRATION</a>: u64 = 60;
+</code></pre>
+<p><a id="0x1_features_COLLECTION_OWNER"></a></p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_COLLECTION_OWNER">COLLECTION_OWNER</a>: u64 = 79;
+</code></pre>
+<p><a id="0x1_features_COMMISSION_CHANGE_DELEGATION_POOL"></a></p>
+<p>Whether the operator commission rate change in delegation pool is enabled.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_COMMISSION_CHANGE_DELEGATION_POOL">COMMISSION_CHANGE_DELEGATION_POOL</a>: u64 = 42;
+</code></pre>
+<p><a id="0x1_features_CONCURRENT_FUNGIBLE_ASSETS"></a></p>
+<p>Whether enable Fungible Asset creation
+to create higher throughput concurrent variants.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_CONCURRENT_FUNGIBLE_ASSETS">CONCURRENT_FUNGIBLE_ASSETS</a>: u64 = 50;
+</code></pre>
+<p><a id="0x1_features_CONCURRENT_FUNGIBLE_BALANCE"></a></p>
+<p>Whether enable concurent Fungible Balance
+to create higher throughput concurrent variants.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_CONCURRENT_FUNGIBLE_BALANCE">CONCURRENT_FUNGIBLE_BALANCE</a>: u64 = 67;
+</code></pre>
+<p><a id="0x1_features_CRYPTOGRAPHY_ALGEBRA_NATIVES"></a></p>
+<p>Whether generic algebra basic operation support in <code>crypto_algebra.<b>move</b></code> are enabled.</p>
+<p>Lifetime: permanent</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_CRYPTOGRAPHY_ALGEBRA_NATIVES">CRYPTOGRAPHY_ALGEBRA_NATIVES</a>: u64 = 12;
+</code></pre>
+<p><a id="0x1_features_DEFAULT_ACCOUNT_RESOURCE"></a></p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_DEFAULT_ACCOUNT_RESOURCE">DEFAULT_ACCOUNT_RESOURCE</a>: u64 = 91;
+</code></pre>
+<p><a id="0x1_features_DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE"></a></p>
+<p>Whether to default new Fungible Store to the concurrent variant.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE">DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE</a>: u64 = 68;
+</code></pre>
+<p><a id="0x1_features_DELEGATION_POOLS"></a></p>
+<p>Whether delegation pools are enabled.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_DELEGATION_POOLS">DELEGATION_POOLS</a>: u64 = 11;
+</code></pre>
+<p><a id="0x1_features_DELEGATION_POOL_ALLOWLISTING"></a></p>
+<p>Whether delegators allowlisting for delegation pools is supported.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_DELEGATION_POOL_ALLOWLISTING">DELEGATION_POOL_ALLOWLISTING</a>: u64 = 56;
+</code></pre>
+<p><a id="0x1_features_DELEGATION_POOL_PARTIAL_GOVERNANCE_VOTING"></a></p>
+<p>Whether enable paritial governance voting on delegation_pool.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_DELEGATION_POOL_PARTIAL_GOVERNANCE_VOTING">DELEGATION_POOL_PARTIAL_GOVERNANCE_VOTING</a>: u64 = 21;
+</code></pre>
+<p><a id="0x1_features_DERIVABLE_ACCOUNT_ABSTRACTION"></a></p>
+<p>Whether the account abstraction is enabled.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_DERIVABLE_ACCOUNT_ABSTRACTION">DERIVABLE_ACCOUNT_ABSTRACTION</a>: u64 = 88;
+</code></pre>
+<p><a id="0x1_features_DISTRIBUTE_TRANSACTION_FEE"></a></p>
+<p>Whether to distribute transaction fee to validators.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_DISTRIBUTE_TRANSACTION_FEE">DISTRIBUTE_TRANSACTION_FEE</a>: u64 = 97;
+</code></pre>
+<p><a id="0x1_features_EAPI_DISABLED"></a></p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_EAPI_DISABLED">EAPI_DISABLED</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_features_ED25519_PUBKEY_VALIDATE_RETURN_FALSE_WRONG_LENGTH"></a></p>
+<p>Whether native_public_key_validate aborts when a public key of the wrong length is given
+Lifetime: ephemeral</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_ED25519_PUBKEY_VALIDATE_RETURN_FALSE_WRONG_LENGTH">ED25519_PUBKEY_VALIDATE_RETURN_FALSE_WRONG_LENGTH</a>: u64 = 14;
+</code></pre>
+<p><a id="0x1_features_EFEATURE_CANNOT_BE_DISABLED"></a></p>
+<p>Deployed to production, and disabling is deprecated.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_EFEATURE_CANNOT_BE_DISABLED">EFEATURE_CANNOT_BE_DISABLED</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_features_EFRAMEWORK_SIGNER_NEEDED"></a></p>
+<p>The provided signer has not a framework address.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_EFRAMEWORK_SIGNER_NEEDED">EFRAMEWORK_SIGNER_NEEDED</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_features_EINVALID_FEATURE"></a></p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_features_ENCRYPTED_TRANSACTIONS"></a></p>
+<p>Whether the encrypted mempool feature is enabled.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_ENCRYPTED_TRANSACTIONS">ENCRYPTED_TRANSACTIONS</a>: u64 = 108;
+</code></pre>
+<p><a id="0x1_features_FEE_PAYER_ACCOUNT_OPTIONAL"></a></p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_FEE_PAYER_ACCOUNT_OPTIONAL">FEE_PAYER_ACCOUNT_OPTIONAL</a>: u64 = 35;
+</code></pre>
+<p><a id="0x1_features_FEE_PAYER_ENABLED"></a></p>
+<p>Whether alternate gas payer is supported
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_FEE_PAYER_ENABLED">FEE_PAYER_ENABLED</a>: u64 = 22;
+</code></pre>
+<p><a id="0x1_features_FUNCTION_REFLECTION"></a></p>
+<p>Whether function reflection is enabled.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>: u64 = 105;
+</code></pre>
+<p><a id="0x1_features_JWK_CONSENSUS"></a></p>
+<p>Deprecated by <code>aptos_framework::jwk_consensus_config::JWKConsensusConfig</code>.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_JWK_CONSENSUS">JWK_CONSENSUS</a>: u64 = 49;
+</code></pre>
+<p><a id="0x1_features_JWK_CONSENSUS_PER_KEY_MODE"></a></p>
+<p>If enabled, JWK consensus should run in per-key mode, where:</p>
+<ul>
+<li>The consensus is for key-level updates
+(e.g., "issuer A key 1 should be deleted", "issuer B key 2 should be upserted");</li>
+<li>transaction type <code>ValidatorTransaction::ObservedJWKUpdate</code> is reused;</li>
+<li>while a key-level update is mostly represented by a new type <code>KeyLevelUpdate</code> locally,
+For simplicity, it is represented by type <code>ProviderJWKs</code> (used to represent issuer-level update)
+in JWK Consensus messages, in validator transactions, and in Move.</li>
+</ul>
+<pre><code><b>const</b> <a href="features.html#0x1_features_JWK_CONSENSUS_PER_KEY_MODE">JWK_CONSENSUS_PER_KEY_MODE</a>: u64 = 92;
+</code></pre>
+<p><a id="0x1_features_KEYLESS_ACCOUNTS"></a></p>
+<p>Whether the OIDB feature is enabled, possibly with the ZK-less verification mode.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_KEYLESS_ACCOUNTS">KEYLESS_ACCOUNTS</a>: u64 = 46;
+</code></pre>
+<p><a id="0x1_features_KEYLESS_ACCOUNTS_WITH_PASSKEYS"></a></p>
+<p>Whether keyless accounts support passkey-based ephemeral signatures.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_KEYLESS_ACCOUNTS_WITH_PASSKEYS">KEYLESS_ACCOUNTS_WITH_PASSKEYS</a>: u64 = 54;
+</code></pre>
+<p><a id="0x1_features_KEYLESS_BUT_ZKLESS_ACCOUNTS"></a></p>
+<p>Whether the ZK-less mode of the keyless accounts feature is enabled.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_KEYLESS_BUT_ZKLESS_ACCOUNTS">KEYLESS_BUT_ZKLESS_ACCOUNTS</a>: u64 = 47;
+</code></pre>
+<p><a id="0x1_features_MAX_OBJECT_NESTING_CHECK"></a></p>
+<p>Whether checking the maximum object nesting is enabled.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MAX_OBJECT_NESTING_CHECK">MAX_OBJECT_NESTING_CHECK</a>: u64 = 53;
+</code></pre>
+<p><a id="0x1_features_MODULE_EVENT"></a></p>
+<p>Whether emit function in <code>event.<b>move</b></code> are enabled for module events.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MODULE_EVENT">MODULE_EVENT</a>: u64 = 26;
+</code></pre>
+<p><a id="0x1_features_MODULE_EVENT_MIGRATION"></a></p>
+<p>Whether aptos_framwork enables the behavior of module event migration.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MODULE_EVENT_MIGRATION">MODULE_EVENT_MIGRATION</a>: u64 = 57;
+</code></pre>
+<p><a id="0x1_features_MULTISIG_ACCOUNTS"></a></p>
+<p>Whether multisig accounts (different from accounts with multi-ed25519 auth keys) are enabled.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MULTISIG_ACCOUNTS">MULTISIG_ACCOUNTS</a>: u64 = 10;
+</code></pre>
+<p><a id="0x1_features_MULTISIG_V2_ENHANCEMENT"></a></p>
+<p>Whether the Multisig V2 enhancement feature is enabled.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MULTISIG_V2_ENHANCEMENT">MULTISIG_V2_ENHANCEMENT</a>: u64 = 55;
+</code></pre>
+<p><a id="0x1_features_MULTI_ED25519_PK_VALIDATE_V2_NATIVES"></a></p>
+<p>Whether the new <code>aptos_stdlib::multi_ed25519::public_key_validate_internal_v2()</code> native is enabled.
+This is needed because of the introduction of a new native function.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MULTI_ED25519_PK_VALIDATE_V2_NATIVES">MULTI_ED25519_PK_VALIDATE_V2_NATIVES</a>: u64 = 7;
+</code></pre>
+<p><a id="0x1_features_NATIVE_MEMORY_OPERATIONS"></a></p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_MEMORY_OPERATIONS">NATIVE_MEMORY_OPERATIONS</a>: u64 = 80;
+</code></pre>
+<p><a id="0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE"></a></p>
+<p>Whether new accounts default to the Fungible Asset store.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_STORE</a>: u64 = 90;
+</code></pre>
+<p><a id="0x1_features_OPERATOR_BENEFICIARY_CHANGE"></a></p>
+<p>Whether allow changing beneficiaries for operators.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_OPERATOR_BENEFICIARY_CHANGE">OPERATOR_BENEFICIARY_CHANGE</a>: u64 = 39;
+</code></pre>
+<p><a id="0x1_features_ORDERLESS_TRANSACTIONS"></a></p>
+<p>Whether orderless transactions are enabled.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_ORDERLESS_TRANSACTIONS">ORDERLESS_TRANSACTIONS</a>: u64 = 94;
+</code></pre>
+<p><a id="0x1_features_PARTIAL_GOVERNANCE_VOTING"></a></p>
+<p>Whether enable paritial governance voting on aptos_governance.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_PARTIAL_GOVERNANCE_VOTING">PARTIAL_GOVERNANCE_VOTING</a>: u64 = 17;
+</code></pre>
+<p><a id="0x1_features_PERIODICAL_REWARD_RATE_DECREASE"></a></p>
+<p>Whether reward rate decreases periodically.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_PERIODICAL_REWARD_RATE_DECREASE">PERIODICAL_REWARD_RATE_DECREASE</a>: u64 = 16;
+</code></pre>
+<p><a id="0x1_features_PERMISSIONED_SIGNER"></a></p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a>: u64 = 84;
+</code></pre>
+<p><a id="0x1_features_RECONFIGURE_WITH_DKG"></a></p>
+<p>Deprecated by <code>aptos_framework::randomness_config::RandomnessConfig</code>.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_RECONFIGURE_WITH_DKG">RECONFIGURE_WITH_DKG</a>: u64 = 45;
+</code></pre>
+<p><a id="0x1_features_RESOURCE_GROUPS"></a></p>
+<p>Whether resource groups are enabled.
+This is needed because of new attributes for structs and a change in storage representation.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_RESOURCE_GROUPS">RESOURCE_GROUPS</a>: u64 = 9;
+</code></pre>
+<p><a id="0x1_features_SHA_512_AND_RIPEMD_160_NATIVES"></a></p>
+<p>Whether the new SHA2-512, SHA3-512 and RIPEMD-160 hash function natives are enabled.
+This is needed because of the introduction of new native functions.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_SHA_512_AND_RIPEMD_160_NATIVES">SHA_512_AND_RIPEMD_160_NATIVES</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_features_SIGNATURE_CHECKER_V2_SCRIPT_FIX"></a></p>
+<p>Whether the fix for a counting bug in the script path of the signature checker pass is enabled.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_SIGNATURE_CHECKER_V2_SCRIPT_FIX">SIGNATURE_CHECKER_V2_SCRIPT_FIX</a>: u64 = 29;
+</code></pre>
+<p><a id="0x1_features_SIGNER_NATIVE_FORMAT_FIX"></a></p>
+<p>Fix the native formatter for signer.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_SIGNER_NATIVE_FORMAT_FIX">SIGNER_NATIVE_FORMAT_FIX</a>: u64 = 25;
+</code></pre>
+<p><a id="0x1_features_SLH_DSA_SHA2_128S_SIGNATURE"></a></p>
+<p>Whether SLH-DSA-SHA2-128s signature scheme is enabled for transaction authentication.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_SLH_DSA_SHA2_128S_SIGNATURE">SLH_DSA_SHA2_128S_SIGNATURE</a>: u64 = 107;
+</code></pre>
+<p><a id="0x1_features_SPONSORED_AUTOMATIC_ACCOUNT_CREATION"></a></p>
+<p>Whether the automatic creation of accounts is enabled for sponsored transactions.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_SPONSORED_AUTOMATIC_ACCOUNT_CREATION">SPONSORED_AUTOMATIC_ACCOUNT_CREATION</a>: u64 = 34;
+</code></pre>
+<p><a id="0x1_features_STORAGE_SLOT_NATIVES"></a></p>
+<p>Whether the storage slot natives are enabled.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>: u64 = 113;
+</code></pre>
+<p><a id="0x1_features_STRUCT_CONSTRUCTORS"></a></p>
+<p>Whether struct constructors are enabled</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_STRUCT_CONSTRUCTORS">STRUCT_CONSTRUCTORS</a>: u64 = 15;
+</code></pre>
+<p><a id="0x1_features_TRANSACTION_CONTEXT_EXTENSION"></a></p>
+<p>Whether the transaction context extension is enabled. This feature allows the module
+<code>transaction_context</code> to provide contextual information about the user transaction.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_TRANSACTION_CONTEXT_EXTENSION">TRANSACTION_CONTEXT_EXTENSION</a>: u64 = 59;
+</code></pre>
+<p><a id="0x1_features_TRANSACTION_LIMITS"></a></p>
+<p>Whether the transaction limits feature is enabled. Allows transactions
+to request higher execution/IO gas limits backed by staking voting power.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_TRANSACTION_LIMITS">TRANSACTION_LIMITS</a>: u64 = 111;
+</code></pre>
+<p><a id="0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT"></a></p>
+<p>Whether the simulation enhancement is enabled. This enables the simulation without an authentication check,
+the sponsored transaction simulation when the fee payer is set to 0x0, and the multisig transaction
+simulation consistnet with the execution.</p>
+<p>Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT">TRANSACTION_SIMULATION_ENHANCEMENT</a>: u64 = 78;
+</code></pre>
+<p><a id="0x1_features_TREAT_FRIEND_AS_PRIVATE"></a></p>
+<p>Whether during upgrade compatibility checking, friend functions should be treated similar like
+private functions.
+Lifetime: permanent</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_TREAT_FRIEND_AS_PRIVATE">TREAT_FRIEND_AS_PRIVATE</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_features_VM_BINARY_FORMAT_V6"></a></p>
+<p>Whether to allow the use of binary format version v6.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_VM_BINARY_FORMAT_V6">VM_BINARY_FORMAT_V6</a>: u64 = 5;
+</code></pre>
+<p><a id="0x1_features_VM_BINARY_FORMAT_V8"></a></p>
+<p>Whether bytecode version v8 is enabled.
+Lifetime: transient</p>
+<p>We do not expect use from Move, so for now only for documentation purposes here</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_VM_BINARY_FORMAT_V8">VM_BINARY_FORMAT_V8</a>: u64 = 86;
+</code></pre>
+<h2 id="function-code_dependency_check_enabled"><a class="header" href="#function-code_dependency_check_enabled">Function <code>code_dependency_check_enabled</code> <a id="0x1_features_code_dependency_check_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_code_dependency_check_enabled">code_dependency_check_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_code_dependency_check_enabled">code_dependency_check_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_CODE_DEPENDENCY_CHECK">CODE_DEPENDENCY_CHECK</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-treat_friend_as_private"><a class="header" href="#function-treat_friend_as_private">Function <code>treat_friend_as_private</code> <a id="0x1_features_treat_friend_as_private"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_treat_friend_as_private">treat_friend_as_private</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_treat_friend_as_private">treat_friend_as_private</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_TREAT_FRIEND_AS_PRIVATE">TREAT_FRIEND_AS_PRIVATE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_sha_512_and_ripemd_160_feature"><a class="header" href="#function-get_sha_512_and_ripemd_160_feature">Function <code>get_sha_512_and_ripemd_160_feature</code> <a id="0x1_features_get_sha_512_and_ripemd_160_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_sha_512_and_ripemd_160_feature">get_sha_512_and_ripemd_160_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_sha_512_and_ripemd_160_feature">get_sha_512_and_ripemd_160_feature</a>(): u64 {
+    <a href="features.html#0x1_features_SHA_512_AND_RIPEMD_160_NATIVES">SHA_512_AND_RIPEMD_160_NATIVES</a>
+}
+</code></pre>
+</details>
+<h2 id="function-sha_512_and_ripemd_160_enabled"><a class="header" href="#function-sha_512_and_ripemd_160_enabled">Function <code>sha_512_and_ripemd_160_enabled</code> <a id="0x1_features_sha_512_and_ripemd_160_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_sha_512_and_ripemd_160_enabled">sha_512_and_ripemd_160_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_sha_512_and_ripemd_160_enabled">sha_512_and_ripemd_160_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_SHA_512_AND_RIPEMD_160_NATIVES">SHA_512_AND_RIPEMD_160_NATIVES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_aptos_stdlib_chain_id_feature"><a class="header" href="#function-get_aptos_stdlib_chain_id_feature">Function <code>get_aptos_stdlib_chain_id_feature</code> <a id="0x1_features_get_aptos_stdlib_chain_id_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_aptos_stdlib_chain_id_feature">get_aptos_stdlib_chain_id_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_aptos_stdlib_chain_id_feature">get_aptos_stdlib_chain_id_feature</a>(): u64 {
+    <a href="features.html#0x1_features_APTOS_STD_CHAIN_ID_NATIVES">APTOS_STD_CHAIN_ID_NATIVES</a>
+}
+</code></pre>
+</details>
+<h2 id="function-aptos_stdlib_chain_id_enabled"><a class="header" href="#function-aptos_stdlib_chain_id_enabled">Function <code>aptos_stdlib_chain_id_enabled</code> <a id="0x1_features_aptos_stdlib_chain_id_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_aptos_stdlib_chain_id_enabled">aptos_stdlib_chain_id_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_aptos_stdlib_chain_id_enabled">aptos_stdlib_chain_id_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_APTOS_STD_CHAIN_ID_NATIVES">APTOS_STD_CHAIN_ID_NATIVES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_vm_binary_format_v6"><a class="header" href="#function-get_vm_binary_format_v6">Function <code>get_vm_binary_format_v6</code> <a id="0x1_features_get_vm_binary_format_v6"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_vm_binary_format_v6">get_vm_binary_format_v6</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_vm_binary_format_v6">get_vm_binary_format_v6</a>(): u64 {
+    <a href="features.html#0x1_features_VM_BINARY_FORMAT_V6">VM_BINARY_FORMAT_V6</a>
+}
+</code></pre>
+</details>
+<h2 id="function-allow_vm_binary_format_v6"><a class="header" href="#function-allow_vm_binary_format_v6">Function <code>allow_vm_binary_format_v6</code> <a id="0x1_features_allow_vm_binary_format_v6"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_allow_vm_binary_format_v6">allow_vm_binary_format_v6</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_allow_vm_binary_format_v6">allow_vm_binary_format_v6</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_VM_BINARY_FORMAT_V6">VM_BINARY_FORMAT_V6</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_collect_and_distribute_gas_fees_feature"><a class="header" href="#function-get_collect_and_distribute_gas_fees_feature">Function <code>get_collect_and_distribute_gas_fees_feature</code> <a id="0x1_features_get_collect_and_distribute_gas_fees_feature"></a></a></h2>
+<p>Deprecated feature</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_collect_and_distribute_gas_fees_feature">get_collect_and_distribute_gas_fees_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_collect_and_distribute_gas_fees_feature">get_collect_and_distribute_gas_fees_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-collect_and_distribute_gas_fees"><a class="header" href="#function-collect_and_distribute_gas_fees">Function <code>collect_and_distribute_gas_fees</code> <a id="0x1_features_collect_and_distribute_gas_fees"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_collect_and_distribute_gas_fees">collect_and_distribute_gas_fees</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_collect_and_distribute_gas_fees">collect_and_distribute_gas_fees</a>(): bool {
+    <b>false</b>
+}
+</code></pre>
+</details>
+<h2 id="function-multi_ed25519_pk_validate_v2_feature"><a class="header" href="#function-multi_ed25519_pk_validate_v2_feature">Function <code>multi_ed25519_pk_validate_v2_feature</code> <a id="0x1_features_multi_ed25519_pk_validate_v2_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_multi_ed25519_pk_validate_v2_feature">multi_ed25519_pk_validate_v2_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_multi_ed25519_pk_validate_v2_feature">multi_ed25519_pk_validate_v2_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MULTI_ED25519_PK_VALIDATE_V2_NATIVES">MULTI_ED25519_PK_VALIDATE_V2_NATIVES</a>
+}
+</code></pre>
+</details>
+<h2 id="function-multi_ed25519_pk_validate_v2_enabled"><a class="header" href="#function-multi_ed25519_pk_validate_v2_enabled">Function <code>multi_ed25519_pk_validate_v2_enabled</code> <a id="0x1_features_multi_ed25519_pk_validate_v2_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_multi_ed25519_pk_validate_v2_enabled">multi_ed25519_pk_validate_v2_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_multi_ed25519_pk_validate_v2_enabled">multi_ed25519_pk_validate_v2_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MULTI_ED25519_PK_VALIDATE_V2_NATIVES">MULTI_ED25519_PK_VALIDATE_V2_NATIVES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_blake2b_256_feature"><a class="header" href="#function-get_blake2b_256_feature">Function <code>get_blake2b_256_feature</code> <a id="0x1_features_get_blake2b_256_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_blake2b_256_feature">get_blake2b_256_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_blake2b_256_feature">get_blake2b_256_feature</a>(): u64 {
+    <a href="features.html#0x1_features_BLAKE2B_256_NATIVE">BLAKE2B_256_NATIVE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-blake2b_256_enabled"><a class="header" href="#function-blake2b_256_enabled">Function <code>blake2b_256_enabled</code> <a id="0x1_features_blake2b_256_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_blake2b_256_enabled">blake2b_256_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_blake2b_256_enabled">blake2b_256_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_BLAKE2B_256_NATIVE">BLAKE2B_256_NATIVE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_resource_groups_feature"><a class="header" href="#function-get_resource_groups_feature">Function <code>get_resource_groups_feature</code> <a id="0x1_features_get_resource_groups_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_resource_groups_feature">get_resource_groups_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_resource_groups_feature">get_resource_groups_feature</a>(): u64 {
+    <a href="features.html#0x1_features_RESOURCE_GROUPS">RESOURCE_GROUPS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-resource_groups_enabled"><a class="header" href="#function-resource_groups_enabled">Function <code>resource_groups_enabled</code> <a id="0x1_features_resource_groups_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_resource_groups_enabled">resource_groups_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_resource_groups_enabled">resource_groups_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_RESOURCE_GROUPS">RESOURCE_GROUPS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_multisig_accounts_feature"><a class="header" href="#function-get_multisig_accounts_feature">Function <code>get_multisig_accounts_feature</code> <a id="0x1_features_get_multisig_accounts_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_accounts_feature">get_multisig_accounts_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_accounts_feature">get_multisig_accounts_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MULTISIG_ACCOUNTS">MULTISIG_ACCOUNTS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-multisig_accounts_enabled"><a class="header" href="#function-multisig_accounts_enabled">Function <code>multisig_accounts_enabled</code> <a id="0x1_features_multisig_accounts_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_multisig_accounts_enabled">multisig_accounts_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_multisig_accounts_enabled">multisig_accounts_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MULTISIG_ACCOUNTS">MULTISIG_ACCOUNTS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_delegation_pools_feature"><a class="header" href="#function-get_delegation_pools_feature">Function <code>get_delegation_pools_feature</code> <a id="0x1_features_get_delegation_pools_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_delegation_pools_feature">get_delegation_pools_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_delegation_pools_feature">get_delegation_pools_feature</a>(): u64 {
+    <a href="features.html#0x1_features_DELEGATION_POOLS">DELEGATION_POOLS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-delegation_pools_enabled"><a class="header" href="#function-delegation_pools_enabled">Function <code>delegation_pools_enabled</code> <a id="0x1_features_delegation_pools_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_delegation_pools_enabled">delegation_pools_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_delegation_pools_enabled">delegation_pools_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_DELEGATION_POOLS">DELEGATION_POOLS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_cryptography_algebra_natives_feature"><a class="header" href="#function-get_cryptography_algebra_natives_feature">Function <code>get_cryptography_algebra_natives_feature</code> <a id="0x1_features_get_cryptography_algebra_natives_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_cryptography_algebra_natives_feature">get_cryptography_algebra_natives_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_cryptography_algebra_natives_feature">get_cryptography_algebra_natives_feature</a>(): u64 {
+    <a href="features.html#0x1_features_CRYPTOGRAPHY_ALGEBRA_NATIVES">CRYPTOGRAPHY_ALGEBRA_NATIVES</a>
+}
+</code></pre>
+</details>
+<h2 id="function-cryptography_algebra_enabled"><a class="header" href="#function-cryptography_algebra_enabled">Function <code>cryptography_algebra_enabled</code> <a id="0x1_features_cryptography_algebra_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_cryptography_algebra_enabled">cryptography_algebra_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_cryptography_algebra_enabled">cryptography_algebra_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_CRYPTOGRAPHY_ALGEBRA_NATIVES">CRYPTOGRAPHY_ALGEBRA_NATIVES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_bls12_381_strutures_feature"><a class="header" href="#function-get_bls12_381_strutures_feature">Function <code>get_bls12_381_strutures_feature</code> <a id="0x1_features_get_bls12_381_strutures_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_bls12_381_strutures_feature">get_bls12_381_strutures_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_bls12_381_strutures_feature">get_bls12_381_strutures_feature</a>(): u64 {
+    <a href="features.html#0x1_features_BLS12_381_STRUCTURES">BLS12_381_STRUCTURES</a>
+}
+</code></pre>
+</details>
+<h2 id="function-bls12_381_structures_enabled"><a class="header" href="#function-bls12_381_structures_enabled">Function <code>bls12_381_structures_enabled</code> <a id="0x1_features_bls12_381_structures_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_bls12_381_structures_enabled">bls12_381_structures_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_bls12_381_structures_enabled">bls12_381_structures_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_BLS12_381_STRUCTURES">BLS12_381_STRUCTURES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_periodical_reward_rate_decrease_feature"><a class="header" href="#function-get_periodical_reward_rate_decrease_feature">Function <code>get_periodical_reward_rate_decrease_feature</code> <a id="0x1_features_get_periodical_reward_rate_decrease_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_periodical_reward_rate_decrease_feature">get_periodical_reward_rate_decrease_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_periodical_reward_rate_decrease_feature">get_periodical_reward_rate_decrease_feature</a>(): u64 {
+    <a href="features.html#0x1_features_PERIODICAL_REWARD_RATE_DECREASE">PERIODICAL_REWARD_RATE_DECREASE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-periodical_reward_rate_decrease_enabled"><a class="header" href="#function-periodical_reward_rate_decrease_enabled">Function <code>periodical_reward_rate_decrease_enabled</code> <a id="0x1_features_periodical_reward_rate_decrease_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_periodical_reward_rate_decrease_enabled">periodical_reward_rate_decrease_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_periodical_reward_rate_decrease_enabled">periodical_reward_rate_decrease_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_PERIODICAL_REWARD_RATE_DECREASE">PERIODICAL_REWARD_RATE_DECREASE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_partial_governance_voting"><a class="header" href="#function-get_partial_governance_voting">Function <code>get_partial_governance_voting</code> <a id="0x1_features_get_partial_governance_voting"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_partial_governance_voting">get_partial_governance_voting</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_partial_governance_voting">get_partial_governance_voting</a>(): u64 {
+    <a href="features.html#0x1_features_PARTIAL_GOVERNANCE_VOTING">PARTIAL_GOVERNANCE_VOTING</a>
+}
+</code></pre>
+</details>
+<h2 id="function-partial_governance_voting_enabled"><a class="header" href="#function-partial_governance_voting_enabled">Function <code>partial_governance_voting_enabled</code> <a id="0x1_features_partial_governance_voting_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_partial_governance_voting_enabled">partial_governance_voting_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_partial_governance_voting_enabled">partial_governance_voting_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_PARTIAL_GOVERNANCE_VOTING">PARTIAL_GOVERNANCE_VOTING</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_delegation_pool_partial_governance_voting"><a class="header" href="#function-get_delegation_pool_partial_governance_voting">Function <code>get_delegation_pool_partial_governance_voting</code> <a id="0x1_features_get_delegation_pool_partial_governance_voting"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_delegation_pool_partial_governance_voting">get_delegation_pool_partial_governance_voting</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_delegation_pool_partial_governance_voting">get_delegation_pool_partial_governance_voting</a>(): u64 {
+    <a href="features.html#0x1_features_DELEGATION_POOL_PARTIAL_GOVERNANCE_VOTING">DELEGATION_POOL_PARTIAL_GOVERNANCE_VOTING</a>
+}
+</code></pre>
+</details>
+<h2 id="function-delegation_pool_partial_governance_voting_enabled"><a class="header" href="#function-delegation_pool_partial_governance_voting_enabled">Function <code>delegation_pool_partial_governance_voting_enabled</code> <a id="0x1_features_delegation_pool_partial_governance_voting_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_delegation_pool_partial_governance_voting_enabled">delegation_pool_partial_governance_voting_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_delegation_pool_partial_governance_voting_enabled">delegation_pool_partial_governance_voting_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_DELEGATION_POOL_PARTIAL_GOVERNANCE_VOTING">DELEGATION_POOL_PARTIAL_GOVERNANCE_VOTING</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-fee_payer_enabled"><a class="header" href="#function-fee_payer_enabled">Function <code>fee_payer_enabled</code> <a id="0x1_features_fee_payer_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_fee_payer_enabled">fee_payer_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_fee_payer_enabled">fee_payer_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_FEE_PAYER_ENABLED">FEE_PAYER_ENABLED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_auids"><a class="header" href="#function-get_auids">Function <code>get_auids</code> <a id="0x1_features_get_auids"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_auids">get_auids</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_auids">get_auids</a>(): u64 {
+    <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EFEATURE_CANNOT_BE_DISABLED">EFEATURE_CANNOT_BE_DISABLED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-auids_enabled"><a class="header" href="#function-auids_enabled">Function <code>auids_enabled</code> <a id="0x1_features_auids_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_auids_enabled">auids_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_auids_enabled">auids_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_bulletproofs_feature"><a class="header" href="#function-get_bulletproofs_feature">Function <code>get_bulletproofs_feature</code> <a id="0x1_features_get_bulletproofs_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_bulletproofs_feature">get_bulletproofs_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_bulletproofs_feature">get_bulletproofs_feature</a>(): u64 {
+    <a href="features.html#0x1_features_BULLETPROOFS_NATIVES">BULLETPROOFS_NATIVES</a>
+}
+</code></pre>
+</details>
+<h2 id="function-bulletproofs_enabled"><a class="header" href="#function-bulletproofs_enabled">Function <code>bulletproofs_enabled</code> <a id="0x1_features_bulletproofs_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_bulletproofs_enabled">bulletproofs_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_bulletproofs_enabled">bulletproofs_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_BULLETPROOFS_NATIVES">BULLETPROOFS_NATIVES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_signer_native_format_fix_feature"><a class="header" href="#function-get_signer_native_format_fix_feature">Function <code>get_signer_native_format_fix_feature</code> <a id="0x1_features_get_signer_native_format_fix_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_signer_native_format_fix_feature">get_signer_native_format_fix_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_signer_native_format_fix_feature">get_signer_native_format_fix_feature</a>(): u64 {
+    <a href="features.html#0x1_features_SIGNER_NATIVE_FORMAT_FIX">SIGNER_NATIVE_FORMAT_FIX</a>
+}
+</code></pre>
+</details>
+<h2 id="function-signer_native_format_fix_enabled"><a class="header" href="#function-signer_native_format_fix_enabled">Function <code>signer_native_format_fix_enabled</code> <a id="0x1_features_signer_native_format_fix_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_signer_native_format_fix_enabled">signer_native_format_fix_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_signer_native_format_fix_enabled">signer_native_format_fix_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_SIGNER_NATIVE_FORMAT_FIX">SIGNER_NATIVE_FORMAT_FIX</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_module_event_feature"><a class="header" href="#function-get_module_event_feature">Function <code>get_module_event_feature</code> <a id="0x1_features_get_module_event_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_module_event_feature">get_module_event_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_module_event_feature">get_module_event_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MODULE_EVENT">MODULE_EVENT</a>
+}
+</code></pre>
+</details>
+<h2 id="function-module_event_enabled"><a class="header" href="#function-module_event_enabled">Function <code>module_event_enabled</code> <a id="0x1_features_module_event_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_module_event_enabled">module_event_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_module_event_enabled">module_event_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MODULE_EVENT">MODULE_EVENT</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_aggregator_v2_api_feature"><a class="header" href="#function-get_aggregator_v2_api_feature">Function <code>get_aggregator_v2_api_feature</code> <a id="0x1_features_get_aggregator_v2_api_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_aggregator_v2_api_feature">get_aggregator_v2_api_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_aggregator_v2_api_feature">get_aggregator_v2_api_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EFEATURE_CANNOT_BE_DISABLED">EFEATURE_CANNOT_BE_DISABLED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-aggregator_v2_api_enabled"><a class="header" href="#function-aggregator_v2_api_enabled">Function <code>aggregator_v2_api_enabled</code> <a id="0x1_features_aggregator_v2_api_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_aggregator_v2_api_enabled">aggregator_v2_api_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_aggregator_v2_api_enabled">aggregator_v2_api_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_aggregator_snapshots_feature"><a class="header" href="#function-get_aggregator_snapshots_feature">Function <code>get_aggregator_snapshots_feature</code> <a id="0x1_features_get_aggregator_snapshots_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_aggregator_snapshots_feature">get_aggregator_snapshots_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_aggregator_snapshots_feature">get_aggregator_snapshots_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-aggregator_snapshots_enabled"><a class="header" href="#function-aggregator_snapshots_enabled">Function <code>aggregator_snapshots_enabled</code> <a id="0x1_features_aggregator_snapshots_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_aggregator_snapshots_enabled">aggregator_snapshots_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_aggregator_snapshots_enabled">aggregator_snapshots_enabled</a>(): bool {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_sponsored_automatic_account_creation"><a class="header" href="#function-get_sponsored_automatic_account_creation">Function <code>get_sponsored_automatic_account_creation</code> <a id="0x1_features_get_sponsored_automatic_account_creation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_sponsored_automatic_account_creation">get_sponsored_automatic_account_creation</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_sponsored_automatic_account_creation">get_sponsored_automatic_account_creation</a>(): u64 {
+    <a href="features.html#0x1_features_SPONSORED_AUTOMATIC_ACCOUNT_CREATION">SPONSORED_AUTOMATIC_ACCOUNT_CREATION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-sponsored_automatic_account_creation_enabled"><a class="header" href="#function-sponsored_automatic_account_creation_enabled">Function <code>sponsored_automatic_account_creation_enabled</code> <a id="0x1_features_sponsored_automatic_account_creation_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_sponsored_automatic_account_creation_enabled">sponsored_automatic_account_creation_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_sponsored_automatic_account_creation_enabled">sponsored_automatic_account_creation_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_SPONSORED_AUTOMATIC_ACCOUNT_CREATION">SPONSORED_AUTOMATIC_ACCOUNT_CREATION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_concurrent_token_v2_feature"><a class="header" href="#function-get_concurrent_token_v2_feature">Function <code>get_concurrent_token_v2_feature</code> <a id="0x1_features_get_concurrent_token_v2_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_concurrent_token_v2_feature">get_concurrent_token_v2_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_concurrent_token_v2_feature">get_concurrent_token_v2_feature</a>(): u64 {
+    <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EFEATURE_CANNOT_BE_DISABLED">EFEATURE_CANNOT_BE_DISABLED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-concurrent_token_v2_enabled"><a class="header" href="#function-concurrent_token_v2_enabled">Function <code>concurrent_token_v2_enabled</code> <a id="0x1_features_concurrent_token_v2_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_concurrent_token_v2_enabled">concurrent_token_v2_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_concurrent_token_v2_enabled">concurrent_token_v2_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_concurrent_assets_feature"><a class="header" href="#function-get_concurrent_assets_feature">Function <code>get_concurrent_assets_feature</code> <a id="0x1_features_get_concurrent_assets_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_concurrent_assets_feature">get_concurrent_assets_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_concurrent_assets_feature">get_concurrent_assets_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EFEATURE_CANNOT_BE_DISABLED">EFEATURE_CANNOT_BE_DISABLED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-concurrent_assets_enabled"><a class="header" href="#function-concurrent_assets_enabled">Function <code>concurrent_assets_enabled</code> <a id="0x1_features_concurrent_assets_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_concurrent_assets_enabled">concurrent_assets_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_concurrent_assets_enabled">concurrent_assets_enabled</a>(): bool {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EFEATURE_CANNOT_BE_DISABLED">EFEATURE_CANNOT_BE_DISABLED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_operator_beneficiary_change_feature"><a class="header" href="#function-get_operator_beneficiary_change_feature">Function <code>get_operator_beneficiary_change_feature</code> <a id="0x1_features_get_operator_beneficiary_change_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_operator_beneficiary_change_feature">get_operator_beneficiary_change_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_operator_beneficiary_change_feature">get_operator_beneficiary_change_feature</a>(): u64 {
+    <a href="features.html#0x1_features_OPERATOR_BENEFICIARY_CHANGE">OPERATOR_BENEFICIARY_CHANGE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-operator_beneficiary_change_enabled"><a class="header" href="#function-operator_beneficiary_change_enabled">Function <code>operator_beneficiary_change_enabled</code> <a id="0x1_features_operator_beneficiary_change_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_operator_beneficiary_change_enabled">operator_beneficiary_change_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_operator_beneficiary_change_enabled">operator_beneficiary_change_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_OPERATOR_BENEFICIARY_CHANGE">OPERATOR_BENEFICIARY_CHANGE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_commission_change_delegation_pool_feature"><a class="header" href="#function-get_commission_change_delegation_pool_feature">Function <code>get_commission_change_delegation_pool_feature</code> <a id="0x1_features_get_commission_change_delegation_pool_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_commission_change_delegation_pool_feature">get_commission_change_delegation_pool_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_commission_change_delegation_pool_feature">get_commission_change_delegation_pool_feature</a>(): u64 {
+    <a href="features.html#0x1_features_COMMISSION_CHANGE_DELEGATION_POOL">COMMISSION_CHANGE_DELEGATION_POOL</a>
+}
+</code></pre>
+</details>
+<h2 id="function-commission_change_delegation_pool_enabled"><a class="header" href="#function-commission_change_delegation_pool_enabled">Function <code>commission_change_delegation_pool_enabled</code> <a id="0x1_features_commission_change_delegation_pool_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_commission_change_delegation_pool_enabled">commission_change_delegation_pool_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_commission_change_delegation_pool_enabled">commission_change_delegation_pool_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_COMMISSION_CHANGE_DELEGATION_POOL">COMMISSION_CHANGE_DELEGATION_POOL</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_bn254_strutures_feature"><a class="header" href="#function-get_bn254_strutures_feature">Function <code>get_bn254_strutures_feature</code> <a id="0x1_features_get_bn254_strutures_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_bn254_strutures_feature">get_bn254_strutures_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_bn254_strutures_feature">get_bn254_strutures_feature</a>(): u64 {
+    <a href="features.html#0x1_features_BN254_STRUCTURES">BN254_STRUCTURES</a>
+}
+</code></pre>
+</details>
+<h2 id="function-bn254_structures_enabled"><a class="header" href="#function-bn254_structures_enabled">Function <code>bn254_structures_enabled</code> <a id="0x1_features_bn254_structures_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_bn254_structures_enabled">bn254_structures_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_bn254_structures_enabled">bn254_structures_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_BN254_STRUCTURES">BN254_STRUCTURES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_reconfigure_with_dkg_feature"><a class="header" href="#function-get_reconfigure_with_dkg_feature">Function <code>get_reconfigure_with_dkg_feature</code> <a id="0x1_features_get_reconfigure_with_dkg_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_reconfigure_with_dkg_feature">get_reconfigure_with_dkg_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_reconfigure_with_dkg_feature">get_reconfigure_with_dkg_feature</a>(): u64 {
+    <a href="features.html#0x1_features_RECONFIGURE_WITH_DKG">RECONFIGURE_WITH_DKG</a>
+}
+</code></pre>
+</details>
+<h2 id="function-reconfigure_with_dkg_enabled"><a class="header" href="#function-reconfigure_with_dkg_enabled">Function <code>reconfigure_with_dkg_enabled</code> <a id="0x1_features_reconfigure_with_dkg_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_reconfigure_with_dkg_enabled">reconfigure_with_dkg_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_reconfigure_with_dkg_enabled">reconfigure_with_dkg_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_RECONFIGURE_WITH_DKG">RECONFIGURE_WITH_DKG</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_keyless_accounts_feature"><a class="header" href="#function-get_keyless_accounts_feature">Function <code>get_keyless_accounts_feature</code> <a id="0x1_features_get_keyless_accounts_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_keyless_accounts_feature">get_keyless_accounts_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_keyless_accounts_feature">get_keyless_accounts_feature</a>(): u64 {
+    <a href="features.html#0x1_features_KEYLESS_ACCOUNTS">KEYLESS_ACCOUNTS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-keyless_accounts_enabled"><a class="header" href="#function-keyless_accounts_enabled">Function <code>keyless_accounts_enabled</code> <a id="0x1_features_keyless_accounts_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_keyless_accounts_enabled">keyless_accounts_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_keyless_accounts_enabled">keyless_accounts_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_KEYLESS_ACCOUNTS">KEYLESS_ACCOUNTS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_keyless_but_zkless_accounts_feature"><a class="header" href="#function-get_keyless_but_zkless_accounts_feature">Function <code>get_keyless_but_zkless_accounts_feature</code> <a id="0x1_features_get_keyless_but_zkless_accounts_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_keyless_but_zkless_accounts_feature">get_keyless_but_zkless_accounts_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_keyless_but_zkless_accounts_feature">get_keyless_but_zkless_accounts_feature</a>(): u64 {
+    <a href="features.html#0x1_features_KEYLESS_BUT_ZKLESS_ACCOUNTS">KEYLESS_BUT_ZKLESS_ACCOUNTS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-keyless_but_zkless_accounts_feature_enabled"><a class="header" href="#function-keyless_but_zkless_accounts_feature_enabled">Function <code>keyless_but_zkless_accounts_feature_enabled</code> <a id="0x1_features_keyless_but_zkless_accounts_feature_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_keyless_but_zkless_accounts_feature_enabled">keyless_but_zkless_accounts_feature_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_keyless_but_zkless_accounts_feature_enabled">keyless_but_zkless_accounts_feature_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_KEYLESS_BUT_ZKLESS_ACCOUNTS">KEYLESS_BUT_ZKLESS_ACCOUNTS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_jwk_consensus_feature"><a class="header" href="#function-get_jwk_consensus_feature">Function <code>get_jwk_consensus_feature</code> <a id="0x1_features_get_jwk_consensus_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_jwk_consensus_feature">get_jwk_consensus_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_jwk_consensus_feature">get_jwk_consensus_feature</a>(): u64 {
+    <a href="features.html#0x1_features_JWK_CONSENSUS">JWK_CONSENSUS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-jwk_consensus_enabled"><a class="header" href="#function-jwk_consensus_enabled">Function <code>jwk_consensus_enabled</code> <a id="0x1_features_jwk_consensus_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_jwk_consensus_enabled">jwk_consensus_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_jwk_consensus_enabled">jwk_consensus_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_JWK_CONSENSUS">JWK_CONSENSUS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_concurrent_fungible_assets_feature"><a class="header" href="#function-get_concurrent_fungible_assets_feature">Function <code>get_concurrent_fungible_assets_feature</code> <a id="0x1_features_get_concurrent_fungible_assets_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_concurrent_fungible_assets_feature">get_concurrent_fungible_assets_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_concurrent_fungible_assets_feature">get_concurrent_fungible_assets_feature</a>(): u64 {
+    <a href="features.html#0x1_features_CONCURRENT_FUNGIBLE_ASSETS">CONCURRENT_FUNGIBLE_ASSETS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-concurrent_fungible_assets_enabled"><a class="header" href="#function-concurrent_fungible_assets_enabled">Function <code>concurrent_fungible_assets_enabled</code> <a id="0x1_features_concurrent_fungible_assets_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_concurrent_fungible_assets_enabled">concurrent_fungible_assets_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_concurrent_fungible_assets_enabled">concurrent_fungible_assets_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_CONCURRENT_FUNGIBLE_ASSETS">CONCURRENT_FUNGIBLE_ASSETS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-is_object_code_deployment_enabled"><a class="header" href="#function-is_object_code_deployment_enabled">Function <code>is_object_code_deployment_enabled</code> <a id="0x1_features_is_object_code_deployment_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_object_code_deployment_enabled">is_object_code_deployment_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_object_code_deployment_enabled">is_object_code_deployment_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_max_object_nesting_check_feature"><a class="header" href="#function-get_max_object_nesting_check_feature">Function <code>get_max_object_nesting_check_feature</code> <a id="0x1_features_get_max_object_nesting_check_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_max_object_nesting_check_feature">get_max_object_nesting_check_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_max_object_nesting_check_feature">get_max_object_nesting_check_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MAX_OBJECT_NESTING_CHECK">MAX_OBJECT_NESTING_CHECK</a>
+}
+</code></pre>
+</details>
+<h2 id="function-max_object_nesting_check_enabled"><a class="header" href="#function-max_object_nesting_check_enabled">Function <code>max_object_nesting_check_enabled</code> <a id="0x1_features_max_object_nesting_check_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_max_object_nesting_check_enabled">max_object_nesting_check_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_max_object_nesting_check_enabled">max_object_nesting_check_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MAX_OBJECT_NESTING_CHECK">MAX_OBJECT_NESTING_CHECK</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_keyless_accounts_with_passkeys_feature"><a class="header" href="#function-get_keyless_accounts_with_passkeys_feature">Function <code>get_keyless_accounts_with_passkeys_feature</code> <a id="0x1_features_get_keyless_accounts_with_passkeys_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_keyless_accounts_with_passkeys_feature">get_keyless_accounts_with_passkeys_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_keyless_accounts_with_passkeys_feature">get_keyless_accounts_with_passkeys_feature</a>(): u64 {
+    <a href="features.html#0x1_features_KEYLESS_ACCOUNTS_WITH_PASSKEYS">KEYLESS_ACCOUNTS_WITH_PASSKEYS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-keyless_accounts_with_passkeys_feature_enabled"><a class="header" href="#function-keyless_accounts_with_passkeys_feature_enabled">Function <code>keyless_accounts_with_passkeys_feature_enabled</code> <a id="0x1_features_keyless_accounts_with_passkeys_feature_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_keyless_accounts_with_passkeys_feature_enabled">keyless_accounts_with_passkeys_feature_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_keyless_accounts_with_passkeys_feature_enabled">keyless_accounts_with_passkeys_feature_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_KEYLESS_ACCOUNTS_WITH_PASSKEYS">KEYLESS_ACCOUNTS_WITH_PASSKEYS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_multisig_v2_enhancement_feature"><a class="header" href="#function-get_multisig_v2_enhancement_feature">Function <code>get_multisig_v2_enhancement_feature</code> <a id="0x1_features_get_multisig_v2_enhancement_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_v2_enhancement_feature">get_multisig_v2_enhancement_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_v2_enhancement_feature">get_multisig_v2_enhancement_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MULTISIG_V2_ENHANCEMENT">MULTISIG_V2_ENHANCEMENT</a>
+}
+</code></pre>
+</details>
+<h2 id="function-multisig_v2_enhancement_feature_enabled"><a class="header" href="#function-multisig_v2_enhancement_feature_enabled">Function <code>multisig_v2_enhancement_feature_enabled</code> <a id="0x1_features_multisig_v2_enhancement_feature_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_multisig_v2_enhancement_feature_enabled">multisig_v2_enhancement_feature_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_multisig_v2_enhancement_feature_enabled">multisig_v2_enhancement_feature_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MULTISIG_V2_ENHANCEMENT">MULTISIG_V2_ENHANCEMENT</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_delegation_pool_allowlisting_feature"><a class="header" href="#function-get_delegation_pool_allowlisting_feature">Function <code>get_delegation_pool_allowlisting_feature</code> <a id="0x1_features_get_delegation_pool_allowlisting_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_delegation_pool_allowlisting_feature">get_delegation_pool_allowlisting_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_delegation_pool_allowlisting_feature">get_delegation_pool_allowlisting_feature</a>(): u64 {
+    <a href="features.html#0x1_features_DELEGATION_POOL_ALLOWLISTING">DELEGATION_POOL_ALLOWLISTING</a>
+}
+</code></pre>
+</details>
+<h2 id="function-delegation_pool_allowlisting_enabled"><a class="header" href="#function-delegation_pool_allowlisting_enabled">Function <code>delegation_pool_allowlisting_enabled</code> <a id="0x1_features_delegation_pool_allowlisting_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_delegation_pool_allowlisting_enabled">delegation_pool_allowlisting_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_delegation_pool_allowlisting_enabled">delegation_pool_allowlisting_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_DELEGATION_POOL_ALLOWLISTING">DELEGATION_POOL_ALLOWLISTING</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_module_event_migration_feature"><a class="header" href="#function-get_module_event_migration_feature">Function <code>get_module_event_migration_feature</code> <a id="0x1_features_get_module_event_migration_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_module_event_migration_feature">get_module_event_migration_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_module_event_migration_feature">get_module_event_migration_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MODULE_EVENT_MIGRATION">MODULE_EVENT_MIGRATION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-module_event_migration_enabled"><a class="header" href="#function-module_event_migration_enabled">Function <code>module_event_migration_enabled</code> <a id="0x1_features_module_event_migration_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_module_event_migration_enabled">module_event_migration_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_module_event_migration_enabled">module_event_migration_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MODULE_EVENT_MIGRATION">MODULE_EVENT_MIGRATION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_transaction_context_extension_feature"><a class="header" href="#function-get_transaction_context_extension_feature">Function <code>get_transaction_context_extension_feature</code> <a id="0x1_features_get_transaction_context_extension_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_transaction_context_extension_feature">get_transaction_context_extension_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_transaction_context_extension_feature">get_transaction_context_extension_feature</a>(): u64 {
+    <a href="features.html#0x1_features_TRANSACTION_CONTEXT_EXTENSION">TRANSACTION_CONTEXT_EXTENSION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-transaction_context_extension_enabled"><a class="header" href="#function-transaction_context_extension_enabled">Function <code>transaction_context_extension_enabled</code> <a id="0x1_features_transaction_context_extension_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_transaction_context_extension_enabled">transaction_context_extension_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_transaction_context_extension_enabled">transaction_context_extension_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_TRANSACTION_CONTEXT_EXTENSION">TRANSACTION_CONTEXT_EXTENSION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_coin_to_fungible_asset_migration_feature"><a class="header" href="#function-get_coin_to_fungible_asset_migration_feature">Function <code>get_coin_to_fungible_asset_migration_feature</code> <a id="0x1_features_get_coin_to_fungible_asset_migration_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_coin_to_fungible_asset_migration_feature">get_coin_to_fungible_asset_migration_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_coin_to_fungible_asset_migration_feature">get_coin_to_fungible_asset_migration_feature</a>(): u64 {
+    <a href="features.html#0x1_features_COIN_TO_FUNGIBLE_ASSET_MIGRATION">COIN_TO_FUNGIBLE_ASSET_MIGRATION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-coin_to_fungible_asset_migration_feature_enabled"><a class="header" href="#function-coin_to_fungible_asset_migration_feature_enabled">Function <code>coin_to_fungible_asset_migration_feature_enabled</code> <a id="0x1_features_coin_to_fungible_asset_migration_feature_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_coin_to_fungible_asset_migration_feature_enabled">coin_to_fungible_asset_migration_feature_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_coin_to_fungible_asset_migration_feature_enabled">coin_to_fungible_asset_migration_feature_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_COIN_TO_FUNGIBLE_ASSET_MIGRATION">COIN_TO_FUNGIBLE_ASSET_MIGRATION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_primary_apt_fungible_store_at_user_address_feature"><a class="header" href="#function-get_primary_apt_fungible_store_at_user_address_feature">Function <code>get_primary_apt_fungible_store_at_user_address_feature</code> <a id="0x1_features_get_primary_apt_fungible_store_at_user_address_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_primary_apt_fungible_store_at_user_address_feature">get_primary_apt_fungible_store_at_user_address_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_primary_apt_fungible_store_at_user_address_feature">get_primary_apt_fungible_store_at_user_address_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-primary_apt_fungible_store_at_user_address_enabled"><a class="header" href="#function-primary_apt_fungible_store_at_user_address_enabled">Function <code>primary_apt_fungible_store_at_user_address_enabled</code> <a id="0x1_features_primary_apt_fungible_store_at_user_address_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_primary_apt_fungible_store_at_user_address_enabled">primary_apt_fungible_store_at_user_address_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_primary_apt_fungible_store_at_user_address_enabled">primary_apt_fungible_store_at_user_address_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-aggregator_v2_is_at_least_api_enabled"><a class="header" href="#function-aggregator_v2_is_at_least_api_enabled">Function <code>aggregator_v2_is_at_least_api_enabled</code> <a id="0x1_features_aggregator_v2_is_at_least_api_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_aggregator_v2_is_at_least_api_enabled">aggregator_v2_is_at_least_api_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_aggregator_v2_is_at_least_api_enabled">aggregator_v2_is_at_least_api_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_object_native_derived_address_feature"><a class="header" href="#function-get_object_native_derived_address_feature">Function <code>get_object_native_derived_address_feature</code> <a id="0x1_features_get_object_native_derived_address_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_object_native_derived_address_feature">get_object_native_derived_address_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_object_native_derived_address_feature">get_object_native_derived_address_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-object_native_derived_address_enabled"><a class="header" href="#function-object_native_derived_address_enabled">Function <code>object_native_derived_address_enabled</code> <a id="0x1_features_object_native_derived_address_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_object_native_derived_address_enabled">object_native_derived_address_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_object_native_derived_address_enabled">object_native_derived_address_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_dispatchable_fungible_asset_feature"><a class="header" href="#function-get_dispatchable_fungible_asset_feature">Function <code>get_dispatchable_fungible_asset_feature</code> <a id="0x1_features_get_dispatchable_fungible_asset_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_dispatchable_fungible_asset_feature">get_dispatchable_fungible_asset_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_dispatchable_fungible_asset_feature">get_dispatchable_fungible_asset_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-dispatchable_fungible_asset_enabled"><a class="header" href="#function-dispatchable_fungible_asset_enabled">Function <code>dispatchable_fungible_asset_enabled</code> <a id="0x1_features_dispatchable_fungible_asset_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_dispatchable_fungible_asset_enabled">dispatchable_fungible_asset_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_dispatchable_fungible_asset_enabled">dispatchable_fungible_asset_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_new_accounts_default_to_fa_apt_store_feature"><a class="header" href="#function-get_new_accounts_default_to_fa_apt_store_feature">Function <code>get_new_accounts_default_to_fa_apt_store_feature</code> <a id="0x1_features_get_new_accounts_default_to_fa_apt_store_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_new_accounts_default_to_fa_apt_store_feature">get_new_accounts_default_to_fa_apt_store_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_new_accounts_default_to_fa_apt_store_feature">get_new_accounts_default_to_fa_apt_store_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-new_accounts_default_to_fa_apt_store_enabled"><a class="header" href="#function-new_accounts_default_to_fa_apt_store_enabled">Function <code>new_accounts_default_to_fa_apt_store_enabled</code> <a id="0x1_features_new_accounts_default_to_fa_apt_store_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_new_accounts_default_to_fa_apt_store_enabled">new_accounts_default_to_fa_apt_store_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_new_accounts_default_to_fa_apt_store_enabled">new_accounts_default_to_fa_apt_store_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_operations_default_to_fa_apt_store_feature"><a class="header" href="#function-get_operations_default_to_fa_apt_store_feature">Function <code>get_operations_default_to_fa_apt_store_feature</code> <a id="0x1_features_get_operations_default_to_fa_apt_store_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_operations_default_to_fa_apt_store_feature">get_operations_default_to_fa_apt_store_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_operations_default_to_fa_apt_store_feature">get_operations_default_to_fa_apt_store_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-operations_default_to_fa_apt_store_enabled"><a class="header" href="#function-operations_default_to_fa_apt_store_enabled">Function <code>operations_default_to_fa_apt_store_enabled</code> <a id="0x1_features_operations_default_to_fa_apt_store_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_operations_default_to_fa_apt_store_enabled">operations_default_to_fa_apt_store_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_operations_default_to_fa_apt_store_enabled">operations_default_to_fa_apt_store_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_concurrent_fungible_balance_feature"><a class="header" href="#function-get_concurrent_fungible_balance_feature">Function <code>get_concurrent_fungible_balance_feature</code> <a id="0x1_features_get_concurrent_fungible_balance_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_concurrent_fungible_balance_feature">get_concurrent_fungible_balance_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_concurrent_fungible_balance_feature">get_concurrent_fungible_balance_feature</a>(): u64 {
+    <a href="features.html#0x1_features_CONCURRENT_FUNGIBLE_BALANCE">CONCURRENT_FUNGIBLE_BALANCE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-concurrent_fungible_balance_enabled"><a class="header" href="#function-concurrent_fungible_balance_enabled">Function <code>concurrent_fungible_balance_enabled</code> <a id="0x1_features_concurrent_fungible_balance_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_concurrent_fungible_balance_enabled">concurrent_fungible_balance_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_concurrent_fungible_balance_enabled">concurrent_fungible_balance_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_CONCURRENT_FUNGIBLE_BALANCE">CONCURRENT_FUNGIBLE_BALANCE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_default_to_concurrent_fungible_balance_feature"><a class="header" href="#function-get_default_to_concurrent_fungible_balance_feature">Function <code>get_default_to_concurrent_fungible_balance_feature</code> <a id="0x1_features_get_default_to_concurrent_fungible_balance_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_default_to_concurrent_fungible_balance_feature">get_default_to_concurrent_fungible_balance_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_default_to_concurrent_fungible_balance_feature">get_default_to_concurrent_fungible_balance_feature</a>(): u64 {
+    <a href="features.html#0x1_features_DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE">DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-default_to_concurrent_fungible_balance_enabled"><a class="header" href="#function-default_to_concurrent_fungible_balance_enabled">Function <code>default_to_concurrent_fungible_balance_enabled</code> <a id="0x1_features_default_to_concurrent_fungible_balance_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_default_to_concurrent_fungible_balance_enabled">default_to_concurrent_fungible_balance_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_default_to_concurrent_fungible_balance_enabled">default_to_concurrent_fungible_balance_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE">DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_abort_if_multisig_payload_mismatch_feature"><a class="header" href="#function-get_abort_if_multisig_payload_mismatch_feature">Function <code>get_abort_if_multisig_payload_mismatch_feature</code> <a id="0x1_features_get_abort_if_multisig_payload_mismatch_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_abort_if_multisig_payload_mismatch_feature">get_abort_if_multisig_payload_mismatch_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_abort_if_multisig_payload_mismatch_feature">get_abort_if_multisig_payload_mismatch_feature</a>(): u64 {
+    <a href="features.html#0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH">ABORT_IF_MULTISIG_PAYLOAD_MISMATCH</a>
+}
+</code></pre>
+</details>
+<h2 id="function-abort_if_multisig_payload_mismatch_enabled"><a class="header" href="#function-abort_if_multisig_payload_mismatch_enabled">Function <code>abort_if_multisig_payload_mismatch_enabled</code> <a id="0x1_features_abort_if_multisig_payload_mismatch_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_abort_if_multisig_payload_mismatch_enabled">abort_if_multisig_payload_mismatch_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_abort_if_multisig_payload_mismatch_enabled">abort_if_multisig_payload_mismatch_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH">ABORT_IF_MULTISIG_PAYLOAD_MISMATCH</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_transaction_simulation_enhancement_feature"><a class="header" href="#function-get_transaction_simulation_enhancement_feature">Function <code>get_transaction_simulation_enhancement_feature</code> <a id="0x1_features_get_transaction_simulation_enhancement_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_transaction_simulation_enhancement_feature">get_transaction_simulation_enhancement_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_transaction_simulation_enhancement_feature">get_transaction_simulation_enhancement_feature</a>(): u64 {
+    <a href="features.html#0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT">TRANSACTION_SIMULATION_ENHANCEMENT</a>
+}
+</code></pre>
+</details>
+<h2 id="function-transaction_simulation_enhancement_enabled"><a class="header" href="#function-transaction_simulation_enhancement_enabled">Function <code>transaction_simulation_enhancement_enabled</code> <a id="0x1_features_transaction_simulation_enhancement_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_transaction_simulation_enhancement_enabled">transaction_simulation_enhancement_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_transaction_simulation_enhancement_enabled">transaction_simulation_enhancement_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT">TRANSACTION_SIMULATION_ENHANCEMENT</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_collection_owner_feature"><a class="header" href="#function-get_collection_owner_feature">Function <code>get_collection_owner_feature</code> <a id="0x1_features_get_collection_owner_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_collection_owner_feature">get_collection_owner_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_collection_owner_feature">get_collection_owner_feature</a>(): u64 {
+    <a href="features.html#0x1_features_COLLECTION_OWNER">COLLECTION_OWNER</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_collection_owner_enabled"><a class="header" href="#function-is_collection_owner_enabled">Function <code>is_collection_owner_enabled</code> <a id="0x1_features_is_collection_owner_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_collection_owner_enabled">is_collection_owner_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_collection_owner_enabled">is_collection_owner_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_COLLECTION_OWNER">COLLECTION_OWNER</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_memory_operations_feature"><a class="header" href="#function-get_native_memory_operations_feature">Function <code>get_native_memory_operations_feature</code> <a id="0x1_features_get_native_memory_operations_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_memory_operations_feature">get_native_memory_operations_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_memory_operations_feature">get_native_memory_operations_feature</a>(): u64 {
+    <a href="features.html#0x1_features_NATIVE_MEMORY_OPERATIONS">NATIVE_MEMORY_OPERATIONS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_memory_operations_enabled"><a class="header" href="#function-is_native_memory_operations_enabled">Function <code>is_native_memory_operations_enabled</code> <a id="0x1_features_is_native_memory_operations_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_memory_operations_enabled">is_native_memory_operations_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_memory_operations_enabled">is_native_memory_operations_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_permissioned_signer_feature"><a class="header" href="#function-get_permissioned_signer_feature">Function <code>get_permissioned_signer_feature</code> <a id="0x1_features_get_permissioned_signer_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_permissioned_signer_feature">get_permissioned_signer_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_permissioned_signer_feature">get_permissioned_signer_feature</a>(): u64 {
+    <a href="features.html#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_permissioned_signer_enabled"><a class="header" href="#function-is_permissioned_signer_enabled">Function <code>is_permissioned_signer_enabled</code> <a id="0x1_features_is_permissioned_signer_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_permissioned_signer_enabled">is_permissioned_signer_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_permissioned_signer_enabled">is_permissioned_signer_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_account_abstraction_feature"><a class="header" href="#function-get_account_abstraction_feature">Function <code>get_account_abstraction_feature</code> <a id="0x1_features_get_account_abstraction_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_account_abstraction_feature">get_account_abstraction_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_account_abstraction_feature">get_account_abstraction_feature</a>(): u64 {
+    <a href="features.html#0x1_features_ACCOUNT_ABSTRACTION">ACCOUNT_ABSTRACTION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_account_abstraction_enabled"><a class="header" href="#function-is_account_abstraction_enabled">Function <code>is_account_abstraction_enabled</code> <a id="0x1_features_is_account_abstraction_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_account_abstraction_enabled">is_account_abstraction_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_account_abstraction_enabled">is_account_abstraction_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_ACCOUNT_ABSTRACTION">ACCOUNT_ABSTRACTION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_bulletproofs_batch_feature"><a class="header" href="#function-get_bulletproofs_batch_feature">Function <code>get_bulletproofs_batch_feature</code> <a id="0x1_features_get_bulletproofs_batch_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_bulletproofs_batch_feature">get_bulletproofs_batch_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_bulletproofs_batch_feature">get_bulletproofs_batch_feature</a>(): u64 {
+    <a href="features.html#0x1_features_BULLETPROOFS_BATCH_NATIVES">BULLETPROOFS_BATCH_NATIVES</a>
+}
+</code></pre>
+</details>
+<h2 id="function-bulletproofs_batch_enabled"><a class="header" href="#function-bulletproofs_batch_enabled">Function <code>bulletproofs_batch_enabled</code> <a id="0x1_features_bulletproofs_batch_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_bulletproofs_batch_enabled">bulletproofs_batch_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_bulletproofs_batch_enabled">bulletproofs_batch_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_BULLETPROOFS_BATCH_NATIVES">BULLETPROOFS_BATCH_NATIVES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-is_derivable_account_abstraction_enabled"><a class="header" href="#function-is_derivable_account_abstraction_enabled">Function <code>is_derivable_account_abstraction_enabled</code> <a id="0x1_features_is_derivable_account_abstraction_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_derivable_account_abstraction_enabled">is_derivable_account_abstraction_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_derivable_account_abstraction_enabled">is_derivable_account_abstraction_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_DERIVABLE_ACCOUNT_ABSTRACTION">DERIVABLE_ACCOUNT_ABSTRACTION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-is_domain_account_abstraction_enabled"><a class="header" href="#function-is_domain_account_abstraction_enabled">Function <code>is_domain_account_abstraction_enabled</code> <a id="0x1_features_is_domain_account_abstraction_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_domain_account_abstraction_enabled">is_domain_account_abstraction_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_domain_account_abstraction_enabled">is_domain_account_abstraction_enabled</a>(): bool {
+    <b>false</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_new_accounts_default_to_fa_store_feature"><a class="header" href="#function-get_new_accounts_default_to_fa_store_feature">Function <code>get_new_accounts_default_to_fa_store_feature</code> <a id="0x1_features_get_new_accounts_default_to_fa_store_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_new_accounts_default_to_fa_store_feature">get_new_accounts_default_to_fa_store_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_new_accounts_default_to_fa_store_feature">get_new_accounts_default_to_fa_store_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-new_accounts_default_to_fa_store_enabled"><a class="header" href="#function-new_accounts_default_to_fa_store_enabled">Function <code>new_accounts_default_to_fa_store_enabled</code> <a id="0x1_features_new_accounts_default_to_fa_store_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_new_accounts_default_to_fa_store_enabled">new_accounts_default_to_fa_store_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_new_accounts_default_to_fa_store_enabled">new_accounts_default_to_fa_store_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_default_account_resource_feature"><a class="header" href="#function-get_default_account_resource_feature">Function <code>get_default_account_resource_feature</code> <a id="0x1_features_get_default_account_resource_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_default_account_resource_feature">get_default_account_resource_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_default_account_resource_feature">get_default_account_resource_feature</a>(): u64 {
+    <a href="features.html#0x1_features_DEFAULT_ACCOUNT_RESOURCE">DEFAULT_ACCOUNT_RESOURCE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_default_account_resource_enabled"><a class="header" href="#function-is_default_account_resource_enabled">Function <code>is_default_account_resource_enabled</code> <a id="0x1_features_is_default_account_resource_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_default_account_resource_enabled">is_default_account_resource_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_default_account_resource_enabled">is_default_account_resource_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_DEFAULT_ACCOUNT_RESOURCE">DEFAULT_ACCOUNT_RESOURCE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_jwk_consensus_per_key_mode_feature"><a class="header" href="#function-get_jwk_consensus_per_key_mode_feature">Function <code>get_jwk_consensus_per_key_mode_feature</code> <a id="0x1_features_get_jwk_consensus_per_key_mode_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_jwk_consensus_per_key_mode_feature">get_jwk_consensus_per_key_mode_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_jwk_consensus_per_key_mode_feature">get_jwk_consensus_per_key_mode_feature</a>(): u64 {
+    <a href="features.html#0x1_features_JWK_CONSENSUS_PER_KEY_MODE">JWK_CONSENSUS_PER_KEY_MODE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_jwk_consensus_per_key_mode_enabled"><a class="header" href="#function-is_jwk_consensus_per_key_mode_enabled">Function <code>is_jwk_consensus_per_key_mode_enabled</code> <a id="0x1_features_is_jwk_consensus_per_key_mode_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_jwk_consensus_per_key_mode_enabled">is_jwk_consensus_per_key_mode_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_jwk_consensus_per_key_mode_enabled">is_jwk_consensus_per_key_mode_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_JWK_CONSENSUS_PER_KEY_MODE">JWK_CONSENSUS_PER_KEY_MODE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_orderless_transactions_feature"><a class="header" href="#function-get_orderless_transactions_feature">Function <code>get_orderless_transactions_feature</code> <a id="0x1_features_get_orderless_transactions_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_orderless_transactions_feature">get_orderless_transactions_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_orderless_transactions_feature">get_orderless_transactions_feature</a>(): u64 {
+    <a href="features.html#0x1_features_ORDERLESS_TRANSACTIONS">ORDERLESS_TRANSACTIONS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-orderless_transactions_enabled"><a class="header" href="#function-orderless_transactions_enabled">Function <code>orderless_transactions_enabled</code> <a id="0x1_features_orderless_transactions_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_orderless_transactions_enabled">orderless_transactions_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_orderless_transactions_enabled">orderless_transactions_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_ORDERLESS_TRANSACTIONS">ORDERLESS_TRANSACTIONS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_calculate_transaction_fee_for_distribution_feature"><a class="header" href="#function-get_calculate_transaction_fee_for_distribution_feature">Function <code>get_calculate_transaction_fee_for_distribution_feature</code> <a id="0x1_features_get_calculate_transaction_fee_for_distribution_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_calculate_transaction_fee_for_distribution_feature">get_calculate_transaction_fee_for_distribution_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_calculate_transaction_fee_for_distribution_feature">get_calculate_transaction_fee_for_distribution_feature</a>(): u64 {
+    <a href="features.html#0x1_features_CALCULATE_TRANSACTION_FEE_FOR_DISTRIBUTION">CALCULATE_TRANSACTION_FEE_FOR_DISTRIBUTION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_calculate_transaction_fee_for_distribution_enabled"><a class="header" href="#function-is_calculate_transaction_fee_for_distribution_enabled">Function <code>is_calculate_transaction_fee_for_distribution_enabled</code> <a id="0x1_features_is_calculate_transaction_fee_for_distribution_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_calculate_transaction_fee_for_distribution_enabled">is_calculate_transaction_fee_for_distribution_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_calculate_transaction_fee_for_distribution_enabled">is_calculate_transaction_fee_for_distribution_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_CALCULATE_TRANSACTION_FEE_FOR_DISTRIBUTION">CALCULATE_TRANSACTION_FEE_FOR_DISTRIBUTION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_distribute_transaction_fee_feature"><a class="header" href="#function-get_distribute_transaction_fee_feature">Function <code>get_distribute_transaction_fee_feature</code> <a id="0x1_features_get_distribute_transaction_fee_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_distribute_transaction_fee_feature">get_distribute_transaction_fee_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_distribute_transaction_fee_feature">get_distribute_transaction_fee_feature</a>(): u64 {
+    <a href="features.html#0x1_features_DISTRIBUTE_TRANSACTION_FEE">DISTRIBUTE_TRANSACTION_FEE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_distribute_transaction_fee_enabled"><a class="header" href="#function-is_distribute_transaction_fee_enabled">Function <code>is_distribute_transaction_fee_enabled</code> <a id="0x1_features_is_distribute_transaction_fee_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_distribute_transaction_fee_enabled">is_distribute_transaction_fee_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_distribute_transaction_fee_enabled">is_distribute_transaction_fee_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_DISTRIBUTE_TRANSACTION_FEE">DISTRIBUTE_TRANSACTION_FEE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_monotonically_increasing_counter_feature"><a class="header" href="#function-get_monotonically_increasing_counter_feature">Function <code>get_monotonically_increasing_counter_feature</code> <a id="0x1_features_get_monotonically_increasing_counter_feature"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_monotonically_increasing_counter_feature">get_monotonically_increasing_counter_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_monotonically_increasing_counter_feature">get_monotonically_increasing_counter_feature</a>(): u64 {
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-is_monotonically_increasing_counter_enabled"><a class="header" href="#function-is_monotonically_increasing_counter_enabled">Function <code>is_monotonically_increasing_counter_enabled</code> <a id="0x1_features_is_monotonically_increasing_counter_enabled"></a></a></h2>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_monotonically_increasing_counter_enabled">is_monotonically_increasing_counter_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_monotonically_increasing_counter_enabled">is_monotonically_increasing_counter_enabled</a>(): bool {
+    <b>true</b>
+}
+</code></pre>
+</details>
+<h2 id="function-get_function_reflection_feature"><a class="header" href="#function-get_function_reflection_feature">Function <code>get_function_reflection_feature</code> <a id="0x1_features_get_function_reflection_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_function_reflection_feature">get_function_reflection_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_function_reflection_feature">get_function_reflection_feature</a>(): u64 {
+    <a href="features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_function_reflection_enabled"><a class="header" href="#function-is_function_reflection_enabled">Function <code>is_function_reflection_enabled</code> <a id="0x1_features_is_function_reflection_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_function_reflection_enabled">is_function_reflection_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_function_reflection_enabled">is_function_reflection_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_slh_dsa_sha2_128s_signature_feature"><a class="header" href="#function-get_slh_dsa_sha2_128s_signature_feature">Function <code>get_slh_dsa_sha2_128s_signature_feature</code> <a id="0x1_features_get_slh_dsa_sha2_128s_signature_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_slh_dsa_sha2_128s_signature_feature">get_slh_dsa_sha2_128s_signature_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_slh_dsa_sha2_128s_signature_feature">get_slh_dsa_sha2_128s_signature_feature</a>(): u64 {
+    <a href="features.html#0x1_features_SLH_DSA_SHA2_128S_SIGNATURE">SLH_DSA_SHA2_128S_SIGNATURE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-slh_dsa_sha2_128s_signature_enabled"><a class="header" href="#function-slh_dsa_sha2_128s_signature_enabled">Function <code>slh_dsa_sha2_128s_signature_enabled</code> <a id="0x1_features_slh_dsa_sha2_128s_signature_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_slh_dsa_sha2_128s_signature_enabled">slh_dsa_sha2_128s_signature_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_slh_dsa_sha2_128s_signature_enabled">slh_dsa_sha2_128s_signature_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_SLH_DSA_SHA2_128S_SIGNATURE">SLH_DSA_SHA2_128S_SIGNATURE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_encrypted_transactions_feature"><a class="header" href="#function-get_encrypted_transactions_feature">Function <code>get_encrypted_transactions_feature</code> <a id="0x1_features_get_encrypted_transactions_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_encrypted_transactions_feature">get_encrypted_transactions_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_encrypted_transactions_feature">get_encrypted_transactions_feature</a>(): u64 {
+    <a href="features.html#0x1_features_ENCRYPTED_TRANSACTIONS">ENCRYPTED_TRANSACTIONS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_encrypted_transactions_enabled"><a class="header" href="#function-is_encrypted_transactions_enabled">Function <code>is_encrypted_transactions_enabled</code> <a id="0x1_features_is_encrypted_transactions_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_encrypted_transactions_enabled">is_encrypted_transactions_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_encrypted_transactions_enabled">is_encrypted_transactions_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_ENCRYPTED_TRANSACTIONS">ENCRYPTED_TRANSACTIONS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_transaction_limits_feature"><a class="header" href="#function-get_transaction_limits_feature">Function <code>get_transaction_limits_feature</code> <a id="0x1_features_get_transaction_limits_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_transaction_limits_feature">get_transaction_limits_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_transaction_limits_feature">get_transaction_limits_feature</a>(): u64 {
+    <a href="features.html#0x1_features_TRANSACTION_LIMITS">TRANSACTION_LIMITS</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_transaction_limits_enabled"><a class="header" href="#function-is_transaction_limits_enabled">Function <code>is_transaction_limits_enabled</code> <a id="0x1_features_is_transaction_limits_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_transaction_limits_enabled">is_transaction_limits_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_transaction_limits_enabled">is_transaction_limits_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_TRANSACTION_LIMITS">TRANSACTION_LIMITS</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-is_storage_slot_natives_enabled"><a class="header" href="#function-is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code> <a id="0x1_features_is_storage_slot_natives_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_storage_slot_natives_enabled">is_storage_slot_natives_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_storage_slot_natives_enabled">is_storage_slot_natives_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-change_feature_flags"><a class="header" href="#function-change_feature_flags">Function <code>change_feature_flags</code> <a id="0x1_features_change_feature_flags"></a></a></h2>
+<p>Deprecated to prevent validator set changes during DKG.</p>
+<p>Genesis/tests should use <code><a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>()</code> for feature vec initialization.</p>
+<p>Governance proposals should use <code><a href="features.html#0x1_features_change_feature_flags_for_next_epoch">change_feature_flags_for_next_epoch</a>()</code> to enable/disable features.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_change_feature_flags">change_feature_flags</a>(_framework: &<a href="signer.html#0x1_signer">signer</a>, _enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, _disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_change_feature_flags">change_feature_flags</a>(
+    _framework: &<a href="signer.html#0x1_signer">signer</a>, _enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, _disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;
+) {
+    <b>abort</b>(<a href="error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="features.html#0x1_features_EAPI_DISABLED">EAPI_DISABLED</a>))
+}
+</code></pre>
+</details>
+<h2 id="function-change_feature_flags_internal"><a class="header" href="#function-change_feature_flags_internal">Function <code>change_feature_flags_internal</code> <a id="0x1_features_change_feature_flags_internal"></a></a></h2>
+<p>Update feature flags directly. Only used in genesis/tests.</p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>(framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>(
+    framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;
+) {
+    <b>assert</b>!(
+        <a href="signer.html#0x1_signer_address_of">signer::address_of</a>(framework) == @std,
+        <a href="error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="features.html#0x1_features_EFRAMEWORK_SIGNER_NEEDED">EFRAMEWORK_SIGNER_NEEDED</a>)
+    );
+    <b>if</b> (!<b>exists</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(@std)) {
+        <b>move_to</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(framework, <a href="features.html#0x1_features_Features">Features</a> { <a href="features.html#0x1_features">features</a>: <a href="vector.html#0x1_vector">vector</a>[] })
+    };
+    <b>let</b> <a href="features.html#0x1_features">features</a> = &<b>mut</b> <a href="features.html#0x1_features_Features">Features</a>[@std].<a href="features.html#0x1_features">features</a>;
+    enable.for_each_ref(|feature| {
+        <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>, *feature, <b>true</b>);
+    });
+    disable.for_each_ref(|feature| {
+        <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>, *feature, <b>false</b>);
+    });
+}
+</code></pre>
+</details>
+<h2 id="function-change_feature_flags_for_next_epoch"><a class="header" href="#function-change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code> <a id="0x1_features_change_feature_flags_for_next_epoch"></a></a></h2>
+<p>Enable and disable features for the next epoch.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_change_feature_flags_for_next_epoch">change_feature_flags_for_next_epoch</a>(framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_change_feature_flags_for_next_epoch">change_feature_flags_for_next_epoch</a>(
+    framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;
+) <b>acquires</b> <a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a>, <a href="features.html#0x1_features_Features">Features</a> {
+    <b>assert</b>!(
+        <a href="signer.html#0x1_signer_address_of">signer::address_of</a>(framework) == @std,
+        <a href="error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="features.html#0x1_features_EFRAMEWORK_SIGNER_NEEDED">EFRAMEWORK_SIGNER_NEEDED</a>)
+    );
+
+    // Figure out the baseline feature vec that the diff will be applied <b>to</b>.
+    <b>let</b> new_feature_vec =
+        <b>if</b> (<b>exists</b>&lt;<a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a>&gt;(@std)) {
+            // If there is a buffered feature vec, <b>use</b> it <b>as</b> the baseline.
+            <b>let</b> <a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a> { <a href="features.html#0x1_features">features</a> } = <b>move_from</b>&lt;<a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a>&gt;(@std);
+            <a href="features.html#0x1_features">features</a>
+        } <b>else</b> <b>if</b> (<b>exists</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(@std)) {
+            // Otherwise, <b>use</b> the currently effective feature flag vec <b>as</b> the baseline, <b>if</b> it <b>exists</b>.
+            <a href="features.html#0x1_features_Features">Features</a>[@std].<a href="features.html#0x1_features">features</a>
+        } <b>else</b> {
+            // Otherwise, <b>use</b> an empty feature vec.
+            <a href="vector.html#0x1_vector">vector</a>[]
+        };
+
+    // Apply the diff and save it <b>to</b> the buffer.
+    <a href="features.html#0x1_features_apply_diff">apply_diff</a>(&<b>mut</b> new_feature_vec, enable, disable);
+    <b>move_to</b>(framework, <a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a> { <a href="features.html#0x1_features">features</a>: new_feature_vec });
+}
+</code></pre>
+</details>
+<h2 id="function-on_new_epoch"><a class="header" href="#function-on_new_epoch">Function <code>on_new_epoch</code> <a id="0x1_features_on_new_epoch"></a></a></h2>
+<p>Apply all the pending feature flag changes. Should only be used at the end of a reconfiguration with DKG.</p>
+<p>While the scope is public, it can only be usd in system transactions like <code>block_prologue</code> and governance proposals,
+who have permission to set the flag that's checked in <code>extract()</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_on_new_epoch">on_new_epoch</a>(framework: &<a href="signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_on_new_epoch">on_new_epoch</a>(framework: &<a href="signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="features.html#0x1_features_Features">Features</a>, <a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a> {
+    <a href="features.html#0x1_features_ensure_framework_signer">ensure_framework_signer</a>(framework);
+    <b>if</b> (<b>exists</b>&lt;<a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a>&gt;(@std)) {
+        <b>let</b> <a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a> { <a href="features.html#0x1_features">features</a> } = <b>move_from</b>&lt;<a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a>&gt;(@std);
+        <b>if</b> (<b>exists</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(@std)) {
+            <a href="features.html#0x1_features_Features">Features</a>[@std].<a href="features.html#0x1_features">features</a> = <a href="features.html#0x1_features">features</a>;
+        } <b>else</b> {
+            <b>move_to</b>(framework, <a href="features.html#0x1_features_Features">Features</a> { <a href="features.html#0x1_features">features</a> })
+        }
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-is_enabled"><a class="header" href="#function-is_enabled">Function <code>is_enabled</code> <a id="0x1_features_is_enabled"></a></a></h2>
+<p>Check whether the feature is enabled.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_enabled">is_enabled</a>(feature: u64): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_enabled">is_enabled</a>(feature: u64): bool {
+    <b>exists</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(@std) && <a href="features.html#0x1_features_contains">contains</a>(&<a href="features.html#0x1_features_Features">Features</a>[@std].<a href="features.html#0x1_features">features</a>, feature)
+}
+</code></pre>
+</details>
+<h2 id="function-set"><a class="header" href="#function-set">Function <code>set</code> <a id="0x1_features_set"></a></a></h2>
+<p>Helper to include or exclude a feature flag.</p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>: &<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, feature: u64, <b>include</b>: bool)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>: &<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, feature: u64, <b>include</b>: bool) {
+    <b>let</b> byte_index = feature / 8;
+    <b>let</b> bit_mask = 1 &lt;&lt; ((feature % 8) <b>as</b> u8);
+    <b>while</b> (<a href="features.html#0x1_features">features</a>.length() &lt;= byte_index) { <a href="features.html#0x1_features">features</a>.push_back(0) };
+
+    <b>if</b> (<b>include</b>) <a href="features.html#0x1_features">features</a>[byte_index] |= bit_mask
+    <b>else</b> <a href="features.html#0x1_features">features</a>[byte_index] &=(0xff ^ bit_mask)
+}
+</code></pre>
+</details>
+<h2 id="function-contains"><a class="header" href="#function-contains">Function <code>contains</code> <a id="0x1_features_contains"></a></a></h2>
+<p>Helper to check whether a feature flag is enabled.</p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_contains">contains</a>(<a href="features.html#0x1_features">features</a>: &<a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, feature: u64): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_contains">contains</a>(<a href="features.html#0x1_features">features</a>: &<a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, feature: u64): bool {
+    <b>let</b> byte_index = feature / 8;
+    <b>let</b> bit_mask = 1 &lt;&lt; ((feature % 8) <b>as</b> u8);
+    byte_index &lt; <a href="features.html#0x1_features">features</a>.length() && (<a href="features.html#0x1_features">features</a>[byte_index] & bit_mask) != 0
+}
+</code></pre>
+</details>
+<h2 id="function-apply_diff"><a class="header" href="#function-apply_diff">Function <code>apply_diff</code> <a id="0x1_features_apply_diff"></a></a></h2>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_apply_diff">apply_diff</a>(<a href="features.html#0x1_features">features</a>: &<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_apply_diff">apply_diff</a>(
+    <a href="features.html#0x1_features">features</a>: &<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;
+) {
+    enable.for_each(|feature| {
+        <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>, feature, <b>true</b>);
+    });
+    disable.for_each(|feature| {
+        <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>, feature, <b>false</b>);
+    });
+}
+</code></pre>
+</details>
+<h2 id="function-ensure_framework_signer"><a class="header" href="#function-ensure_framework_signer">Function <code>ensure_framework_signer</code> <a id="0x1_features_ensure_framework_signer"></a></a></h2>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_ensure_framework_signer">ensure_framework_signer</a>(account: &<a href="signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_ensure_framework_signer">ensure_framework_signer</a>(account: &<a href="signer.html#0x1_signer">signer</a>) {
+    <b>let</b> addr = <a href="signer.html#0x1_signer_address_of">signer::address_of</a>(account);
+    <b>assert</b>!(addr == @std, <a href="error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="features.html#0x1_features_EFRAMEWORK_SIGNER_NEEDED">EFRAMEWORK_SIGNER_NEEDED</a>));
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="resource-features-1"><a class="header" href="#resource-features-1">Resource <code>Features</code> <a id="@Specification_1_Features"></a></a></h3>
+<pre><code><b>struct</b> <a href="features.html#0x1_features_Features">Features</a> <b>has</b> key
+</code></pre>
+<dl>
+<dt>
+<code><a href="features.html#0x1_features">features</a>: <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code><b>pragma</b> bv = b"0";
+</code></pre>
+<h3 id="resource-pendingfeatures-1"><a class="header" href="#resource-pendingfeatures-1">Resource <code>PendingFeatures</code> <a id="@Specification_1_PendingFeatures"></a></a></h3>
+<pre><code><b>struct</b> <a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a> <b>has</b> key
+</code></pre>
+<dl>
+<dt>
+<code><a href="features.html#0x1_features">features</a>: <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code><b>pragma</b> bv = b"0";
+</code></pre>
+<h3 id="function-periodical_reward_rate_decrease_enabled-1"><a class="header" href="#function-periodical_reward_rate_decrease_enabled-1">Function <code>periodical_reward_rate_decrease_enabled</code> <a id="@Specification_1_periodical_reward_rate_decrease_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_periodical_reward_rate_decrease_enabled">periodical_reward_rate_decrease_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">spec_periodical_reward_rate_decrease_enabled</a>();
+</code></pre>
+<p><a id="0x1_features_spec_partial_governance_voting_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_partial_governance_voting_enabled">spec_partial_governance_voting_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_PARTIAL_GOVERNANCE_VOTING">PARTIAL_GOVERNANCE_VOTING</a>)
+}
+</code></pre>
+<h3 id="function-partial_governance_voting_enabled-1"><a class="header" href="#function-partial_governance_voting_enabled-1">Function <code>partial_governance_voting_enabled</code> <a id="@Specification_1_partial_governance_voting_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_partial_governance_voting_enabled">partial_governance_voting_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_partial_governance_voting_enabled">spec_partial_governance_voting_enabled</a>();
+</code></pre>
+<h3 id="function-module_event_enabled-1"><a class="header" href="#function-module_event_enabled-1">Function <code>module_event_enabled</code> <a id="@Specification_1_module_event_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_module_event_enabled">module_event_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_module_event_enabled">spec_module_event_enabled</a>();
+</code></pre>
+<p><a id="0x1_features_spec_abort_if_multisig_payload_mismatch_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_abort_if_multisig_payload_mismatch_enabled">spec_abort_if_multisig_payload_mismatch_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH">ABORT_IF_MULTISIG_PAYLOAD_MISMATCH</a>)
+}
+</code></pre>
+<p><a id="0x1_features_spec_new_accounts_default_to_fa_store_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_new_accounts_default_to_fa_store_enabled">spec_new_accounts_default_to_fa_store_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_STORE</a>)
+}
+</code></pre>
+<p><a id="0x1_features_spec_simulation_enhancement_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_simulation_enhancement_enabled">spec_simulation_enhancement_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT">TRANSACTION_SIMULATION_ENHANCEMENT</a>)
+}
+</code></pre>
+<h3 id="function-abort_if_multisig_payload_mismatch_enabled-1"><a class="header" href="#function-abort_if_multisig_payload_mismatch_enabled-1">Function <code>abort_if_multisig_payload_mismatch_enabled</code> <a id="@Specification_1_abort_if_multisig_payload_mismatch_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_abort_if_multisig_payload_mismatch_enabled">abort_if_multisig_payload_mismatch_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_abort_if_multisig_payload_mismatch_enabled">spec_abort_if_multisig_payload_mismatch_enabled</a>();
+</code></pre>
+<h3 id="function-is_default_account_resource_enabled-1"><a class="header" href="#function-is_default_account_resource_enabled-1">Function <code>is_default_account_resource_enabled</code> <a id="@Specification_1_is_default_account_resource_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_default_account_resource_enabled">is_default_account_resource_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_DEFAULT_ACCOUNT_RESOURCE">DEFAULT_ACCOUNT_RESOURCE</a>);
+</code></pre>
+<h3 id="function-is_storage_slot_natives_enabled-1"><a class="header" href="#function-is_storage_slot_natives_enabled-1">Function <code>is_storage_slot_natives_enabled</code> <a id="@Specification_1_is_storage_slot_natives_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_storage_slot_natives_enabled">is_storage_slot_natives_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>);
+</code></pre>
+<h3 id="function-change_feature_flags_internal-1"><a class="header" href="#function-change_feature_flags_internal-1">Function <code>change_feature_flags_internal</code> <a id="@Specification_1_change_feature_flags_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>(framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(@std);
+<b>aborts_if</b> <a href="signer.html#0x1_signer_address_of">signer::address_of</a>(framework) != @std;
+</code></pre>
+<h3 id="function-change_feature_flags_for_next_epoch-1"><a class="header" href="#function-change_feature_flags_for_next_epoch-1">Function <code>change_feature_flags_for_next_epoch</code> <a id="@Specification_1_change_feature_flags_for_next_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_change_feature_flags_for_next_epoch">change_feature_flags_for_next_epoch</a>(framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>aborts_if</b> <a href="signer.html#0x1_signer_address_of">signer::address_of</a>(framework) != @std;
+<b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(@std);
+<b>modifies</b> <b>global</b>&lt;<a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a>&gt;(@std);
+</code></pre>
+<p><a id="0x1_features_spec_contains"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_contains">spec_contains</a>(<a href="features.html#0x1_features">features</a>: <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, feature: u64): bool {
+   ((int2bv(
+       (((1 <b>as</b> u8) &lt;&lt; ((feature % (8 <b>as</b> u64)) <b>as</b> u64)) <b>as</b> u8)
+   ) <b>as</b> u8) & <a href="features.html#0x1_features">features</a>[feature / 8] <b>as</b> u8) &gt; (0 <b>as</b> u8)
+       && (feature / 8) &lt; len(<a href="features.html#0x1_features">features</a>)
+}
+</code></pre>
+<h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_on_new_epoch">on_new_epoch</a>(framework: &<a href="signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>requires</b> @std == <a href="signer.html#0x1_signer_address_of">signer::address_of</a>(framework);
+<b>let</b> features_pending = <b>global</b>&lt;<a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a>&gt;(@std).<a href="features.html#0x1_features">features</a>;
+<b>let</b> <b>post</b> features_std = <b>global</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(@std).<a href="features.html#0x1_features">features</a>;
+<b>ensures</b> <b>exists</b>&lt;<a href="features.html#0x1_features_PendingFeatures">PendingFeatures</a>&gt;(@std) ==&gt; features_std == features_pending;
+<b>aborts_if</b> <b>false</b>;
+</code></pre>
+<p><a id="0x1_features_spec_sha_512_and_ripemd_160_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_sha_512_and_ripemd_160_enabled">spec_sha_512_and_ripemd_160_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_SHA_512_AND_RIPEMD_160_NATIVES">SHA_512_AND_RIPEMD_160_NATIVES</a>)
+}
+</code></pre>
+<h3 id="function-is_enabled-1"><a class="header" href="#function-is_enabled-1">Function <code>is_enabled</code> <a id="@Specification_1_is_enabled"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_enabled">is_enabled</a>(feature: u64): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(feature);
+</code></pre>
+<p><a id="0x1_features_spec_is_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(feature: u64): bool;
+</code></pre>
+<p><a id="0x1_features_spec_periodical_reward_rate_decrease_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">spec_periodical_reward_rate_decrease_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_PERIODICAL_REWARD_RATE_DECREASE">PERIODICAL_REWARD_RATE_DECREASE</a>)
+}
+</code></pre>
+<p><a id="0x1_features_spec_fee_payer_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_fee_payer_enabled">spec_fee_payer_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_FEE_PAYER_ENABLED">FEE_PAYER_ENABLED</a>)
+}
+</code></pre>
+<p><a id="0x1_features_spec_module_event_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_module_event_enabled">spec_module_event_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_MODULE_EVENT">MODULE_EVENT</a>)
+}
+</code></pre>
+<h3 id="function-set-1"><a class="header" href="#function-set-1">Function <code>set</code> <a id="@Specification_1_set"></a></a></h3>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>: &<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, feature: u64, <b>include</b>: bool)
+</code></pre>
+<pre><code><b>pragma</b> bv = b"0";
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> feature / 8 &lt; len(<a href="features.html#0x1_features">features</a>);
+<b>ensures</b> <b>include</b> == <a href="features.html#0x1_features_spec_contains">spec_contains</a>(<a href="features.html#0x1_features">features</a>, feature);
+</code></pre>
+<h3 id="function-contains-1"><a class="header" href="#function-contains-1">Function <code>contains</code> <a id="@Specification_1_contains"></a></a></h3>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_contains">contains</a>(<a href="features.html#0x1_features">features</a>: &<a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, feature: u64): bool
+</code></pre>
+<pre><code><b>pragma</b> bv = b"0";
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="features.html#0x1_features_spec_contains">spec_contains</a>(<a href="features.html#0x1_features">features</a>, feature);
+</code></pre>
+<h3 id="function-apply_diff-1"><a class="header" href="#function-apply_diff-1">Function <code>apply_diff</code> <a id="@Specification_1_apply_diff"></a></a></h3>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_apply_diff">apply_diff</a>(<a href="features.html#0x1_features">features</a>: &<b>mut</b> <a href="vector.html#0x1_vector">vector</a>&lt;u8&gt;, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] <b>forall</b> i in disable: !<a href="features.html#0x1_features_spec_contains">spec_contains</a>(<a href="features.html#0x1_features">features</a>, i);
+<b>ensures</b> [abstract] <b>forall</b> i in enable: !<a href="vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(disable, i)
+    ==&gt; <a href="features.html#0x1_features_spec_contains">spec_contains</a>(<a href="features.html#0x1_features">features</a>, i);
+<b>pragma</b> opaque;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../move-stdlib/error.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../move-stdlib/fixed_point32.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../move-stdlib/error.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../move-stdlib/fixed_point32.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>
