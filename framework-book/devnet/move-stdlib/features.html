@@ -326,6 +326,8 @@ return true.</p>
 <li><a href="#0x1_features_get_transaction_limits_feature">Function <code>get_transaction_limits_feature</code></a></li>
 <li><a href="#0x1_features_is_transaction_limits_enabled">Function <code>is_transaction_limits_enabled</code></a></li>
 <li><a href="#0x1_features_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
+<li><a href="#0x1_features_get_multisig_timelock_feature">Function <code>get_multisig_timelock_feature</code></a></li>
+<li><a href="#0x1_features_is_multisig_timelock_enabled">Function <code>is_multisig_timelock_enabled</code></a></li>
 <li><a href="#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -345,6 +347,7 @@ return true.</p>
 <li><a href="#@Specification_1_abort_if_multisig_payload_mismatch_enabled">Function <code>abort_if_multisig_payload_mismatch_enabled</code></a></li>
 <li><a href="#@Specification_1_is_default_account_resource_enabled">Function <code>is_default_account_resource_enabled</code></a></li>
 <li><a href="#@Specification_1_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
+<li><a href="#@Specification_1_is_multisig_timelock_enabled">Function <code>is_multisig_timelock_enabled</code></a></li>
 <li><a href="#@Specification_1_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="#@Specification_1_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
@@ -599,6 +602,10 @@ in JWK Consensus messages, in validator transactions, and in Move.</li>
 <p><a id="0x1_features_MULTISIG_ACCOUNTS"></a></p>
 <p>Whether multisig accounts (different from accounts with multi-ed25519 auth keys) are enabled.</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_MULTISIG_ACCOUNTS">MULTISIG_ACCOUNTS</a>: u64 = 10;
+</code></pre>
+<p><a id="0x1_features_MULTISIG_TIMELOCK"></a></p>
+<p>Whether the multisig timelock feature is enabled.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>: u64 = 115;
 </code></pre>
 <p><a id="0x1_features_MULTISIG_V2_ENHANCEMENT"></a></p>
 <p>Whether the Multisig V2 enhancement feature is enabled.</p>
@@ -2085,6 +2092,26 @@ Lifetime: transient</p>
 }
 </code></pre>
 </details>
+<h2 id="function-get_multisig_timelock_feature"><a class="header" href="#function-get_multisig_timelock_feature">Function <code>get_multisig_timelock_feature</code> <a id="0x1_features_get_multisig_timelock_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_timelock_feature">get_multisig_timelock_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_timelock_feature">get_multisig_timelock_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_multisig_timelock_enabled"><a class="header" href="#function-is_multisig_timelock_enabled">Function <code>is_multisig_timelock_enabled</code> <a id="0x1_features_is_multisig_timelock_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_timelock_enabled">is_multisig_timelock_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_timelock_enabled">is_multisig_timelock_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>)
+}
+</code></pre>
+</details>
 <h2 id="function-change_feature_flags"><a class="header" href="#function-change_feature_flags">Function <code>change_feature_flags</code> <a id="0x1_features_change_feature_flags"></a></a></h2>
 <p>Deprecated to prevent validator set changes during DKG.</p>
 <p>Genesis/tests should use <code><a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>()</code> for feature vec initialization.</p>
@@ -2306,14 +2333,9 @@ who have permission to set the flag that's checked in <code>extract()</code>.</p
    <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH">ABORT_IF_MULTISIG_PAYLOAD_MISMATCH</a>)
 }
 </code></pre>
-<p><a id="0x1_features_spec_new_accounts_default_to_fa_store_enabled"></a></p>
-<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_new_accounts_default_to_fa_store_enabled">spec_new_accounts_default_to_fa_store_enabled</a>(): bool {
-   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_STORE</a>)
-}
-</code></pre>
-<p><a id="0x1_features_spec_simulation_enhancement_enabled"></a></p>
-<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_simulation_enhancement_enabled">spec_simulation_enhancement_enabled</a>(): bool {
-   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT">TRANSACTION_SIMULATION_ENHANCEMENT</a>)
+<p><a id="0x1_features_spec_multisig_timelock_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_multisig_timelock_enabled">spec_multisig_timelock_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>)
 }
 </code></pre>
 <h3 id="function-abort_if_multisig_payload_mismatch_enabled-1"><a class="header" href="#function-abort_if_multisig_payload_mismatch_enabled-1">Function <code>abort_if_multisig_payload_mismatch_enabled</code> <a id="@Specification_1_abort_if_multisig_payload_mismatch_enabled"></a></a></h3>
@@ -2336,6 +2358,23 @@ who have permission to set the flag that's checked in <code>extract()</code>.</p
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>);
+</code></pre>
+<h3 id="function-is_multisig_timelock_enabled-1"><a class="header" href="#function-is_multisig_timelock_enabled-1">Function <code>is_multisig_timelock_enabled</code> <a id="@Specification_1_is_multisig_timelock_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_timelock_enabled">is_multisig_timelock_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_multisig_timelock_enabled">spec_multisig_timelock_enabled</a>();
+</code></pre>
+<p><a id="0x1_features_spec_new_accounts_default_to_fa_store_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_new_accounts_default_to_fa_store_enabled">spec_new_accounts_default_to_fa_store_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_STORE</a>)
+}
+</code></pre>
+<p><a id="0x1_features_spec_simulation_enhancement_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_simulation_enhancement_enabled">spec_simulation_enhancement_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT">TRANSACTION_SIMULATION_ENHANCEMENT</a>)
+}
 </code></pre>
 <h3 id="function-change_feature_flags_internal-1"><a class="header" href="#function-change_feature_flags_internal-1">Function <code>change_feature_flags_internal</code> <a id="@Specification_1_change_feature_flags_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>(framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)

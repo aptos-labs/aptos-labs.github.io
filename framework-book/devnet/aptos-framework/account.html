@@ -175,6 +175,7 @@
 <li><a href="#0x1_account_RotationCapability">Struct <code>RotationCapability</code></a></li>
 <li><a href="#0x1_account_SignerCapability">Struct <code>SignerCapability</code></a></li>
 <li><a href="#0x1_account_OriginatingAddress">Resource <code>OriginatingAddress</code></a></li>
+<li><a href="#0x1_account_EncryptedDK">Enum Resource <code>EncryptedDK</code></a></li>
 <li><a href="#0x1_account_RotationProofChallenge">Struct <code>RotationProofChallenge</code></a></li>
 <li><a href="#0x1_account_RotationCapabilityOfferProofChallenge">Struct <code>RotationCapabilityOfferProofChallenge</code></a></li>
 <li><a href="#0x1_account_SignerCapabilityOfferProofChallenge">Struct <code>SignerCapabilityOfferProofChallenge</code></a></li>
@@ -208,6 +209,10 @@
 <li><a href="#@Events_3">Events</a></li>
 </ul>
 </li>
+<li><a href="#0x1_account_upsert_ed25519_backup_key_and_encrypt_dk">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code></a></li>
+<li><a href="#0x1_account_upsert_encrypted_dk">Function <code>upsert_encrypted_dk</code></a></li>
+<li><a href="#0x1_account_get_encrypted_dk">Function <code>get_encrypted_dk</code></a></li>
+<li><a href="#0x1_account_encrypted_dk_exists">Function <code>encrypted_dk_exists</code></a></li>
 <li><a href="#0x1_account_rotate_authentication_key">Function <code>rotate_authentication_key</code></a></li>
 <li><a href="#0x1_account_rotate_authentication_key_with_rotation_capability">Function <code>rotate_authentication_key_with_rotation_capability</code></a></li>
 <li><a href="#0x1_account_offer_rotation_capability">Function <code>offer_rotation_capability</code></a></li>
@@ -516,6 +521,29 @@ This struct solves this problem by mapping the new authentication key <code>b</c
 </dd>
 </dl>
 </details>
+<h2 id="enum-resource-encrypteddk"><a class="header" href="#enum-resource-encrypteddk">Enum Resource <code>EncryptedDK</code> <a id="0x1_account_EncryptedDK"></a></a></h2>
+<p>Per-account encrypted backup of a confidential-asset decryption key (DK). The ciphertext is opaque to the
+chain — clients (e.g. Petra) own encryption/decryption. Writers go through <code>upsert_encrypted_dk</code> (friend-only)
+so the calling module owns the policy (e.g. atomicity with a key rotation); readers can use the
+<code>get_encrypted_dk</code> view. Versioned via the <code>V1</code> variant so the schema can evolve.</p>
+<pre><code>enum <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> <b>has</b> <b>copy</b>, drop, store, key
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
 <h2 id="struct-rotationproofchallenge"><a class="header" href="#struct-rotationproofchallenge">Struct <code>RotationProofChallenge</code> <a id="0x1_account_RotationProofChallenge"></a></a></h2>
 <p>This structs stores the challenge message that should be signed during key rotation. First, this struct is
 signed by the account owner's current public key, which proves possession of a capability to rotate the key.
@@ -695,6 +723,14 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p>Scheme identifier for Ed25519 signatures used to derive authentication keys for Ed25519 public keys.</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a>: u8 = 0;
 </code></pre>
+<p><a id="0x1_account_EENCRYPTED_DK_NOT_FOUND"></a></p>
+<p>No <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> resource exists for the queried address.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_EENCRYPTED_DK_NOT_FOUND">EENCRYPTED_DK_NOT_FOUND</a>: u64 = 29;
+</code></pre>
+<p><a id="0x1_account_EENCRYPTED_DK_TOO_LONG"></a></p>
+<p>The ciphertext being written into <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> exceeds <code><a href="account.html#0x1_account_MAX_ENCRYPTED_DK_BYTES">MAX_ENCRYPTED_DK_BYTES</a></code>.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_EENCRYPTED_DK_TOO_LONG">EENCRYPTED_DK_TOO_LONG</a>: u64 = 28;
+</code></pre>
 <p><a id="0x1_account_EEXCEEDED_MAX_GUID_CREATION_NUM"></a></p>
 <p>This account has exceeded the allocated GUIDs it can create. It should be impossible to reach this number for real applications.</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_EEXCEEDED_MAX_GUID_CREATION_NUM">EEXCEEDED_MAX_GUID_CREATION_NUM</a>: u64 = 20;
@@ -786,6 +822,11 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p><a id="0x1_account_EWRONG_CURRENT_PUBLIC_KEY"></a></p>
 <p>Specified current public key is not correct</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_EWRONG_CURRENT_PUBLIC_KEY">EWRONG_CURRENT_PUBLIC_KEY</a>: u64 = 7;
+</code></pre>
+<p><a id="0x1_account_MAX_ENCRYPTED_DK_BYTES"></a></p>
+<p>Maximum size of the payload stored in <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code>. 128 bytes is generous for the initial use case
+(an encrypted 32-byte confidential-asset DK with nonce + auth tag), while keeping per-account state small.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_MAX_ENCRYPTED_DK_BYTES">MAX_ENCRYPTED_DK_BYTES</a>: u64 = 128;
 </code></pre>
 <p><a id="0x1_account_MAX_GUID_CREATION_NUM"></a></p>
 <p>Explicitly separate the GUID space between Object and Account to prevent accidental overlap.</p>
@@ -1179,9 +1220,9 @@ This function will abort if the scheme is not recognized or if new_public_key_by
 </code></pre>
 </details>
 <h2 id="function-upsert_ed25519_backup_key_on_keyless_account"><a class="header" href="#function-upsert_ed25519_backup_key_on_keyless_account">Function <code>upsert_ed25519_backup_key_on_keyless_account</code> <a id="0x1_account_upsert_ed25519_backup_key_on_keyless_account"></a></a></h2>
-<p>Upserts an ED25519 backup key to an account that has a keyless public key as its original public key by converting the account's authentication key
+<p>Upserts an Ed25519 backup key to an account that has a keyless public key as its original public key by converting the account's authentication key
 to a multi-key of the original keyless public key and the new backup key that requires 1 signature from either key to authenticate.
-This function takes a the account's original keyless public key and a ED25519 backup public key and rotates the account's authentication key to a multi-key of
+This function takes the account's original keyless public key and a Ed25519 backup public key and rotates the account's authentication key to a multi-key of
 the original keyless public key and the new backup key that requires 1 signature from either key to authenticate.</p>
 <p>Note: This function emits a <code>KeyRotationToMultiPublicKey</code> event marking both keys as verified since the keyless public key
 is the original public key of the account and the new backup key has been validated via verifying the challenge signed by the new backup key.</p>
@@ -1189,7 +1230,7 @@ is the original public key of the account and the new backup key has been valida
 <ul>
 <li><code><a href="account.html#0x1_account">account</a></code> - The signer representing the keyless account</li>
 <li><code>keyless_public_key</code> - The original keyless public key of the account (wrapped in an AnyPublicKey)</li>
-<li><code>backup_public_key</code> - The ED25519 public key to add as a backup</li>
+<li><code>backup_public_key</code> - The Ed25519 public key to add as a backup</li>
 <li><code>backup_key_proof</code> - A signature from the backup key proving ownership</li>
 </ul>
 <h3 id="aborts"><a class="header" href="#aborts">Aborts <a id="@Aborts_2"></a></a></h3>
@@ -1261,6 +1302,81 @@ is the original public key of the account and the new backup key has been valida
         old_auth_key,
         new_auth_key,
     });
+}
+</code></pre>
+</details>
+<h2 id="function-upsert_ed25519_backup_key_and_encrypt_dk"><a class="header" href="#function-upsert_ed25519_backup_key_and_encrypt_dk">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code> <a id="0x1_account_upsert_ed25519_backup_key_and_encrypt_dk"></a></a></h2>
+<p>Atomically performs an <code>upsert_ed25519_backup_key_on_keyless_account</code> and stores <code>dk_ciphertext</code> in the
+account's <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> resource. Currently used for backing up confidential-asset decryption keys on-chain
+in Petra for keyless accounts. The ciphertext is opaque to the chain — see <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code>.</p>
+<p>SECURITY: This function does not verify that <code>dk_ciphertext</code> is a well-formed encryption of the DK corresponding
+to the registered EK on-chain. (It could, in theory, but we've judged the implementation complexity too high.)
+Wallets using this function must be careful to only call this using a <code>dk_ciphertext</code> produced from its own
+keyless Ed25519 backup key flow under the user-controlled <code>backup_public_key</code>.</p>
+<pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_and_encrypt_dk">upsert_ed25519_backup_key_and_encrypt_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, dk_ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_and_encrypt_dk">upsert_ed25519_backup_key_and_encrypt_dk</a>(
+    <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    dk_ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a>, <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> {
+    <a href="account.html#0x1_account_upsert_ed25519_backup_key_on_keyless_account">upsert_ed25519_backup_key_on_keyless_account</a>(<a href="account.html#0x1_account">account</a>, keyless_public_key, backup_public_key, backup_key_proof);
+    <a href="account.html#0x1_account_upsert_encrypted_dk">upsert_encrypted_dk</a>(<a href="account.html#0x1_account">account</a>, dk_ciphertext);
+}
+</code></pre>
+</details>
+<h2 id="function-upsert_encrypted_dk"><a class="header" href="#function-upsert_encrypted_dk">Function <code>upsert_encrypted_dk</code> <a id="0x1_account_upsert_encrypted_dk"></a></a></h2>
+<p>Upserts the opaque per-account <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> for <code><a href="account.html#0x1_account">account</a></code>. Friend-only so that the policy of who can
+write a ciphertext (and the atomicity guarantees that come with it, e.g. coupling with a key rotation) lives
+in the calling module rather than at this layer.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_upsert_encrypted_dk">upsert_encrypted_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_upsert_encrypted_dk">upsert_encrypted_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) <b>acquires</b> <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> {
+    <b>assert</b>!(
+        ciphertext.length() &lt;= <a href="account.html#0x1_account_MAX_ENCRYPTED_DK_BYTES">MAX_ENCRYPTED_DK_BYTES</a>,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="account.html#0x1_account_EENCRYPTED_DK_TOO_LONG">EENCRYPTED_DK_TOO_LONG</a>)
+    );
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+    <b>if</b> (!<b>exists</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr)) {
+        <b>move_to</b>(<a href="account.html#0x1_account">account</a>, EncryptedDK::V1 { ciphertext: ciphertext });
+    } <b>else</b> {
+        <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>[addr].ciphertext = ciphertext;
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-get_encrypted_dk"><a class="header" href="#function-get_encrypted_dk">Function <code>get_encrypted_dk</code> <a id="0x1_account_get_encrypted_dk"></a></a></h2>
+<p>Returns the <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> stored for <code>addr</code>. Aborts with <code><a href="account.html#0x1_account_EENCRYPTED_DK_NOT_FOUND">EENCRYPTED_DK_NOT_FOUND</a></code> if none exists,
+so callers must check <code><a href="account.html#0x1_account_encrypted_dk_exists">encrypted_dk_exists</a>(addr)</code> first if absence is a valid case.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_encrypted_dk">get_encrypted_dk</a>(addr: <b>address</b>): <a href="account.html#0x1_account_EncryptedDK">account::EncryptedDK</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_encrypted_dk">get_encrypted_dk</a>(addr: <b>address</b>): <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> <b>acquires</b> <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> {
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EENCRYPTED_DK_NOT_FOUND">EENCRYPTED_DK_NOT_FOUND</a>)
+    );
+    <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>[addr]
+}
+</code></pre>
+</details>
+<h2 id="function-encrypted_dk_exists"><a class="header" href="#function-encrypted_dk_exists">Function <code>encrypted_dk_exists</code> <a id="0x1_account_encrypted_dk_exists"></a></a></h2>
+<p>Returns whether an <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> is stored for <code>addr</code>.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="account.html#0x1_account_encrypted_dk_exists">encrypted_dk_exists</a>(addr: <b>address</b>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_encrypted_dk_exists">encrypted_dk_exists</a>(addr: <b>address</b>): bool {
+    <b>exists</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr)
 }
 </code></pre>
 </details>
