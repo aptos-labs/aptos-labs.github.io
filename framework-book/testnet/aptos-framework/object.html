@@ -220,6 +220,8 @@ make it so that a reference to a global object can be returned from a function.<
 <li><a href="#0x1_object_create_object_from_object">Function <code>create_object_from_object</code></a></li>
 <li><a href="#0x1_object_create_object_from_guid">Function <code>create_object_from_guid</code></a></li>
 <li><a href="#0x1_object_create_object_internal">Function <code>create_object_internal</code></a></li>
+<li><a href="#0x1_object_create_unique_onchain_signer">Function <code>create_unique_onchain_signer</code></a></li>
+<li><a href="#0x1_object_create_named_unowned_onchain_signer">Function <code>create_named_unowned_onchain_signer</code></a></li>
 <li><a href="#0x1_object_generate_delete_ref">Function <code>generate_delete_ref</code></a></li>
 <li><a href="#0x1_object_generate_extend_ref">Function <code>generate_extend_ref</code></a></li>
 <li><a href="#0x1_object_generate_transfer_ref">Function <code>generate_transfer_ref</code></a></li>
@@ -228,6 +230,7 @@ make it so that a reference to a global object can be returned from a function.<
 <li><a href="#0x1_object_address_from_constructor_ref">Function <code>address_from_constructor_ref</code></a></li>
 <li><a href="#0x1_object_object_from_constructor_ref">Function <code>object_from_constructor_ref</code></a></li>
 <li><a href="#0x1_object_can_generate_delete_ref">Function <code>can_generate_delete_ref</code></a></li>
+<li><a href="#0x1_object_transfer_with_constructor_ref">Function <code>transfer_with_constructor_ref</code></a></li>
 <li><a href="#0x1_object_create_guid">Function <code>create_guid</code></a></li>
 <li><a href="#0x1_object_new_event_handle">Function <code>new_event_handle</code></a></li>
 <li><a href="#0x1_object_address_from_delete_ref">Function <code>address_from_delete_ref</code></a></li>
@@ -740,6 +743,7 @@ derivation to produce an object address.</p>
 </details>
 <h2 id="function-create_user_derived_object_address"><a class="header" href="#function-create_user_derived_object_address">Function <code>create_user_derived_object_address</code> <a id="0x1_object_create_user_derived_object_address"></a></a></h2>
 <p>Derives an object address from the source address and an object: sha3_256([source | object addr | 0xFC]).</p>
+<p>Only used for primary_fungible_store.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_user_derived_object_address">create_user_derived_object_address</a>(source: <b>address</b>, derive_from: <b>address</b>): <b>address</b>
 </code></pre>
 <details>
@@ -796,6 +800,8 @@ derivation to produce an object address.</p>
 <h2 id="function-create_named_object"><a class="header" href="#function-create_named_object">Function <code>create_named_object</code> <a id="0x1_object_create_named_object"></a></a></h2>
 <p>Create a new named object and return the ConstructorRef. Named objects can be queried globally
 by knowing the user generated seed used to create them. Named objects cannot be deleted.</p>
+<p>Note that object returned will be owned by creator, and so creator still can do thing directly to the object,
+for example withdraw from fungible stores signer would own.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_named_object">create_named_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
 </code></pre>
 <details>
@@ -810,6 +816,7 @@ by knowing the user generated seed used to create them. Named objects cannot be 
 <h2 id="function-create_user_derived_object"><a class="header" href="#function-create_user_derived_object">Function <code>create_user_derived_object</code> <a id="0x1_object_create_user_derived_object"></a></a></h2>
 <p>Create a new object whose address is derived based on the creator account address and another object.
 Derivde objects, similar to named objects, cannot be deleted.</p>
+<p>Only used for primary_fungible_store.</p>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="object.html#0x1_object_create_user_derived_object">create_user_derived_object</a>(creator_address: <b>address</b>, derive_ref: &<a href="object.html#0x1_object_DeriveRef">object::DeriveRef</a>): <a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
 </code></pre>
 <details>
@@ -891,7 +898,7 @@ doesn't have the same bottlenecks.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_object_from_object">create_object_from_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="object.html#0x1_object_ConstructorRef">ConstructorRef</a> <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_object_from_object">create_object_from_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="object.html#0x1_object_ConstructorRef">ConstructorRef</a> {
     <b>let</b> <a href="guid.html#0x1_guid">guid</a> = <a href="object.html#0x1_object_create_guid">create_guid</a>(creator);
     <a href="object.html#0x1_object_create_object_from_guid">create_object_from_guid</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator), <a href="guid.html#0x1_guid">guid</a>)
 }
@@ -936,6 +943,47 @@ doesn't have the same bottlenecks.</p>
         },
     );
     <a href="object.html#0x1_object_ConstructorRef">ConstructorRef</a> { self: <a href="object.html#0x1_object">object</a>, can_delete }
+}
+</code></pre>
+</details>
+<h2 id="function-create_unique_onchain_signer"><a class="header" href="#function-create_unique_onchain_signer">Function <code>create_unique_onchain_signer</code> <a id="0x1_object_create_unique_onchain_signer"></a></a></h2>
+<p>Create a unique and lightweight onchain signer.
+Returned ExtendRef can be used to create the signer, and can be stored onchain.</p>
+<p>It has no object resources (i.e. ObjectCore, etc) - and so is lightweight.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_unique_onchain_signer">create_unique_onchain_signer</a>(): <a href="object.html#0x1_object_ExtendRef">object::ExtendRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_unique_onchain_signer">create_unique_onchain_signer</a>(): <a href="object.html#0x1_object_ExtendRef">ExtendRef</a> {
+    // Equivalent <b>to</b> this snippet, without creating and then deleting <a href="object.html#0x1_object_ObjectCore">ObjectCore</a>:
+    // <b>let</b> constructor_ref = <a href="object.html#0x1_object_create_object">object::create_object</a>(@0x0);
+    // <b>let</b> extend_ref = constructor_ref.<a href="object.html#0x1_object_generate_extend_ref">generate_extend_ref</a>();
+    // constructor_ref.<a href="object.html#0x1_object_generate_delete_ref">generate_delete_ref</a>().<a href="object.html#0x1_object_delete">delete</a>();
+
+    <a href="object.html#0x1_object_ExtendRef">ExtendRef</a> { self: <a href="transaction_context.html#0x1_transaction_context_generate_auid_address">transaction_context::generate_auid_address</a>() }
+}
+</code></pre>
+</details>
+<h2 id="function-create_named_unowned_onchain_signer"><a class="header" href="#function-create_named_unowned_onchain_signer">Function <code>create_named_unowned_onchain_signer</code> <a id="0x1_object_create_named_unowned_onchain_signer"></a></a></h2>
+<p>Creates a named onchain signer and returns ExtendRef to create it.
+The signer is deterministically created form passed creator and name.</p>
+<p>ObjectCore is created (and cannot be deleted), to guarantee that the
+same signer cannot be created again.
+Aborts if same creator has already created a signer or object with same name.</p>
+<p>Object is unowned (owner is set to 0x0), to avoid being owned by creator,
+which would allow creator to still do thing directly to the object,
+for example withdraw from fungible stores returned signer would own.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_named_unowned_onchain_signer">create_named_unowned_onchain_signer</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="object.html#0x1_object_ExtendRef">object::ExtendRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_named_unowned_onchain_signer">create_named_unowned_onchain_signer</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+): <a href="object.html#0x1_object_ExtendRef">ExtendRef</a> {
+    <b>let</b> constructor_ref = <a href="object.html#0x1_object_create_named_object">create_named_object</a>(creator, name);
+    <b>let</b> extend_ref = constructor_ref.<a href="object.html#0x1_object_generate_extend_ref">generate_extend_ref</a>();
+    constructor_ref.<a href="object.html#0x1_object_transfer_with_constructor_ref">transfer_with_constructor_ref</a>(@0x0);
+    extend_ref
 }
 </code></pre>
 </details>
@@ -1029,13 +1077,23 @@ doesn't have the same bottlenecks.</p>
 }
 </code></pre>
 </details>
+<h2 id="function-transfer_with_constructor_ref"><a class="header" href="#function-transfer_with_constructor_ref">Function <code>transfer_with_constructor_ref</code> <a id="0x1_object_transfer_with_constructor_ref"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_transfer_with_constructor_ref">transfer_with_constructor_ref</a>(self: &<a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, <b>to</b>: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_transfer_with_constructor_ref">transfer_with_constructor_ref</a>(self: &<a href="object.html#0x1_object_ConstructorRef">ConstructorRef</a>, <b>to</b>: <b>address</b>) {
+    self.<a href="object.html#0x1_object_generate_transfer_ref">generate_transfer_ref</a>().<a href="object.html#0x1_object_generate_linear_transfer_ref">generate_linear_transfer_ref</a>().<a href="object.html#0x1_object_transfer_with_ref">transfer_with_ref</a>(<b>to</b>)
+}
+</code></pre>
+</details>
 <h2 id="function-create_guid"><a class="header" href="#function-create_guid">Function <code>create_guid</code> <a id="0x1_object_create_guid"></a></a></h2>
 <p>Create a guid for the object, typically used for events</p>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_guid">create_guid</a>(<a href="object.html#0x1_object">object</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="guid.html#0x1_guid_GUID">guid::GUID</a>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_guid">create_guid</a>(<a href="object.html#0x1_object">object</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="guid.html#0x1_guid_GUID">guid::GUID</a> <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_guid">create_guid</a>(<a href="object.html#0x1_object">object</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="guid.html#0x1_guid_GUID">guid::GUID</a> {
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="object.html#0x1_object">object</a>);
     <b>let</b> object_data = <b>borrow_global_mut</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(addr);
     <a href="guid.html#0x1_guid_create">guid::create</a>(addr, &<b>mut</b> object_data.guid_creation_num)
@@ -1050,7 +1108,7 @@ doesn't have the same bottlenecks.</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_new_event_handle">new_event_handle</a>&lt;T: drop + store&gt;(
     <a href="object.html#0x1_object">object</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-): <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt; <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+): <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt; {
     <a href="event.html#0x1_event_new_event_handle">event::new_event_handle</a>(<a href="object.html#0x1_object_create_guid">create_guid</a>(<a href="object.html#0x1_object">object</a>))
 }
 </code></pre>
@@ -1083,7 +1141,7 @@ doesn't have the same bottlenecks.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_delete">delete</a>(self: <a href="object.html#0x1_object_DeleteRef">DeleteRef</a>) <b>acquires</b> <a href="object.html#0x1_object_Untransferable">Untransferable</a>, <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_delete">delete</a>(self: <a href="object.html#0x1_object_DeleteRef">DeleteRef</a>) {
     <b>let</b> object_core = <b>move_from</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(self.self);
     <b>let</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
         guid_creation_num: _,
@@ -1128,7 +1186,7 @@ doesn't have the same bottlenecks.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_disable_ungated_transfer">disable_ungated_transfer</a>(self: &<a href="object.html#0x1_object_TransferRef">TransferRef</a>) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_disable_ungated_transfer">disable_ungated_transfer</a>(self: &<a href="object.html#0x1_object_TransferRef">TransferRef</a>) {
     <b>let</b> <a href="object.html#0x1_object">object</a> = <b>borrow_global_mut</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(self.self);
     <a href="object.html#0x1_object">object</a>.allow_ungated_transfer = <b>false</b>;
 }
@@ -1140,7 +1198,7 @@ doesn't have the same bottlenecks.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_set_untransferable">set_untransferable</a>(self: &<a href="object.html#0x1_object_ConstructorRef">ConstructorRef</a>) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_set_untransferable">set_untransferable</a>(self: &<a href="object.html#0x1_object_ConstructorRef">ConstructorRef</a>) {
     <b>let</b> <a href="object.html#0x1_object">object</a> = <b>borrow_global_mut</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(self.self);
     <a href="object.html#0x1_object">object</a>.allow_ungated_transfer = <b>false</b>;
     <b>let</b> object_signer = self.<a href="object.html#0x1_object_generate_signer">generate_signer</a>();
@@ -1154,7 +1212,7 @@ doesn't have the same bottlenecks.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_enable_ungated_transfer">enable_ungated_transfer</a>(self: &<a href="object.html#0x1_object_TransferRef">TransferRef</a>) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_enable_ungated_transfer">enable_ungated_transfer</a>(self: &<a href="object.html#0x1_object_TransferRef">TransferRef</a>) {
     <b>assert</b>!(!<b>exists</b>&lt;<a href="object.html#0x1_object_Untransferable">Untransferable</a>&gt;(self.self), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="object.html#0x1_object_EOBJECT_NOT_TRANSFERRABLE">EOBJECT_NOT_TRANSFERRABLE</a>));
     <b>let</b> <a href="object.html#0x1_object">object</a> = <b>borrow_global_mut</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(self.self);
     <a href="object.html#0x1_object">object</a>.allow_ungated_transfer = <b>true</b>;
@@ -1168,7 +1226,7 @@ time of generation is the owner at the time of transferring.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_generate_linear_transfer_ref">generate_linear_transfer_ref</a>(self: &<a href="object.html#0x1_object_TransferRef">TransferRef</a>): <a href="object.html#0x1_object_LinearTransferRef">LinearTransferRef</a> <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_generate_linear_transfer_ref">generate_linear_transfer_ref</a>(self: &<a href="object.html#0x1_object_TransferRef">TransferRef</a>): <a href="object.html#0x1_object_LinearTransferRef">LinearTransferRef</a> {
     <b>assert</b>!(!<b>exists</b>&lt;<a href="object.html#0x1_object_Untransferable">Untransferable</a>&gt;(self.self), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="object.html#0x1_object_EOBJECT_NOT_TRANSFERRABLE">EOBJECT_NOT_TRANSFERRABLE</a>));
     <b>let</b> owner = <a href="object.html#0x1_object_Object">Object</a>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt; { inner: self.self }.<a href="object.html#0x1_object_owner">owner</a>();
     <a href="object.html#0x1_object_LinearTransferRef">LinearTransferRef</a> {
@@ -1184,7 +1242,7 @@ time of generation is the owner at the time of transferring.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_transfer_with_ref">transfer_with_ref</a>(self: <a href="object.html#0x1_object_LinearTransferRef">LinearTransferRef</a>, <b>to</b>: <b>address</b>) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a>, <a href="object.html#0x1_object_TombStone">TombStone</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_transfer_with_ref">transfer_with_ref</a>(self: <a href="object.html#0x1_object_LinearTransferRef">LinearTransferRef</a>, <b>to</b>: <b>address</b>) {
     <b>assert</b>!(!<b>exists</b>&lt;<a href="object.html#0x1_object_Untransferable">Untransferable</a>&gt;(self.self), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="object.html#0x1_object_EOBJECT_NOT_TRANSFERRABLE">EOBJECT_NOT_TRANSFERRABLE</a>));
 
     // Undo soft burn <b>if</b> present <b>as</b> we don't want the original owner <b>to</b> be able <b>to</b> reclaim by calling unburn later.
@@ -1218,7 +1276,7 @@ time of generation is the owner at the time of transferring.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     <a href="object.html#0x1_object">object</a>: <b>address</b>,
     <b>to</b>: <b>address</b>,
-) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+) {
     <a href="object.html#0x1_object_transfer_raw">transfer_raw</a>(owner, <a href="object.html#0x1_object">object</a>, <b>to</b>)
 }
 </code></pre>
@@ -1234,7 +1292,7 @@ for Object<T> to the "to" address.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;,
     <b>to</b>: <b>address</b>,
-) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+) {
     <a href="object.html#0x1_object_transfer_raw">transfer_raw</a>(owner, <a href="object.html#0x1_object">object</a>.inner, <b>to</b>)
 }
 </code></pre>
@@ -1252,7 +1310,7 @@ hierarchy.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     <a href="object.html#0x1_object">object</a>: <b>address</b>,
     <b>to</b>: <b>address</b>,
-) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+) {
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>assert</b>!(
         <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(owner, <a href="object.html#0x1_object_TransferPermission">TransferPermission</a> { <a href="object.html#0x1_object">object</a> }),
@@ -1293,7 +1351,7 @@ hierarchy.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;O&gt;,
     <b>to</b>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;,
-) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+) {
     <a href="object.html#0x1_object_transfer">transfer</a>(owner, <a href="object.html#0x1_object">object</a>, <b>to</b>.inner)
 }
 </code></pre>
@@ -1306,7 +1364,7 @@ objects may have cyclic dependencies.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>fun</b> <a href="object.html#0x1_object_verify_ungated_and_descendant">verify_ungated_and_descendant</a>(owner: <b>address</b>, destination: <b>address</b>) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>fun</b> <a href="object.html#0x1_object_verify_ungated_and_descendant">verify_ungated_and_descendant</a>(owner: <b>address</b>, destination: <b>address</b>) {
     <b>let</b> current_address = destination;
     <b>assert</b>!(
         <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current_address),
@@ -1349,7 +1407,7 @@ Please use the test only [<code>object::burn_object_with_transfer</code>] for te
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> entry <b>fun</b> <a href="object.html#0x1_object_burn">burn</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;) <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> entry <b>fun</b> <a href="object.html#0x1_object_burn">burn</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;) {
     <b>let</b> original_owner = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>assert</b>!(<a href="object.html#0x1_object_is_owner">is_owner</a>(<a href="object.html#0x1_object">object</a>, original_owner), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="object.html#0x1_object_ENOT_OBJECT_OWNER">ENOT_OBJECT_OWNER</a>));
     <b>let</b> object_addr = <a href="object.html#0x1_object">object</a>.inner;
@@ -1367,7 +1425,7 @@ Please use the test only [<code>object::burn_object_with_transfer</code>] for te
 <pre><code><b>public</b> entry <b>fun</b> <a href="object.html#0x1_object_unburn">unburn</a>&lt;T: key&gt;(
     original_owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;,
-) <b>acquires</b> <a href="object.html#0x1_object_TombStone">TombStone</a>, <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+) {
     <b>let</b> object_addr = <a href="object.html#0x1_object">object</a>.inner;
     <b>assert</b>!(<b>exists</b>&lt;<a href="object.html#0x1_object_TombStone">TombStone</a>&gt;(object_addr), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="object.html#0x1_object_EOBJECT_NOT_BURNT">EOBJECT_NOT_BURNT</a>));
     <b>assert</b>!(
@@ -1400,7 +1458,7 @@ Return true if ungated transfer is allowed.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_ungated_transfer_allowed">ungated_transfer_allowed</a>&lt;T: key&gt;(self: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;): bool <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_ungated_transfer_allowed">ungated_transfer_allowed</a>&lt;T: key&gt;(self: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;): bool {
     <b>assert</b>!(
         <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(self.inner),
         <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="object.html#0x1_object_EOBJECT_DOES_NOT_EXIST">EOBJECT_DOES_NOT_EXIST</a>),
@@ -1416,7 +1474,7 @@ Return true if ungated transfer is allowed.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_owner">owner</a>&lt;T: key&gt;(self: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;): <b>address</b> <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_owner">owner</a>&lt;T: key&gt;(self: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;): <b>address</b> {
     <b>assert</b>!(
         <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(self.inner),
         <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="object.html#0x1_object_EOBJECT_DOES_NOT_EXIST">EOBJECT_DOES_NOT_EXIST</a>),
@@ -1433,7 +1491,7 @@ Return true if ungated transfer is allowed.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_is_owner">is_owner</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;, owner: <b>address</b>): bool <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_is_owner">is_owner</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;, owner: <b>address</b>): bool {
     <a href="object.html#0x1_object">object</a>.<a href="object.html#0x1_object_owner">owner</a>() == owner
 }
 </code></pre>
@@ -1446,7 +1504,7 @@ Return true if ungated transfer is allowed.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_owns">owns</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;, owner: <b>address</b>): bool <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_owns">owns</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;, owner: <b>address</b>): bool {
     <b>let</b> current_address = <a href="object.html#0x1_object">object</a>.<a href="object.html#0x1_object_object_address">object_address</a>();
 
     <b>assert</b>!(
@@ -1484,7 +1542,7 @@ to determine the identity of the starting point of ownership.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_root_owner">root_owner</a>&lt;T: key&gt;(self: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;): <b>address</b> <b>acquires</b> <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_root_owner">root_owner</a>&lt;T: key&gt;(self: <a href="object.html#0x1_object_Object">Object</a>&lt;T&gt;): <b>address</b> {
     <b>let</b> obj_owner = self.<a href="object.html#0x1_object_owner">owner</a>();
     <b>while</b> (<a href="object.html#0x1_object_is_object">is_object</a>(obj_owner)) {
         obj_owner = <a href="object.html#0x1_object_address_to_object">address_to_object</a>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(obj_owner).<a href="object.html#0x1_object_owner">owner</a>();

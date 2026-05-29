@@ -325,6 +325,7 @@ return true.</p>
 <li><a href="#0x1_features_is_encrypted_transactions_enabled">Function <code>is_encrypted_transactions_enabled</code></a></li>
 <li><a href="#0x1_features_get_transaction_limits_feature">Function <code>get_transaction_limits_feature</code></a></li>
 <li><a href="#0x1_features_is_transaction_limits_enabled">Function <code>is_transaction_limits_enabled</code></a></li>
+<li><a href="#0x1_features_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
 <li><a href="#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -343,6 +344,7 @@ return true.</p>
 <li><a href="#@Specification_1_module_event_enabled">Function <code>module_event_enabled</code></a></li>
 <li><a href="#@Specification_1_abort_if_multisig_payload_mismatch_enabled">Function <code>abort_if_multisig_payload_mismatch_enabled</code></a></li>
 <li><a href="#@Specification_1_is_default_account_resource_enabled">Function <code>is_default_account_resource_enabled</code></a></li>
+<li><a href="#@Specification_1_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
 <li><a href="#@Specification_1_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="#@Specification_1_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
@@ -674,6 +676,10 @@ Lifetime: transient</p>
 <p>Whether the automatic creation of accounts is enabled for sponsored transactions.
 Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_SPONSORED_AUTOMATIC_ACCOUNT_CREATION">SPONSORED_AUTOMATIC_ACCOUNT_CREATION</a>: u64 = 34;
+</code></pre>
+<p><a id="0x1_features_STORAGE_SLOT_NATIVES"></a></p>
+<p>Whether the storage slot natives are enabled.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>: u64 = 113;
 </code></pre>
 <p><a id="0x1_features_STRUCT_CONSTRUCTORS"></a></p>
 <p>Whether struct constructors are enabled</p>
@@ -2069,6 +2075,16 @@ Lifetime: transient</p>
 }
 </code></pre>
 </details>
+<h2 id="function-is_storage_slot_natives_enabled"><a class="header" href="#function-is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code> <a id="0x1_features_is_storage_slot_natives_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_storage_slot_natives_enabled">is_storage_slot_natives_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_storage_slot_natives_enabled">is_storage_slot_natives_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>)
+}
+</code></pre>
+</details>
 <h2 id="function-change_feature_flags"><a class="header" href="#function-change_feature_flags">Function <code>change_feature_flags</code> <a id="0x1_features_change_feature_flags"></a></a></h2>
 <p>Deprecated to prevent validator set changes during DKG.</p>
 <p>Genesis/tests should use <code><a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>()</code> for feature vec initialization.</p>
@@ -2313,6 +2329,13 @@ who have permission to set the flag that's checked in <code>extract()</code>.</p
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_DEFAULT_ACCOUNT_RESOURCE">DEFAULT_ACCOUNT_RESOURCE</a>);
+</code></pre>
+<h3 id="function-is_storage_slot_natives_enabled-1"><a class="header" href="#function-is_storage_slot_natives_enabled-1">Function <code>is_storage_slot_natives_enabled</code> <a id="@Specification_1_is_storage_slot_natives_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_storage_slot_natives_enabled">is_storage_slot_natives_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>);
 </code></pre>
 <h3 id="function-change_feature_flags_internal-1"><a class="header" href="#function-change_feature_flags_internal-1">Function <code>change_feature_flags_internal</code> <a id="@Specification_1_change_feature_flags_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>(framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)

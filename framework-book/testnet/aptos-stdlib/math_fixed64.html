@@ -203,9 +203,13 @@
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="math_fixed64.html#0x1_math_fixed64_sqrt">sqrt</a>(x: FixedPoint64): FixedPoint64 {
     <b>let</b> y = x.get_raw_value();
-    <b>let</b> z = (<a href="math128.html#0x1_math128_sqrt">math128::sqrt</a>(y) &lt;&lt; 32 <b>as</b> u256);
-    z = (z + ((y <b>as</b> u256) &lt;&lt; 64) / z) &gt;&gt; 1;
-    <a href="fixed_point64.html#0x1_fixed_point64_create_from_raw_value">fixed_point64::create_from_raw_value</a>((z <b>as</b> u128))
+    <b>if</b> (y == 0) {
+        <a href="fixed_point64.html#0x1_fixed_point64_create_from_raw_value">fixed_point64::create_from_raw_value</a>(0)
+    } <b>else</b> {
+        <b>let</b> z = (<a href="math128.html#0x1_math128_sqrt">math128::sqrt</a>(y) &lt;&lt; 32 <b>as</b> u256);
+        z = (z + ((y <b>as</b> u256) &lt;&lt; 64) / z) &gt;&gt; 1;
+        <a href="fixed_point64.html#0x1_fixed_point64_create_from_raw_value">fixed_point64::create_from_raw_value</a>((z <b>as</b> u128))
+    }
 }
 </code></pre>
 </details>
@@ -328,9 +332,7 @@ is positive for all values of x.</p>
 <h3 id="function-sqrt-1"><a class="header" href="#function-sqrt-1">Function <code>sqrt</code> <a id="@Specification_1_sqrt"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="math_fixed64.html#0x1_math_fixed64_sqrt">sqrt</a>(x: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>): <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
 </code></pre>
-<p><code>sqrt</code> aborts when the input is zero (math128::sqrt(0)==0 causes division by zero in the Newton step).
-No loop in the body (single Newton refinement step), so callers can inline without havocing.</p>
-<pre><code><b>aborts_if</b> x.get_raw_value() == 0;
+<pre><code><b>aborts_if</b> [abstract] <b>false</b>;
 </code></pre>
 <h3 id="function-mul_div-1"><a class="header" href="#function-mul_div-1">Function <code>mul_div</code> <a id="@Specification_1_mul_div"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="math_fixed64.html#0x1_math_fixed64_mul_div">mul_div</a>(x: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, y: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, z: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>): <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
