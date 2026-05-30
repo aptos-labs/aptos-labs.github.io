@@ -1,0 +1,1260 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>aptos_token - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-token-objects/aptos_token.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x4aptos_token"><a class="header" href="#module-0x4aptos_token">Module <code>0x4::aptos_token</code> <a id="0x4_aptos_token"></a></a></h1>
+<p>This defines a minimally viable token for no-code solutions akin to the original token at
+0x3::token module.
+The key features are:</p>
+<ul>
+<li>Base token and collection features</li>
+<li>Creator definable mutability for tokens</li>
+<li>Creator-based freezing of tokens</li>
+<li>Standard object-based transfer and events</li>
+<li>Metadata property type</li>
+</ul>
+<ul>
+<li><a href="#0x4_aptos_token_AptosCollection">Resource <code>AptosCollection</code></a></li>
+<li><a href="#0x4_aptos_token_AptosToken">Resource <code>AptosToken</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x4_aptos_token_create_collection">Function <code>create_collection</code></a></li>
+<li><a href="#0x4_aptos_token_create_collection_object">Function <code>create_collection_object</code></a></li>
+<li><a href="#0x4_aptos_token_mint">Function <code>mint</code></a></li>
+<li><a href="#0x4_aptos_token_mint_token_object">Function <code>mint_token_object</code></a></li>
+<li><a href="#0x4_aptos_token_mint_soul_bound">Function <code>mint_soul_bound</code></a></li>
+<li><a href="#0x4_aptos_token_mint_soul_bound_token_object">Function <code>mint_soul_bound_token_object</code></a></li>
+<li><a href="#0x4_aptos_token_mint_internal">Function <code>mint_internal</code></a></li>
+<li><a href="#0x4_aptos_token_borrow">Function <code>borrow</code></a></li>
+<li><a href="#0x4_aptos_token_are_properties_mutable">Function <code>are_properties_mutable</code></a></li>
+<li><a href="#0x4_aptos_token_is_burnable">Function <code>is_burnable</code></a></li>
+<li><a href="#0x4_aptos_token_is_freezable_by_creator">Function <code>is_freezable_by_creator</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_description">Function <code>is_mutable_description</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_name">Function <code>is_mutable_name</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_uri">Function <code>is_mutable_uri</code></a></li>
+<li><a href="#0x4_aptos_token_authorized_borrow">Function <code>authorized_borrow</code></a></li>
+<li><a href="#0x4_aptos_token_burn">Function <code>burn</code></a></li>
+<li><a href="#0x4_aptos_token_freeze_transfer">Function <code>freeze_transfer</code></a></li>
+<li><a href="#0x4_aptos_token_unfreeze_transfer">Function <code>unfreeze_transfer</code></a></li>
+<li><a href="#0x4_aptos_token_set_description">Function <code>set_description</code></a></li>
+<li><a href="#0x4_aptos_token_set_name">Function <code>set_name</code></a></li>
+<li><a href="#0x4_aptos_token_set_uri">Function <code>set_uri</code></a></li>
+<li><a href="#0x4_aptos_token_add_property">Function <code>add_property</code></a></li>
+<li><a href="#0x4_aptos_token_add_typed_property">Function <code>add_typed_property</code></a></li>
+<li><a href="#0x4_aptos_token_remove_property">Function <code>remove_property</code></a></li>
+<li><a href="#0x4_aptos_token_update_property">Function <code>update_property</code></a></li>
+<li><a href="#0x4_aptos_token_update_typed_property">Function <code>update_typed_property</code></a></li>
+<li><a href="#0x4_aptos_token_collection_object">Function <code>collection_object</code></a></li>
+<li><a href="#0x4_aptos_token_borrow_collection">Function <code>borrow_collection</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_collection_description">Function <code>is_mutable_collection_description</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_collection_royalty">Function <code>is_mutable_collection_royalty</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_collection_uri">Function <code>is_mutable_collection_uri</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_collection_token_description">Function <code>is_mutable_collection_token_description</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_collection_token_name">Function <code>is_mutable_collection_token_name</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_collection_token_uri">Function <code>is_mutable_collection_token_uri</code></a></li>
+<li><a href="#0x4_aptos_token_is_mutable_collection_token_properties">Function <code>is_mutable_collection_token_properties</code></a></li>
+<li><a href="#0x4_aptos_token_are_collection_tokens_burnable">Function <code>are_collection_tokens_burnable</code></a></li>
+<li><a href="#0x4_aptos_token_are_collection_tokens_freezable">Function <code>are_collection_tokens_freezable</code></a></li>
+<li><a href="#0x4_aptos_token_authorized_borrow_collection">Function <code>authorized_borrow_collection</code></a></li>
+<li><a href="#0x4_aptos_token_set_collection_description">Function <code>set_collection_description</code></a></li>
+<li><a href="#0x4_aptos_token_set_collection_royalties">Function <code>set_collection_royalties</code></a></li>
+<li><a href="#0x4_aptos_token_set_collection_royalties_call">Function <code>set_collection_royalties_call</code></a></li>
+<li><a href="#0x4_aptos_token_set_collection_uri">Function <code>set_collection_uri</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../aptos-framework/object.html#0x1_object">0x1::object</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="collection.html#0x4_collection">0x4::collection</a>;
+<b>use</b> <a href="property_map.html#0x4_property_map">0x4::property_map</a>;
+<b>use</b> <a href="royalty.html#0x4_royalty">0x4::royalty</a>;
+<b>use</b> <a href="token.html#0x4_token">0x4::token</a>;
+</code></pre>
+<h2 id="resource-aptoscollection"><a class="header" href="#resource-aptoscollection">Resource <code>AptosCollection</code> <a id="0x4_aptos_token_AptosCollection"></a></a></h2>
+<p>Storage state for managing the no-code Collection.</p>
+<pre><code>#[resource_group_member(#[group = <a href="../aptos-framework/object.html#0x1_object_ObjectGroup">0x1::object::ObjectGroup</a>])]
+<b>struct</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>mutator_ref: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="collection.html#0x4_collection_MutatorRef">collection::MutatorRef</a>&gt;</code>
+</dt>
+<dd>
+ Used to mutate collection fields
+</dd>
+<dt>
+<code>royalty_mutator_ref: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_MutatorRef">royalty::MutatorRef</a>&gt;</code>
+</dt>
+<dd>
+ Used to mutate royalties
+</dd>
+<dt>
+<code>mutable_description: bool</code>
+</dt>
+<dd>
+ Determines if the creator can mutate the collection's description
+</dd>
+<dt>
+<code>mutable_uri: bool</code>
+</dt>
+<dd>
+ Determines if the creator can mutate the collection's uri
+</dd>
+<dt>
+<code>mutable_token_description: bool</code>
+</dt>
+<dd>
+ Determines if the creator can mutate token descriptions
+</dd>
+<dt>
+<code>mutable_token_name: bool</code>
+</dt>
+<dd>
+ Determines if the creator can mutate token names
+</dd>
+<dt>
+<code>mutable_token_properties: bool</code>
+</dt>
+<dd>
+ Determines if the creator can mutate token properties
+</dd>
+<dt>
+<code>mutable_token_uri: bool</code>
+</dt>
+<dd>
+ Determines if the creator can mutate token uris
+</dd>
+<dt>
+<code>tokens_burnable_by_creator: bool</code>
+</dt>
+<dd>
+ Determines if the creator can burn tokens
+</dd>
+<dt>
+<code>tokens_freezable_by_creator: bool</code>
+</dt>
+<dd>
+ Determines if the creator can freeze tokens
+</dd>
+</dl>
+</details>
+<h2 id="resource-aptostoken"><a class="header" href="#resource-aptostoken">Resource <code>AptosToken</code> <a id="0x4_aptos_token_AptosToken"></a></a></h2>
+<p>Storage state for managing the no-code Token.</p>
+<pre><code>#[resource_group_member(#[group = <a href="../aptos-framework/object.html#0x1_object_ObjectGroup">0x1::object::ObjectGroup</a>])]
+<b>struct</b> <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>burn_ref: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="token.html#0x4_token_BurnRef">token::BurnRef</a>&gt;</code>
+</dt>
+<dd>
+ Used to burn.
+</dd>
+<dt>
+<code>transfer_ref: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-framework/object.html#0x1_object_TransferRef">object::TransferRef</a>&gt;</code>
+</dt>
+<dd>
+ Used to control freeze.
+</dd>
+<dt>
+<code>mutator_ref: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="token.html#0x4_token_MutatorRef">token::MutatorRef</a>&gt;</code>
+</dt>
+<dd>
+ Used to mutate fields
+</dd>
+<dt>
+<code>property_mutator_ref: <a href="property_map.html#0x4_property_map_MutatorRef">property_map::MutatorRef</a></code>
+</dt>
+<dd>
+ Used to mutate properties
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x4_aptos_token_ECOLLECTION_DOES_NOT_EXIST"></a></p>
+<p>The collection does not exist</p>
+<pre><code><b>const</b> <a href="aptos_token.html#0x4_aptos_token_ECOLLECTION_DOES_NOT_EXIST">ECOLLECTION_DOES_NOT_EXIST</a>: u64 = 1;
+</code></pre>
+<p><a id="0x4_aptos_token_EFIELD_NOT_MUTABLE"></a></p>
+<p>The field being changed is not mutable</p>
+<pre><code><b>const</b> <a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>: u64 = 4;
+</code></pre>
+<p><a id="0x4_aptos_token_ENOT_CREATOR"></a></p>
+<p>The provided signer is not the creator</p>
+<pre><code><b>const</b> <a href="aptos_token.html#0x4_aptos_token_ENOT_CREATOR">ENOT_CREATOR</a>: u64 = 3;
+</code></pre>
+<p><a id="0x4_aptos_token_ETOKEN_DOES_NOT_EXIST"></a></p>
+<p>The token does not exist</p>
+<pre><code><b>const</b> <a href="aptos_token.html#0x4_aptos_token_ETOKEN_DOES_NOT_EXIST">ETOKEN_DOES_NOT_EXIST</a>: u64 = 2;
+</code></pre>
+<p><a id="0x4_aptos_token_EPROPERTIES_NOT_MUTABLE"></a></p>
+<p>The property map being mutated is not mutable</p>
+<pre><code><b>const</b> <a href="aptos_token.html#0x4_aptos_token_EPROPERTIES_NOT_MUTABLE">EPROPERTIES_NOT_MUTABLE</a>: u64 = 6;
+</code></pre>
+<p><a id="0x4_aptos_token_ETOKEN_NOT_BURNABLE"></a></p>
+<p>The token being burned is not burnable</p>
+<pre><code><b>const</b> <a href="aptos_token.html#0x4_aptos_token_ETOKEN_NOT_BURNABLE">ETOKEN_NOT_BURNABLE</a>: u64 = 5;
+</code></pre>
+<h2 id="function-create_collection"><a class="header" href="#function-create_collection">Function <code>create_collection</code> <a id="0x4_aptos_token_create_collection"></a></a></h2>
+<p>Create a new collection</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_create_collection">create_collection</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, max_supply: u64, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, mutable_description: bool, mutable_royalty: bool, mutable_uri: bool, mutable_token_description: bool, mutable_token_name: bool, mutable_token_properties: bool, mutable_token_uri: bool, tokens_burnable_by_creator: bool, tokens_freezable_by_creator: bool, royalty_numerator: u64, royalty_denominator: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_create_collection">create_collection</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    description: String,
+    max_supply: u64,
+    name: String,
+    uri: String,
+    mutable_description: bool,
+    mutable_royalty: bool,
+    mutable_uri: bool,
+    mutable_token_description: bool,
+    mutable_token_name: bool,
+    mutable_token_properties: bool,
+    mutable_token_uri: bool,
+    tokens_burnable_by_creator: bool,
+    tokens_freezable_by_creator: bool,
+    royalty_numerator: u64,
+    royalty_denominator: u64,
+) {
+    <a href="aptos_token.html#0x4_aptos_token_create_collection_object">create_collection_object</a>(
+        creator,
+        description,
+        max_supply,
+        name,
+        uri,
+        mutable_description,
+        mutable_royalty,
+        mutable_uri,
+        mutable_token_description,
+        mutable_token_name,
+        mutable_token_properties,
+        mutable_token_uri,
+        tokens_burnable_by_creator,
+        tokens_freezable_by_creator,
+        royalty_numerator,
+        royalty_denominator
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-create_collection_object"><a class="header" href="#function-create_collection_object">Function <code>create_collection_object</code> <a id="0x4_aptos_token_create_collection_object"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_create_collection_object">create_collection_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, max_supply: u64, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, mutable_description: bool, mutable_royalty: bool, mutable_uri: bool, mutable_token_description: bool, mutable_token_name: bool, mutable_token_properties: bool, mutable_token_uri: bool, tokens_burnable_by_creator: bool, tokens_freezable_by_creator: bool, royalty_numerator: u64, royalty_denominator: u64): <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosCollection">aptos_token::AptosCollection</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_create_collection_object">create_collection_object</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    description: String,
+    max_supply: u64,
+    name: String,
+    uri: String,
+    mutable_description: bool,
+    mutable_royalty: bool,
+    mutable_uri: bool,
+    mutable_token_description: bool,
+    mutable_token_name: bool,
+    mutable_token_properties: bool,
+    mutable_token_uri: bool,
+    tokens_burnable_by_creator: bool,
+    tokens_freezable_by_creator: bool,
+    royalty_numerator: u64,
+    royalty_denominator: u64,
+): Object&lt;<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>&gt; {
+    <b>let</b> creator_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+    <b>let</b> <a href="royalty.html#0x4_royalty">royalty</a> = <a href="royalty.html#0x4_royalty_create">royalty::create</a>(royalty_numerator, royalty_denominator, creator_addr);
+    <b>let</b> constructor_ref = <a href="collection.html#0x4_collection_create_fixed_collection">collection::create_fixed_collection</a>(
+        creator,
+        description,
+        max_supply,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="royalty.html#0x4_royalty">royalty</a>),
+        uri,
+    );
+
+    <b>let</b> object_signer = constructor_ref.generate_signer();
+    <b>let</b> mutator_ref = <b>if</b> (mutable_description || mutable_uri) {
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="collection.html#0x4_collection_generate_mutator_ref">collection::generate_mutator_ref</a>(&constructor_ref))
+    } <b>else</b> {
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+    };
+
+    <b>let</b> royalty_mutator_ref = <b>if</b> (mutable_royalty) {
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="royalty.html#0x4_royalty_generate_mutator_ref">royalty::generate_mutator_ref</a>(constructor_ref.generate_extend_ref()))
+    } <b>else</b> {
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+    };
+
+    <b>let</b> aptos_collection = <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+        mutator_ref,
+        royalty_mutator_ref,
+        mutable_description,
+        mutable_uri,
+        mutable_token_description,
+        mutable_token_name,
+        mutable_token_properties,
+        mutable_token_uri,
+        tokens_burnable_by_creator,
+        tokens_freezable_by_creator,
+    };
+    <b>move_to</b>(&object_signer, aptos_collection);
+    constructor_ref.object_from_constructor_ref()
+}
+</code></pre>
+</details>
+<h2 id="function-mint"><a class="header" href="#function-mint">Function <code>mint</code> <a id="0x4_aptos_token_mint"></a></a></h2>
+<p>With an existing collection, directly mint a viable token into the creators account.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint">mint</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint">mint</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <a href="aptos_token.html#0x4_aptos_token_mint_token_object">mint_token_object</a>(creator, <a href="collection.html#0x4_collection">collection</a>, description, name, uri, property_keys, property_types, property_values);
+}
+</code></pre>
+</details>
+<h2 id="function-mint_token_object"><a class="header" href="#function-mint_token_object">Function <code>mint_token_object</code> <a id="0x4_aptos_token_mint_token_object"></a></a></h2>
+<p>Mint a token into an existing collection, and retrieve the object / address of the token.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint_token_object">mint_token_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosToken">aptos_token::AptosToken</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint_token_object">mint_token_object</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+): Object&lt;<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a>&gt; <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> constructor_ref = <a href="aptos_token.html#0x4_aptos_token_mint_internal">mint_internal</a>(
+        creator,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name,
+        uri,
+        property_keys,
+        property_types,
+        property_values,
+    );
+
+    <b>let</b> <a href="collection.html#0x4_collection">collection</a> = <a href="aptos_token.html#0x4_aptos_token_collection_object">collection_object</a>(creator, &<a href="collection.html#0x4_collection">collection</a>);
+
+    // If tokens are freezable, add a transfer ref <b>to</b> be able <b>to</b> <b>freeze</b> transfers
+    <b>let</b> freezable_by_creator = <a href="aptos_token.html#0x4_aptos_token_are_collection_tokens_freezable">are_collection_tokens_freezable</a>(<a href="collection.html#0x4_collection">collection</a>);
+    <b>if</b> (freezable_by_creator) {
+        <b>let</b> aptos_token_addr = constructor_ref.address_from_constructor_ref();
+        <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = &<b>mut</b> <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a>[aptos_token_addr];
+        <b>let</b> transfer_ref = constructor_ref.generate_transfer_ref();
+        <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.transfer_ref.fill(transfer_ref);
+    };
+
+    constructor_ref.object_from_constructor_ref()
+}
+</code></pre>
+</details>
+<h2 id="function-mint_soul_bound"><a class="header" href="#function-mint_soul_bound">Function <code>mint_soul_bound</code> <a id="0x4_aptos_token_mint_soul_bound"></a></a></h2>
+<p>With an existing collection, directly mint a soul bound token into the recipient's account.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint_soul_bound">mint_soul_bound</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, soul_bound_to: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint_soul_bound">mint_soul_bound</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+    soul_bound_to: <b>address</b>,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_mint_soul_bound_token_object">mint_soul_bound_token_object</a>(
+        creator,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name,
+        uri,
+        property_keys,
+        property_types,
+        property_values,
+        soul_bound_to
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-mint_soul_bound_token_object"><a class="header" href="#function-mint_soul_bound_token_object">Function <code>mint_soul_bound_token_object</code> <a id="0x4_aptos_token_mint_soul_bound_token_object"></a></a></h2>
+<p>With an existing collection, directly mint a soul bound token into the recipient's account.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint_soul_bound_token_object">mint_soul_bound_token_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, soul_bound_to: <b>address</b>): <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosToken">aptos_token::AptosToken</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint_soul_bound_token_object">mint_soul_bound_token_object</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+    soul_bound_to: <b>address</b>,
+): Object&lt;<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a>&gt; <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> constructor_ref = <a href="aptos_token.html#0x4_aptos_token_mint_internal">mint_internal</a>(
+        creator,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name,
+        uri,
+        property_keys,
+        property_types,
+        property_values,
+    );
+
+    <b>let</b> transfer_ref = constructor_ref.generate_transfer_ref();
+    <b>let</b> linear_transfer_ref = transfer_ref.generate_linear_transfer_ref();
+    linear_transfer_ref.transfer_with_ref(soul_bound_to);
+    transfer_ref.disable_ungated_transfer();
+
+    constructor_ref.object_from_constructor_ref()
+}
+</code></pre>
+</details>
+<h2 id="function-mint_internal"><a class="header" href="#function-mint_internal">Function <code>mint_internal</code> <a id="0x4_aptos_token_mint_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint_internal">mint_internal</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos_token.html#0x4_aptos_token_mint_internal">mint_internal</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: String,
+    description: String,
+    name: String,
+    uri: String,
+    property_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_types: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
+    property_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+): ConstructorRef <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> constructor_ref = <a href="token.html#0x4_token_create">token::create</a>(creator, <a href="collection.html#0x4_collection">collection</a>, description, name, <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), uri);
+
+    <b>let</b> object_signer = constructor_ref.generate_signer();
+
+    <b>let</b> collection_obj = <a href="aptos_token.html#0x4_aptos_token_collection_object">collection_object</a>(creator, &<a href="collection.html#0x4_collection">collection</a>);
+    <b>let</b> <a href="collection.html#0x4_collection">collection</a> = <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&collection_obj);
+
+    <b>let</b> mutator_ref = <b>if</b> (
+        <a href="collection.html#0x4_collection">collection</a>.mutable_token_description
+            || <a href="collection.html#0x4_collection">collection</a>.mutable_token_name
+            || <a href="collection.html#0x4_collection">collection</a>.mutable_token_uri
+    ) {
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="token.html#0x4_token_generate_mutator_ref">token::generate_mutator_ref</a>(&constructor_ref))
+    } <b>else</b> {
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+    };
+
+    <b>let</b> burn_ref = <b>if</b> (<a href="collection.html#0x4_collection">collection</a>.tokens_burnable_by_creator) {
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="token.html#0x4_token_generate_burn_ref">token::generate_burn_ref</a>(&constructor_ref))
+    } <b>else</b> {
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+    };
+
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+        burn_ref,
+        transfer_ref: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        mutator_ref,
+        property_mutator_ref: <a href="property_map.html#0x4_property_map_generate_mutator_ref">property_map::generate_mutator_ref</a>(&constructor_ref),
+    };
+    <b>move_to</b>(&object_signer, <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>);
+
+    <b>let</b> properties = <a href="property_map.html#0x4_property_map_prepare_input">property_map::prepare_input</a>(property_keys, property_types, property_values);
+    <a href="property_map.html#0x4_property_map_init">property_map::init</a>(&constructor_ref, properties);
+
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-borrow"><a class="header" href="#function-borrow">Function <code>borrow</code> <a id="0x4_aptos_token_borrow"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: &<a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): &<a href="aptos_token.html#0x4_aptos_token_AptosToken">aptos_token::AptosToken</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: &Object&lt;T&gt;): &<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> token_address = <a href="token.html#0x4_token">token</a>.object_address();
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a>&gt;(token_address),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos_token.html#0x4_aptos_token_ETOKEN_DOES_NOT_EXIST">ETOKEN_DOES_NOT_EXIST</a>),
+    );
+    &<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a>[token_address]
+}
+</code></pre>
+</details>
+<h2 id="function-are_properties_mutable"><a class="header" href="#function-are_properties_mutable">Function <code>are_properties_mutable</code> <a id="0x4_aptos_token_are_properties_mutable"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_are_properties_mutable">are_properties_mutable</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_are_properties_mutable">are_properties_mutable</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> <a href="collection.html#0x4_collection">collection</a> = <a href="token.html#0x4_token_collection_object">token::collection_object</a>(<a href="token.html#0x4_token">token</a>);
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).mutable_token_properties
+}
+</code></pre>
+</details>
+<h2 id="function-is_burnable"><a class="header" href="#function-is_burnable">Function <code>is_burnable</code> <a id="0x4_aptos_token_is_burnable"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_burnable">is_burnable</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_burnable">is_burnable</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).burn_ref.is_some()
+}
+</code></pre>
+</details>
+<h2 id="function-is_freezable_by_creator"><a class="header" href="#function-is_freezable_by_creator">Function <code>is_freezable_by_creator</code> <a id="0x4_aptos_token_is_freezable_by_creator"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_freezable_by_creator">is_freezable_by_creator</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_freezable_by_creator">is_freezable_by_creator</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_are_collection_tokens_freezable">are_collection_tokens_freezable</a>(<a href="token.html#0x4_token_collection_object">token::collection_object</a>(<a href="token.html#0x4_token">token</a>))
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_description"><a class="header" href="#function-is_mutable_description">Function <code>is_mutable_description</code> <a id="0x4_aptos_token_is_mutable_description"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_description">is_mutable_description</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_description">is_mutable_description</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_description">is_mutable_collection_token_description</a>(<a href="token.html#0x4_token_collection_object">token::collection_object</a>(<a href="token.html#0x4_token">token</a>))
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_name"><a class="header" href="#function-is_mutable_name">Function <code>is_mutable_name</code> <a id="0x4_aptos_token_is_mutable_name"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_name">is_mutable_name</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_name">is_mutable_name</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_name">is_mutable_collection_token_name</a>(<a href="token.html#0x4_token_collection_object">token::collection_object</a>(<a href="token.html#0x4_token">token</a>))
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_uri"><a class="header" href="#function-is_mutable_uri">Function <code>is_mutable_uri</code> <a id="0x4_aptos_token_is_mutable_uri"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_uri">is_mutable_uri</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_uri">is_mutable_uri</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_uri">is_mutable_collection_token_uri</a>(<a href="token.html#0x4_token_collection_object">token::collection_object</a>(<a href="token.html#0x4_token">token</a>))
+}
+</code></pre>
+</details>
+<h2 id="function-authorized_borrow"><a class="header" href="#function-authorized_borrow">Function <code>authorized_borrow</code> <a id="0x4_aptos_token_authorized_borrow"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: &<a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): &<a href="aptos_token.html#0x4_aptos_token_AptosToken">aptos_token::AptosToken</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: &Object&lt;T&gt;, creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): &<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> token_address = <a href="token.html#0x4_token">token</a>.object_address();
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a>&gt;(token_address),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos_token.html#0x4_aptos_token_ETOKEN_DOES_NOT_EXIST">ETOKEN_DOES_NOT_EXIST</a>),
+    );
+
+    <b>assert</b>!(
+        <a href="token.html#0x4_token_creator">token::creator</a>(*<a href="token.html#0x4_token">token</a>) == <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_ENOT_CREATOR">ENOT_CREATOR</a>),
+    );
+    &<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a>[token_address]
+}
+</code></pre>
+</details>
+<h2 id="function-burn"><a class="header" href="#function-burn">Function <code>burn</code> <a id="0x4_aptos_token_burn"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_burn">burn</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_burn">burn</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.burn_ref.is_some(),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_ETOKEN_NOT_BURNABLE">ETOKEN_NOT_BURNABLE</a>),
+    );
+    <b>move</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>;
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <b>move_from</b>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a>&gt;(<a href="token.html#0x4_token">token</a>.object_address());
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+        burn_ref,
+        transfer_ref: _,
+        mutator_ref: _,
+        property_mutator_ref,
+    } = <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>;
+    <a href="property_map.html#0x4_property_map_burn">property_map::burn</a>(property_mutator_ref);
+    <a href="token.html#0x4_token_burn">token::burn</a>(burn_ref.extract());
+}
+</code></pre>
+</details>
+<h2 id="function-freeze_transfer"><a class="header" href="#function-freeze_transfer">Function <code>freeze_transfer</code> <a id="0x4_aptos_token_freeze_transfer"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_freeze_transfer">freeze_transfer</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_freeze_transfer">freeze_transfer</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_are_collection_tokens_freezable">are_collection_tokens_freezable</a>(<a href="token.html#0x4_token_collection_object">token::collection_object</a>(<a href="token.html#0x4_token">token</a>))
+            && <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.transfer_ref.is_some(),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>),
+    );
+    <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.transfer_ref.<a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>().disable_ungated_transfer();
+}
+</code></pre>
+</details>
+<h2 id="function-unfreeze_transfer"><a class="header" href="#function-unfreeze_transfer">Function <code>unfreeze_transfer</code> <a id="0x4_aptos_token_unfreeze_transfer"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_unfreeze_transfer">unfreeze_transfer</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_unfreeze_transfer">unfreeze_transfer</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_are_collection_tokens_freezable">are_collection_tokens_freezable</a>(<a href="token.html#0x4_token_collection_object">token::collection_object</a>(<a href="token.html#0x4_token">token</a>))
+            && <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.transfer_ref.is_some(),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>),
+    );
+    <a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.transfer_ref.<a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>().enable_ungated_transfer();
+}
+</code></pre>
+</details>
+<h2 id="function-set_description"><a class="header" href="#function-set_description">Function <code>set_description</code> <a id="0x4_aptos_token_set_description"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_description">set_description</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_description">set_description</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;,
+    description: String,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_is_mutable_description">is_mutable_description</a>(<a href="token.html#0x4_token">token</a>),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>),
+    );
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <a href="token.html#0x4_token_set_description">token::set_description</a>(<a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.mutator_ref.<a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>(), description);
+}
+</code></pre>
+</details>
+<h2 id="function-set_name"><a class="header" href="#function-set_name">Function <code>set_name</code> <a id="0x4_aptos_token_set_name"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_name">set_name</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_name">set_name</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;,
+    name: String,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_is_mutable_name">is_mutable_name</a>(<a href="token.html#0x4_token">token</a>),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>),
+    );
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <a href="token.html#0x4_token_set_name">token::set_name</a>(<a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.mutator_ref.<a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>(), name);
+}
+</code></pre>
+</details>
+<h2 id="function-set_uri"><a class="header" href="#function-set_uri">Function <code>set_uri</code> <a id="0x4_aptos_token_set_uri"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_uri">set_uri</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_uri">set_uri</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;,
+    uri: String,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_is_mutable_uri">is_mutable_uri</a>(<a href="token.html#0x4_token">token</a>),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>),
+    );
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <a href="token.html#0x4_token_set_uri">token::set_uri</a>(<a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.mutator_ref.<a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>(), uri);
+}
+</code></pre>
+</details>
+<h2 id="function-add_property"><a class="header" href="#function-add_property">Function <code>add_property</code> <a id="0x4_aptos_token_add_property"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_add_property">add_property</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, key: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, type: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, value: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_add_property">add_property</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;,
+    key: String,
+    type: String,
+    value: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_are_properties_mutable">are_properties_mutable</a>(<a href="token.html#0x4_token">token</a>),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EPROPERTIES_NOT_MUTABLE">EPROPERTIES_NOT_MUTABLE</a>),
+    );
+
+    <a href="property_map.html#0x4_property_map_add">property_map::add</a>(&<a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.property_mutator_ref, key, type, value);
+}
+</code></pre>
+</details>
+<h2 id="function-add_typed_property"><a class="header" href="#function-add_typed_property">Function <code>add_typed_property</code> <a id="0x4_aptos_token_add_typed_property"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_add_typed_property">add_typed_property</a>&lt;T: key, V: drop&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, key: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, value: V)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_add_typed_property">add_typed_property</a>&lt;T: key, V: drop&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;,
+    key: String,
+    value: V,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_are_properties_mutable">are_properties_mutable</a>(<a href="token.html#0x4_token">token</a>),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EPROPERTIES_NOT_MUTABLE">EPROPERTIES_NOT_MUTABLE</a>),
+    );
+
+    <a href="property_map.html#0x4_property_map_add_typed">property_map::add_typed</a>(&<a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.property_mutator_ref, key, value);
+}
+</code></pre>
+</details>
+<h2 id="function-remove_property"><a class="header" href="#function-remove_property">Function <code>remove_property</code> <a id="0x4_aptos_token_remove_property"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_remove_property">remove_property</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, key: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_remove_property">remove_property</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;,
+    key: String,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_are_properties_mutable">are_properties_mutable</a>(<a href="token.html#0x4_token">token</a>),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EPROPERTIES_NOT_MUTABLE">EPROPERTIES_NOT_MUTABLE</a>),
+    );
+
+    <a href="property_map.html#0x4_property_map_remove">property_map::remove</a>(&<a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.property_mutator_ref, &key);
+}
+</code></pre>
+</details>
+<h2 id="function-update_property"><a class="header" href="#function-update_property">Function <code>update_property</code> <a id="0x4_aptos_token_update_property"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_update_property">update_property</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, key: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, type: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, value: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_update_property">update_property</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;,
+    key: String,
+    type: String,
+    value: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_are_properties_mutable">are_properties_mutable</a>(<a href="token.html#0x4_token">token</a>),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EPROPERTIES_NOT_MUTABLE">EPROPERTIES_NOT_MUTABLE</a>),
+    );
+
+    <a href="property_map.html#0x4_property_map_update">property_map::update</a>(&<a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.property_mutator_ref, &key, type, value);
+}
+</code></pre>
+</details>
+<h2 id="function-update_typed_property"><a class="header" href="#function-update_typed_property">Function <code>update_typed_property</code> <a id="0x4_aptos_token_update_typed_property"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_update_typed_property">update_typed_property</a>&lt;T: key, V: drop&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, key: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, value: V)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_update_typed_property">update_typed_property</a>&lt;T: key, V: drop&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="token.html#0x4_token">token</a>: Object&lt;T&gt;,
+    key: String,
+    value: V,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>, <a href="aptos_token.html#0x4_aptos_token_AptosToken">AptosToken</a> {
+    <b>let</b> <a href="aptos_token.html#0x4_aptos_token">aptos_token</a> = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow">authorized_borrow</a>(&<a href="token.html#0x4_token">token</a>, creator);
+    <b>assert</b>!(
+        <a href="aptos_token.html#0x4_aptos_token_are_properties_mutable">are_properties_mutable</a>(<a href="token.html#0x4_token">token</a>),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EPROPERTIES_NOT_MUTABLE">EPROPERTIES_NOT_MUTABLE</a>),
+    );
+
+    <a href="property_map.html#0x4_property_map_update_typed">property_map::update_typed</a>(&<a href="aptos_token.html#0x4_aptos_token">aptos_token</a>.property_mutator_ref, &key, value);
+}
+</code></pre>
+</details>
+<h2 id="function-collection_object"><a class="header" href="#function-collection_object">Function <code>collection_object</code> <a id="0x4_aptos_token_collection_object"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos_token.html#0x4_aptos_token_collection_object">collection_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: &<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosCollection">aptos_token::AptosCollection</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_collection_object">collection_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: &String): Object&lt;<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>&gt; {
+    <b>let</b> collection_addr = <a href="collection.html#0x4_collection_create_collection_address">collection::create_collection_address</a>(&<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator), name);
+    <a href="../aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>&gt;(collection_addr)
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_collection"><a class="header" href="#function-borrow_collection">Function <code>borrow_collection</code> <a id="0x4_aptos_token_borrow_collection"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: &<a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): &<a href="aptos_token.html#0x4_aptos_token_AptosCollection">aptos_token::AptosCollection</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: &Object&lt;T&gt;): &<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> collection_address = <a href="token.html#0x4_token">token</a>.object_address();
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>&gt;(collection_address),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos_token.html#0x4_aptos_token_ECOLLECTION_DOES_NOT_EXIST">ECOLLECTION_DOES_NOT_EXIST</a>),
+    );
+    &<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>[collection_address]
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_collection_description"><a class="header" href="#function-is_mutable_collection_description">Function <code>is_mutable_collection_description</code> <a id="0x4_aptos_token_is_mutable_collection_description"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_description">is_mutable_collection_description</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_description">is_mutable_collection_description</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).mutable_description
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_collection_royalty"><a class="header" href="#function-is_mutable_collection_royalty">Function <code>is_mutable_collection_royalty</code> <a id="0x4_aptos_token_is_mutable_collection_royalty"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_royalty">is_mutable_collection_royalty</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_royalty">is_mutable_collection_royalty</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).royalty_mutator_ref.is_some()
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_collection_uri"><a class="header" href="#function-is_mutable_collection_uri">Function <code>is_mutable_collection_uri</code> <a id="0x4_aptos_token_is_mutable_collection_uri"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_uri">is_mutable_collection_uri</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_uri">is_mutable_collection_uri</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).mutable_uri
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_collection_token_description"><a class="header" href="#function-is_mutable_collection_token_description">Function <code>is_mutable_collection_token_description</code> <a id="0x4_aptos_token_is_mutable_collection_token_description"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_description">is_mutable_collection_token_description</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_description">is_mutable_collection_token_description</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).mutable_token_description
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_collection_token_name"><a class="header" href="#function-is_mutable_collection_token_name">Function <code>is_mutable_collection_token_name</code> <a id="0x4_aptos_token_is_mutable_collection_token_name"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_name">is_mutable_collection_token_name</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_name">is_mutable_collection_token_name</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).mutable_token_name
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_collection_token_uri"><a class="header" href="#function-is_mutable_collection_token_uri">Function <code>is_mutable_collection_token_uri</code> <a id="0x4_aptos_token_is_mutable_collection_token_uri"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_uri">is_mutable_collection_token_uri</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_uri">is_mutable_collection_token_uri</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).mutable_token_uri
+}
+</code></pre>
+</details>
+<h2 id="function-is_mutable_collection_token_properties"><a class="header" href="#function-is_mutable_collection_token_properties">Function <code>is_mutable_collection_token_properties</code> <a id="0x4_aptos_token_is_mutable_collection_token_properties"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_properties">is_mutable_collection_token_properties</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_is_mutable_collection_token_properties">is_mutable_collection_token_properties</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).mutable_token_properties
+}
+</code></pre>
+</details>
+<h2 id="function-are_collection_tokens_burnable"><a class="header" href="#function-are_collection_tokens_burnable">Function <code>are_collection_tokens_burnable</code> <a id="0x4_aptos_token_are_collection_tokens_burnable"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_are_collection_tokens_burnable">are_collection_tokens_burnable</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_are_collection_tokens_burnable">are_collection_tokens_burnable</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).tokens_burnable_by_creator
+}
+</code></pre>
+</details>
+<h2 id="function-are_collection_tokens_freezable"><a class="header" href="#function-are_collection_tokens_freezable">Function <code>are_collection_tokens_freezable</code> <a id="0x4_aptos_token_are_collection_tokens_freezable"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_are_collection_tokens_freezable">are_collection_tokens_freezable</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_are_collection_tokens_freezable">are_collection_tokens_freezable</a>&lt;T: key&gt;(
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+): bool <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <a href="aptos_token.html#0x4_aptos_token_borrow_collection">borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>).tokens_freezable_by_creator
+}
+</code></pre>
+</details>
+<h2 id="function-authorized_borrow_collection"><a class="header" href="#function-authorized_borrow_collection">Function <code>authorized_borrow_collection</code> <a id="0x4_aptos_token_authorized_borrow_collection"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos_token.html#0x4_aptos_token_authorized_borrow_collection">authorized_borrow_collection</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: &<a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): &<a href="aptos_token.html#0x4_aptos_token_AptosCollection">aptos_token::AptosCollection</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_authorized_borrow_collection">authorized_borrow_collection</a>&lt;T: key&gt;(<a href="collection.html#0x4_collection">collection</a>: &Object&lt;T&gt;, creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): &<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> collection_address = <a href="collection.html#0x4_collection">collection</a>.object_address();
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>&gt;(collection_address),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos_token.html#0x4_aptos_token_ECOLLECTION_DOES_NOT_EXIST">ECOLLECTION_DOES_NOT_EXIST</a>),
+    );
+    <b>assert</b>!(
+        <a href="collection.html#0x4_collection_creator">collection::creator</a>(*<a href="collection.html#0x4_collection">collection</a>) == <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_ENOT_CREATOR">ENOT_CREATOR</a>),
+    );
+    &<a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a>[collection_address]
+}
+</code></pre>
+</details>
+<h2 id="function-set_collection_description"><a class="header" href="#function-set_collection_description">Function <code>set_collection_description</code> <a id="0x4_aptos_token_set_collection_description"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_collection_description">set_collection_description</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_collection_description">set_collection_description</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+    description: String,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> aptos_collection = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow_collection">authorized_borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>, creator);
+    <b>assert</b>!(
+        aptos_collection.mutable_description,
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>),
+    );
+    <a href="collection.html#0x4_collection_set_description">collection::set_description</a>(aptos_collection.mutator_ref.<a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>(), description);
+}
+</code></pre>
+</details>
+<h2 id="function-set_collection_royalties"><a class="header" href="#function-set_collection_royalties">Function <code>set_collection_royalties</code> <a id="0x4_aptos_token_set_collection_royalties"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_collection_royalties">set_collection_royalties</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_collection_royalties">set_collection_royalties</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+    <a href="royalty.html#0x4_royalty">royalty</a>: <a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> aptos_collection = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow_collection">authorized_borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>, creator);
+    <b>assert</b>!(
+        aptos_collection.royalty_mutator_ref.is_some(),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>),
+    );
+    <a href="royalty.html#0x4_royalty_update">royalty::update</a>(aptos_collection.royalty_mutator_ref.<a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>(), <a href="royalty.html#0x4_royalty">royalty</a>);
+}
+</code></pre>
+</details>
+<h2 id="function-set_collection_royalties_call"><a class="header" href="#function-set_collection_royalties_call">Function <code>set_collection_royalties_call</code> <a id="0x4_aptos_token_set_collection_royalties_call"></a></a></h2>
+<pre><code>entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_collection_royalties_call">set_collection_royalties_call</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, royalty_numerator: u64, royalty_denominator: u64, payee_address: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_collection_royalties_call">set_collection_royalties_call</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+    royalty_numerator: u64,
+    royalty_denominator: u64,
+    payee_address: <b>address</b>,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> <a href="royalty.html#0x4_royalty">royalty</a> = <a href="royalty.html#0x4_royalty_create">royalty::create</a>(royalty_numerator, royalty_denominator, payee_address);
+    <a href="aptos_token.html#0x4_aptos_token_set_collection_royalties">set_collection_royalties</a>(creator, <a href="collection.html#0x4_collection">collection</a>, <a href="royalty.html#0x4_royalty">royalty</a>);
+}
+</code></pre>
+</details>
+<h2 id="function-set_collection_uri"><a class="header" href="#function-set_collection_uri">Function <code>set_collection_uri</code> <a id="0x4_aptos_token_set_collection_uri"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_collection_uri">set_collection_uri</a>&lt;T: key&gt;(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos_token.html#0x4_aptos_token_set_collection_uri">set_collection_uri</a>&lt;T: key&gt;(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;T&gt;,
+    uri: String,
+) <b>acquires</b> <a href="aptos_token.html#0x4_aptos_token_AptosCollection">AptosCollection</a> {
+    <b>let</b> aptos_collection = <a href="aptos_token.html#0x4_aptos_token_authorized_borrow_collection">authorized_borrow_collection</a>(&<a href="collection.html#0x4_collection">collection</a>, creator);
+    <b>assert</b>!(
+        aptos_collection.mutable_uri,
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos_token.html#0x4_aptos_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>),
+    );
+    <a href="collection.html#0x4_collection_set_uri">collection::set_uri</a>(aptos_collection.mutator_ref.<a href="aptos_token.html#0x4_aptos_token_borrow">borrow</a>(), uri);
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-token-objects/overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-token-objects/collection.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-token-objects/overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-token-objects/collection.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

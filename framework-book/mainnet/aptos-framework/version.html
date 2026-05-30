@@ -1,0 +1,450 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>version - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/version.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1version"><a class="header" href="#module-0x1version">Module <code>0x1::version</code> <a id="0x1_version"></a></a></h1>
+<p>Maintains the version number for the blockchain.</p>
+<ul>
+<li><a href="#0x1_version_Version">Resource <code>Version</code></a></li>
+<li><a href="#0x1_version_SetVersionCapability">Resource <code>SetVersionCapability</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_version_initialize">Function <code>initialize</code></a></li>
+<li><a href="#0x1_version_set_version">Function <code>set_version</code></a></li>
+<li><a href="#0x1_version_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
+<li><a href="#0x1_version_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#0x1_version_initialize_for_test">Function <code>initialize_for_test</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#high-level-req">High-level Requirements</a></li>
+<li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_1_set_version">Function <code>set_version</code></a></li>
+<li><a href="#@Specification_1_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
+<li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#@Specification_1_initialize_for_test">Function <code>initialize_for_test</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="chain_status.html#0x1_chain_status">0x1::chain_status</a>;
+<b>use</b> <a href="config_buffer.html#0x1_config_buffer">0x1::config_buffer</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="reconfiguration.html#0x1_reconfiguration">0x1::reconfiguration</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
+</code></pre>
+<h2 id="resource-version"><a class="header" href="#resource-version">Resource <code>Version</code> <a id="0x1_version_Version"></a></a></h2>
+<pre><code><b>struct</b> <a href="version.html#0x1_version_Version">Version</a> <b>has</b> drop, store, key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>major: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-setversioncapability"><a class="header" href="#resource-setversioncapability">Resource <code>SetVersionCapability</code> <a id="0x1_version_SetVersionCapability"></a></a></h2>
+<pre><code><b>struct</b> <a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>dummy_field: bool</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_version_EINVALID_MAJOR_VERSION_NUMBER"></a></p>
+<p>Specified major version number must be greater than current version number.</p>
+<pre><code><b>const</b> <a href="version.html#0x1_version_EINVALID_MAJOR_VERSION_NUMBER">EINVALID_MAJOR_VERSION_NUMBER</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_version_ENOT_AUTHORIZED"></a></p>
+<p>Account is not authorized to make this change.</p>
+<pre><code><b>const</b> <a href="version.html#0x1_version_ENOT_AUTHORIZED">ENOT_AUTHORIZED</a>: u64 = 2;
+</code></pre>
+<h2 id="function-initialize"><a class="header" href="#function-initialize">Function <code>initialize</code> <a id="0x1_version_initialize"></a></a></h2>
+<p>Only called during genesis.
+Publishes the Version config.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="version.html#0x1_version_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, initial_version: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="version.html#0x1_version_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, initial_version: u64) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+
+    <b>move_to</b>(aptos_framework, <a href="version.html#0x1_version_Version">Version</a> { major: initial_version });
+    // Give aptos framework <a href="account.html#0x1_account">account</a> capability <b>to</b> call set <a href="version.html#0x1_version">version</a>. This allows on chain governance <b>to</b> do it through
+    // control of the aptos framework <a href="account.html#0x1_account">account</a>.
+    <b>move_to</b>(aptos_framework, <a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a> {});
+}
+</code></pre>
+</details>
+<h2 id="function-set_version"><a class="header" href="#function-set_version">Function <code>set_version</code> <a id="0x1_version_set_version"></a></a></h2>
+<p>Deprecated by <code><a href="version.html#0x1_version_set_for_next_epoch">set_for_next_epoch</a>()</code>.</p>
+<p>WARNING: calling this while randomness is enabled will trigger a new epoch without randomness!</p>
+<p>TODO: update all the tests that reference this function, then disable this function.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="version.html#0x1_version_set_version">set_version</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, major: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="version.html#0x1_version_set_version">set_version</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, major: u64) <b>acquires</b> <a href="version.html#0x1_version_Version">Version</a> {
+    <b>assert</b>!(<b>exists</b>&lt;<a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>)), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="version.html#0x1_version_ENOT_AUTHORIZED">ENOT_AUTHORIZED</a>));
+    <a href="chain_status.html#0x1_chain_status_assert_genesis">chain_status::assert_genesis</a>();
+
+    <b>let</b> old_major = <b>borrow_global</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework).major;
+    <b>assert</b>!(old_major &lt; major, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="version.html#0x1_version_EINVALID_MAJOR_VERSION_NUMBER">EINVALID_MAJOR_VERSION_NUMBER</a>));
+
+    <b>let</b> config = <b>borrow_global_mut</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework);
+    config.major = major;
+
+    // Need <b>to</b> trigger <a href="reconfiguration.html#0x1_reconfiguration">reconfiguration</a> so validator nodes can sync on the updated <a href="version.html#0x1_version">version</a>.
+    <a href="reconfiguration.html#0x1_reconfiguration_reconfigure">reconfiguration::reconfigure</a>();
+}
+</code></pre>
+</details>
+<h2 id="function-set_for_next_epoch"><a class="header" href="#function-set_for_next_epoch">Function <code>set_for_next_epoch</code> <a id="0x1_version_set_for_next_epoch"></a></a></h2>
+<p>Used in on-chain governances to update the major version for the next epoch.
+Example usage:</p>
+<ul>
+<li><code>aptos_framework::version::set_for_next_epoch(&amp;framework_signer, new_version);</code></li>
+<li><code>aptos_framework::aptos_governance::reconfigure(&amp;framework_signer);</code></li>
+</ul>
+<pre><code><b>public</b> entry <b>fun</b> <a href="version.html#0x1_version_set_for_next_epoch">set_for_next_epoch</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, major: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="version.html#0x1_version_set_for_next_epoch">set_for_next_epoch</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, major: u64) <b>acquires</b> <a href="version.html#0x1_version_Version">Version</a> {
+    <b>assert</b>!(<b>exists</b>&lt;<a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>)), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="version.html#0x1_version_ENOT_AUTHORIZED">ENOT_AUTHORIZED</a>));
+    <b>let</b> old_major = <b>borrow_global</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework).major;
+    <b>assert</b>!(old_major &lt; major, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="version.html#0x1_version_EINVALID_MAJOR_VERSION_NUMBER">EINVALID_MAJOR_VERSION_NUMBER</a>));
+    <a href="config_buffer.html#0x1_config_buffer_upsert">config_buffer::upsert</a>(<a href="version.html#0x1_version_Version">Version</a> {major});
+}
+</code></pre>
+</details>
+<h2 id="function-on_new_epoch"><a class="header" href="#function-on_new_epoch">Function <code>on_new_epoch</code> <a id="0x1_version_on_new_epoch"></a></a></h2>
+<p>Only used in reconfigurations to apply the pending <code><a href="version.html#0x1_version_Version">Version</a></code>, if there is any.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="version.html#0x1_version_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="version.html#0x1_version_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="version.html#0x1_version_Version">Version</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
+    <b>if</b> (<a href="config_buffer.html#0x1_config_buffer_does_exist">config_buffer::does_exist</a>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;()) {
+        <b>let</b> new_value = <a href="config_buffer.html#0x1_config_buffer_extract_v2">config_buffer::extract_v2</a>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;();
+        <b>if</b> (<b>exists</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework)) {
+            *<b>borrow_global_mut</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework) = new_value;
+        } <b>else</b> {
+            <b>move_to</b>(framework, new_value);
+        }
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-initialize_for_test"><a class="header" href="#function-initialize_for_test">Function <code>initialize_for_test</code> <a id="0x1_version_initialize_for_test"></a></a></h2>
+<p>Only called in tests and testnets. This allows the core resources account, which only exists in tests/testnets,
+to update the version.</p>
+<pre><code><b>fun</b> <a href="version.html#0x1_version_initialize_for_test">initialize_for_test</a>(core_resources: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="version.html#0x1_version_initialize_for_test">initialize_for_test</a>(core_resources: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_core_resource">system_addresses::assert_core_resource</a>(core_resources);
+    <b>move_to</b>(core_resources, <a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a> {});
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="high-level-requirements"><a class="header" href="#high-level-requirements">High-level Requirements <a id="high-level-req"></a></a></h3>
+<table>
+<tr>
+<th>No.</th><th>Requirement</th><th>Criticality</th><th>Implementation</th><th>Enforcement</th>
+</tr>
+<tr>
+<td>1</td>
+<td>During genesis, the Version resource should be initialized with the initial version and stored along with its capability under the aptos framework account.</td>
+<td>Medium</td>
+<td>The initialize function ensures that the signer is the aptos framework account and stores the Version and SetVersionCapability resources in it.</td>
+<td>Formally verified via <a href="#high-level-req-1">initialize</a>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The version should be updateable after initialization, but only by the Aptos framework account and with an increasing version number.</td>
+<td>Medium</td>
+<td>The version number for the blockchain should be updatable whenever necessary. This functionality is provided by the set_version function which ensures that the new version is greater than the previous one.</td>
+<td>Formally verified via <a href="#high-level-req-2">set_version</a>.</td>
+</tr>
+</table>
+<h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
+<pre><code><b>pragma</b> verify = <b>true</b>;
+<b>pragma</b> aborts_if_is_strict;
+</code></pre>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="version.html#0x1_version_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, initial_version: u64)
+</code></pre>
+<p>Abort if resource already exists in <code>@aptos_framwork</code> when initializing.</p>
+<pre><code>// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework) != @aptos_framework;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>global</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework) == <a href="version.html#0x1_version_Version">Version</a> { major: initial_version };
+<b>ensures</b> <b>global</b>&lt;<a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a>&gt;(@aptos_framework) == <a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a> {};
+</code></pre>
+<h3 id="function-set_version-1"><a class="header" href="#function-set_version-1">Function <code>set_version</code> <a id="@Specification_1_set_version"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="version.html#0x1_version_set_version">set_version</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, major: u64)
+</code></pre>
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">staking_config::StakingRewardsConfigRequirement</a>;
+<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_genesis">chain_status::is_genesis</a>();
+<b>requires</b> <a href="timestamp.html#0x1_timestamp_spec_now_microseconds">timestamp::spec_now_microseconds</a>() &gt;= <a href="reconfiguration.html#0x1_reconfiguration_last_reconfiguration_time">reconfiguration::last_reconfiguration_time</a>();
+<b>requires</b> <b>exists</b>&lt;CoinInfo&lt;AptosCoin&gt;&gt;(@aptos_framework);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework);
+<b>let</b> old_major = <b>global</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework).major;
+// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
+<b>aborts_if</b> !(old_major &lt; major);
+<b>ensures</b> <b>global</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework).major == major;
+</code></pre>
+<h3 id="function-set_for_next_epoch-1"><a class="header" href="#function-set_for_next_epoch-1">Function <code>set_for_next_epoch</code> <a id="@Specification_1_set_for_next_epoch"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="version.html#0x1_version_set_for_next_epoch">set_for_next_epoch</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, major: u64)
+</code></pre>
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="version.html#0x1_version_SetVersionCapability">SetVersionCapability</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>global</b>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;(@aptos_framework).major &gt;= major;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework);
+</code></pre>
+<h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="version.html#0x1_version_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>requires</b> @aptos_framework == std::signer::address_of(framework);
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochRequirement">config_buffer::OnNewEpochRequirement</a>&lt;<a href="version.html#0x1_version_Version">Version</a>&gt;;
+<b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-initialize_for_test-1"><a class="header" href="#function-initialize_for_test-1">Function <code>initialize_for_test</code> <a id="@Specification_1_initialize_for_test"></a></a></h3>
+<pre><code><b>fun</b> <a href="version.html#0x1_version_initialize_for_test">initialize_for_test</a>(core_resources: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<p>This module turns on <code>aborts_if_is_strict</code>, so need to add spec for test function <code>initialize_for_test</code>.</p>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/validator_consensus_info.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/vesting.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/validator_consensus_info.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/vesting.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

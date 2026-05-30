@@ -1,0 +1,759 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>aggregator_v2 - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/aggregator_v2.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1aggregator_v2"><a class="header" href="#module-0x1aggregator_v2">Module <code>0x1::aggregator_v2</code> <a id="0x1_aggregator_v2"></a></a></h1>
+<p>This module provides an interface for aggregators (version 2). Aggregators are
+similar to unsigned integers and support addition and subtraction (aborting on
+underflow or on overflowing a custom upper limit). The difference from integers
+is that aggregators allow to perform both additions and subtractions in parallel
+across multiple transactions, enabling parallel execution. For example, if the
+first transaction is doing <code><a href="aggregator_v2.html#0x1_aggregator_v2_try_add">try_add</a>(X, 1)</code> for aggregator <code>X</code>, and the second is
+doing <code><a href="aggregator_v2.html#0x1_aggregator_v2_try_sub">try_sub</a>(X,3)</code>, they can be executed in parallel avoiding a read-modify-write
+dependency.
+However, reading the aggregator value (i.e. calling <code><a href="aggregator_v2.html#0x1_aggregator_v2_read">read</a>(X)</code>) is a resource-intensive
+operation that also reduced parallelism, and should be avoided as much as possible.
+If you need to capture the value, without revealing it, use snapshot function instead,
+which has no parallelism impact.</p>
+<p>From parallelism considerations, there are three different levels of effects:</p>
+<ul>
+<li>enable full parallelism (cannot create conflicts):
+max_value, create_*, snapshot, derive_string_concat</li>
+<li>enable speculative parallelism (generally parallel via branch prediction)
+try_add, add, try_sub, sub, is_at_least</li>
+<li>create read/write conflicts, as if you were using a regular field
+read, read_snapshot, read_derived_string</li>
+</ul>
+<ul>
+<li><a href="#0x1_aggregator_v2_Aggregator">Struct <code>Aggregator</code></a></li>
+<li><a href="#0x1_aggregator_v2_AggregatorSnapshot">Struct <code>AggregatorSnapshot</code></a></li>
+<li><a href="#0x1_aggregator_v2_DerivedStringSnapshot">Struct <code>DerivedStringSnapshot</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_aggregator_v2_max_value">Function <code>max_value</code></a></li>
+<li><a href="#0x1_aggregator_v2_create_aggregator">Function <code>create_aggregator</code></a></li>
+<li><a href="#0x1_aggregator_v2_create_aggregator_with_value">Function <code>create_aggregator_with_value</code></a></li>
+<li><a href="#0x1_aggregator_v2_create_unbounded_aggregator">Function <code>create_unbounded_aggregator</code></a></li>
+<li><a href="#0x1_aggregator_v2_create_unbounded_aggregator_with_value">Function <code>create_unbounded_aggregator_with_value</code></a></li>
+<li><a href="#0x1_aggregator_v2_try_add">Function <code>try_add</code></a></li>
+<li><a href="#0x1_aggregator_v2_add">Function <code>add</code></a></li>
+<li><a href="#0x1_aggregator_v2_try_sub">Function <code>try_sub</code></a></li>
+<li><a href="#0x1_aggregator_v2_sub">Function <code>sub</code></a></li>
+<li><a href="#0x1_aggregator_v2_is_at_least_impl">Function <code>is_at_least_impl</code></a></li>
+<li><a href="#0x1_aggregator_v2_is_at_least">Function <code>is_at_least</code></a></li>
+<li><a href="#0x1_aggregator_v2_read">Function <code>read</code></a></li>
+<li><a href="#0x1_aggregator_v2_snapshot">Function <code>snapshot</code></a></li>
+<li><a href="#0x1_aggregator_v2_create_snapshot">Function <code>create_snapshot</code></a></li>
+<li><a href="#0x1_aggregator_v2_read_snapshot">Function <code>read_snapshot</code></a></li>
+<li><a href="#0x1_aggregator_v2_read_derived_string">Function <code>read_derived_string</code></a></li>
+<li><a href="#0x1_aggregator_v2_create_derived_string">Function <code>create_derived_string</code></a></li>
+<li><a href="#0x1_aggregator_v2_derive_string_concat">Function <code>derive_string_concat</code></a></li>
+<li><a href="#0x1_aggregator_v2_copy_snapshot">Function <code>copy_snapshot</code></a></li>
+<li><a href="#0x1_aggregator_v2_string_concat">Function <code>string_concat</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_Aggregator">Struct <code>Aggregator</code></a></li>
+<li><a href="#@Specification_1_max_value">Function <code>max_value</code></a></li>
+<li><a href="#@Specification_1_create_aggregator">Function <code>create_aggregator</code></a></li>
+<li><a href="#@Specification_1_create_unbounded_aggregator">Function <code>create_unbounded_aggregator</code></a></li>
+<li><a href="#@Specification_1_try_add">Function <code>try_add</code></a></li>
+<li><a href="#@Specification_1_add">Function <code>add</code></a></li>
+<li><a href="#@Specification_1_try_sub">Function <code>try_sub</code></a></li>
+<li><a href="#@Specification_1_sub">Function <code>sub</code></a></li>
+<li><a href="#@Specification_1_is_at_least_impl">Function <code>is_at_least_impl</code></a></li>
+<li><a href="#@Specification_1_read">Function <code>read</code></a></li>
+<li><a href="#@Specification_1_snapshot">Function <code>snapshot</code></a></li>
+<li><a href="#@Specification_1_create_snapshot">Function <code>create_snapshot</code></a></li>
+<li><a href="#@Specification_1_read_snapshot">Function <code>read_snapshot</code></a></li>
+<li><a href="#@Specification_1_read_derived_string">Function <code>read_derived_string</code></a></li>
+<li><a href="#@Specification_1_create_derived_string">Function <code>create_derived_string</code></a></li>
+<li><a href="#@Specification_1_derive_string_concat">Function <code>derive_string_concat</code></a></li>
+<li><a href="#@Specification_1_copy_snapshot">Function <code>copy_snapshot</code></a></li>
+<li><a href="#@Specification_1_string_concat">Function <code>string_concat</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+</code></pre>
+<h2 id="struct-aggregator"><a class="header" href="#struct-aggregator">Struct <code>Aggregator</code> <a id="0x1_aggregator_v2_Aggregator"></a></a></h2>
+<p>Represents an integer which supports parallel additions and subtractions
+across multiple transactions. See the module description for more details.</p>
+<p>Currently supported types for IntElement are u64 and u128.</p>
+<pre><code><b>struct</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt; <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>value: IntElement</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>max_value: IntElement</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-aggregatorsnapshot"><a class="header" href="#struct-aggregatorsnapshot">Struct <code>AggregatorSnapshot</code> <a id="0x1_aggregator_v2_AggregatorSnapshot"></a></a></h2>
+<p>Represents a constant value, that was derived from an aggregator at given instant in time.
+Unlike read() and storing the value directly, this enables parallel execution of transactions,
+while storing snapshot of aggregator state elsewhere.</p>
+<pre><code><b>struct</b> <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt; <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>value: IntElement</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-derivedstringsnapshot"><a class="header" href="#struct-derivedstringsnapshot">Struct <code>DerivedStringSnapshot</code> <a id="0x1_aggregator_v2_DerivedStringSnapshot"></a></a></h2>
+<pre><code><b>struct</b> <a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">DerivedStringSnapshot</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>value: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>padding: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_aggregator_v2_EAGGREGATOR_OVERFLOW"></a></p>
+<p>The value of aggregator overflows. Raised by uncoditional add() call</p>
+<pre><code><b>const</b> <a href="aggregator_v2.html#0x1_aggregator_v2_EAGGREGATOR_OVERFLOW">EAGGREGATOR_OVERFLOW</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_aggregator_v2_EAGGREGATOR_UNDERFLOW"></a></p>
+<p>The value of aggregator underflows (goes below zero). Raised by uncoditional sub() call</p>
+<pre><code><b>const</b> <a href="aggregator_v2.html#0x1_aggregator_v2_EAGGREGATOR_UNDERFLOW">EAGGREGATOR_UNDERFLOW</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_aggregator_v2_EAGGREGATOR_API_V2_NOT_ENABLED"></a></p>
+<p>The aggregator api v2 feature flag is not enabled.</p>
+<pre><code><b>const</b> <a href="aggregator_v2.html#0x1_aggregator_v2_EAGGREGATOR_API_V2_NOT_ENABLED">EAGGREGATOR_API_V2_NOT_ENABLED</a>: u64 = 6;
+</code></pre>
+<p><a id="0x1_aggregator_v2_EAGGREGATOR_FUNCTION_NOT_YET_SUPPORTED"></a></p>
+<p>The native aggregator function, that is in the move file, is not yet supported.
+and any calls will raise this error.</p>
+<pre><code><b>const</b> <a href="aggregator_v2.html#0x1_aggregator_v2_EAGGREGATOR_FUNCTION_NOT_YET_SUPPORTED">EAGGREGATOR_FUNCTION_NOT_YET_SUPPORTED</a>: u64 = 9;
+</code></pre>
+<p><a id="0x1_aggregator_v2_ECONCAT_STRING_LENGTH_TOO_LARGE"></a></p>
+<p>Arguments passed to concat exceed max limit of 1024 bytes (for prefix and suffix together).</p>
+<pre><code><b>const</b> <a href="aggregator_v2.html#0x1_aggregator_v2_ECONCAT_STRING_LENGTH_TOO_LARGE">ECONCAT_STRING_LENGTH_TOO_LARGE</a>: u64 = 8;
+</code></pre>
+<p><a id="0x1_aggregator_v2_EUNSUPPORTED_AGGREGATOR_SNAPSHOT_TYPE"></a></p>
+<p>The generic type supplied to the aggregator snapshot is not supported.</p>
+<pre><code><b>const</b> <a href="aggregator_v2.html#0x1_aggregator_v2_EUNSUPPORTED_AGGREGATOR_SNAPSHOT_TYPE">EUNSUPPORTED_AGGREGATOR_SNAPSHOT_TYPE</a>: u64 = 5;
+</code></pre>
+<p><a id="0x1_aggregator_v2_EUNSUPPORTED_AGGREGATOR_TYPE"></a></p>
+<p>The generic type supplied to the aggregator is not supported.</p>
+<pre><code><b>const</b> <a href="aggregator_v2.html#0x1_aggregator_v2_EUNSUPPORTED_AGGREGATOR_TYPE">EUNSUPPORTED_AGGREGATOR_TYPE</a>: u64 = 7;
+</code></pre>
+<h2 id="function-max_value"><a class="header" href="#function-max_value">Function <code>max_value</code> <a id="0x1_aggregator_v2_max_value"></a></a></h2>
+<p>Returns <code>max_value</code> exceeding which aggregator overflows.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_max_value">max_value</a>&lt;IntElement: <b>copy</b>, drop&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;): IntElement
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_max_value">max_value</a>&lt;IntElement: <b>copy</b> + drop&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;): IntElement {
+    self.max_value
+}
+</code></pre>
+</details>
+<h2 id="function-create_aggregator"><a class="header" href="#function-create_aggregator">Function <code>create_aggregator</code> <a id="0x1_aggregator_v2_create_aggregator"></a></a></h2>
+<p>Creates new aggregator, with given 'max_value'.</p>
+<p>Currently supported types for IntElement are u64 and u128.
+EAGGREGATOR_ELEMENT_TYPE_NOT_SUPPORTED raised if called with a different type.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_aggregator">create_aggregator</a>&lt;IntElement: <b>copy</b>, drop&gt;(max_value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_aggregator">create_aggregator</a>&lt;IntElement: <b>copy</b> + drop&gt;(max_value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;;
+</code></pre>
+</details>
+<h2 id="function-create_aggregator_with_value"><a class="header" href="#function-create_aggregator_with_value">Function <code>create_aggregator_with_value</code> <a id="0x1_aggregator_v2_create_aggregator_with_value"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_aggregator_with_value">create_aggregator_with_value</a>&lt;IntElement: <b>copy</b>, drop&gt;(start_value: IntElement, max_value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_aggregator_with_value">create_aggregator_with_value</a>&lt;IntElement: <b>copy</b> + drop&gt;(start_value: IntElement, max_value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt; {
+    <b>let</b> <a href="aggregator.html#0x1_aggregator">aggregator</a> = <a href="aggregator_v2.html#0x1_aggregator_v2_create_aggregator">create_aggregator</a>(max_value);
+    <a href="aggregator.html#0x1_aggregator">aggregator</a>.<a href="aggregator_v2.html#0x1_aggregator_v2_add">add</a>(start_value);
+    <a href="aggregator.html#0x1_aggregator">aggregator</a>
+}
+</code></pre>
+</details>
+<h2 id="function-create_unbounded_aggregator"><a class="header" href="#function-create_unbounded_aggregator">Function <code>create_unbounded_aggregator</code> <a id="0x1_aggregator_v2_create_unbounded_aggregator"></a></a></h2>
+<p>Creates new aggregator, without any 'max_value' on top of the implicit bound restriction
+due to the width of the type (i.e. MAX_U64 for u64, MAX_U128 for u128).</p>
+<p>Currently supported types for IntElement are u64 and u128.
+EAGGREGATOR_ELEMENT_TYPE_NOT_SUPPORTED raised if called with a different type.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_unbounded_aggregator">create_unbounded_aggregator</a>&lt;IntElement: <b>copy</b>, drop&gt;(): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_unbounded_aggregator">create_unbounded_aggregator</a>&lt;IntElement: <b>copy</b> + drop&gt;(): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;;
+</code></pre>
+</details>
+<h2 id="function-create_unbounded_aggregator_with_value"><a class="header" href="#function-create_unbounded_aggregator_with_value">Function <code>create_unbounded_aggregator_with_value</code> <a id="0x1_aggregator_v2_create_unbounded_aggregator_with_value"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_unbounded_aggregator_with_value">create_unbounded_aggregator_with_value</a>&lt;IntElement: <b>copy</b>, drop&gt;(start_value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_unbounded_aggregator_with_value">create_unbounded_aggregator_with_value</a>&lt;IntElement: <b>copy</b> + drop&gt;(start_value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt; {
+    <b>let</b> <a href="aggregator.html#0x1_aggregator">aggregator</a> = <a href="aggregator_v2.html#0x1_aggregator_v2_create_unbounded_aggregator">create_unbounded_aggregator</a>();
+    <a href="aggregator.html#0x1_aggregator">aggregator</a>.<a href="aggregator_v2.html#0x1_aggregator_v2_add">add</a>(start_value);
+    <a href="aggregator.html#0x1_aggregator">aggregator</a>
+}
+</code></pre>
+</details>
+<h2 id="function-try_add"><a class="header" href="#function-try_add">Function <code>try_add</code> <a id="0x1_aggregator_v2_try_add"></a></a></h2>
+<p>Adds <code>value</code> to aggregator.
+If addition would exceed the max_value, <code><b>false</b></code> is returned, and aggregator value is left unchanged.</p>
+<p>Parallelism info: This operation enables speculative parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_try_add">try_add</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, value: IntElement): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_try_add">try_add</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;, value: IntElement): bool;
+</code></pre>
+</details>
+<h2 id="function-add"><a class="header" href="#function-add">Function <code>add</code> <a id="0x1_aggregator_v2_add"></a></a></h2>
+<p>Adds <code>value</code> to aggregator, unconditionally.
+If addition would exceed the max_value, EAGGREGATOR_OVERFLOW exception will be thrown.</p>
+<p>Parallelism info: This operation enables speculative parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_add">add</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, value: IntElement)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_add">add</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;, value: IntElement) {
+    <b>assert</b>!(self.<a href="aggregator_v2.html#0x1_aggregator_v2_try_add">try_add</a>(value), <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="aggregator_v2.html#0x1_aggregator_v2_EAGGREGATOR_OVERFLOW">EAGGREGATOR_OVERFLOW</a>));
+}
+</code></pre>
+</details>
+<h2 id="function-try_sub"><a class="header" href="#function-try_sub">Function <code>try_sub</code> <a id="0x1_aggregator_v2_try_sub"></a></a></h2>
+<p>Subtracts <code>value</code> from aggregator.
+If subtraction would result in a negative value, <code><b>false</b></code> is returned, and aggregator value is left unchanged.</p>
+<p>Parallelism info: This operation enables speculative parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_try_sub">try_sub</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, value: IntElement): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_try_sub">try_sub</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;, value: IntElement): bool;
+</code></pre>
+</details>
+<h2 id="function-sub"><a class="header" href="#function-sub">Function <code>sub</code> <a id="0x1_aggregator_v2_sub"></a></a></h2>
+<p>Parallelism info: This operation enables speculative parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_sub">sub</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, value: IntElement)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_sub">sub</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;, value: IntElement) {
+    <b>assert</b>!(self.<a href="aggregator_v2.html#0x1_aggregator_v2_try_sub">try_sub</a>(value), <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="aggregator_v2.html#0x1_aggregator_v2_EAGGREGATOR_UNDERFLOW">EAGGREGATOR_UNDERFLOW</a>));
+}
+</code></pre>
+</details>
+<h2 id="function-is_at_least_impl"><a class="header" href="#function-is_at_least_impl">Function <code>is_at_least_impl</code> <a id="0x1_aggregator_v2_is_at_least_impl"></a></a></h2>
+<pre><code><b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least_impl">is_at_least_impl</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, min_amount: IntElement): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least_impl">is_at_least_impl</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;, min_amount: IntElement): bool;
+</code></pre>
+</details>
+<h2 id="function-is_at_least"><a class="header" href="#function-is_at_least">Function <code>is_at_least</code> <a id="0x1_aggregator_v2_is_at_least"></a></a></h2>
+<p>Returns true if aggregator value is larger than or equal to the given <code>min_amount</code>, false otherwise.</p>
+<p>This operation is more efficient and much more parallelization friendly than calling <code><a href="aggregator_v2.html#0x1_aggregator_v2_read">read</a>(agg) &gt; min_amount</code>.
+Until traits are deployed, <code>is_at_most</code>/<code>is_equal</code> utility methods can be derived from this one (assuming +1 doesn't overflow):</p>
+<ul>
+<li>for <code>is_at_most(agg, max_amount)</code>, you can do <code>!<a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least">is_at_least</a>(max_amount + 1)</code></li>
+<li>for <code>is_equal(agg, value)</code>, you can do <code><a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least">is_at_least</a>(value) &amp;&amp; !<a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least">is_at_least</a>(value + 1)</code></li>
+</ul>
+<p>Parallelism info: This operation enables speculative parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least">is_at_least</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, min_amount: IntElement): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least">is_at_least</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;, min_amount: IntElement): bool {
+    self.<a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least_impl">is_at_least_impl</a>(min_amount)
+}
+</code></pre>
+</details>
+<h2 id="function-read"><a class="header" href="#function-read">Function <code>read</code> <a id="0x1_aggregator_v2_read"></a></a></h2>
+<p>Returns a value stored in this aggregator.
+Note: This operation is resource-intensive, and reduces parallelism.
+If you need to capture the value, without revealing it, use snapshot function instead,
+which has no parallelism impact.
+If called in a transaction that also modifies the aggregator, or has other read/write conflicts,
+it will sequentialize that transaction. (i.e. up to concurrency_level times slower)
+If called in a separate transaction (i.e. after transaction that modifies aggregator), it might be
+up to two times slower.</p>
+<p>Parallelism info: This operation <em>prevents</em> speculative parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read">read</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;): IntElement
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read">read</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;): IntElement;
+</code></pre>
+</details>
+<h2 id="function-snapshot"><a class="header" href="#function-snapshot">Function <code>snapshot</code> <a id="0x1_aggregator_v2_snapshot"></a></a></h2>
+<p>Returns a wrapper of a current value of an aggregator
+Unlike read(), it is fast and avoids sequential dependencies.</p>
+<p>Parallelism info: This operation enables parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_snapshot">snapshot</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_snapshot">snapshot</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;;
+</code></pre>
+</details>
+<h2 id="function-create_snapshot"><a class="header" href="#function-create_snapshot">Function <code>create_snapshot</code> <a id="0x1_aggregator_v2_create_snapshot"></a></a></h2>
+<p>Creates a snapshot of a given value.
+Useful for when object is sometimes created via snapshot() or string_concat(), and sometimes directly.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_snapshot">create_snapshot</a>&lt;IntElement: <b>copy</b>, drop&gt;(value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_snapshot">create_snapshot</a>&lt;IntElement: <b>copy</b> + drop&gt;(value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;;
+</code></pre>
+</details>
+<h2 id="function-read_snapshot"><a class="header" href="#function-read_snapshot">Function <code>read_snapshot</code> <a id="0x1_aggregator_v2_read_snapshot"></a></a></h2>
+<p>Returns a value stored in this snapshot.
+Note: This operation is resource-intensive, and reduces parallelism.
+(Especially if called in a transaction that also modifies the aggregator,
+or has other read/write conflicts)</p>
+<p>Parallelism info: This operation <em>prevents</em> speculative parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read_snapshot">read_snapshot</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;): IntElement
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read_snapshot">read_snapshot</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;): IntElement;
+</code></pre>
+</details>
+<h2 id="function-read_derived_string"><a class="header" href="#function-read_derived_string">Function <code>read_derived_string</code> <a id="0x1_aggregator_v2_read_derived_string"></a></a></h2>
+<p>Returns a value stored in this DerivedStringSnapshot.
+Note: This operation is resource-intensive, and reduces parallelism.
+(Especially if called in a transaction that also modifies the aggregator,
+or has other read/write conflicts)</p>
+<p>Parallelism info: This operation <em>prevents</em> speculative parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read_derived_string">read_derived_string</a>(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">aggregator_v2::DerivedStringSnapshot</a>): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read_derived_string">read_derived_string</a>(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">DerivedStringSnapshot</a>): String;
+</code></pre>
+</details>
+<h2 id="function-create_derived_string"><a class="header" href="#function-create_derived_string">Function <code>create_derived_string</code> <a id="0x1_aggregator_v2_create_derived_string"></a></a></h2>
+<p>Creates a DerivedStringSnapshot of a given value.
+Useful for when object is sometimes created via string_concat(), and sometimes directly.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_derived_string">create_derived_string</a>(value: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">aggregator_v2::DerivedStringSnapshot</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_derived_string">create_derived_string</a>(value: String): <a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">DerivedStringSnapshot</a>;
+</code></pre>
+</details>
+<h2 id="function-derive_string_concat"><a class="header" href="#function-derive_string_concat">Function <code>derive_string_concat</code> <a id="0x1_aggregator_v2_derive_string_concat"></a></a></h2>
+<p>Concatenates <code>before</code>, <code>snapshot</code> and <code>after</code> into a single string.
+snapshot passed needs to have integer type - currently supported types are u64 and u128.
+Raises EUNSUPPORTED_AGGREGATOR_SNAPSHOT_TYPE if called with another type.
+If length of prefix and suffix together exceeds 1024 bytes, ECONCAT_STRING_LENGTH_TOO_LARGE is raised.</p>
+<p>Parallelism info: This operation enables parallelism.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_derive_string_concat">derive_string_concat</a>&lt;IntElement&gt;(before: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;, after: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">aggregator_v2::DerivedStringSnapshot</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_derive_string_concat">derive_string_concat</a>&lt;IntElement&gt;(before: String, snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;, after: String): <a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">DerivedStringSnapshot</a>;
+</code></pre>
+</details>
+<h2 id="function-copy_snapshot"><a class="header" href="#function-copy_snapshot">Function <code>copy_snapshot</code> <a id="0x1_aggregator_v2_copy_snapshot"></a></a></h2>
+<p>NOT YET IMPLEMENTED, always raises EAGGREGATOR_FUNCTION_NOT_YET_SUPPORTED.</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_copy_snapshot">copy_snapshot</a>&lt;IntElement: <b>copy</b>, drop&gt;(snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_copy_snapshot">copy_snapshot</a>&lt;IntElement: <b>copy</b> + drop&gt;(snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;;
+</code></pre>
+</details>
+<h2 id="function-string_concat"><a class="header" href="#function-string_concat">Function <code>string_concat</code> <a id="0x1_aggregator_v2_string_concat"></a></a></h2>
+<p>DEPRECATED, use derive_string_concat() instead. always raises EAGGREGATOR_FUNCTION_NOT_YET_SUPPORTED.</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_string_concat">string_concat</a>&lt;IntElement&gt;(before: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;, after: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_string_concat">string_concat</a>&lt;IntElement&gt;(before: String, snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;, after: String): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;String&gt;;
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<p><a id="0x1_aggregator_v2_spec_get_value"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">spec_get_value</a>&lt;IntElement&gt;(<a href="aggregator.html#0x1_aggregator">aggregator</a>: <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;): IntElement;
+</code></pre>
+<p><a id="0x1_aggregator_v2_spec_get_max_value"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">spec_get_max_value</a>&lt;IntElement&gt;(<a href="aggregator.html#0x1_aggregator">aggregator</a>: <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt;): IntElement;
+</code></pre>
+<p><a id="0x1_aggregator_v2_spec_get_string_value"></a></p>
+<pre><code><b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_string_value">spec_get_string_value</a>&lt;IntElement&gt;(<a href="aggregator.html#0x1_aggregator">aggregator</a>: <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;): String;
+</code></pre>
+<p><a id="0x1_aggregator_v2_spec_read_snapshot"></a></p>
+<pre><code><b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_spec_read_snapshot">spec_read_snapshot</a>&lt;IntElement&gt;(snapshot: <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">AggregatorSnapshot</a>&lt;IntElement&gt;): IntElement {
+   snapshot.value
+}
+</code></pre>
+<p><a id="0x1_aggregator_v2_spec_read_derived_string"></a></p>
+<pre><code><b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_spec_read_derived_string">spec_read_derived_string</a>(snapshot: <a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">DerivedStringSnapshot</a>): String {
+   snapshot.value
+}
+</code></pre>
+<h3 id="struct-aggregator-1"><a class="header" href="#struct-aggregator-1">Struct <code>Aggregator</code> <a id="@Specification_1_Aggregator"></a></a></h3>
+<pre><code><b>struct</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">Aggregator</a>&lt;IntElement&gt; <b>has</b> drop, store
+</code></pre>
+<dl>
+<dt>
+<code>value: IntElement</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>max_value: IntElement</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-max_value-1"><a class="header" href="#function-max_value-1">Function <code>max_value</code> <a id="@Specification_1_max_value"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_max_value">max_value</a>&lt;IntElement: <b>copy</b>, drop&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;): IntElement
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-create_aggregator-1"><a class="header" href="#function-create_aggregator-1">Function <code>create_aggregator</code> <a id="@Specification_1_create_aggregator"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_aggregator">create_aggregator</a>&lt;IntElement: <b>copy</b>, drop&gt;(max_value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-create_unbounded_aggregator-1"><a class="header" href="#function-create_unbounded_aggregator-1">Function <code>create_unbounded_aggregator</code> <a id="@Specification_1_create_unbounded_aggregator"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_unbounded_aggregator">create_unbounded_aggregator</a>&lt;IntElement: <b>copy</b>, drop&gt;(): <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-try_add-1"><a class="header" href="#function-try_add-1">Function <code>try_add</code> <a id="@Specification_1_try_add"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_try_add">try_add</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, value: IntElement): bool
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-add-1"><a class="header" href="#function-add-1">Function <code>add</code> <a id="@Specification_1_add"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_add">add</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, value: IntElement)
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-try_sub-1"><a class="header" href="#function-try_sub-1">Function <code>try_sub</code> <a id="@Specification_1_try_sub"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_try_sub">try_sub</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, value: IntElement): bool
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-sub-1"><a class="header" href="#function-sub-1">Function <code>sub</code> <a id="@Specification_1_sub"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_sub">sub</a>&lt;IntElement&gt;(self: &<b>mut</b> <a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, value: IntElement)
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-is_at_least_impl-1"><a class="header" href="#function-is_at_least_impl-1">Function <code>is_at_least_impl</code> <a id="@Specification_1_is_at_least_impl"></a></a></h3>
+<pre><code><b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_is_at_least_impl">is_at_least_impl</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;, min_amount: IntElement): bool
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-read-1"><a class="header" href="#function-read-1">Function <code>read</code> <a id="@Specification_1_read"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read">read</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;): IntElement
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-snapshot-1"><a class="header" href="#function-snapshot-1">Function <code>snapshot</code> <a id="@Specification_1_snapshot"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_snapshot">snapshot</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_Aggregator">aggregator_v2::Aggregator</a>&lt;IntElement&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="aggregator_v2.html#0x1_aggregator_v2_AbortsIfIntElement">AbortsIfIntElement</a>&lt;IntElement&gt;;
+<b>ensures</b> [abstract] result.value == <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">spec_get_value</a>(self);
+</code></pre>
+<h3 id="function-create_snapshot-1"><a class="header" href="#function-create_snapshot-1">Function <code>create_snapshot</code> <a id="@Specification_1_create_snapshot"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_snapshot">create_snapshot</a>&lt;IntElement: <b>copy</b>, drop&gt;(value: IntElement): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="aggregator_v2.html#0x1_aggregator_v2_AbortsIfIntElement">AbortsIfIntElement</a>&lt;IntElement&gt;;
+<b>ensures</b> [abstract] result.value == value;
+</code></pre>
+<h3 id="function-read_snapshot-1"><a class="header" href="#function-read_snapshot-1">Function <code>read_snapshot</code> <a id="@Specification_1_read_snapshot"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read_snapshot">read_snapshot</a>&lt;IntElement&gt;(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;): IntElement
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="aggregator_v2.html#0x1_aggregator_v2_AbortsIfIntElement">AbortsIfIntElement</a>&lt;IntElement&gt;;
+<b>ensures</b> [abstract] result == self.value;
+</code></pre>
+<h3 id="function-read_derived_string-1"><a class="header" href="#function-read_derived_string-1">Function <code>read_derived_string</code> <a id="@Specification_1_read_derived_string"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_read_derived_string">read_derived_string</a>(self: &<a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">aggregator_v2::DerivedStringSnapshot</a>): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == self.value;
+</code></pre>
+<h3 id="function-create_derived_string-1"><a class="header" href="#function-create_derived_string-1">Function <code>create_derived_string</code> <a id="@Specification_1_create_derived_string"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_create_derived_string">create_derived_string</a>(value: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">aggregator_v2::DerivedStringSnapshot</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] len(value.bytes) &gt; 1024;
+<b>ensures</b> [abstract] result.value == value;
+</code></pre>
+<h3 id="function-derive_string_concat-1"><a class="header" href="#function-derive_string_concat-1">Function <code>derive_string_concat</code> <a id="@Specification_1_derive_string_concat"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_derive_string_concat">derive_string_concat</a>&lt;IntElement&gt;(before: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;, after: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">aggregator_v2::DerivedStringSnapshot</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="aggregator_v2.html#0x1_aggregator_v2_AbortsIfIntElement">AbortsIfIntElement</a>&lt;IntElement&gt;;
+<b>ensures</b> [abstract] result.value.bytes == concat(before.bytes, concat(<a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_string_value">spec_get_string_value</a>(snapshot).bytes, after.bytes));
+<b>aborts_if</b> [abstract] len(before.bytes) + len(after.bytes) &gt; 1024;
+</code></pre>
+<p><a id="0x1_aggregator_v2_AbortsIfIntElement"></a></p>
+<pre><code><b>schema</b> <a href="aggregator_v2.html#0x1_aggregator_v2_AbortsIfIntElement">AbortsIfIntElement</a>&lt;IntElement&gt; {
+    <b>aborts_if</b> [abstract] <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;IntElement&gt;().bytes != b"u64" && <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;IntElement&gt;().bytes != b"u128";
+}
+</code></pre>
+<h3 id="function-copy_snapshot-1"><a class="header" href="#function-copy_snapshot-1">Function <code>copy_snapshot</code> <a id="@Specification_1_copy_snapshot"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_copy_snapshot">copy_snapshot</a>&lt;IntElement: <b>copy</b>, drop&gt;(snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>true</b>;
+</code></pre>
+<h3 id="function-string_concat-1"><a class="header" href="#function-string_concat-1">Function <code>string_concat</code> <a id="@Specification_1_string_concat"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="aggregator_v2.html#0x1_aggregator_v2_string_concat">string_concat</a>&lt;IntElement&gt;(before: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, snapshot: &<a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;IntElement&gt;, after: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>true</b>;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/aggregator_factory.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/aptos_account.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/aggregator_factory.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/aptos_account.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

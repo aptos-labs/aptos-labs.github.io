@@ -1,0 +1,2451 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>market_types - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-experimental/market_types.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x7market_types"><a class="header" href="#module-0x7market_types">Module <code>0x7::market_types</code> <a id="0x7_market_types"></a></a></h1>
+<ul>
+<li><a href="#0x7_market_types_OrderCancellationReason">Enum <code>OrderCancellationReason</code></a></li>
+<li><a href="#0x7_market_types_OrderStatus">Enum <code>OrderStatus</code></a></li>
+<li><a href="#0x7_market_types_CallbackResult">Enum <code>CallbackResult</code></a></li>
+<li><a href="#0x7_market_types_SettleTradeResult">Enum <code>SettleTradeResult</code></a></li>
+<li><a href="#0x7_market_types_ValidationResult">Enum <code>ValidationResult</code></a></li>
+<li><a href="#0x7_market_types_PlaceMakerOrderResult">Enum <code>PlaceMakerOrderResult</code></a></li>
+<li><a href="#0x7_market_types_MarketClearinghouseCallbacks">Enum <code>MarketClearinghouseCallbacks</code></a></li>
+<li><a href="#0x7_market_types_Market">Enum <code>Market</code></a></li>
+<li><a href="#0x7_market_types_MarketConfig">Enum <code>MarketConfig</code></a></li>
+<li><a href="#0x7_market_types_OrderEvent">Enum <code>OrderEvent</code></a></li>
+<li><a href="#0x7_market_types_BulkOrderPlacedEvent">Enum <code>BulkOrderPlacedEvent</code></a></li>
+<li><a href="#0x7_market_types_BulkOrderModifiedEvent">Enum <code>BulkOrderModifiedEvent</code></a></li>
+<li><a href="#0x7_market_types_BulkOrderFilledEvent">Enum <code>BulkOrderFilledEvent</code></a></li>
+<li><a href="#0x7_market_types_BulkOrderRejectionEvent">Enum <code>BulkOrderRejectionEvent</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_post_only_violation">Function <code>order_cancellation_reason_post_only_violation</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_ioc_violation">Function <code>order_cancellation_reason_ioc_violation</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_position_update_violation">Function <code>order_cancellation_reason_position_update_violation</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_clearinghouse_settle_violation">Function <code>order_cancellation_reason_clearinghouse_settle_violation</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_max_fill_limit_violation">Function <code>order_cancellation_reason_max_fill_limit_violation</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_duplicate_client_order_id">Function <code>order_cancellation_reason_duplicate_client_order_id</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_order_pre_cancelled">Function <code>order_cancellation_reason_order_pre_cancelled</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_place_maker_order_violation">Function <code>order_cancellation_reason_place_maker_order_violation</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">Function <code>order_cancellation_reason_dead_mans_switch_expired</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_disallowed_self_trading">Function <code>order_cancellation_reason_disallowed_self_trading</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_cancelled_by_user">Function <code>order_cancellation_reason_cancelled_by_user</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_cancelled_by_system">Function <code>order_cancellation_reason_cancelled_by_system</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_cancelled_by_system_due_to_error">Function <code>order_cancellation_reason_cancelled_by_system_due_to_error</code></a></li>
+<li><a href="#0x7_market_types_order_cancellation_reason_clearinghouse_stopped_matching">Function <code>order_cancellation_reason_clearinghouse_stopped_matching</code></a></li>
+<li><a href="#0x7_market_types_order_status_open">Function <code>order_status_open</code></a></li>
+<li><a href="#0x7_market_types_order_status_filled">Function <code>order_status_filled</code></a></li>
+<li><a href="#0x7_market_types_order_status_cancelled">Function <code>order_status_cancelled</code></a></li>
+<li><a href="#0x7_market_types_order_status_rejected">Function <code>order_status_rejected</code></a></li>
+<li><a href="#0x7_market_types_order_status_size_reduced">Function <code>order_status_size_reduced</code></a></li>
+<li><a href="#0x7_market_types_order_status_acknowledged">Function <code>order_status_acknowledged</code></a></li>
+<li><a href="#0x7_market_types_new_settle_trade_result">Function <code>new_settle_trade_result</code></a></li>
+<li><a href="#0x7_market_types_new_validation_result">Function <code>new_validation_result</code></a></li>
+<li><a href="#0x7_market_types_new_place_maker_order_result">Function <code>new_place_maker_order_result</code></a></li>
+<li><a href="#0x7_market_types_new_market_clearinghouse_callbacks">Function <code>new_market_clearinghouse_callbacks</code></a></li>
+<li><a href="#0x7_market_types_get_settled_size">Function <code>get_settled_size</code></a></li>
+<li><a href="#0x7_market_types_get_maker_cancellation_reason">Function <code>get_maker_cancellation_reason</code></a></li>
+<li><a href="#0x7_market_types_get_taker_cancellation_reason">Function <code>get_taker_cancellation_reason</code></a></li>
+<li><a href="#0x7_market_types_get_callback_result">Function <code>get_callback_result</code></a></li>
+<li><a href="#0x7_market_types_is_validation_result_valid">Function <code>is_validation_result_valid</code></a></li>
+<li><a href="#0x7_market_types_get_validation_failure_reason">Function <code>get_validation_failure_reason</code></a></li>
+<li><a href="#0x7_market_types_get_place_maker_order_actions">Function <code>get_place_maker_order_actions</code></a></li>
+<li><a href="#0x7_market_types_get_place_maker_order_cancellation_reason">Function <code>get_place_maker_order_cancellation_reason</code></a></li>
+<li><a href="#0x7_market_types_extract_results">Function <code>extract_results</code></a></li>
+<li><a href="#0x7_market_types_should_stop_matching">Function <code>should_stop_matching</code></a></li>
+<li><a href="#0x7_market_types_new_callback_result_continue_matching">Function <code>new_callback_result_continue_matching</code></a></li>
+<li><a href="#0x7_market_types_new_callback_result_stop_matching">Function <code>new_callback_result_stop_matching</code></a></li>
+<li><a href="#0x7_market_types_new_callback_result_not_available">Function <code>new_callback_result_not_available</code></a></li>
+<li><a href="#0x7_market_types_settle_trade">Function <code>settle_trade</code></a></li>
+<li><a href="#0x7_market_types_validate_order_placement">Function <code>validate_order_placement</code></a></li>
+<li><a href="#0x7_market_types_validate_bulk_order_placement">Function <code>validate_bulk_order_placement</code></a></li>
+<li><a href="#0x7_market_types_place_maker_order">Function <code>place_maker_order</code></a></li>
+<li><a href="#0x7_market_types_cleanup_order">Function <code>cleanup_order</code></a></li>
+<li><a href="#0x7_market_types_cleanup_bulk_order_at_price">Function <code>cleanup_bulk_order_at_price</code></a></li>
+<li><a href="#0x7_market_types_place_bulk_order">Function <code>place_bulk_order</code></a></li>
+<li><a href="#0x7_market_types_decrease_order_size">Function <code>decrease_order_size</code></a></li>
+<li><a href="#0x7_market_types_get_order_metadata_bytes">Function <code>get_order_metadata_bytes</code></a></li>
+<li><a href="#0x7_market_types_new_market_config">Function <code>new_market_config</code></a></li>
+<li><a href="#0x7_market_types_new_market">Function <code>new_market</code></a></li>
+<li><a href="#0x7_market_types_set_allow_self_trade">Function <code>set_allow_self_trade</code></a></li>
+<li><a href="#0x7_market_types_set_allow_events_emission">Function <code>set_allow_events_emission</code></a></li>
+<li><a href="#0x7_market_types_set_allow_dead_mans_switch">Function <code>set_allow_dead_mans_switch</code></a></li>
+<li><a href="#0x7_market_types_set_dead_mans_switch_min_keep_alive_time_secs">Function <code>set_dead_mans_switch_min_keep_alive_time_secs</code></a></li>
+<li><a href="#0x7_market_types_get_order_book">Function <code>get_order_book</code></a></li>
+<li><a href="#0x7_market_types_get_market_address">Function <code>get_market_address</code></a></li>
+<li><a href="#0x7_market_types_best_bid_price">Function <code>best_bid_price</code></a></li>
+<li><a href="#0x7_market_types_best_ask_price">Function <code>best_ask_price</code></a></li>
+<li><a href="#0x7_market_types_is_taker_order">Function <code>is_taker_order</code></a></li>
+<li><a href="#0x7_market_types_is_allowed_self_trade">Function <code>is_allowed_self_trade</code></a></li>
+<li><a href="#0x7_market_types_get_remaining_size">Function <code>get_remaining_size</code></a></li>
+<li><a href="#0x7_market_types_get_bulk_order_remaining_size">Function <code>get_bulk_order_remaining_size</code></a></li>
+<li><a href="#0x7_market_types_get_order_metadata">Function <code>get_order_metadata</code></a></li>
+<li><a href="#0x7_market_types_set_order_metadata">Function <code>set_order_metadata</code></a></li>
+<li><a href="#0x7_market_types_get_order_metadata_by_client_id">Function <code>get_order_metadata_by_client_id</code></a></li>
+<li><a href="#0x7_market_types_set_order_metadata_by_client_id">Function <code>set_order_metadata_by_client_id</code></a></li>
+<li><a href="#0x7_market_types_take_ready_price_based_orders">Function <code>take_ready_price_based_orders</code></a></li>
+<li><a href="#0x7_market_types_take_ready_time_based_orders">Function <code>take_ready_time_based_orders</code></a></li>
+<li><a href="#0x7_market_types_emit_event_for_order">Function <code>emit_event_for_order</code></a></li>
+<li><a href="#0x7_market_types_emit_event_for_bulk_order_placed">Function <code>emit_event_for_bulk_order_placed</code></a></li>
+<li><a href="#0x7_market_types_emit_event_for_bulk_order_cancelled">Function <code>emit_event_for_bulk_order_cancelled</code></a></li>
+<li><a href="#0x7_market_types_emit_event_for_bulk_order_filled">Function <code>emit_event_for_bulk_order_filled</code></a></li>
+<li><a href="#0x7_market_types_emit_event_for_bulk_order_modified">Function <code>emit_event_for_bulk_order_modified</code></a></li>
+<li><a href="#0x7_market_types_emit_event_for_bulk_order_rejection">Function <code>emit_event_for_bulk_order_rejection</code></a></li>
+<li><a href="#0x7_market_types_get_order_book_mut">Function <code>get_order_book_mut</code></a></li>
+<li><a href="#0x7_market_types_get_pre_cancellation_tracker_mut">Function <code>get_pre_cancellation_tracker_mut</code></a></li>
+<li><a href="#0x7_market_types_get_dead_mans_switch_tracker">Function <code>get_dead_mans_switch_tracker</code></a></li>
+<li><a href="#0x7_market_types_get_dead_mans_switch_tracker_mut">Function <code>get_dead_mans_switch_tracker_mut</code></a></li>
+<li><a href="#0x7_market_types_is_dead_mans_switch_enabled">Function <code>is_dead_mans_switch_enabled</code></a></li>
+<li><a href="#0x7_market_types_get_parent">Function <code>get_parent</code></a></li>
+<li><a href="#0x7_market_types_get_market">Function <code>get_market</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../aptos-framework/event.html#0x1_event">0x1::event</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="../aptos-stdlib/table.html#0x1_table">0x1::table</a>;
+<b>use</b> <a href="../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+<b>use</b> <a href="../aptos-trading/single_order_types.html#0x5_single_order_types">0x5::single_order_types</a>;
+<b>use</b> <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">0x7::dead_mans_switch_tracker</a>;
+<b>use</b> <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info">0x7::market_clearinghouse_order_info</a>;
+<b>use</b> <a href="order_book.html#0x7_order_book">0x7::order_book</a>;
+<b>use</b> <a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">0x7::pre_cancellation_tracker</a>;
+</code></pre>
+<h2 id="enum-ordercancellationreason"><a class="header" href="#enum-ordercancellationreason">Enum <code>OrderCancellationReason</code> <a id="0x7_market_types_OrderCancellationReason"></a></a></h2>
+<p>Reasons why an order was cancelled</p>
+<pre><code>enum <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>PostOnlyViolation</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>IOCViolation</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>PositionUpdateViolation</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>ReduceOnlyViolation</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>ClearinghouseSettleViolation</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>MaxFillLimitViolation</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>DuplicateClientOrderIdViolation</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>OrderPreCancelled</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>PlaceMakerOrderViolation</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>DeadMansSwitchExpired</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>DisallowedSelfTrading</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>OrderCancelledByUser</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>OrderCancelledBySystem</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>OrderCancelledBySystemDueToError</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>ClearinghouseStoppedMatching</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-orderstatus"><a class="header" href="#enum-orderstatus">Enum <code>OrderStatus</code> <a id="0x7_market_types_OrderStatus"></a></a></h2>
+<pre><code>enum <a href="market_types.html#0x7_market_types_OrderStatus">OrderStatus</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>OPEN</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>FILLED</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>CANCELLED</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>REJECTED</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>SIZE_REDUCED</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>ACKNOWLEDGED</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-callbackresult"><a class="header" href="#enum-callbackresult">Enum <code>CallbackResult</code> <a id="0x7_market_types_CallbackResult"></a></a></h2>
+<pre><code>enum <a href="market_types.html#0x7_market_types_CallbackResult">CallbackResult</a>&lt;R: <b>copy</b>, drop, store&gt; <b>has</b> <b>copy</b>, drop
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>NOT_AVAILABLE</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>CONTINUE_MATCHING</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>result: R</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+<details>
+<summary>STOP_MATCHING</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>result: R</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-settletraderesult"><a class="header" href="#enum-settletraderesult">Enum <code>SettleTradeResult</code> <a id="0x7_market_types_SettleTradeResult"></a></a></h2>
+<pre><code>enum <a href="market_types.html#0x7_market_types_SettleTradeResult">SettleTradeResult</a>&lt;R: <b>copy</b>, drop, store&gt; <b>has</b> drop
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>settled_size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>maker_cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>taker_cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>callback_result: <a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-validationresult"><a class="header" href="#enum-validationresult">Enum <code>ValidationResult</code> <a id="0x7_market_types_ValidationResult"></a></a></h2>
+<pre><code>enum <a href="market_types.html#0x7_market_types_ValidationResult">ValidationResult</a> <b>has</b> <b>copy</b>, drop
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>failure_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-placemakerorderresult"><a class="header" href="#enum-placemakerorderresult">Enum <code>PlaceMakerOrderResult</code> <a id="0x7_market_types_PlaceMakerOrderResult"></a></a></h2>
+<pre><code>enum <a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">PlaceMakerOrderResult</a>&lt;R: <b>copy</b>, drop, store&gt; <b>has</b> <b>copy</b>, drop
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>action: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;R&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-marketclearinghousecallbacks"><a class="header" href="#enum-marketclearinghousecallbacks">Enum <code>MarketClearinghouseCallbacks</code> <a id="0x7_market_types_MarketClearinghouseCallbacks"></a></a></h2>
+<pre><code>enum <a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt; <b>has</b> drop
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>settle_trade_f: |&<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u128, u64, u64|<a href="market_types.html#0x7_market_types_SettleTradeResult">market_types::SettleTradeResult</a>&lt;R&gt; <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ settle_trade_f arguments: market, taker, maker, fill_id, settled_price, settled_size,
+</dd>
+<dt>
+<code>validate_order_placement_f: |<a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u64|<a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a> <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ validate_settlement_update_f arguments: order_info, size
+</dd>
+<dt>
+<code>validate_bulk_order_placement_f: |<b>address</b>, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &M|<a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a> <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ Validate the bulk order placement arguments: account, bids_prices, bids_sizes, asks_prices, asks_sizes
+</dd>
+<dt>
+<code>place_maker_order_f: |<a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u64|<a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">market_types::PlaceMakerOrderResult</a>&lt;R&gt; <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ place_maker_order_f arguments: order_info, size
+</dd>
+<dt>
+<code>cleanup_order_f: |<a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u64, bool| <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ cleanup_order_f arguments: order_info, cleanup_size, is_taker
+</dd>
+<dt>
+<code>cleanup_bulk_order_at_price_f: |<b>address</b>, <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, bool, u64, u64| <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ cleanup_bulk_orders_f arguments: account, is_bid, remaining_sizes
+</dd>
+<dt>
+<code>place_bulk_order_f: |<b>address</b>, <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &M| <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ place_bulk_order_f arguments: account, order_id, bid_prices, bid_sizes, ask_prices, ask_sizes,
+ cancelled_bid_prices, cancelled_bid_sizes, cancelled_ask_prices, cancelled_ask_sizes, metadata
+</dd>
+<dt>
+<code>decrease_order_size_f: |<a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u64| <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ decrease_order_size_f arguments: order_info, size
+</dd>
+<dt>
+<code>get_order_metadata_bytes: |&M|<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; <b>has</b> <b>copy</b> + drop</code>
+</dt>
+<dd>
+ get a string representation of order metadata to be used in events
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-market"><a class="header" href="#enum-market">Enum <code>Market</code> <a id="0x7_market_types_Market"></a></a></h2>
+<pre><code>enum <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M: <b>copy</b>, drop, store&gt; <b>has</b> store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>parent: <b>address</b></code>
+</dt>
+<dd>
+ Address of the parent object that created this market
+ Purely for grouping events based on the source DEX, not used otherwise
+</dd>
+<dt>
+<code>market: <b>address</b></code>
+</dt>
+<dd>
+ Address of the market object of this market.
+</dd>
+<dt>
+<code>config: <a href="market_types.html#0x7_market_types_MarketConfig">market_types::MarketConfig</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="order_book.html#0x7_order_book">order_book</a>: <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">pre_cancellation_tracker</a>: <a href="../aptos-stdlib/table.html#0x1_table_Table">table::Table</a>&lt;u8, <a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker_PreCancellationTracker">pre_cancellation_tracker::PreCancellationTracker</a>&gt;</code>
+</dt>
+<dd>
+ Pre cancellation tracker for the market, it is wrapped inside a table
+ as otherwise any insertion/deletion from the tracker would cause conflict
+ with the order book.
+</dd>
+<dt>
+<code><a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">dead_mans_switch_tracker</a>: <a href="../aptos-stdlib/table.html#0x1_table_Table">table::Table</a>&lt;u8, <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker_DeadMansSwitchTracker">dead_mans_switch_tracker::DeadMansSwitchTracker</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-marketconfig"><a class="header" href="#enum-marketconfig">Enum <code>MarketConfig</code> <a id="0x7_market_types_MarketConfig"></a></a></h2>
+<pre><code>enum <a href="market_types.html#0x7_market_types_MarketConfig">MarketConfig</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>allow_self_trade: bool</code>
+</dt>
+<dd>
+ Weather to allow self matching orders
+</dd>
+<dt>
+<code>allow_events_emission: bool</code>
+</dt>
+<dd>
+ Whether to allow sending all events for the markett
+</dd>
+<dt>
+<code>pre_cancellation_window_secs: u64</code>
+</dt>
+<dd>
+ Pre cancellation window in seconds
+</dd>
+<dt>
+<code>enable_dead_mans_switch: bool</code>
+</dt>
+<dd>
+ Enable dead man's switch functionality
+</dd>
+<dt>
+<code>min_keep_alive_time_secs: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-orderevent"><a class="header" href="#enum-orderevent">Enum <code>OrderEvent</code> <a id="0x7_market_types_OrderEvent"></a></a></h2>
+<pre><code>#[<a href="../aptos-framework/event.html#0x1_event">event</a>]
+enum <a href="market_types.html#0x7_market_types_OrderEvent">OrderEvent</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>parent: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>market: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>order_id: u128</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>user: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>orig_size: u64</code>
+</dt>
+<dd>
+ Original size of the order
+</dd>
+<dt>
+<code>remaining_size: u64</code>
+</dt>
+<dd>
+ Remaining size of the order in the order book
+</dd>
+<dt>
+<code>size_delta: u64</code>
+</dt>
+<dd>
+ OPEN - size_delta will be amount of size added
+ CANCELLED - size_delta will be amount of size removed
+ FILLED - size_delta will be amount of size filled
+ REJECTED - size_delta will always be 0
+</dd>
+<dt>
+<code>price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_bid: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_taker: bool</code>
+</dt>
+<dd>
+ Whether the order crosses the orderbook.
+</dd>
+<dt>
+<code>status: <a href="market_types.html#0x7_market_types_OrderStatus">market_types::OrderStatus</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>details: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>metadata_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-bulkorderplacedevent"><a class="header" href="#enum-bulkorderplacedevent">Enum <code>BulkOrderPlacedEvent</code> <a id="0x7_market_types_BulkOrderPlacedEvent"></a></a></h2>
+<pre><code>#[<a href="../aptos-framework/event.html#0x1_event">event</a>]
+enum <a href="market_types.html#0x7_market_types_BulkOrderPlacedEvent">BulkOrderPlacedEvent</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>parent: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>market: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>order_id: u128</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>user: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancelled_bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancelled_bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancelled_ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancelled_ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>previous_seq_num: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-bulkordermodifiedevent"><a class="header" href="#enum-bulkordermodifiedevent">Enum <code>BulkOrderModifiedEvent</code> <a id="0x7_market_types_BulkOrderModifiedEvent"></a></a></h2>
+<pre><code>#[<a href="../aptos-framework/event.html#0x1_event">event</a>]
+enum <a href="market_types.html#0x7_market_types_BulkOrderModifiedEvent">BulkOrderModifiedEvent</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>parent: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>market: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>order_id: u128</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>user: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancelled_bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancelled_bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancelled_ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancelled_ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>previous_seq_num: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-bulkorderfilledevent"><a class="header" href="#enum-bulkorderfilledevent">Enum <code>BulkOrderFilledEvent</code> <a id="0x7_market_types_BulkOrderFilledEvent"></a></a></h2>
+<pre><code>#[<a href="../aptos-framework/event.html#0x1_event">event</a>]
+enum <a href="market_types.html#0x7_market_types_BulkOrderFilledEvent">BulkOrderFilledEvent</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>parent: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>market: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>order_id: u128</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>user: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>filled_size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>orig_price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_bid: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>fill_id: u128</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-bulkorderrejectionevent"><a class="header" href="#enum-bulkorderrejectionevent">Enum <code>BulkOrderRejectionEvent</code> <a id="0x7_market_types_BulkOrderRejectionEvent"></a></a></h2>
+<pre><code>#[<a href="../aptos-framework/event.html#0x1_event">event</a>]
+enum <a href="market_types.html#0x7_market_types_BulkOrderRejectionEvent">BulkOrderRejectionEvent</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>parent: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>market: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>user: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>existing_sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x7_market_types_EINVALID_TIME_IN_FORCE"></a></p>
+<pre><code><b>const</b> <a href="market_types.html#0x7_market_types_EINVALID_TIME_IN_FORCE">EINVALID_TIME_IN_FORCE</a>: u64 = 3;
+</code></pre>
+<p><a id="0x7_market_types_DEAD_MANS_SWITCH_TRACKER_KEY"></a></p>
+<pre><code><b>const</b> <a href="market_types.html#0x7_market_types_DEAD_MANS_SWITCH_TRACKER_KEY">DEAD_MANS_SWITCH_TRACKER_KEY</a>: u8 = 1;
+</code></pre>
+<p><a id="0x7_market_types_EINVALID_ADDRESS"></a></p>
+<pre><code><b>const</b> <a href="market_types.html#0x7_market_types_EINVALID_ADDRESS">EINVALID_ADDRESS</a>: u64 = 1;
+</code></pre>
+<p><a id="0x7_market_types_EINVALID_SETTLE_RESULT"></a></p>
+<pre><code><b>const</b> <a href="market_types.html#0x7_market_types_EINVALID_SETTLE_RESULT">EINVALID_SETTLE_RESULT</a>: u64 = 2;
+</code></pre>
+<p><a id="0x7_market_types_EORDER_DOES_NOT_EXIST"></a></p>
+<pre><code><b>const</b> <a href="market_types.html#0x7_market_types_EORDER_DOES_NOT_EXIST">EORDER_DOES_NOT_EXIST</a>: u64 = 6;
+</code></pre>
+<p><a id="0x7_market_types_PRE_CANCELLATION_TRACKER_KEY"></a></p>
+<pre><code><b>const</b> <a href="market_types.html#0x7_market_types_PRE_CANCELLATION_TRACKER_KEY">PRE_CANCELLATION_TRACKER_KEY</a>: u8 = 0;
+</code></pre>
+<h2 id="function-order_cancellation_reason_post_only_violation"><a class="header" href="#function-order_cancellation_reason_post_only_violation">Function <code>order_cancellation_reason_post_only_violation</code> <a id="0x7_market_types_order_cancellation_reason_post_only_violation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_post_only_violation">order_cancellation_reason_post_only_violation</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_post_only_violation">order_cancellation_reason_post_only_violation</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::PostOnlyViolation
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_ioc_violation"><a class="header" href="#function-order_cancellation_reason_ioc_violation">Function <code>order_cancellation_reason_ioc_violation</code> <a id="0x7_market_types_order_cancellation_reason_ioc_violation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_ioc_violation">order_cancellation_reason_ioc_violation</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_ioc_violation">order_cancellation_reason_ioc_violation</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::IOCViolation
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_position_update_violation"><a class="header" href="#function-order_cancellation_reason_position_update_violation">Function <code>order_cancellation_reason_position_update_violation</code> <a id="0x7_market_types_order_cancellation_reason_position_update_violation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_position_update_violation">order_cancellation_reason_position_update_violation</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_position_update_violation">order_cancellation_reason_position_update_violation</a>()
+    : <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::PositionUpdateViolation
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_clearinghouse_settle_violation"><a class="header" href="#function-order_cancellation_reason_clearinghouse_settle_violation">Function <code>order_cancellation_reason_clearinghouse_settle_violation</code> <a id="0x7_market_types_order_cancellation_reason_clearinghouse_settle_violation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_clearinghouse_settle_violation">order_cancellation_reason_clearinghouse_settle_violation</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_clearinghouse_settle_violation">order_cancellation_reason_clearinghouse_settle_violation</a>()
+    : <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::ClearinghouseSettleViolation
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_max_fill_limit_violation"><a class="header" href="#function-order_cancellation_reason_max_fill_limit_violation">Function <code>order_cancellation_reason_max_fill_limit_violation</code> <a id="0x7_market_types_order_cancellation_reason_max_fill_limit_violation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_max_fill_limit_violation">order_cancellation_reason_max_fill_limit_violation</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_max_fill_limit_violation">order_cancellation_reason_max_fill_limit_violation</a>()
+    : <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::MaxFillLimitViolation
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_duplicate_client_order_id"><a class="header" href="#function-order_cancellation_reason_duplicate_client_order_id">Function <code>order_cancellation_reason_duplicate_client_order_id</code> <a id="0x7_market_types_order_cancellation_reason_duplicate_client_order_id"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_duplicate_client_order_id">order_cancellation_reason_duplicate_client_order_id</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_duplicate_client_order_id">order_cancellation_reason_duplicate_client_order_id</a>()
+    : <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::DuplicateClientOrderIdViolation
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_order_pre_cancelled"><a class="header" href="#function-order_cancellation_reason_order_pre_cancelled">Function <code>order_cancellation_reason_order_pre_cancelled</code> <a id="0x7_market_types_order_cancellation_reason_order_pre_cancelled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_order_pre_cancelled">order_cancellation_reason_order_pre_cancelled</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_order_pre_cancelled">order_cancellation_reason_order_pre_cancelled</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::OrderPreCancelled
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_place_maker_order_violation"><a class="header" href="#function-order_cancellation_reason_place_maker_order_violation">Function <code>order_cancellation_reason_place_maker_order_violation</code> <a id="0x7_market_types_order_cancellation_reason_place_maker_order_violation"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_place_maker_order_violation">order_cancellation_reason_place_maker_order_violation</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_place_maker_order_violation">order_cancellation_reason_place_maker_order_violation</a>()
+    : <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::PlaceMakerOrderViolation
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_dead_mans_switch_expired"><a class="header" href="#function-order_cancellation_reason_dead_mans_switch_expired">Function <code>order_cancellation_reason_dead_mans_switch_expired</code> <a id="0x7_market_types_order_cancellation_reason_dead_mans_switch_expired"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">order_cancellation_reason_dead_mans_switch_expired</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">order_cancellation_reason_dead_mans_switch_expired</a>()
+    : <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::DeadMansSwitchExpired
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_disallowed_self_trading"><a class="header" href="#function-order_cancellation_reason_disallowed_self_trading">Function <code>order_cancellation_reason_disallowed_self_trading</code> <a id="0x7_market_types_order_cancellation_reason_disallowed_self_trading"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_disallowed_self_trading">order_cancellation_reason_disallowed_self_trading</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_disallowed_self_trading">order_cancellation_reason_disallowed_self_trading</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::DisallowedSelfTrading
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_cancelled_by_user"><a class="header" href="#function-order_cancellation_reason_cancelled_by_user">Function <code>order_cancellation_reason_cancelled_by_user</code> <a id="0x7_market_types_order_cancellation_reason_cancelled_by_user"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_cancelled_by_user">order_cancellation_reason_cancelled_by_user</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_cancelled_by_user">order_cancellation_reason_cancelled_by_user</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::OrderCancelledByUser
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_cancelled_by_system"><a class="header" href="#function-order_cancellation_reason_cancelled_by_system">Function <code>order_cancellation_reason_cancelled_by_system</code> <a id="0x7_market_types_order_cancellation_reason_cancelled_by_system"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_cancelled_by_system">order_cancellation_reason_cancelled_by_system</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_cancelled_by_system">order_cancellation_reason_cancelled_by_system</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::OrderCancelledBySystem
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_cancelled_by_system_due_to_error"><a class="header" href="#function-order_cancellation_reason_cancelled_by_system_due_to_error">Function <code>order_cancellation_reason_cancelled_by_system_due_to_error</code> <a id="0x7_market_types_order_cancellation_reason_cancelled_by_system_due_to_error"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_cancelled_by_system_due_to_error">order_cancellation_reason_cancelled_by_system_due_to_error</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_cancelled_by_system_due_to_error">order_cancellation_reason_cancelled_by_system_due_to_error</a>()
+    : <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::OrderCancelledBySystemDueToError
+}
+</code></pre>
+</details>
+<h2 id="function-order_cancellation_reason_clearinghouse_stopped_matching"><a class="header" href="#function-order_cancellation_reason_clearinghouse_stopped_matching">Function <code>order_cancellation_reason_clearinghouse_stopped_matching</code> <a id="0x7_market_types_order_cancellation_reason_clearinghouse_stopped_matching"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_clearinghouse_stopped_matching">order_cancellation_reason_clearinghouse_stopped_matching</a>(): <a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_cancellation_reason_clearinghouse_stopped_matching">order_cancellation_reason_clearinghouse_stopped_matching</a>()
+    : <a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a> {
+    OrderCancellationReason::ClearinghouseStoppedMatching
+}
+</code></pre>
+</details>
+<h2 id="function-order_status_open"><a class="header" href="#function-order_status_open">Function <code>order_status_open</code> <a id="0x7_market_types_order_status_open"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_open">order_status_open</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">market_types::OrderStatus</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_open">order_status_open</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">OrderStatus</a> {
+    OrderStatus::OPEN
+}
+</code></pre>
+</details>
+<h2 id="function-order_status_filled"><a class="header" href="#function-order_status_filled">Function <code>order_status_filled</code> <a id="0x7_market_types_order_status_filled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_filled">order_status_filled</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">market_types::OrderStatus</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_filled">order_status_filled</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">OrderStatus</a> {
+    OrderStatus::FILLED
+}
+</code></pre>
+</details>
+<h2 id="function-order_status_cancelled"><a class="header" href="#function-order_status_cancelled">Function <code>order_status_cancelled</code> <a id="0x7_market_types_order_status_cancelled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_cancelled">order_status_cancelled</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">market_types::OrderStatus</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_cancelled">order_status_cancelled</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">OrderStatus</a> {
+    OrderStatus::CANCELLED
+}
+</code></pre>
+</details>
+<h2 id="function-order_status_rejected"><a class="header" href="#function-order_status_rejected">Function <code>order_status_rejected</code> <a id="0x7_market_types_order_status_rejected"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_rejected">order_status_rejected</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">market_types::OrderStatus</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_rejected">order_status_rejected</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">OrderStatus</a> {
+    OrderStatus::REJECTED
+}
+</code></pre>
+</details>
+<h2 id="function-order_status_size_reduced"><a class="header" href="#function-order_status_size_reduced">Function <code>order_status_size_reduced</code> <a id="0x7_market_types_order_status_size_reduced"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_size_reduced">order_status_size_reduced</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">market_types::OrderStatus</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_size_reduced">order_status_size_reduced</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">OrderStatus</a> {
+    OrderStatus::SIZE_REDUCED
+}
+</code></pre>
+</details>
+<h2 id="function-order_status_acknowledged"><a class="header" href="#function-order_status_acknowledged">Function <code>order_status_acknowledged</code> <a id="0x7_market_types_order_status_acknowledged"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_acknowledged">order_status_acknowledged</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">market_types::OrderStatus</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_order_status_acknowledged">order_status_acknowledged</a>(): <a href="market_types.html#0x7_market_types_OrderStatus">OrderStatus</a> {
+    OrderStatus::ACKNOWLEDGED
+}
+</code></pre>
+</details>
+<h2 id="function-new_settle_trade_result"><a class="header" href="#function-new_settle_trade_result">Function <code>new_settle_trade_result</code> <a id="0x7_market_types_new_settle_trade_result"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_settle_trade_result">new_settle_trade_result</a>&lt;R: <b>copy</b>, drop, store&gt;(settled_size: u64, maker_cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, taker_cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, callback_result: <a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;): <a href="market_types.html#0x7_market_types_SettleTradeResult">market_types::SettleTradeResult</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_settle_trade_result">new_settle_trade_result</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    settled_size: u64,
+    maker_cancellation_reason: Option&lt;String&gt;,
+    taker_cancellation_reason: Option&lt;String&gt;,
+    callback_result: <a href="market_types.html#0x7_market_types_CallbackResult">CallbackResult</a>&lt;R&gt;
+): <a href="market_types.html#0x7_market_types_SettleTradeResult">SettleTradeResult</a>&lt;R&gt; {
+    SettleTradeResult::V1 {
+        settled_size,
+        maker_cancellation_reason,
+        taker_cancellation_reason,
+        callback_result
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_validation_result"><a class="header" href="#function-new_validation_result">Function <code>new_validation_result</code> <a id="0x7_market_types_new_validation_result"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_validation_result">new_validation_result</a>(cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;): <a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_validation_result">new_validation_result</a>(
+    cancellation_reason: Option&lt;String&gt;
+): <a href="market_types.html#0x7_market_types_ValidationResult">ValidationResult</a> {
+    ValidationResult::V1 { failure_reason: cancellation_reason }
+}
+</code></pre>
+</details>
+<h2 id="function-new_place_maker_order_result"><a class="header" href="#function-new_place_maker_order_result">Function <code>new_place_maker_order_result</code> <a id="0x7_market_types_new_place_maker_order_result"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_place_maker_order_result">new_place_maker_order_result</a>&lt;R: <b>copy</b>, drop, store&gt;(cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, actions: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;R&gt;): <a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">market_types::PlaceMakerOrderResult</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_place_maker_order_result">new_place_maker_order_result</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    cancellation_reason: Option&lt;String&gt;, actions: Option&lt;R&gt;
+): <a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">PlaceMakerOrderResult</a>&lt;R&gt; {
+    PlaceMakerOrderResult::V1 { cancellation_reason, action: actions }
+}
+</code></pre>
+</details>
+<h2 id="function-new_market_clearinghouse_callbacks"><a class="header" href="#function-new_market_clearinghouse_callbacks">Function <code>new_market_clearinghouse_callbacks</code> <a id="0x7_market_types_new_market_clearinghouse_callbacks"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_market_clearinghouse_callbacks">new_market_clearinghouse_callbacks</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(settle_trade_f: |&<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u128, u64, u64|<a href="market_types.html#0x7_market_types_SettleTradeResult">market_types::SettleTradeResult</a>&lt;R&gt; <b>has</b> <b>copy</b> + drop, validate_order_placement_f: |<a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u64|<a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a> <b>has</b> <b>copy</b> + drop, validate_bulk_order_placement_f: |<b>address</b>, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &M|<a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a> <b>has</b> <b>copy</b> + drop, place_maker_order_f: |<a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u64|<a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">market_types::PlaceMakerOrderResult</a>&lt;R&gt; <b>has</b> <b>copy</b> + drop, cleanup_order_f: |<a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u64, bool| <b>has</b> <b>copy</b> + drop, cleanup_bulk_order_at_price_f: |<b>address</b>, <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, bool, u64, u64| <b>has</b> <b>copy</b> + drop, place_bulk_order_f: |<b>address</b>, <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, &M| <b>has</b> <b>copy</b> + drop, decrease_order_size_f: |<a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, u64| <b>has</b> <b>copy</b> + drop, get_order_metadata_bytes: |&M|<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; <b>has</b> <b>copy</b> + drop): <a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_market_clearinghouse_callbacks">new_market_clearinghouse_callbacks</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    settle_trade_f: |
+        &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+        MarketClearinghouseOrderInfo&lt;M&gt;,
+        MarketClearinghouseOrderInfo&lt;M&gt;,
+        u128,
+        u64,
+        u64
+    | <a href="market_types.html#0x7_market_types_SettleTradeResult">SettleTradeResult</a>&lt;R&gt; <b>has</b> drop + <b>copy</b>,
+    validate_order_placement_f: |
+        MarketClearinghouseOrderInfo&lt;M&gt;,
+        u64
+    | <a href="market_types.html#0x7_market_types_ValidationResult">ValidationResult</a> <b>has</b> drop + <b>copy</b>,
+    validate_bulk_order_placement_f: |
+        <b>address</b>,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &M
+    | <a href="market_types.html#0x7_market_types_ValidationResult">ValidationResult</a> <b>has</b> drop + <b>copy</b>,
+    place_maker_order_f: |MarketClearinghouseOrderInfo&lt;M&gt;, u64| <a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">PlaceMakerOrderResult</a>&lt;R&gt; <b>has</b> drop
+    + <b>copy</b>,
+    cleanup_order_f: |
+        MarketClearinghouseOrderInfo&lt;M&gt;,
+        u64,
+        bool
+    | <b>has</b> drop + <b>copy</b>,
+    cleanup_bulk_order_at_price_f: |
+        <b>address</b>,
+        OrderId,
+        bool,
+        u64,
+        u64
+    | <b>has</b> drop + <b>copy</b>,
+    place_bulk_order_f: |
+        <b>address</b>,
+        OrderId,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+        &M
+    | <b>has</b> drop + <b>copy</b>,
+    decrease_order_size_f: |
+        MarketClearinghouseOrderInfo&lt;M&gt;,
+        u64
+    | <b>has</b> drop + <b>copy</b>,
+    get_order_metadata_bytes: |&M| <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; <b>has</b> drop + <b>copy</b>
+): <a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt; {
+    MarketClearinghouseCallbacks::V1 {
+        settle_trade_f,
+        validate_order_placement_f,
+        validate_bulk_order_placement_f,
+        place_maker_order_f,
+        cleanup_order_f,
+        cleanup_bulk_order_at_price_f,
+        place_bulk_order_f,
+        decrease_order_size_f,
+        get_order_metadata_bytes
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-get_settled_size"><a class="header" href="#function-get_settled_size">Function <code>get_settled_size</code> <a id="0x7_market_types_get_settled_size"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_settled_size">get_settled_size</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_SettleTradeResult">market_types::SettleTradeResult</a>&lt;R&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_settled_size">get_settled_size</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_SettleTradeResult">SettleTradeResult</a>&lt;R&gt;
+): u64 {
+    self.settled_size
+}
+</code></pre>
+</details>
+<h2 id="function-get_maker_cancellation_reason"><a class="header" href="#function-get_maker_cancellation_reason">Function <code>get_maker_cancellation_reason</code> <a id="0x7_market_types_get_maker_cancellation_reason"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_maker_cancellation_reason">get_maker_cancellation_reason</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_SettleTradeResult">market_types::SettleTradeResult</a>&lt;R&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_maker_cancellation_reason">get_maker_cancellation_reason</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_SettleTradeResult">SettleTradeResult</a>&lt;R&gt;
+): Option&lt;String&gt; {
+    self.maker_cancellation_reason
+}
+</code></pre>
+</details>
+<h2 id="function-get_taker_cancellation_reason"><a class="header" href="#function-get_taker_cancellation_reason">Function <code>get_taker_cancellation_reason</code> <a id="0x7_market_types_get_taker_cancellation_reason"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_taker_cancellation_reason">get_taker_cancellation_reason</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_SettleTradeResult">market_types::SettleTradeResult</a>&lt;R&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_taker_cancellation_reason">get_taker_cancellation_reason</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_SettleTradeResult">SettleTradeResult</a>&lt;R&gt;
+): Option&lt;String&gt; {
+    self.taker_cancellation_reason
+}
+</code></pre>
+</details>
+<h2 id="function-get_callback_result"><a class="header" href="#function-get_callback_result">Function <code>get_callback_result</code> <a id="0x7_market_types_get_callback_result"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_callback_result">get_callback_result</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_SettleTradeResult">market_types::SettleTradeResult</a>&lt;R&gt;): &<a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_callback_result">get_callback_result</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_SettleTradeResult">SettleTradeResult</a>&lt;R&gt;
+): &<a href="market_types.html#0x7_market_types_CallbackResult">CallbackResult</a>&lt;R&gt; {
+    &self.callback_result
+}
+</code></pre>
+</details>
+<h2 id="function-is_validation_result_valid"><a class="header" href="#function-is_validation_result_valid">Function <code>is_validation_result_valid</code> <a id="0x7_market_types_is_validation_result_valid"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_is_validation_result_valid">is_validation_result_valid</a>(self: &<a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_is_validation_result_valid">is_validation_result_valid</a>(self: &<a href="market_types.html#0x7_market_types_ValidationResult">ValidationResult</a>): bool {
+    self.failure_reason.is_none()
+}
+</code></pre>
+</details>
+<h2 id="function-get_validation_failure_reason"><a class="header" href="#function-get_validation_failure_reason">Function <code>get_validation_failure_reason</code> <a id="0x7_market_types_get_validation_failure_reason"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_validation_failure_reason">get_validation_failure_reason</a>(self: &<a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_validation_failure_reason">get_validation_failure_reason</a>(self: &<a href="market_types.html#0x7_market_types_ValidationResult">ValidationResult</a>): Option&lt;String&gt; {
+    self.failure_reason
+}
+</code></pre>
+</details>
+<h2 id="function-get_place_maker_order_actions"><a class="header" href="#function-get_place_maker_order_actions">Function <code>get_place_maker_order_actions</code> <a id="0x7_market_types_get_place_maker_order_actions"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_place_maker_order_actions">get_place_maker_order_actions</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">market_types::PlaceMakerOrderResult</a>&lt;R&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_place_maker_order_actions">get_place_maker_order_actions</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">PlaceMakerOrderResult</a>&lt;R&gt;
+): Option&lt;R&gt; {
+    self.action
+}
+</code></pre>
+</details>
+<h2 id="function-get_place_maker_order_cancellation_reason"><a class="header" href="#function-get_place_maker_order_cancellation_reason">Function <code>get_place_maker_order_cancellation_reason</code> <a id="0x7_market_types_get_place_maker_order_cancellation_reason"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_place_maker_order_cancellation_reason">get_place_maker_order_cancellation_reason</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">market_types::PlaceMakerOrderResult</a>&lt;R&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_place_maker_order_cancellation_reason">get_place_maker_order_cancellation_reason</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">PlaceMakerOrderResult</a>&lt;R&gt;
+): Option&lt;String&gt; {
+    self.cancellation_reason
+}
+</code></pre>
+</details>
+<h2 id="function-extract_results"><a class="header" href="#function-extract_results">Function <code>extract_results</code> <a id="0x7_market_types_extract_results"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_extract_results">extract_results</a>&lt;R: <b>copy</b>, drop, store&gt;(self: <a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_extract_results">extract_results</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: <a href="market_types.html#0x7_market_types_CallbackResult">CallbackResult</a>&lt;R&gt;
+): Option&lt;R&gt; {
+    match(self) {
+        CallbackResult::NOT_AVAILABLE =&gt; <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        CallbackResult::CONTINUE_MATCHING { result } =&gt; <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(result),
+        CallbackResult::STOP_MATCHING { result } =&gt; <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(result)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-should_stop_matching"><a class="header" href="#function-should_stop_matching">Function <code>should_stop_matching</code> <a id="0x7_market_types_should_stop_matching"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_should_stop_matching">should_stop_matching</a>&lt;R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_should_stop_matching">should_stop_matching</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_CallbackResult">CallbackResult</a>&lt;R&gt;
+): bool {
+    self is CallbackResult::STOP_MATCHING
+}
+</code></pre>
+</details>
+<h2 id="function-new_callback_result_continue_matching"><a class="header" href="#function-new_callback_result_continue_matching">Function <code>new_callback_result_continue_matching</code> <a id="0x7_market_types_new_callback_result_continue_matching"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_callback_result_continue_matching">new_callback_result_continue_matching</a>&lt;R: <b>copy</b>, drop, store&gt;(result: R): <a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_callback_result_continue_matching">new_callback_result_continue_matching</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    result: R
+): <a href="market_types.html#0x7_market_types_CallbackResult">CallbackResult</a>&lt;R&gt; {
+    CallbackResult::CONTINUE_MATCHING { result }
+}
+</code></pre>
+</details>
+<h2 id="function-new_callback_result_stop_matching"><a class="header" href="#function-new_callback_result_stop_matching">Function <code>new_callback_result_stop_matching</code> <a id="0x7_market_types_new_callback_result_stop_matching"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_callback_result_stop_matching">new_callback_result_stop_matching</a>&lt;R: <b>copy</b>, drop, store&gt;(result: R): <a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_callback_result_stop_matching">new_callback_result_stop_matching</a>&lt;R: store + <b>copy</b> + drop&gt;(
+    result: R
+): <a href="market_types.html#0x7_market_types_CallbackResult">CallbackResult</a>&lt;R&gt; {
+    CallbackResult::STOP_MATCHING { result }
+}
+</code></pre>
+</details>
+<h2 id="function-new_callback_result_not_available"><a class="header" href="#function-new_callback_result_not_available">Function <code>new_callback_result_not_available</code> <a id="0x7_market_types_new_callback_result_not_available"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_callback_result_not_available">new_callback_result_not_available</a>&lt;R: <b>copy</b>, drop, store&gt;(): <a href="market_types.html#0x7_market_types_CallbackResult">market_types::CallbackResult</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_callback_result_not_available">new_callback_result_not_available</a>&lt;R: store + <b>copy</b> + drop&gt;()
+    : <a href="market_types.html#0x7_market_types_CallbackResult">CallbackResult</a>&lt;R&gt; {
+    CallbackResult::NOT_AVAILABLE
+}
+</code></pre>
+</details>
+<h2 id="function-settle_trade"><a class="header" href="#function-settle_trade">Function <code>settle_trade</code> <a id="0x7_market_types_settle_trade"></a></a></h2>
+<pre><code>#[lint::skip(#[needless_mutable_reference])]
+<b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_settle_trade">settle_trade</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, market: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, taker: <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, maker: <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, fill_id: u128, settled_price: u64, settled_size: u64): <a href="market_types.html#0x7_market_types_SettleTradeResult">market_types::SettleTradeResult</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_settle_trade">settle_trade</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    market: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    taker: MarketClearinghouseOrderInfo&lt;M&gt;,
+    maker: MarketClearinghouseOrderInfo&lt;M&gt;,
+    fill_id: u128,
+    settled_price: u64,
+    settled_size: u64
+): <a href="market_types.html#0x7_market_types_SettleTradeResult">SettleTradeResult</a>&lt;R&gt; {
+    (self.settle_trade_f) (market, taker, maker, fill_id, settled_price, settled_size)
+}
+</code></pre>
+</details>
+<h2 id="function-validate_order_placement"><a class="header" href="#function-validate_order_placement">Function <code>validate_order_placement</code> <a id="0x7_market_types_validate_order_placement"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_validate_order_placement">validate_order_placement</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, order_info: <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, size: u64): <a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_validate_order_placement">validate_order_placement</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    order_info: MarketClearinghouseOrderInfo&lt;M&gt;,
+    size: u64
+): <a href="market_types.html#0x7_market_types_ValidationResult">ValidationResult</a> {
+    (self.validate_order_placement_f) (order_info, size)
+}
+</code></pre>
+</details>
+<h2 id="function-validate_bulk_order_placement"><a class="header" href="#function-validate_bulk_order_placement">Function <code>validate_bulk_order_placement</code> <a id="0x7_market_types_validate_bulk_order_placement"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_validate_bulk_order_placement">validate_bulk_order_placement</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, bids_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, bids_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, asks_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, asks_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, order_metadata: &M): <a href="market_types.html#0x7_market_types_ValidationResult">market_types::ValidationResult</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_validate_bulk_order_placement">validate_bulk_order_placement</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    bids_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    bids_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    asks_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    asks_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    order_metadata: &M
+): <a href="market_types.html#0x7_market_types_ValidationResult">ValidationResult</a> {
+    (self.validate_bulk_order_placement_f) (
+        <a href="../aptos-framework/account.html#0x1_account">account</a>, bids_prices, bids_sizes, asks_prices, asks_sizes, order_metadata
+    )
+}
+</code></pre>
+</details>
+<h2 id="function-place_maker_order"><a class="header" href="#function-place_maker_order">Function <code>place_maker_order</code> <a id="0x7_market_types_place_maker_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_place_maker_order">place_maker_order</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, order_info: <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, size: u64): <a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">market_types::PlaceMakerOrderResult</a>&lt;R&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_place_maker_order">place_maker_order</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    order_info: MarketClearinghouseOrderInfo&lt;M&gt;,
+    size: u64
+): <a href="market_types.html#0x7_market_types_PlaceMakerOrderResult">PlaceMakerOrderResult</a>&lt;R&gt; {
+    (self.place_maker_order_f) (order_info, size)
+}
+</code></pre>
+</details>
+<h2 id="function-cleanup_order"><a class="header" href="#function-cleanup_order">Function <code>cleanup_order</code> <a id="0x7_market_types_cleanup_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_cleanup_order">cleanup_order</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, order_info: <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, cleanup_size: u64, is_taker: bool)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_cleanup_order">cleanup_order</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    order_info: MarketClearinghouseOrderInfo&lt;M&gt;,
+    cleanup_size: u64,
+    is_taker: bool
+) {
+    (self.cleanup_order_f) (order_info, cleanup_size, is_taker)
+}
+</code></pre>
+</details>
+<h2 id="function-cleanup_bulk_order_at_price"><a class="header" href="#function-cleanup_bulk_order_at_price">Function <code>cleanup_bulk_order_at_price</code> <a id="0x7_market_types_cleanup_bulk_order_at_price"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_cleanup_bulk_order_at_price">cleanup_bulk_order_at_price</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, is_bid: bool, price: u64, cleanup_size: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_cleanup_bulk_order_at_price">cleanup_bulk_order_at_price</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    order_id: OrderId,
+    is_bid: bool,
+    price: u64,
+    cleanup_size: u64
+) {
+    (self.cleanup_bulk_order_at_price_f) (
+        <a href="../aptos-framework/account.html#0x1_account">account</a>, order_id, is_bid, price, cleanup_size
+    )
+}
+</code></pre>
+</details>
+<h2 id="function-place_bulk_order"><a class="header" href="#function-place_bulk_order">Function <code>place_bulk_order</code> <a id="0x7_market_types_place_bulk_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_place_bulk_order">place_bulk_order</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, bid_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, bid_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_bid_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_bid_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_ask_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_ask_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, metadata: &M)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_place_bulk_order">place_bulk_order</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    order_id: OrderId,
+    bid_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    bid_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_bid_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_bid_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_ask_prices: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_ask_sizes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    metadata: &M
+) {
+    (self.place_bulk_order_f) (
+        <a href="../aptos-framework/account.html#0x1_account">account</a>,
+        order_id,
+        bid_prices,
+        bid_sizes,
+        ask_prices,
+        ask_sizes,
+        cancelled_bid_prices,
+        cancelled_bid_sizes,
+        cancelled_ask_prices,
+        cancelled_ask_sizes,
+        metadata
+    )
+}
+</code></pre>
+</details>
+<h2 id="function-decrease_order_size"><a class="header" href="#function-decrease_order_size">Function <code>decrease_order_size</code> <a id="0x7_market_types_decrease_order_size"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_decrease_order_size">decrease_order_size</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, order_info: <a href="market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;, new_size: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_decrease_order_size">decrease_order_size</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    order_info: MarketClearinghouseOrderInfo&lt;M&gt;,
+    new_size: u64
+) {
+    (self.decrease_order_size_f) (order_info, new_size)
+}
+</code></pre>
+</details>
+<h2 id="function-get_order_metadata_bytes"><a class="header" href="#function-get_order_metadata_bytes">Function <code>get_order_metadata_bytes</code> <a id="0x7_market_types_get_order_metadata_bytes"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_metadata_bytes">get_order_metadata_bytes</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;, order_metadata: &M): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_metadata_bytes">get_order_metadata_bytes</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;,
+    order_metadata: &M
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    (self.get_order_metadata_bytes) (order_metadata)
+}
+</code></pre>
+</details>
+<h2 id="function-new_market_config"><a class="header" href="#function-new_market_config">Function <code>new_market_config</code> <a id="0x7_market_types_new_market_config"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_market_config">new_market_config</a>(allow_self_matching: bool, allow_events_emission: bool, pre_cancellation_window_secs: u64, enable_dead_mans_switch: bool, min_keep_alive_time_secs: u64): <a href="market_types.html#0x7_market_types_MarketConfig">market_types::MarketConfig</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_market_config">new_market_config</a>(
+    allow_self_matching: bool,
+    allow_events_emission: bool,
+    pre_cancellation_window_secs: u64,
+    enable_dead_mans_switch: bool,
+    min_keep_alive_time_secs: u64
+): <a href="market_types.html#0x7_market_types_MarketConfig">MarketConfig</a> {
+    MarketConfig::V1 {
+        allow_self_trade: allow_self_matching,
+        allow_events_emission,
+        pre_cancellation_window_secs,
+        enable_dead_mans_switch,
+        min_keep_alive_time_secs
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_market"><a class="header" href="#function-new_market">Function <code>new_market</code> <a id="0x7_market_types_new_market"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_market">new_market</a>&lt;M: <b>copy</b>, drop, store&gt;(parent: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, market: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="market_types.html#0x7_market_types_MarketConfig">market_types::MarketConfig</a>): <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_new_market">new_market</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    parent: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, market: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="market_types.html#0x7_market_types_MarketConfig">MarketConfig</a>
+): <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt; {
+    // requiring signers, and not addresses, purely <b>to</b> guarantee different dexes
+    // cannot polute events <b>to</b> each other, accidentally or maliciously.
+    <b>let</b> pre_cancellation_window = config.pre_cancellation_window_secs;
+    <b>let</b> <a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">pre_cancellation_tracker</a> = <a href="../aptos-stdlib/table.html#0x1_table_new">table::new</a>();
+    <a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">pre_cancellation_tracker</a>.add(
+        <a href="market_types.html#0x7_market_types_PRE_CANCELLATION_TRACKER_KEY">PRE_CANCELLATION_TRACKER_KEY</a>,
+        new_pre_cancellation_tracker(pre_cancellation_window)
+    );
+    <b>let</b> <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">dead_mans_switch_tracker</a> = <a href="../aptos-stdlib/table.html#0x1_table_new">table::new</a>();
+    <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">dead_mans_switch_tracker</a>.add(
+        <a href="market_types.html#0x7_market_types_DEAD_MANS_SWITCH_TRACKER_KEY">DEAD_MANS_SWITCH_TRACKER_KEY</a>,
+        new_dead_mans_switch_tracker(config.min_keep_alive_time_secs)
+    );
+    Market::V1 {
+        parent: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(parent),
+        market: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(market),
+        config,
+        <a href="order_book.html#0x7_order_book">order_book</a>: new_order_book(),
+        <a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">pre_cancellation_tracker</a>,
+        <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">dead_mans_switch_tracker</a>
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-set_allow_self_trade"><a class="header" href="#function-set_allow_self_trade">Function <code>set_allow_self_trade</code> <a id="0x7_market_types_set_allow_self_trade"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_allow_self_trade">set_allow_self_trade</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, allow_self_trade: bool)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_allow_self_trade">set_allow_self_trade</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, allow_self_trade: bool
+) {
+    self.config.allow_self_trade = allow_self_trade;
+}
+</code></pre>
+</details>
+<h2 id="function-set_allow_events_emission"><a class="header" href="#function-set_allow_events_emission">Function <code>set_allow_events_emission</code> <a id="0x7_market_types_set_allow_events_emission"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_allow_events_emission">set_allow_events_emission</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, allow_events_emission: bool)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_allow_events_emission">set_allow_events_emission</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, allow_events_emission: bool
+) {
+    self.config.allow_events_emission = allow_events_emission;
+}
+</code></pre>
+</details>
+<h2 id="function-set_allow_dead_mans_switch"><a class="header" href="#function-set_allow_dead_mans_switch">Function <code>set_allow_dead_mans_switch</code> <a id="0x7_market_types_set_allow_dead_mans_switch"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_allow_dead_mans_switch">set_allow_dead_mans_switch</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, enable_dead_mans_switch: bool)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_allow_dead_mans_switch">set_allow_dead_mans_switch</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, enable_dead_mans_switch: bool
+) {
+    self.config.enable_dead_mans_switch = enable_dead_mans_switch;
+}
+</code></pre>
+</details>
+<h2 id="function-set_dead_mans_switch_min_keep_alive_time_secs"><a class="header" href="#function-set_dead_mans_switch_min_keep_alive_time_secs">Function <code>set_dead_mans_switch_min_keep_alive_time_secs</code> <a id="0x7_market_types_set_dead_mans_switch_min_keep_alive_time_secs"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_dead_mans_switch_min_keep_alive_time_secs">set_dead_mans_switch_min_keep_alive_time_secs</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, min_keep_alive_time_secs: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_dead_mans_switch_min_keep_alive_time_secs">set_dead_mans_switch_min_keep_alive_time_secs</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, min_keep_alive_time_secs: u64
+) {
+    self.config.min_keep_alive_time_secs = min_keep_alive_time_secs;
+    <b>let</b> parent = self.parent;
+    <b>let</b> market = self.market;
+    <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker_set_min_keep_alive_time_secs">dead_mans_switch_tracker::set_min_keep_alive_time_secs</a>(
+        self.<a href="market_types.html#0x7_market_types_get_dead_mans_switch_tracker_mut">get_dead_mans_switch_tracker_mut</a>(),
+        parent,
+        market,
+        min_keep_alive_time_secs
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-get_order_book"><a class="header" href="#function-get_order_book">Function <code>get_order_book</code> <a id="0x7_market_types_get_order_book"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_book">get_order_book</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_book">get_order_book</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;): &OrderBook&lt;M&gt; {
+    &self.<a href="order_book.html#0x7_order_book">order_book</a>
+}
+</code></pre>
+</details>
+<h2 id="function-get_market_address"><a class="header" href="#function-get_market_address">Function <code>get_market_address</code> <a id="0x7_market_types_get_market_address"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_market_address">get_market_address</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_market_address">get_market_address</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;): <b>address</b> {
+    self.market
+}
+</code></pre>
+</details>
+<h2 id="function-best_bid_price"><a class="header" href="#function-best_bid_price">Function <code>best_bid_price</code> <a id="0x7_market_types_best_bid_price"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_best_bid_price">best_bid_price</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_best_bid_price">best_bid_price</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;): Option&lt;u64&gt; {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.<a href="market_types.html#0x7_market_types_best_bid_price">best_bid_price</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-best_ask_price"><a class="header" href="#function-best_ask_price">Function <code>best_ask_price</code> <a id="0x7_market_types_best_ask_price"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_best_ask_price">best_ask_price</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_best_ask_price">best_ask_price</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;): Option&lt;u64&gt; {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.<a href="market_types.html#0x7_market_types_best_ask_price">best_ask_price</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-is_taker_order"><a class="header" href="#function-is_taker_order">Function <code>is_taker_order</code> <a id="0x7_market_types_is_taker_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_is_taker_order">is_taker_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, price: u64, is_bid: bool, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_is_taker_order">is_taker_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    price: u64,
+    is_bid: bool,
+    trigger_condition: Option&lt;TriggerCondition&gt;
+): bool {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.<a href="market_types.html#0x7_market_types_is_taker_order">is_taker_order</a>(price, is_bid, trigger_condition)
+}
+</code></pre>
+</details>
+<h2 id="function-is_allowed_self_trade"><a class="header" href="#function-is_allowed_self_trade">Function <code>is_allowed_self_trade</code> <a id="0x7_market_types_is_allowed_self_trade"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_is_allowed_self_trade">is_allowed_self_trade</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_is_allowed_self_trade">is_allowed_self_trade</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;): bool {
+    self.config.allow_self_trade
+}
+</code></pre>
+</details>
+<h2 id="function-get_remaining_size"><a class="header" href="#function-get_remaining_size">Function <code>get_remaining_size</code> <a id="0x7_market_types_get_remaining_size"></a></a></h2>
+<p>Remaining size of the order in the order book.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_remaining_size">get_remaining_size</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_remaining_size">get_remaining_size</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, order_id: OrderId
+): u64 {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.get_single_remaining_size(order_id)
+}
+</code></pre>
+</details>
+<h2 id="function-get_bulk_order_remaining_size"><a class="header" href="#function-get_bulk_order_remaining_size">Function <code>get_bulk_order_remaining_size</code> <a id="0x7_market_types_get_bulk_order_remaining_size"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_bulk_order_remaining_size">get_bulk_order_remaining_size</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user: <b>address</b>, is_bid: bool): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_bulk_order_remaining_size">get_bulk_order_remaining_size</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, user: <b>address</b>, is_bid: bool
+): u64 {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.<a href="market_types.html#0x7_market_types_get_bulk_order_remaining_size">get_bulk_order_remaining_size</a>(user, is_bid)
+}
+</code></pre>
+</details>
+<h2 id="function-get_order_metadata"><a class="header" href="#function-get_order_metadata">Function <code>get_order_metadata</code> <a id="0x7_market_types_get_order_metadata"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_metadata">get_order_metadata</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_metadata">get_order_metadata</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, order_id: OrderId
+): Option&lt;M&gt; {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.get_single_order_metadata(order_id)
+}
+</code></pre>
+</details>
+<h2 id="function-set_order_metadata"><a class="header" href="#function-set_order_metadata">Function <code>set_order_metadata</code> <a id="0x7_market_types_set_order_metadata"></a></a></h2>
+<p>Returns the order metadata for an order by order id.
+It is up to the caller to perform necessary permissions checks</p>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_order_metadata">set_order_metadata</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, metadata: M)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_order_metadata">set_order_metadata</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, order_id: OrderId, metadata: M
+) {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.set_single_order_metadata(order_id, metadata);
+}
+</code></pre>
+</details>
+<h2 id="function-get_order_metadata_by_client_id"><a class="header" href="#function-get_order_metadata_by_client_id">Function <code>get_order_metadata_by_client_id</code> <a id="0x7_market_types_get_order_metadata_by_client_id"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_metadata_by_client_id">get_order_metadata_by_client_id</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user: <b>address</b>, client_order_id: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_metadata_by_client_id">get_order_metadata_by_client_id</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, user: <b>address</b>, client_order_id: String
+): Option&lt;M&gt; {
+    <b>let</b> order_id = self.<a href="order_book.html#0x7_order_book">order_book</a>.get_order_id_by_client_id(user, client_order_id);
+    <b>if</b> (order_id.is_none()) {
+        <b>return</b> <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>();
+    };
+    <b>return</b> self.<a href="market_types.html#0x7_market_types_get_order_metadata">get_order_metadata</a>(order_id.destroy_some())
+}
+</code></pre>
+</details>
+<h2 id="function-set_order_metadata_by_client_id"><a class="header" href="#function-set_order_metadata_by_client_id">Function <code>set_order_metadata_by_client_id</code> <a id="0x7_market_types_set_order_metadata_by_client_id"></a></a></h2>
+<p>Sets the order metadata for an order by client id. It is up to the caller to perform necessary permissions checks
+around ownership of the order.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_order_metadata_by_client_id">set_order_metadata_by_client_id</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user: <b>address</b>, client_order_id: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, metadata: M)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_set_order_metadata_by_client_id">set_order_metadata_by_client_id</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    user: <b>address</b>,
+    client_order_id: String,
+    metadata: M
+) {
+    <b>let</b> order_id = self.<a href="order_book.html#0x7_order_book">order_book</a>.get_order_id_by_client_id(user, client_order_id);
+    <b>assert</b>!(order_id.is_some(), <a href="market_types.html#0x7_market_types_EORDER_DOES_NOT_EXIST">EORDER_DOES_NOT_EXIST</a>);
+    self.<a href="market_types.html#0x7_market_types_set_order_metadata">set_order_metadata</a>(order_id.destroy_some(), metadata);
+}
+</code></pre>
+</details>
+<h2 id="function-take_ready_price_based_orders"><a class="header" href="#function-take_ready_price_based_orders">Function <code>take_ready_price_based_orders</code> <a id="0x7_market_types_take_ready_price_based_orders"></a></a></h2>
+<p>Returns all the pending order ready to be executed based on the oracle price. The caller is responsible to
+call the <code>place_order_with_order_id</code> API to place the order with the order id returned from this API.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_take_ready_price_based_orders">take_ready_price_based_orders</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, oracle_price: u64, order_limit: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_take_ready_price_based_orders">take_ready_price_based_orders</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, oracle_price: u64, order_limit: u64
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;SingleOrder&lt;M&gt;&gt; {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.<a href="market_types.html#0x7_market_types_take_ready_price_based_orders">take_ready_price_based_orders</a>(oracle_price, order_limit)
+}
+</code></pre>
+</details>
+<h2 id="function-take_ready_time_based_orders"><a class="header" href="#function-take_ready_time_based_orders">Function <code>take_ready_time_based_orders</code> <a id="0x7_market_types_take_ready_time_based_orders"></a></a></h2>
+<p>Returns all the pending order that are ready to be executed based on current time stamp. The caller is responsible to
+call the <code>place_order_with_order_id</code> API to place the order with the order id returned from this API.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_take_ready_time_based_orders">take_ready_time_based_orders</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_limit: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_take_ready_time_based_orders">take_ready_time_based_orders</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;, order_limit: u64
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;SingleOrder&lt;M&gt;&gt; {
+    self.<a href="order_book.html#0x7_order_book">order_book</a>.<a href="market_types.html#0x7_market_types_take_ready_time_based_orders">take_ready_time_based_orders</a>(order_limit)
+}
+</code></pre>
+</details>
+<h2 id="function-emit_event_for_order"><a class="header" href="#function-emit_event_for_order">Function <code>emit_event_for_order</code> <a id="0x7_market_types_emit_event_for_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_order">emit_event_for_order</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, user: <b>address</b>, orig_size: u64, remaining_size: u64, size_delta: u64, price: u64, is_bid: bool, is_taker: bool, status: <a href="market_types.html#0x7_market_types_OrderStatus">market_types::OrderStatus</a>, details: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, metadata: M, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;, callbacks: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_order">emit_event_for_order</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    order_id: OrderId,
+    client_order_id: Option&lt;String&gt;,
+    user: <b>address</b>,
+    orig_size: u64,
+    remaining_size: u64,
+    size_delta: u64,
+    price: u64,
+    is_bid: bool,
+    is_taker: bool,
+    status: <a href="market_types.html#0x7_market_types_OrderStatus">OrderStatus</a>,
+    details: String,
+    metadata: M,
+    trigger_condition: Option&lt;TriggerCondition&gt;,
+    time_in_force: TimeInForce,
+    cancellation_reason: Option&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a>&gt;,
+    callbacks: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">MarketClearinghouseCallbacks</a>&lt;M, R&gt;
+) {
+    // Final check whether <a href="../aptos-framework/event.html#0x1_event">event</a> sending is enabled
+    <b>if</b> (self.config.allow_events_emission) {
+        <b>let</b> metadata_bytes = callbacks.<a href="market_types.html#0x7_market_types_get_order_metadata_bytes">get_order_metadata_bytes</a>(&metadata);
+        <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(
+            OrderEvent::V1 {
+                parent: self.parent,
+                market: self.market,
+                order_id: order_id.get_order_id_value(),
+                client_order_id,
+                user,
+                orig_size,
+                remaining_size,
+                size_delta,
+                price,
+                is_bid,
+                is_taker,
+                status,
+                details,
+                metadata_bytes,
+                time_in_force,
+                trigger_condition,
+                cancellation_reason
+            }
+        );
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-emit_event_for_bulk_order_placed"><a class="header" href="#function-emit_event_for_bulk_order_placed">Function <code>emit_event_for_bulk_order_placed</code> <a id="0x7_market_types_emit_event_for_bulk_order_placed"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_placed">emit_event_for_bulk_order_placed</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, sequence_number: u64, user: <b>address</b>, bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, previous_seq_num: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_placed">emit_event_for_bulk_order_placed</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    order_id: OrderId,
+    sequence_number: u64,
+    user: <b>address</b>,
+    bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    previous_seq_num: u64
+) {
+    // Final check whether <a href="../aptos-framework/event.html#0x1_event">event</a> sending is enabled
+    <b>if</b> (self.config.allow_events_emission) {
+        <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(
+            BulkOrderPlacedEvent::V1 {
+                parent: self.parent,
+                market: self.market,
+                order_id: order_id.get_order_id_value(),
+                sequence_number,
+                user,
+                bid_prices,
+                bid_sizes,
+                ask_prices,
+                ask_sizes,
+                cancelled_bid_prices,
+                cancelled_bid_sizes,
+                cancelled_ask_prices,
+                cancelled_ask_sizes,
+                previous_seq_num
+            }
+        );
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-emit_event_for_bulk_order_cancelled"><a class="header" href="#function-emit_event_for_bulk_order_cancelled">Function <code>emit_event_for_bulk_order_cancelled</code> <a id="0x7_market_types_emit_event_for_bulk_order_cancelled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_cancelled">emit_event_for_bulk_order_cancelled</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, sequence_number: u64, user: <b>address</b>, cancelled_bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_cancelled">emit_event_for_bulk_order_cancelled</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    order_id: OrderId,
+    sequence_number: u64,
+    user: <b>address</b>,
+    cancelled_bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancellation_reason: Option&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a>&gt;
+) {
+    // Final check whether <a href="../aptos-framework/event.html#0x1_event">event</a> sending is enabled
+    <b>if</b> (self.config.allow_events_emission) {
+        <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(
+            BulkOrderModifiedEvent::V1 {
+                parent: self.parent,
+                market: self.market,
+                order_id: order_id.get_order_id_value(),
+                sequence_number,
+                user,
+                bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+                bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+                ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+                ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[],
+                cancelled_bid_prices,
+                cancelled_bid_sizes,
+                cancelled_ask_prices,
+                cancelled_ask_sizes,
+                previous_seq_num: sequence_number,
+                cancellation_reason
+            }
+        )
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-emit_event_for_bulk_order_filled"><a class="header" href="#function-emit_event_for_bulk_order_filled">Function <code>emit_event_for_bulk_order_filled</code> <a id="0x7_market_types_emit_event_for_bulk_order_filled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_filled">emit_event_for_bulk_order_filled</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, sequence_number: u64, user: <b>address</b>, filled_size: u64, price: u64, orig_price: u64, is_bid: bool, fill_id: u128)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_filled">emit_event_for_bulk_order_filled</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    order_id: OrderId,
+    sequence_number: u64,
+    user: <b>address</b>,
+    filled_size: u64,
+    price: u64,
+    orig_price: u64,
+    is_bid: bool,
+    fill_id: u128
+) {
+    // Final check whether <a href="../aptos-framework/event.html#0x1_event">event</a> sending is enabled
+    <b>if</b> (self.config.allow_events_emission) {
+        <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(
+            BulkOrderFilledEvent::V1 {
+                parent: self.parent,
+                market: self.market,
+                order_id: order_id.get_order_id_value(),
+                sequence_number,
+                user,
+                filled_size,
+                price,
+                orig_price,
+                is_bid,
+                fill_id
+            }
+        );
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-emit_event_for_bulk_order_modified"><a class="header" href="#function-emit_event_for_bulk_order_modified">Function <code>emit_event_for_bulk_order_modified</code> <a id="0x7_market_types_emit_event_for_bulk_order_modified"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_modified">emit_event_for_bulk_order_modified</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, sequence_number: u64, user: <b>address</b>, bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancelled_ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, cancellation_reason: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">market_types::OrderCancellationReason</a>&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_modified">emit_event_for_bulk_order_modified</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    order_id: OrderId,
+    sequence_number: u64,
+    user: <b>address</b>,
+    bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancelled_ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    cancellation_reason: Option&lt;<a href="market_types.html#0x7_market_types_OrderCancellationReason">OrderCancellationReason</a>&gt;
+) {
+    // Final check whether <a href="../aptos-framework/event.html#0x1_event">event</a> sending is enabled
+    <b>if</b> (self.config.allow_events_emission) {
+        <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(
+            BulkOrderModifiedEvent::V1 {
+                parent: self.parent,
+                market: self.market,
+                order_id: order_id.get_order_id_value(),
+                sequence_number,
+                user,
+                bid_prices,
+                bid_sizes,
+                ask_prices,
+                ask_sizes,
+                cancelled_bid_prices,
+                cancelled_bid_sizes,
+                cancelled_ask_prices,
+                cancelled_ask_sizes,
+                previous_seq_num: sequence_number,
+                cancellation_reason
+            }
+        );
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-emit_event_for_bulk_order_rejection"><a class="header" href="#function-emit_event_for_bulk_order_rejection">Function <code>emit_event_for_bulk_order_rejection</code> <a id="0x7_market_types_emit_event_for_bulk_order_rejection"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_rejection">emit_event_for_bulk_order_rejection</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, user: <b>address</b>, sequence_number: u64, existing_sequence_number: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="market_types.html#0x7_market_types_emit_event_for_bulk_order_rejection">emit_event_for_bulk_order_rejection</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;,
+    user: <b>address</b>,
+    sequence_number: u64,
+    existing_sequence_number: u64
+) {
+    // Final check whether <a href="../aptos-framework/event.html#0x1_event">event</a> sending is enabled
+    <b>if</b> (self.config.allow_events_emission) {
+        <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(
+            BulkOrderRejectionEvent::V1 {
+                parent: self.parent,
+                market: self.market,
+                user,
+                sequence_number,
+                existing_sequence_number
+            }
+        );
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-get_order_book_mut"><a class="header" href="#function-get_order_book_mut">Function <code>get_order_book_mut</code> <a id="0x7_market_types_get_order_book_mut"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_book_mut">get_order_book_mut</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_order_book_mut">get_order_book_mut</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;
+): &<b>mut</b> OrderBook&lt;M&gt; {
+    &<b>mut</b> self.<a href="order_book.html#0x7_order_book">order_book</a>
+}
+</code></pre>
+</details>
+<h2 id="function-get_pre_cancellation_tracker_mut"><a class="header" href="#function-get_pre_cancellation_tracker_mut">Function <code>get_pre_cancellation_tracker_mut</code> <a id="0x7_market_types_get_pre_cancellation_tracker_mut"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_pre_cancellation_tracker_mut">get_pre_cancellation_tracker_mut</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): &<b>mut</b> <a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker_PreCancellationTracker">pre_cancellation_tracker::PreCancellationTracker</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_pre_cancellation_tracker_mut">get_pre_cancellation_tracker_mut</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;
+): &<b>mut</b> PreCancellationTracker {
+    self.<a href="pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">pre_cancellation_tracker</a>.borrow_mut(<a href="market_types.html#0x7_market_types_PRE_CANCELLATION_TRACKER_KEY">PRE_CANCELLATION_TRACKER_KEY</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_dead_mans_switch_tracker"><a class="header" href="#function-get_dead_mans_switch_tracker">Function <code>get_dead_mans_switch_tracker</code> <a id="0x7_market_types_get_dead_mans_switch_tracker"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_dead_mans_switch_tracker">get_dead_mans_switch_tracker</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): &<a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker_DeadMansSwitchTracker">dead_mans_switch_tracker::DeadMansSwitchTracker</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_dead_mans_switch_tracker">get_dead_mans_switch_tracker</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;
+): &DeadMansSwitchTracker {
+    self.<a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">dead_mans_switch_tracker</a>.borrow(<a href="market_types.html#0x7_market_types_DEAD_MANS_SWITCH_TRACKER_KEY">DEAD_MANS_SWITCH_TRACKER_KEY</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_dead_mans_switch_tracker_mut"><a class="header" href="#function-get_dead_mans_switch_tracker_mut">Function <code>get_dead_mans_switch_tracker_mut</code> <a id="0x7_market_types_get_dead_mans_switch_tracker_mut"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_dead_mans_switch_tracker_mut">get_dead_mans_switch_tracker_mut</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): &<b>mut</b> <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker_DeadMansSwitchTracker">dead_mans_switch_tracker::DeadMansSwitchTracker</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_dead_mans_switch_tracker_mut">get_dead_mans_switch_tracker_mut</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;
+): &<b>mut</b> DeadMansSwitchTracker {
+    self.<a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">dead_mans_switch_tracker</a>.borrow_mut(<a href="market_types.html#0x7_market_types_DEAD_MANS_SWITCH_TRACKER_KEY">DEAD_MANS_SWITCH_TRACKER_KEY</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-is_dead_mans_switch_enabled"><a class="header" href="#function-is_dead_mans_switch_enabled">Function <code>is_dead_mans_switch_enabled</code> <a id="0x7_market_types_is_dead_mans_switch_enabled"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_is_dead_mans_switch_enabled">is_dead_mans_switch_enabled</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_is_dead_mans_switch_enabled">is_dead_mans_switch_enabled</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;
+): bool {
+    self.config.enable_dead_mans_switch
+}
+</code></pre>
+</details>
+<h2 id="function-get_parent"><a class="header" href="#function-get_parent">Function <code>get_parent</code> <a id="0x7_market_types_get_parent"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_parent">get_parent</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_parent">get_parent</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;): <b>address</b> {
+    self.parent
+}
+</code></pre>
+</details>
+<h2 id="function-get_market"><a class="header" href="#function-get_market">Function <code>get_market</code> <a id="0x7_market_types_get_market"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_market">get_market</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="market_types.html#0x7_market_types_get_market">get_market</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &<a href="market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;): <b>address</b> {
+    self.market
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-experimental/market_clearinghouse_order_info.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-experimental/order_book.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-experimental/market_clearinghouse_order_info.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-experimental/order_book.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

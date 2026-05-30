@@ -1,0 +1,1158 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>staking_config - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/staking_config.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1staking_config"><a class="header" href="#module-0x1staking_config">Module <code>0x1::staking_config</code> <a id="0x1_staking_config"></a></a></h1>
+<p>Provides the configuration for staking and rewards</p>
+<ul>
+<li><a href="#0x1_staking_config_StakingConfig">Resource <code>StakingConfig</code></a></li>
+<li><a href="#0x1_staking_config_StakingRewardsConfig">Resource <code>StakingRewardsConfig</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_staking_config_initialize">Function <code>initialize</code></a></li>
+<li><a href="#0x1_staking_config_reward_rate">Function <code>reward_rate</code></a></li>
+<li><a href="#0x1_staking_config_initialize_rewards">Function <code>initialize_rewards</code></a></li>
+<li><a href="#0x1_staking_config_get">Function <code>get</code></a></li>
+<li><a href="#0x1_staking_config_get_allow_validator_set_change">Function <code>get_allow_validator_set_change</code></a></li>
+<li><a href="#0x1_staking_config_get_required_stake">Function <code>get_required_stake</code></a></li>
+<li><a href="#0x1_staking_config_get_recurring_lockup_duration">Function <code>get_recurring_lockup_duration</code></a></li>
+<li><a href="#0x1_staking_config_get_reward_rate">Function <code>get_reward_rate</code></a></li>
+<li><a href="#0x1_staking_config_get_voting_power_increase_limit">Function <code>get_voting_power_increase_limit</code></a></li>
+<li><a href="#0x1_staking_config_calculate_and_save_latest_epoch_rewards_rate">Function <code>calculate_and_save_latest_epoch_rewards_rate</code></a></li>
+<li><a href="#0x1_staking_config_calculate_and_save_latest_rewards_config">Function <code>calculate_and_save_latest_rewards_config</code></a></li>
+<li><a href="#0x1_staking_config_update_required_stake">Function <code>update_required_stake</code></a></li>
+<li><a href="#0x1_staking_config_update_recurring_lockup_duration_secs">Function <code>update_recurring_lockup_duration_secs</code></a></li>
+<li><a href="#0x1_staking_config_update_rewards_rate">Function <code>update_rewards_rate</code></a></li>
+<li><a href="#0x1_staking_config_update_rewards_config">Function <code>update_rewards_config</code></a></li>
+<li><a href="#0x1_staking_config_update_voting_power_increase_limit">Function <code>update_voting_power_increase_limit</code></a></li>
+<li><a href="#0x1_staking_config_validate_required_stake">Function <code>validate_required_stake</code></a></li>
+<li><a href="#0x1_staking_config_validate_rewards_config">Function <code>validate_rewards_config</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#high-level-req">High-level Requirements</a></li>
+<li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_StakingConfig">Resource <code>StakingConfig</code></a></li>
+<li><a href="#@Specification_1_StakingRewardsConfig">Resource <code>StakingRewardsConfig</code></a></li>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_1_reward_rate">Function <code>reward_rate</code></a></li>
+<li><a href="#@Specification_1_initialize_rewards">Function <code>initialize_rewards</code></a></li>
+<li><a href="#@Specification_1_get">Function <code>get</code></a></li>
+<li><a href="#@Specification_1_get_reward_rate">Function <code>get_reward_rate</code></a></li>
+<li><a href="#@Specification_1_calculate_and_save_latest_epoch_rewards_rate">Function <code>calculate_and_save_latest_epoch_rewards_rate</code></a></li>
+<li><a href="#@Specification_1_calculate_and_save_latest_rewards_config">Function <code>calculate_and_save_latest_rewards_config</code></a></li>
+<li><a href="#@Specification_1_update_required_stake">Function <code>update_required_stake</code></a></li>
+<li><a href="#@Specification_1_update_recurring_lockup_duration_secs">Function <code>update_recurring_lockup_duration_secs</code></a></li>
+<li><a href="#@Specification_1_update_rewards_rate">Function <code>update_rewards_rate</code></a></li>
+<li><a href="#@Specification_1_update_rewards_config">Function <code>update_rewards_config</code></a></li>
+<li><a href="#@Specification_1_update_voting_power_increase_limit">Function <code>update_voting_power_increase_limit</code></a></li>
+<li><a href="#@Specification_1_validate_required_stake">Function <code>validate_required_stake</code></a></li>
+<li><a href="#@Specification_1_validate_rewards_config">Function <code>validate_rewards_config</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64">0x1::fixed_point64</a>;
+<b>use</b> <a href="../aptos-stdlib/math_fixed64.html#0x1_math_fixed64">0x1::math_fixed64</a>;
+<b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
+<b>use</b> <a href="timestamp.html#0x1_timestamp">0x1::timestamp</a>;
+</code></pre>
+<h2 id="resource-stakingconfig"><a class="header" href="#resource-stakingconfig">Resource <code>StakingConfig</code> <a id="0x1_staking_config_StakingConfig"></a></a></h2>
+<p>Validator set configurations that will be stored with the @aptos_framework account.</p>
+<pre><code><b>struct</b> <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> <b>has</b> <b>copy</b>, drop, key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>minimum_stake: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>maximum_stake: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>recurring_lockup_duration_secs: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>allow_validator_set_change: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>rewards_rate: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>rewards_rate_denominator: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>voting_power_increase_limit: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-stakingrewardsconfig"><a class="header" href="#resource-stakingrewardsconfig">Resource <code>StakingRewardsConfig</code> <a id="0x1_staking_config_StakingRewardsConfig"></a></a></h2>
+<p>Staking reward configurations that will be stored with the @aptos_framework account.</p>
+<pre><code><b>struct</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> <b>has</b> <b>copy</b>, drop, key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>rewards_rate_period_in_secs: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>last_rewards_rate_period_start_in_secs: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_staking_config_MAX_U64"></a></p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>: u128 = 18446744073709551615;
+</code></pre>
+<p><a id="0x1_staking_config_EDEPRECATED_FUNCTION"></a></p>
+<p>The function has been deprecated.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EDEPRECATED_FUNCTION">EDEPRECATED_FUNCTION</a>: u64 = 10;
+</code></pre>
+<p><a id="0x1_staking_config_BPS_DENOMINATOR"></a></p>
+<p>Denominator of number in basis points. 1 bps(basis points) = 0.01%.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_BPS_DENOMINATOR">BPS_DENOMINATOR</a>: u64 = 10000;
+</code></pre>
+<p><a id="0x1_staking_config_EDISABLED_FUNCTION"></a></p>
+<p>The function is disabled or hasn't been enabled.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EDISABLED_FUNCTION">EDISABLED_FUNCTION</a>: u64 = 11;
+</code></pre>
+<p><a id="0x1_staking_config_EINVALID_LAST_REWARDS_RATE_PERIOD_START"></a></p>
+<p>Specified start time of last rewards rate period is invalid, which must be not late than the current timestamp.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EINVALID_LAST_REWARDS_RATE_PERIOD_START">EINVALID_LAST_REWARDS_RATE_PERIOD_START</a>: u64 = 7;
+</code></pre>
+<p><a id="0x1_staking_config_EINVALID_MIN_REWARDS_RATE"></a></p>
+<p>Specified min rewards rate is invalid, which must be within [0, rewards_rate].</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EINVALID_MIN_REWARDS_RATE">EINVALID_MIN_REWARDS_RATE</a>: u64 = 6;
+</code></pre>
+<p><a id="0x1_staking_config_EINVALID_REWARDS_RATE"></a></p>
+<p>Specified rewards rate is invalid, which must be within [0, MAX_REWARDS_RATE].</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE">EINVALID_REWARDS_RATE</a>: u64 = 5;
+</code></pre>
+<p><a id="0x1_staking_config_EINVALID_REWARDS_RATE_DECREASE_RATE"></a></p>
+<p>Specified rewards rate decrease rate is invalid, which must be not greater than BPS_DENOMINATOR.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE_DECREASE_RATE">EINVALID_REWARDS_RATE_DECREASE_RATE</a>: u64 = 8;
+</code></pre>
+<p><a id="0x1_staking_config_EINVALID_REWARDS_RATE_PERIOD"></a></p>
+<p>Specified rewards rate period is invalid. It must be larger than 0 and cannot be changed if configured.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE_PERIOD">EINVALID_REWARDS_RATE_PERIOD</a>: u64 = 9;
+</code></pre>
+<p><a id="0x1_staking_config_EINVALID_STAKE_RANGE"></a></p>
+<p>Specified stake range is invalid. Max must be greater than min.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EINVALID_STAKE_RANGE">EINVALID_STAKE_RANGE</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_staking_config_EINVALID_VOTING_POWER_INCREASE_LIMIT"></a></p>
+<p>The voting power increase limit percentage must be within (0, 50].</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EINVALID_VOTING_POWER_INCREASE_LIMIT">EINVALID_VOTING_POWER_INCREASE_LIMIT</a>: u64 = 4;
+</code></pre>
+<p><a id="0x1_staking_config_EZERO_LOCKUP_DURATION"></a></p>
+<p>Stake lockup duration cannot be zero.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EZERO_LOCKUP_DURATION">EZERO_LOCKUP_DURATION</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_staking_config_EZERO_REWARDS_RATE_DENOMINATOR"></a></p>
+<p>Reward rate denominator cannot be zero.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_EZERO_REWARDS_RATE_DENOMINATOR">EZERO_REWARDS_RATE_DENOMINATOR</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_staking_config_MAX_REWARDS_RATE"></a></p>
+<p>Limit the maximum value of <code>rewards_rate</code> in order to avoid any arithmetic overflow.</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>: u64 = 1000000;
+</code></pre>
+<p><a id="0x1_staking_config_ONE_YEAR_IN_SECS"></a></p>
+<p>1 year =&gt; 365 * 24 * 60 * 60</p>
+<pre><code><b>const</b> <a href="staking_config.html#0x1_staking_config_ONE_YEAR_IN_SECS">ONE_YEAR_IN_SECS</a>: u64 = 31536000;
+</code></pre>
+<h2 id="function-initialize"><a class="header" href="#function-initialize">Function <code>initialize</code> <a id="0x1_staking_config_initialize"></a></a></h2>
+<p>Only called during genesis.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="staking_config.html#0x1_staking_config_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, minimum_stake: u64, maximum_stake: u64, recurring_lockup_duration_secs: u64, allow_validator_set_change: bool, rewards_rate: u64, rewards_rate_denominator: u64, voting_power_increase_limit: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="staking_config.html#0x1_staking_config_initialize">initialize</a>(
+    aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    minimum_stake: u64,
+    maximum_stake: u64,
+    recurring_lockup_duration_secs: u64,
+    allow_validator_set_change: bool,
+    rewards_rate: u64,
+    rewards_rate_denominator: u64,
+    voting_power_increase_limit: u64,
+) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+
+    // This can fail <a href="genesis.html#0x1_genesis">genesis</a> but is necessary so that <a href="../aptos-stdlib/any.html#0x1_any">any</a> misconfigurations can be corrected before <a href="genesis.html#0x1_genesis">genesis</a> succeeds
+    <a href="staking_config.html#0x1_staking_config_validate_required_stake">validate_required_stake</a>(minimum_stake, maximum_stake);
+
+    <b>assert</b>!(recurring_lockup_duration_secs &gt; 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EZERO_LOCKUP_DURATION">EZERO_LOCKUP_DURATION</a>));
+    <b>assert</b>!(
+        rewards_rate_denominator &gt; 0,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EZERO_REWARDS_RATE_DENOMINATOR">EZERO_REWARDS_RATE_DENOMINATOR</a>),
+    );
+    <b>assert</b>!(
+        voting_power_increase_limit &gt; 0 && voting_power_increase_limit &lt;= 50,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_VOTING_POWER_INCREASE_LIMIT">EINVALID_VOTING_POWER_INCREASE_LIMIT</a>),
+    );
+
+    // `rewards_rate` which is the numerator is limited <b>to</b> be `&lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>` in order <b>to</b> avoid the arithmetic
+    // overflow in the rewards calculation. `rewards_rate_denominator` can be adjusted <b>to</b> get the desired rewards
+    // rate (i.e., rewards_rate / rewards_rate_denominator).
+    <b>assert</b>!(rewards_rate &lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE">EINVALID_REWARDS_RATE</a>));
+
+    // We <b>assert</b> that (rewards_rate / rewards_rate_denominator &lt;= 1).
+    <b>assert</b>!(rewards_rate &lt;= rewards_rate_denominator, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE">EINVALID_REWARDS_RATE</a>));
+
+    <b>move_to</b>(aptos_framework, <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> {
+        minimum_stake,
+        maximum_stake,
+        recurring_lockup_duration_secs,
+        allow_validator_set_change,
+        rewards_rate,
+        rewards_rate_denominator,
+        voting_power_increase_limit,
+    });
+
+    // Initialize <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> <b>with</b> the given rewards_rate and rewards_rate_denominator,
+    // <b>while</b> setting min_rewards_rate and rewards_rate_decrease_rate <b>to</b> 0.
+    <a href="staking_config.html#0x1_staking_config_initialize_rewards">initialize_rewards</a>(
+        aptos_framework,
+        <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_create_from_rational">fixed_point64::create_from_rational</a>((rewards_rate <b>as</b> u128), (rewards_rate_denominator <b>as</b> u128)),
+        <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_create_from_rational">fixed_point64::create_from_rational</a>(0, 1000),
+        <a href="staking_config.html#0x1_staking_config_ONE_YEAR_IN_SECS">ONE_YEAR_IN_SECS</a>,
+        0,
+        <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_create_from_rational">fixed_point64::create_from_rational</a>(0, 1000),
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-reward_rate"><a class="header" href="#function-reward_rate">Function <code>reward_rate</code> <a id="0x1_staking_config_reward_rate"></a></a></h2>
+<p>Return the reward rate of this epoch as a tuple (numerator, denominator).</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_reward_rate">reward_rate</a>(): (u64, u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_reward_rate">reward_rate</a>(): (u64, u64) <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>, <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> {
+    <a href="staking_config.html#0x1_staking_config_get_reward_rate">get_reward_rate</a>(<b>borrow_global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework))
+}
+</code></pre>
+</details>
+<h2 id="function-initialize_rewards"><a class="header" href="#function-initialize_rewards">Function <code>initialize_rewards</code> <a id="0x1_staking_config_initialize_rewards"></a></a></h2>
+<p>Initialize rewards configurations.
+Can only be called as part of the Aptos governance proposal process established by the AptosGovernance module.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_initialize_rewards">initialize_rewards</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, rewards_rate_period_in_secs: u64, last_rewards_rate_period_start_in_secs: u64, rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_initialize_rewards">initialize_rewards</a>(
+    aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    rewards_rate: FixedPoint64,
+    min_rewards_rate: FixedPoint64,
+    rewards_rate_period_in_secs: u64,
+    last_rewards_rate_period_start_in_secs: u64,
+    rewards_rate_decrease_rate: FixedPoint64,
+) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+
+    <a href="staking_config.html#0x1_staking_config_validate_rewards_config">validate_rewards_config</a>(
+        rewards_rate,
+        min_rewards_rate,
+        rewards_rate_period_in_secs,
+        rewards_rate_decrease_rate,
+    );
+    <b>assert</b>!(
+        <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>() &gt;= last_rewards_rate_period_start_in_secs,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_LAST_REWARDS_RATE_PERIOD_START">EINVALID_LAST_REWARDS_RATE_PERIOD_START</a>)
+    );
+
+    <b>move_to</b>(aptos_framework, <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> {
+        rewards_rate,
+        min_rewards_rate,
+        rewards_rate_period_in_secs,
+        last_rewards_rate_period_start_in_secs,
+        rewards_rate_decrease_rate,
+    });
+}
+</code></pre>
+</details>
+<h2 id="function-get"><a class="header" href="#function-get">Function <code>get</code> <a id="0x1_staking_config_get"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get">get</a>(): <a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get">get</a>(): <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> {
+    *<b>borrow_global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework)
+}
+</code></pre>
+</details>
+<h2 id="function-get_allow_validator_set_change"><a class="header" href="#function-get_allow_validator_set_change">Function <code>get_allow_validator_set_change</code> <a id="0x1_staking_config_get_allow_validator_set_change"></a></a></h2>
+<p>Return whether validator set changes are allowed</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_allow_validator_set_change">get_allow_validator_set_change</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_allow_validator_set_change">get_allow_validator_set_change</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>): bool {
+    config.allow_validator_set_change
+}
+</code></pre>
+</details>
+<h2 id="function-get_required_stake"><a class="header" href="#function-get_required_stake">Function <code>get_required_stake</code> <a id="0x1_staking_config_get_required_stake"></a></a></h2>
+<p>Return the required min/max stake.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_required_stake">get_required_stake</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>): (u64, u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_required_stake">get_required_stake</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>): (u64, u64) {
+    (config.minimum_stake, config.maximum_stake)
+}
+</code></pre>
+</details>
+<h2 id="function-get_recurring_lockup_duration"><a class="header" href="#function-get_recurring_lockup_duration">Function <code>get_recurring_lockup_duration</code> <a id="0x1_staking_config_get_recurring_lockup_duration"></a></a></h2>
+<p>Return the recurring lockup duration that every validator is automatically renewed for (unless they unlock and
+withdraw all funds).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_recurring_lockup_duration">get_recurring_lockup_duration</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_recurring_lockup_duration">get_recurring_lockup_duration</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>): u64 {
+    config.recurring_lockup_duration_secs
+}
+</code></pre>
+</details>
+<h2 id="function-get_reward_rate"><a class="header" href="#function-get_reward_rate">Function <code>get_reward_rate</code> <a id="0x1_staking_config_get_reward_rate"></a></a></h2>
+<p>Return the reward rate of this epoch.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_reward_rate">get_reward_rate</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>): (u64, u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_reward_rate">get_reward_rate</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>): (u64, u64) <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> {
+    <b>if</b> (<a href="../move-stdlib/features.html#0x1_features_periodical_reward_rate_decrease_enabled">features::periodical_reward_rate_decrease_enabled</a>()) {
+        <b>let</b> epoch_rewards_rate = <b>borrow_global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
+        <b>if</b> (epoch_rewards_rate.is_zero()) {
+            (0u64, 1u64)
+        } <b>else</b> {
+            // Maximize denominator for higher precision.
+            // Restriction: nominator &lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a> && denominator &lt;= <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>
+            <b>let</b> denominator = <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_divide_u128">fixed_point64::divide_u128</a>((<a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a> <b>as</b> u128), epoch_rewards_rate);
+            <b>if</b> (denominator &gt; <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>) {
+                denominator = <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>
+            };
+            <b>let</b> nominator = (<a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_multiply_u128">fixed_point64::multiply_u128</a>(denominator, epoch_rewards_rate) <b>as</b> u64);
+            (nominator, (denominator <b>as</b> u64))
+        }
+    } <b>else</b> {
+        (config.rewards_rate, config.rewards_rate_denominator)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-get_voting_power_increase_limit"><a class="header" href="#function-get_voting_power_increase_limit">Function <code>get_voting_power_increase_limit</code> <a id="0x1_staking_config_get_voting_power_increase_limit"></a></a></h2>
+<p>Return the joining limit %.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_voting_power_increase_limit">get_voting_power_increase_limit</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_voting_power_increase_limit">get_voting_power_increase_limit</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>): u64 {
+    config.voting_power_increase_limit
+}
+</code></pre>
+</details>
+<h2 id="function-calculate_and_save_latest_epoch_rewards_rate"><a class="header" href="#function-calculate_and_save_latest_epoch_rewards_rate">Function <code>calculate_and_save_latest_epoch_rewards_rate</code> <a id="0x1_staking_config_calculate_and_save_latest_epoch_rewards_rate"></a></a></h2>
+<p>Calculate and save the latest rewards rate.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_epoch_rewards_rate">calculate_and_save_latest_epoch_rewards_rate</a>(): <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_epoch_rewards_rate">calculate_and_save_latest_epoch_rewards_rate</a>(): FixedPoint64 <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_periodical_reward_rate_decrease_enabled">features::periodical_reward_rate_decrease_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="staking_config.html#0x1_staking_config_EDISABLED_FUNCTION">EDISABLED_FUNCTION</a>));
+    <b>let</b> staking_rewards_config = <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_rewards_config">calculate_and_save_latest_rewards_config</a>();
+    staking_rewards_config.rewards_rate
+}
+</code></pre>
+</details>
+<h2 id="function-calculate_and_save_latest_rewards_config"><a class="header" href="#function-calculate_and_save_latest_rewards_config">Function <code>calculate_and_save_latest_rewards_config</code> <a id="0x1_staking_config_calculate_and_save_latest_rewards_config"></a></a></h2>
+<p>Calculate and return the up-to-date StakingRewardsConfig.</p>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_rewards_config">calculate_and_save_latest_rewards_config</a>(): <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_rewards_config">calculate_and_save_latest_rewards_config</a>(): <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> {
+    <b>let</b> staking_rewards_config = <b>borrow_global_mut</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+    <b>let</b> current_time_in_secs = <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>();
+    <b>assert</b>!(
+        current_time_in_secs &gt;= staking_rewards_config.last_rewards_rate_period_start_in_secs,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_LAST_REWARDS_RATE_PERIOD_START">EINVALID_LAST_REWARDS_RATE_PERIOD_START</a>)
+    );
+    <b>if</b> (current_time_in_secs - staking_rewards_config.last_rewards_rate_period_start_in_secs &lt; staking_rewards_config.rewards_rate_period_in_secs) {
+        <b>return</b> *staking_rewards_config
+    };
+    // Rewards rate decrease rate cannot be greater than 100%. Otherwise rewards rate will be negative.
+    <b>assert</b>!(
+        staking_rewards_config.rewards_rate_decrease_rate.ceil() &lt;= 1,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE_DECREASE_RATE">EINVALID_REWARDS_RATE_DECREASE_RATE</a>)
+    );
+    <b>let</b> new_rate = <a href="../aptos-stdlib/math_fixed64.html#0x1_math_fixed64_mul_div">math_fixed64::mul_div</a>(
+        staking_rewards_config.rewards_rate,
+        <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_create_from_u128">fixed_point64::create_from_u128</a>(1).sub(staking_rewards_config.rewards_rate_decrease_rate),
+        <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_create_from_u128">fixed_point64::create_from_u128</a>(1),
+    );
+    new_rate = <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_max">fixed_point64::max</a>(new_rate, staking_rewards_config.min_rewards_rate);
+
+    staking_rewards_config.rewards_rate = new_rate;
+    staking_rewards_config.last_rewards_rate_period_start_in_secs += staking_rewards_config.rewards_rate_period_in_secs;
+    <b>return</b> *staking_rewards_config
+}
+</code></pre>
+</details>
+<h2 id="function-update_required_stake"><a class="header" href="#function-update_required_stake">Function <code>update_required_stake</code> <a id="0x1_staking_config_update_required_stake"></a></a></h2>
+<p>Update the min and max stake amounts.
+Can only be called as part of the Aptos governance proposal process established by the AptosGovernance module.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_required_stake">update_required_stake</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, minimum_stake: u64, maximum_stake: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_required_stake">update_required_stake</a>(
+    aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    minimum_stake: u64,
+    maximum_stake: u64,
+) <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+    <a href="staking_config.html#0x1_staking_config_validate_required_stake">validate_required_stake</a>(minimum_stake, maximum_stake);
+
+    <b>let</b> <a href="staking_config.html#0x1_staking_config">staking_config</a> = <b>borrow_global_mut</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+    <a href="staking_config.html#0x1_staking_config">staking_config</a>.minimum_stake = minimum_stake;
+    <a href="staking_config.html#0x1_staking_config">staking_config</a>.maximum_stake = maximum_stake;
+}
+</code></pre>
+</details>
+<h2 id="function-update_recurring_lockup_duration_secs"><a class="header" href="#function-update_recurring_lockup_duration_secs">Function <code>update_recurring_lockup_duration_secs</code> <a id="0x1_staking_config_update_recurring_lockup_duration_secs"></a></a></h2>
+<p>Update the recurring lockup duration.
+Can only be called as part of the Aptos governance proposal process established by the AptosGovernance module.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_recurring_lockup_duration_secs">update_recurring_lockup_duration_secs</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_recurring_lockup_duration_secs: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_recurring_lockup_duration_secs">update_recurring_lockup_duration_secs</a>(
+    aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    new_recurring_lockup_duration_secs: u64,
+) <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> {
+    <b>assert</b>!(new_recurring_lockup_duration_secs &gt; 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EZERO_LOCKUP_DURATION">EZERO_LOCKUP_DURATION</a>));
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+
+    <b>let</b> <a href="staking_config.html#0x1_staking_config">staking_config</a> = <b>borrow_global_mut</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+    <a href="staking_config.html#0x1_staking_config">staking_config</a>.recurring_lockup_duration_secs = new_recurring_lockup_duration_secs;
+}
+</code></pre>
+</details>
+<h2 id="function-update_rewards_rate"><a class="header" href="#function-update_rewards_rate">Function <code>update_rewards_rate</code> <a id="0x1_staking_config_update_rewards_rate"></a></a></h2>
+<p>DEPRECATING
+Update the rewards rate.
+Can only be called as part of the Aptos governance proposal process established by the AptosGovernance module.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_rewards_rate">update_rewards_rate</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_rewards_rate: u64, new_rewards_rate_denominator: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_rewards_rate">update_rewards_rate</a>(
+    aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    new_rewards_rate: u64,
+    new_rewards_rate_denominator: u64,
+) <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> {
+    <b>assert</b>!(!<a href="../move-stdlib/features.html#0x1_features_periodical_reward_rate_decrease_enabled">features::periodical_reward_rate_decrease_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="staking_config.html#0x1_staking_config_EDEPRECATED_FUNCTION">EDEPRECATED_FUNCTION</a>));
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+    <b>assert</b>!(
+        new_rewards_rate_denominator &gt; 0,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EZERO_REWARDS_RATE_DENOMINATOR">EZERO_REWARDS_RATE_DENOMINATOR</a>),
+    );
+    // `rewards_rate` which is the numerator is limited <b>to</b> be `&lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>` in order <b>to</b> avoid the arithmetic
+    // overflow in the rewards calculation. `rewards_rate_denominator` can be adjusted <b>to</b> get the desired rewards
+    // rate (i.e., rewards_rate / rewards_rate_denominator).
+    <b>assert</b>!(new_rewards_rate &lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE">EINVALID_REWARDS_RATE</a>));
+
+    // We <b>assert</b> that (rewards_rate / rewards_rate_denominator &lt;= 1).
+    <b>assert</b>!(new_rewards_rate &lt;= new_rewards_rate_denominator, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE">EINVALID_REWARDS_RATE</a>));
+
+    <b>let</b> <a href="staking_config.html#0x1_staking_config">staking_config</a> = <b>borrow_global_mut</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+    <a href="staking_config.html#0x1_staking_config">staking_config</a>.rewards_rate = new_rewards_rate;
+    <a href="staking_config.html#0x1_staking_config">staking_config</a>.rewards_rate_denominator = new_rewards_rate_denominator;
+}
+</code></pre>
+</details>
+<h2 id="function-update_rewards_config"><a class="header" href="#function-update_rewards_config">Function <code>update_rewards_config</code> <a id="0x1_staking_config_update_rewards_config"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_rewards_config">update_rewards_config</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, rewards_rate_period_in_secs: u64, rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_rewards_config">update_rewards_config</a>(
+    aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    rewards_rate: FixedPoint64,
+    min_rewards_rate: FixedPoint64,
+    rewards_rate_period_in_secs: u64,
+    rewards_rate_decrease_rate: FixedPoint64,
+) <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+
+    <a href="staking_config.html#0x1_staking_config_validate_rewards_config">validate_rewards_config</a>(
+        rewards_rate,
+        min_rewards_rate,
+        rewards_rate_period_in_secs,
+        rewards_rate_decrease_rate,
+    );
+
+    <b>let</b> staking_rewards_config = <b>borrow_global_mut</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+    // Currently rewards_rate_period_in_secs is not allowed <b>to</b> be changed because this could bring complicated
+    // logics. At the moment the argument is just a placeholder for future <b>use</b>.
+    <b>assert</b>!(
+        rewards_rate_period_in_secs == staking_rewards_config.rewards_rate_period_in_secs,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE_PERIOD">EINVALID_REWARDS_RATE_PERIOD</a>),
+    );
+    staking_rewards_config.rewards_rate = rewards_rate;
+    staking_rewards_config.min_rewards_rate = min_rewards_rate;
+    staking_rewards_config.rewards_rate_period_in_secs = rewards_rate_period_in_secs;
+    staking_rewards_config.rewards_rate_decrease_rate = rewards_rate_decrease_rate;
+}
+</code></pre>
+</details>
+<h2 id="function-update_voting_power_increase_limit"><a class="header" href="#function-update_voting_power_increase_limit">Function <code>update_voting_power_increase_limit</code> <a id="0x1_staking_config_update_voting_power_increase_limit"></a></a></h2>
+<p>Update the joining limit %.
+Can only be called as part of the Aptos governance proposal process established by the AptosGovernance module.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_voting_power_increase_limit">update_voting_power_increase_limit</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_voting_power_increase_limit: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_voting_power_increase_limit">update_voting_power_increase_limit</a>(
+    aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    new_voting_power_increase_limit: u64,
+) <b>acquires</b> <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+    <b>assert</b>!(
+        new_voting_power_increase_limit &gt; 0 && new_voting_power_increase_limit &lt;= 50,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_VOTING_POWER_INCREASE_LIMIT">EINVALID_VOTING_POWER_INCREASE_LIMIT</a>),
+    );
+
+    <b>let</b> <a href="staking_config.html#0x1_staking_config">staking_config</a> = <b>borrow_global_mut</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+    <a href="staking_config.html#0x1_staking_config">staking_config</a>.voting_power_increase_limit = new_voting_power_increase_limit;
+}
+</code></pre>
+</details>
+<h2 id="function-validate_required_stake"><a class="header" href="#function-validate_required_stake">Function <code>validate_required_stake</code> <a id="0x1_staking_config_validate_required_stake"></a></a></h2>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_validate_required_stake">validate_required_stake</a>(minimum_stake: u64, maximum_stake: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_validate_required_stake">validate_required_stake</a>(minimum_stake: u64, maximum_stake: u64) {
+    <b>assert</b>!(minimum_stake &lt;= maximum_stake && maximum_stake &gt; 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_STAKE_RANGE">EINVALID_STAKE_RANGE</a>));
+}
+</code></pre>
+</details>
+<h2 id="function-validate_rewards_config"><a class="header" href="#function-validate_rewards_config">Function <code>validate_rewards_config</code> <a id="0x1_staking_config_validate_rewards_config"></a></a></h2>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_validate_rewards_config">validate_rewards_config</a>(rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, rewards_rate_period_in_secs: u64, rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_validate_rewards_config">validate_rewards_config</a>(
+    rewards_rate: FixedPoint64,
+    min_rewards_rate: FixedPoint64,
+    rewards_rate_period_in_secs: u64,
+    rewards_rate_decrease_rate: FixedPoint64,
+) {
+    // Bound rewards rate <b>to</b> avoid arithmetic overflow.
+    <b>assert</b>!(
+        rewards_rate.less_or_equal(<a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_create_from_u128">fixed_point64::create_from_u128</a>((1u128))),
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE">EINVALID_REWARDS_RATE</a>)
+    );
+    <b>assert</b>!(
+        min_rewards_rate.less_or_equal(rewards_rate),
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_MIN_REWARDS_RATE">EINVALID_MIN_REWARDS_RATE</a>)
+    );
+    // Rewards rate decrease rate cannot be greater than 100%. Otherwise rewards rate will be negative.
+    <b>assert</b>!(
+        rewards_rate_decrease_rate.ceil() &lt;= 1,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE_DECREASE_RATE">EINVALID_REWARDS_RATE_DECREASE_RATE</a>)
+    );
+    // This field, rewards_rate_period_in_secs must be greater than 0.
+    // TODO: rewards_rate_period_in_secs should be longer than the epoch duration but reading epoch duration causes a circular dependency.
+    <b>assert</b>!(
+        rewards_rate_period_in_secs &gt; 0,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="staking_config.html#0x1_staking_config_EINVALID_REWARDS_RATE_PERIOD">EINVALID_REWARDS_RATE_PERIOD</a>),
+    );
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="high-level-requirements"><a class="header" href="#high-level-requirements">High-level Requirements <a id="high-level-req"></a></a></h3>
+<table>
+<tr>
+<th>No.</th><th>Requirement</th><th>Criticality</th><th>Implementation</th><th>Enforcement</th>
+</tr>
+<tr>
+<td>1</td>
+<td>The ability to initialize the staking config and staking rewards resources, as well as the ability to update the staking config and staking rewards should only be available to the Aptos framework account.</td>
+<td>Medium</td>
+<td>The function initialize and initialize_rewards are used to initialize the StakingConfig and StakingRewardConfig resources. Updating the resources, can be done using the update_required_stake, update_recurring_lockup_duration_secs, update_rewards_rate, update_rewards_config, update_voting_power_increase_limit functions, which ensure that the signer is aptos_framework using the assert_aptos_framework function.</td>
+<td>Verified via <a href="#high-level-req-1.1">initialize</a>, <a href="#high-level-req-1.2">initialize_rewards</a>, <a href="#high-level-req-1.3">update_required_stake</a>, <a href="#high-level-req-1.4">update_recurring_lockup_duration_secs</a>, <a href="#high-level-req-1.5">update_rewards_rate</a>, <a href="#high-level-req-1.6">update_rewards_config</a>, and <a href="#high-level-req-1.7">update_voting_power_increase_limit</a>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The voting power increase, in a staking config resource, should always be greater than 0 and less or equal to 50.</td>
+<td>High</td>
+<td>During the initialization and update of the staking config, the value of voting_power_increase_limit is ensured to be in the range of (0 to 50].</td>
+<td>Ensured via <a href="#high-level-req-2.1">initialize</a> and <a href="#high-level-req-2.2">update_voting_power_increase_limit</a>. Formally verified via <a href="#high-level-req-2.3">StakingConfig</a>.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>The recurring lockup duration, in a staking config resource, should always be greater than 0.</td>
+<td>Medium</td>
+<td>During the initialization and update of the staking config, the value of recurring_lockup_duration_secs is ensured to be greater than 0.</td>
+<td>Ensured via <a href="#high-level-req-3.1">initialize</a> and <a href="#high-level-req-3.2">update_recurring_lockup_duration_secs</a>. Formally verified via <a href="#high-level-req-3.3">StakingConfig</a>.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The calculation of rewards should not be possible if the last reward rate period just started.</td>
+<td>High</td>
+<td>The function calculate_and_save_latest_rewards_config ensures that last_rewards_rate_period_start_in_secs is greater or equal to the current timestamp.</td>
+<td>Formally verified in <a href="#high-level-req-4">StakingRewardsConfigEnabledRequirement</a>.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>The rewards rate should always be less than or equal to 100%.</td>
+<td>High</td>
+<td>When initializing and updating the rewards rate, it is ensured that the rewards_rate is less or equal to MAX_REWARDS_RATE, otherwise rewards rate will be negative.</td>
+<td>Verified via <a href="#high-level-req-5">StakingConfig</a>.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>The reward rate's denominator should never be 0.</td>
+<td>High</td>
+<td>While initializing and updating the rewards rate, rewards_rate_denominator is ensured to be greater than 0.</td>
+<td>Verified via <a href="#high-level-req-6">StakingConfig</a>.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>The reward rate's nominator and dominator ratio should always be less or equal to 1.</td>
+<td>High</td>
+<td>When initializing and updating the rewards rate, it is ensured that rewards_rate is less or equal to rewards_rate_denominator.</td>
+<td>Verified via <a href="#high-level-req-7">StakingConfig</a>.</td>
+</tr>
+</table>
+<h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
+<pre><code><b>invariant</b> [suspendable] <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt; <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<b>invariant</b> [suspendable] <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt; <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>pragma</b> verify = <b>true</b>;
+<b>pragma</b> aborts_if_is_strict;
+</code></pre>
+<h3 id="resource-stakingconfig-1"><a class="header" href="#resource-stakingconfig-1">Resource <code>StakingConfig</code> <a id="@Specification_1_StakingConfig"></a></a></h3>
+<pre><code><b>struct</b> <a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a> <b>has</b> <b>copy</b>, drop, key
+</code></pre>
+<dl>
+<dt>
+<code>minimum_stake: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>maximum_stake: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>recurring_lockup_duration_secs: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>allow_validator_set_change: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>rewards_rate: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>rewards_rate_denominator: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>voting_power_increase_limit: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code>// This enforces <a id="high-level-req-5" href="#high-level-req">high-level requirement 5</a>:
+<b>invariant</b> rewards_rate &lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>;
+// This enforces <a id="high-level-req-6" href="#high-level-req">high-level requirement 6</a>:
+<b>invariant</b> rewards_rate_denominator &gt; 0;
+// This enforces <a id="high-level-req-7" href="#high-level-req">high-level requirement 7</a>:
+<b>invariant</b> rewards_rate &lt;= rewards_rate_denominator;
+// This enforces <a id="high-level-req-3.3" href="#high-level-req">high-level requirement 3</a>:
+<b>invariant</b> recurring_lockup_duration_secs &gt; 0;
+// This enforces <a id="high-level-req-2.3" href="#high-level-req">high-level requirement 2</a>:
+<b>invariant</b> voting_power_increase_limit &gt; 0 && voting_power_increase_limit &lt;= 50;
+</code></pre>
+<h3 id="resource-stakingrewardsconfig-1"><a class="header" href="#resource-stakingrewardsconfig-1">Resource <code>StakingRewardsConfig</code> <a id="@Specification_1_StakingRewardsConfig"></a></a></h3>
+<pre><code><b>struct</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a> <b>has</b> <b>copy</b>, drop, key
+</code></pre>
+<dl>
+<dt>
+<code>rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>rewards_rate_period_in_secs: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>last_rewards_rate_period_start_in_secs: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code><b>invariant</b> <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_spec_less_or_equal">fixed_point64::spec_less_or_equal</a>(
+    rewards_rate,
+    <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_spec_create_from_u128">fixed_point64::spec_create_from_u128</a>((1u128)));
+<b>invariant</b> <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_spec_less_or_equal">fixed_point64::spec_less_or_equal</a>(min_rewards_rate, rewards_rate);
+<b>invariant</b> rewards_rate_period_in_secs &gt; 0;
+<b>invariant</b> <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_spec_ceil">fixed_point64::spec_ceil</a>(rewards_rate_decrease_rate) &lt;= 1;
+</code></pre>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="staking_config.html#0x1_staking_config_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, minimum_stake: u64, maximum_stake: u64, recurring_lockup_duration_secs: u64, allow_validator_set_change: bool, rewards_rate: u64, rewards_rate_denominator: u64, voting_power_increase_limit: u64)
+</code></pre>
+<p>Caller must be @aptos_framework.
+The maximum_stake must be greater than maximum_stake in the range of Specified stake and the maximum_stake greater than zero.
+The rewards_rate_denominator must greater than zero.
+Only this %0-%50 of current total voting power is allowed to join the validator set in each epoch.
+The <code>rewards_rate</code> which is the numerator is limited to be <code>&lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a></code> in order to avoid the arithmetic overflow in the rewards calculation.
+rewards_rate/rewards_rate_denominator &lt;= 1.
+StakingConfig does not exist under the aptos_framework before creating it.</p>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<b>requires</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+// This enforces <a id="high-level-req-1.1" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> addr != @aptos_framework;
+<b>aborts_if</b> minimum_stake &gt; maximum_stake || maximum_stake == 0;
+// This enforces <a id="high-level-req-3.1" href="#high-level-req">high-level requirement 3</a>:
+<b>aborts_if</b> recurring_lockup_duration_secs == 0;
+<b>aborts_if</b> rewards_rate_denominator == 0;
+// This enforces <a id="high-level-req-2.1" href="#high-level-req">high-level requirement 2</a>:
+<b>aborts_if</b> voting_power_increase_limit == 0 || voting_power_increase_limit &gt; 50;
+<b>aborts_if</b> rewards_rate &gt; <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>;
+<b>aborts_if</b> rewards_rate &gt; rewards_rate_denominator;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(addr);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(addr);
+</code></pre>
+<h3 id="function-reward_rate-1"><a class="header" href="#function-reward_rate-1">Function <code>reward_rate</code> <a id="@Specification_1_reward_rate"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_reward_rate">reward_rate</a>(): (u64, u64)
+</code></pre>
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>let</b> config = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
+<b>ensures</b> (<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>() &&
+    (<b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate.value <b>as</b> u64) != 0) ==&gt;
+    result_1 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a> && result_2 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>;
+</code></pre>
+<h3 id="function-initialize_rewards-1"><a class="header" href="#function-initialize_rewards-1">Function <code>initialize_rewards</code> <a id="@Specification_1_initialize_rewards"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_initialize_rewards">initialize_rewards</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, rewards_rate_period_in_secs: u64, last_rewards_rate_period_start_in_secs: u64, rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>)
+</code></pre>
+<p>Caller must be @aptos_framework.
+last_rewards_rate_period_start_in_secs cannot be later than now.
+Abort at any condition in StakingRewardsConfigValidationAborts.
+StakingRewardsConfig does not exist under the aptos_framework before creating it.</p>
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>requires</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+// This enforces <a id="high-level-req-1.2" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> addr != @aptos_framework;
+<b>aborts_if</b> last_rewards_rate_period_start_in_secs &gt; <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>();
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigValidationAbortsIf">StakingRewardsConfigValidationAbortsIf</a>;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(addr);
+</code></pre>
+<h3 id="function-get-1"><a class="header" href="#function-get-1">Function <code>get</code> <a id="@Specification_1_get"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get">get</a>(): <a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>
+</code></pre>
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+</code></pre>
+<h3 id="function-get_reward_rate-1"><a class="header" href="#function-get_reward_rate-1">Function <code>get_reward_rate</code> <a id="@Specification_1_get_reward_rate"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_get_reward_rate">get_reward_rate</a>(config: &<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>): (u64, u64)
+</code></pre>
+<pre><code><b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
+<b>ensures</b> result_1 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>;
+<b>ensures</b> result_2 &gt; 0;
+<b>ensures</b> result_1 &lt;= result_2;
+<b>ensures</b> (<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>() &&
+    (<b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate.value <b>as</b> u64) != 0) ==&gt;
+        result_2 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>;
+</code></pre>
+<h3 id="function-calculate_and_save_latest_epoch_rewards_rate-1"><a class="header" href="#function-calculate_and_save_latest_epoch_rewards_rate-1">Function <code>calculate_and_save_latest_epoch_rewards_rate</code> <a id="@Specification_1_calculate_and_save_latest_epoch_rewards_rate"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_epoch_rewards_rate">calculate_and_save_latest_epoch_rewards_rate</a>(): <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
+</code></pre>
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
+</code></pre>
+<h3 id="function-calculate_and_save_latest_rewards_config-1"><a class="header" href="#function-calculate_and_save_latest_rewards_config-1">Function <code>calculate_and_save_latest_rewards_config</code> <a id="@Specification_1_calculate_and_save_latest_rewards_config"></a></a></h3>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_rewards_config">calculate_and_save_latest_rewards_config</a>(): <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>
+</code></pre>
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>requires</b> <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+</code></pre>
+<h3 id="function-update_required_stake-1"><a class="header" href="#function-update_required_stake-1">Function <code>update_required_stake</code> <a id="@Specification_1_update_required_stake"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_required_stake">update_required_stake</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, minimum_stake: u64, maximum_stake: u64)
+</code></pre>
+<p>Caller must be @aptos_framework.
+The maximum_stake must be greater than maximum_stake in the range of Specified stake and the maximum_stake greater than zero.
+The StakingConfig is under @aptos_framework.</p>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+// This enforces <a id="high-level-req-1.3" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> addr != @aptos_framework;
+<b>aborts_if</b> minimum_stake &gt; maximum_stake || maximum_stake == 0;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework).minimum_stake == minimum_stake &&
+    <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework).maximum_stake == maximum_stake;
+</code></pre>
+<h3 id="function-update_recurring_lockup_duration_secs-1"><a class="header" href="#function-update_recurring_lockup_duration_secs-1">Function <code>update_recurring_lockup_duration_secs</code> <a id="@Specification_1_update_recurring_lockup_duration_secs"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_recurring_lockup_duration_secs">update_recurring_lockup_duration_secs</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_recurring_lockup_duration_secs: u64)
+</code></pre>
+<p>Caller must be @aptos_framework.
+The new_recurring_lockup_duration_secs must greater than zero.
+The StakingConfig is under @aptos_framework.</p>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+// This enforces <a id="high-level-req-1.4" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> addr != @aptos_framework;
+// This enforces <a id="high-level-req-3.2" href="#high-level-req">high-level requirement 3</a>:
+<b>aborts_if</b> new_recurring_lockup_duration_secs == 0;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework).recurring_lockup_duration_secs == new_recurring_lockup_duration_secs;
+</code></pre>
+<h3 id="function-update_rewards_rate-1"><a class="header" href="#function-update_rewards_rate-1">Function <code>update_rewards_rate</code> <a id="@Specification_1_update_rewards_rate"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_rewards_rate">update_rewards_rate</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_rewards_rate: u64, new_rewards_rate_denominator: u64)
+</code></pre>
+<p>Caller must be @aptos_framework.
+The new_rewards_rate_denominator must greater than zero.
+The StakingConfig is under @aptos_framework.
+The <code>rewards_rate</code> which is the numerator is limited to be <code>&lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a></code> in order to avoid the arithmetic overflow in the rewards calculation.
+rewards_rate/rewards_rate_denominator &lt;= 1.</p>
+<pre><code><b>aborts_if</b> <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+// This enforces <a id="high-level-req-1.5" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> addr != @aptos_framework;
+<b>aborts_if</b> new_rewards_rate_denominator == 0;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<b>aborts_if</b> new_rewards_rate &gt; <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>;
+<b>aborts_if</b> new_rewards_rate &gt; new_rewards_rate_denominator;
+<b>let</b> <b>post</b> <a href="staking_config.html#0x1_staking_config">staking_config</a> = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> <a href="staking_config.html#0x1_staking_config">staking_config</a>.rewards_rate == new_rewards_rate;
+<b>ensures</b> <a href="staking_config.html#0x1_staking_config">staking_config</a>.rewards_rate_denominator == new_rewards_rate_denominator;
+</code></pre>
+<h3 id="function-update_rewards_config-1"><a class="header" href="#function-update_rewards_config-1">Function <code>update_rewards_config</code> <a id="@Specification_1_update_rewards_config"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_rewards_config">update_rewards_config</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, rewards_rate_period_in_secs: u64, rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>)
+</code></pre>
+<p>Caller must be @aptos_framework.
+StakingRewardsConfig is under the @aptos_framework.</p>
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+// This enforces <a id="high-level-req-1.6" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> addr != @aptos_framework;
+<b>aborts_if</b> <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate_period_in_secs != rewards_rate_period_in_secs;
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigValidationAbortsIf">StakingRewardsConfigValidationAbortsIf</a>;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(addr);
+<b>let</b> <b>post</b> staking_rewards_config = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> staking_rewards_config.rewards_rate == rewards_rate;
+<b>ensures</b> staking_rewards_config.min_rewards_rate == min_rewards_rate;
+<b>ensures</b> staking_rewards_config.rewards_rate_period_in_secs == rewards_rate_period_in_secs;
+<b>ensures</b> staking_rewards_config.rewards_rate_decrease_rate == rewards_rate_decrease_rate;
+</code></pre>
+<h3 id="function-update_voting_power_increase_limit-1"><a class="header" href="#function-update_voting_power_increase_limit-1">Function <code>update_voting_power_increase_limit</code> <a id="@Specification_1_update_voting_power_increase_limit"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_voting_power_increase_limit">update_voting_power_increase_limit</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_voting_power_increase_limit: u64)
+</code></pre>
+<p>Caller must be @aptos_framework.
+Only this %0-%50 of current total voting power is allowed to join the validator set in each epoch.
+The StakingConfig is under @aptos_framework.</p>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+// This enforces <a id="high-level-req-1.7" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> addr != @aptos_framework;
+// This enforces <a id="high-level-req-2.2" href="#high-level-req">high-level requirement 2</a>:
+<b>aborts_if</b> new_voting_power_increase_limit == 0 || new_voting_power_increase_limit &gt; 50;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework).voting_power_increase_limit == new_voting_power_increase_limit;
+</code></pre>
+<h3 id="function-validate_required_stake-1"><a class="header" href="#function-validate_required_stake-1">Function <code>validate_required_stake</code> <a id="@Specification_1_validate_required_stake"></a></a></h3>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_validate_required_stake">validate_required_stake</a>(minimum_stake: u64, maximum_stake: u64)
+</code></pre>
+<p>The maximum_stake must be greater than maximum_stake in the range of Specified stake and the maximum_stake greater than zero.</p>
+<pre><code><b>aborts_if</b> minimum_stake &gt; maximum_stake || maximum_stake == 0;
+</code></pre>
+<h3 id="function-validate_rewards_config-1"><a class="header" href="#function-validate_rewards_config-1">Function <code>validate_rewards_config</code> <a id="@Specification_1_validate_rewards_config"></a></a></h3>
+<pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_validate_rewards_config">validate_rewards_config</a>(rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, rewards_rate_period_in_secs: u64, rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>)
+</code></pre>
+<p>Abort at any condition in StakingRewardsConfigValidationAborts.</p>
+<pre><code><b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigValidationAbortsIf">StakingRewardsConfigValidationAbortsIf</a>;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/stake.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/staking_contract.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/stake.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/staking_contract.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

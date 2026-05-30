@@ -1,0 +1,478 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>event - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/event.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1event"><a class="header" href="#module-0x1event">Module <code>0x1::event</code> <a id="0x1_event"></a></a></h1>
+<p>The Event module defines an <code>EventHandleGenerator</code> that is used to create
+<code><a href="event.html#0x1_event_EventHandle">EventHandle</a></code>s with unique GUIDs. It contains a counter for the number
+of <code><a href="event.html#0x1_event_EventHandle">EventHandle</a></code>s it generates. An <code><a href="event.html#0x1_event_EventHandle">EventHandle</a></code> is used to count the number of
+events emitted to a handle and emit events to the event store.</p>
+<ul>
+<li><a href="#0x1_event_EventHandle">Struct <code>EventHandle</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_event_emit">Function <code>emit</code></a></li>
+<li><a href="#0x1_event_write_module_event_to_store">Function <code>write_module_event_to_store</code></a></li>
+<li><a href="#0x1_event_new_event_handle">Function <code>new_event_handle</code></a></li>
+<li><a href="#0x1_event_emit_event">Function <code>emit_event</code></a></li>
+<li><a href="#0x1_event_guid">Function <code>guid</code></a></li>
+<li><a href="#0x1_event_counter">Function <code>counter</code></a></li>
+<li><a href="#0x1_event_write_to_event_store">Function <code>write_to_event_store</code></a></li>
+<li><a href="#0x1_event_destroy_handle">Function <code>destroy_handle</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#high-level-req">High-level Requirements</a></li>
+<li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_emit">Function <code>emit</code></a></li>
+<li><a href="#@Specification_1_write_module_event_to_store">Function <code>write_module_event_to_store</code></a></li>
+<li><a href="#@Specification_1_emit_event">Function <code>emit_event</code></a></li>
+<li><a href="#@Specification_1_guid">Function <code>guid</code></a></li>
+<li><a href="#@Specification_1_counter">Function <code>counter</code></a></li>
+<li><a href="#@Specification_1_write_to_event_store">Function <code>write_to_event_store</code></a></li>
+<li><a href="#@Specification_1_destroy_handle">Function <code>destroy_handle</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/bcs.html#0x1_bcs">0x1::bcs</a>;
+<b>use</b> <a href="guid.html#0x1_guid">0x1::guid</a>;
+</code></pre>
+<h2 id="struct-eventhandle"><a class="header" href="#struct-eventhandle">Struct <code>EventHandle</code> <a id="0x1_event_EventHandle"></a></a></h2>
+<p>A handle for an event such that:</p>
+<ol>
+<li>Other modules can emit events to this handle.</li>
+<li>Storage can use this handle to prove the total number of events that happened in the past.</li>
+</ol>
+<pre><code>#[deprecated]
+<b>struct</b> <a href="event.html#0x1_event_EventHandle">EventHandle</a>&lt;T: drop, store&gt; <b>has</b> store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>counter: u64</code>
+</dt>
+<dd>
+ Total number of events emitted to this event stream.
+</dd>
+<dt>
+<code><a href="guid.html#0x1_guid">guid</a>: <a href="guid.html#0x1_guid_GUID">guid::GUID</a></code>
+</dt>
+<dd>
+ A globally unique ID for this event stream.
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_event_ECANNOT_CREATE_EVENT"></a></p>
+<p>An event cannot be created. This error is returned by native implementations when</p>
+<ul>
+<li>The type tag for event is too deeply nested.</li>
+</ul>
+<pre><code><b>const</b> <a href="event.html#0x1_event_ECANNOT_CREATE_EVENT">ECANNOT_CREATE_EVENT</a>: u64 = 1;
+</code></pre>
+<h2 id="function-emit"><a class="header" href="#function-emit">Function <code>emit</code> <a id="0x1_event_emit"></a></a></h2>
+<p>Emit a module event with payload <code>msg</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="event.html#0x1_event_emit">emit</a>&lt;T: drop, store&gt;(msg: T)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="event.html#0x1_event_emit">emit</a>&lt;T: store + drop&gt;(msg: T) {
+    <a href="event.html#0x1_event_write_module_event_to_store">write_module_event_to_store</a>&lt;T&gt;(msg);
+}
+</code></pre>
+</details>
+<h2 id="function-write_module_event_to_store"><a class="header" href="#function-write_module_event_to_store">Function <code>write_module_event_to_store</code> <a id="0x1_event_write_module_event_to_store"></a></a></h2>
+<p>Log <code>msg</code> with the event stream identified by <code>T</code></p>
+<pre><code><b>fun</b> <a href="event.html#0x1_event_write_module_event_to_store">write_module_event_to_store</a>&lt;T: drop, store&gt;(msg: T)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="event.html#0x1_event_write_module_event_to_store">write_module_event_to_store</a>&lt;T: drop + store&gt;(msg: T);
+</code></pre>
+</details>
+<h2 id="function-new_event_handle"><a class="header" href="#function-new_event_handle">Function <code>new_event_handle</code> <a id="0x1_event_new_event_handle"></a></a></h2>
+<p>Use EventHandleGenerator to generate a unique event handle for <code>sig</code></p>
+<pre><code>#[deprecated]
+<b>public</b>(<b>friend</b>) <b>fun</b> <a href="event.html#0x1_event_new_event_handle">new_event_handle</a>&lt;T: drop, store&gt;(<a href="guid.html#0x1_guid">guid</a>: <a href="guid.html#0x1_guid_GUID">guid::GUID</a>): <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="event.html#0x1_event_new_event_handle">new_event_handle</a>&lt;T: drop + store&gt;(<a href="guid.html#0x1_guid">guid</a>: GUID): <a href="event.html#0x1_event_EventHandle">EventHandle</a>&lt;T&gt; {
+    <a href="event.html#0x1_event_EventHandle">EventHandle</a>&lt;T&gt; {
+        counter: 0,
+        <a href="guid.html#0x1_guid">guid</a>,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-emit_event"><a class="header" href="#function-emit_event">Function <code>emit_event</code> <a id="0x1_event_emit_event"></a></a></h2>
+<p>Emit an event with payload <code>msg</code> by using <code>handle_ref</code>'s key and counter.</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="event.html#0x1_event_emit_event">emit_event</a>&lt;T: drop, store&gt;(handle_ref: &<b>mut</b> <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;, msg: T)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="event.html#0x1_event_emit_event">emit_event</a>&lt;T: drop + store&gt;(handle_ref: &<b>mut</b> <a href="event.html#0x1_event_EventHandle">EventHandle</a>&lt;T&gt;, msg: T) {
+    <a href="event.html#0x1_event_write_to_event_store">write_to_event_store</a>&lt;T&gt;(<a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(&handle_ref.<a href="guid.html#0x1_guid">guid</a>), handle_ref.counter, msg);
+    <b>spec</b> {
+        <b>assume</b> handle_ref.counter + 1 &lt;= MAX_U64;
+    };
+    handle_ref.counter += 1;
+}
+</code></pre>
+</details>
+<h2 id="function-guid"><a class="header" href="#function-guid">Function <code>guid</code> <a id="0x1_event_guid"></a></a></h2>
+<p>Return the GUID associated with this EventHandle</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="guid.html#0x1_guid">guid</a>&lt;T: drop, store&gt;(handle_ref: &<a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;): &<a href="guid.html#0x1_guid_GUID">guid::GUID</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="guid.html#0x1_guid">guid</a>&lt;T: drop + store&gt;(handle_ref: &<a href="event.html#0x1_event_EventHandle">EventHandle</a>&lt;T&gt;): &GUID {
+    &handle_ref.<a href="guid.html#0x1_guid">guid</a>
+}
+</code></pre>
+</details>
+<h2 id="function-counter"><a class="header" href="#function-counter">Function <code>counter</code> <a id="0x1_event_counter"></a></a></h2>
+<p>Return the current counter associated with this EventHandle</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="event.html#0x1_event_counter">counter</a>&lt;T: drop, store&gt;(handle_ref: &<a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="event.html#0x1_event_counter">counter</a>&lt;T: drop + store&gt;(handle_ref: &<a href="event.html#0x1_event_EventHandle">EventHandle</a>&lt;T&gt;): u64 {
+    handle_ref.counter
+}
+</code></pre>
+</details>
+<h2 id="function-write_to_event_store"><a class="header" href="#function-write_to_event_store">Function <code>write_to_event_store</code> <a id="0x1_event_write_to_event_store"></a></a></h2>
+<p>Log <code>msg</code> as the <code>count</code>th event associated with the event stream identified by <code><a href="guid.html#0x1_guid">guid</a></code></p>
+<pre><code>#[deprecated]
+<b>fun</b> <a href="event.html#0x1_event_write_to_event_store">write_to_event_store</a>&lt;T: drop, store&gt;(<a href="guid.html#0x1_guid">guid</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, count: u64, msg: T)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="event.html#0x1_event_write_to_event_store">write_to_event_store</a>&lt;T: drop + store&gt;(<a href="guid.html#0x1_guid">guid</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, count: u64, msg: T);
+</code></pre>
+</details>
+<h2 id="function-destroy_handle"><a class="header" href="#function-destroy_handle">Function <code>destroy_handle</code> <a id="0x1_event_destroy_handle"></a></a></h2>
+<p>Destroy a unique handle.</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="event.html#0x1_event_destroy_handle">destroy_handle</a>&lt;T: drop, store&gt;(handle: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="event.html#0x1_event_destroy_handle">destroy_handle</a>&lt;T: drop + store&gt;(handle: <a href="event.html#0x1_event_EventHandle">EventHandle</a>&lt;T&gt;) {
+    <a href="event.html#0x1_event_EventHandle">EventHandle</a>&lt;T&gt; { counter: _, <a href="guid.html#0x1_guid">guid</a>: _ } = handle;
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="high-level-requirements"><a class="header" href="#high-level-requirements">High-level Requirements <a id="high-level-req"></a></a></h3>
+<table>
+<tr>
+<th>No.</th><th>Requirement</th><th>Criticality</th><th>Implementation</th><th>Enforcement</th>
+</tr>
+<tr>
+<td>1</td>
+<td>Each event handle possesses a distinct and unique GUID.</td>
+<td>Critical</td>
+<td>The new_event_handle function creates an EventHandle object with a unique GUID, ensuring distinct identification.</td>
+<td>Audited: GUIDs are created in guid::create. Each time the function is called, it increments creation_num_ref. Multiple calls to the function will result in distinct GUID values.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Unable to publish two events with the same GUID & sequence number.</td>
+<td>Critical</td>
+<td>Two events may either have the same GUID with a different counter or the same counter with a different GUID.</td>
+<td>This is implied by <a href="#high-level-req">high-level requirement 1</a>.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Event native functions respect normal Move rules around object creation and destruction.</td>
+<td>Critical</td>
+<td>Must follow the same rules and principles that apply to object creation and destruction in Move when using event native functions.</td>
+<td>The native functions of this module have been manually audited.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Counter increases monotonically between event emissions</td>
+<td>Medium</td>
+<td>With each event emission, the emit_event function increments the counter of the EventHandle by one.</td>
+<td>Formally verified in the post condition of <a href="#high-level-req-4">emit_event</a>.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>For a given EventHandle, it should always be possible to: (1) return the GUID associated with this EventHandle, (2) return the current counter associated with this EventHandle, and (3) destroy the handle.</td>
+<td>Low</td>
+<td>The following functions should not abort if EventHandle exists: guid(), counter(), destroy_handle().</td>
+<td>Formally verified via <a href="#high-level-req-5.1">guid</a>, <a href="#high-level-req-5.2">counter</a> and <a href="#high-level-req-5.3">destroy_handle</a>.</td>
+</tr>
+</table>
+<h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
+<pre><code><b>pragma</b> verify = <b>true</b>;
+<b>pragma</b> aborts_if_is_strict;
+</code></pre>
+<h3 id="function-emit-1"><a class="header" href="#function-emit-1">Function <code>emit</code> <a id="@Specification_1_emit"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="event.html#0x1_event_emit">emit</a>&lt;T: drop, store&gt;(msg: T)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-write_module_event_to_store-1"><a class="header" href="#function-write_module_event_to_store-1">Function <code>write_module_event_to_store</code> <a id="@Specification_1_write_module_event_to_store"></a></a></h3>
+<pre><code><b>fun</b> <a href="event.html#0x1_event_write_module_event_to_store">write_module_event_to_store</a>&lt;T: drop, store&gt;(msg: T)
+</code></pre>
+<p>Native function use opaque.</p>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-emit_event-1"><a class="header" href="#function-emit_event-1">Function <code>emit_event</code> <a id="@Specification_1_emit_event"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="event.html#0x1_event_emit_event">emit_event</a>&lt;T: drop, store&gt;(handle_ref: &<b>mut</b> <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;, msg: T)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+// This enforces <a id="high-level-req-4" href="#high-level-req">high-level requirement 4</a>:
+<b>ensures</b> [concrete] handle_ref.counter == <b>old</b>(handle_ref.counter) + 1;
+</code></pre>
+<h3 id="function-guid-1"><a class="header" href="#function-guid-1">Function <code>guid</code> <a id="@Specification_1_guid"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="guid.html#0x1_guid">guid</a>&lt;T: drop, store&gt;(handle_ref: &<a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;): &<a href="guid.html#0x1_guid_GUID">guid::GUID</a>
+</code></pre>
+<pre><code>// This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
+<b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-counter-1"><a class="header" href="#function-counter-1">Function <code>counter</code> <a id="@Specification_1_counter"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="event.html#0x1_event_counter">counter</a>&lt;T: drop, store&gt;(handle_ref: &<a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;): u64
+</code></pre>
+<pre><code>// This enforces <a id="high-level-req-5.2" href="#high-level-req">high-level requirement 5</a>:
+<b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-write_to_event_store-1"><a class="header" href="#function-write_to_event_store-1">Function <code>write_to_event_store</code> <a id="@Specification_1_write_to_event_store"></a></a></h3>
+<pre><code>#[deprecated]
+<b>fun</b> <a href="event.html#0x1_event_write_to_event_store">write_to_event_store</a>&lt;T: drop, store&gt;(<a href="guid.html#0x1_guid">guid</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, count: u64, msg: T)
+</code></pre>
+<p>Native function use opaque.</p>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-destroy_handle-1"><a class="header" href="#function-destroy_handle-1">Function <code>destroy_handle</code> <a id="@Specification_1_destroy_handle"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="event.html#0x1_event_destroy_handle">destroy_handle</a>&lt;T: drop, store&gt;(handle: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;)
+</code></pre>
+<pre><code>// This enforces <a id="high-level-req-5.3" href="#high-level-req">high-level requirement 5</a>:
+<b>aborts_if</b> <b>false</b>;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/ethereum_derivable_account.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/execution_config.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/ethereum_derivable_account.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/execution_config.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

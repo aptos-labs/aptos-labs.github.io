@@ -1,0 +1,896 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>pool_u64_unbound - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/pool_u64_unbound.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1pool_u64_unbound"><a class="header" href="#module-0x1pool_u64_unbound">Module <code>0x1::pool_u64_unbound</code> <a id="0x1_pool_u64_unbound"></a></a></h1>
+<p>Simple module for tracking and calculating shares of a pool of coins. The shares are worth more as the total coins in
+the pool increases. New shareholder can buy more shares or redeem their existing shares.</p>
+<p>Example flow:</p>
+<ol>
+<li>Pool start outs empty.</li>
+<li>Shareholder A buys in with 1000 coins. A will receive 1000 shares in the pool. Pool now has 1000 total coins and
+1000 total shares.</li>
+<li>Pool appreciates in value from rewards and now has 2000 coins. A's 1000 shares are now worth 2000 coins.</li>
+<li>Shareholder B now buys in with 1000 coins. Since before the buy in, each existing share is worth 2 coins, B will
+receive 500 shares in exchange for 1000 coins. Pool now has 1500 shares and 3000 coins.</li>
+<li>Pool appreciates in value from rewards and now has 6000 coins.</li>
+<li>A redeems 500 shares. Each share is worth 6000 / 1500 = 4. A receives 2000 coins. Pool has 4000 coins and 1000
+shares left.</li>
+</ol>
+<ul>
+<li><a href="#0x1_pool_u64_unbound_Pool">Struct <code>Pool</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_pool_u64_unbound_new">Function <code>new</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_create">Function <code>create</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_create_with_scaling_factor">Function <code>create_with_scaling_factor</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_destroy_empty">Function <code>destroy_empty</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_total_coins">Function <code>total_coins</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_total_shares">Function <code>total_shares</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_contains">Function <code>contains</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_shares">Function <code>shares</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_balance">Function <code>balance</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_shareholders_count">Function <code>shareholders_count</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_update_total_coins">Function <code>update_total_coins</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_buy_in">Function <code>buy_in</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_add_shares">Function <code>add_shares</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_redeem_shares">Function <code>redeem_shares</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_transfer_shares">Function <code>transfer_shares</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_deduct_shares">Function <code>deduct_shares</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_amount_to_shares">Function <code>amount_to_shares</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_amount_to_shares_with_total_coins">Function <code>amount_to_shares_with_total_coins</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_shares_to_amount">Function <code>shares_to_amount</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_shares_to_amount_with_total_coins">Function <code>shares_to_amount_with_total_coins</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_shares_to_amount_with_total_stats">Function <code>shares_to_amount_with_total_stats</code></a></li>
+<li><a href="#0x1_pool_u64_unbound_multiply_then_divide">Function <code>multiply_then_divide</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_Pool">Struct <code>Pool</code></a></li>
+<li><a href="#@Specification_1_contains">Function <code>contains</code></a></li>
+<li><a href="#@Specification_1_shares">Function <code>shares</code></a></li>
+<li><a href="#@Specification_1_balance">Function <code>balance</code></a></li>
+<li><a href="#@Specification_1_buy_in">Function <code>buy_in</code></a></li>
+<li><a href="#@Specification_1_add_shares">Function <code>add_shares</code></a></li>
+<li><a href="#@Specification_1_redeem_shares">Function <code>redeem_shares</code></a></li>
+<li><a href="#@Specification_1_transfer_shares">Function <code>transfer_shares</code></a></li>
+<li><a href="#@Specification_1_deduct_shares">Function <code>deduct_shares</code></a></li>
+<li><a href="#@Specification_1_amount_to_shares_with_total_coins">Function <code>amount_to_shares_with_total_coins</code></a></li>
+<li><a href="#@Specification_1_shares_to_amount_with_total_coins">Function <code>shares_to_amount_with_total_coins</code></a></li>
+<li><a href="#@Specification_1_multiply_then_divide">Function <code>multiply_then_divide</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="table_with_length.html#0x1_table_with_length">0x1::table_with_length</a>;
+</code></pre>
+<h2 id="struct-pool"><a class="header" href="#struct-pool">Struct <code>Pool</code> <a id="0x1_pool_u64_unbound_Pool"></a></a></h2>
+<pre><code><b>struct</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a> <b>has</b> store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>total_coins: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>total_shares: u128</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>shares: <a href="table_with_length.html#0x1_table_with_length_TableWithLength">table_with_length::TableWithLength</a>&lt;<b>address</b>, u128&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>scaling_factor: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_pool_u64_unbound_MAX_U64"></a></p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U64">MAX_U64</a>: u64 = 18446744073709551615;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_MAX_U128"></a></p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a>: u128 = 340282366920938463463374607431768211455;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_EINSUFFICIENT_SHARES"></a></p>
+<p>Cannot redeem more shares than the shareholder has in the pool.</p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EINSUFFICIENT_SHARES">EINSUFFICIENT_SHARES</a>: u64 = 4;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_EPOOL_IS_NOT_EMPTY"></a></p>
+<p>Cannot destroy non-empty pool.</p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EPOOL_IS_NOT_EMPTY">EPOOL_IS_NOT_EMPTY</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_EPOOL_TOTAL_COINS_OVERFLOW"></a></p>
+<p>Pool's total coins cannot exceed u64.max.</p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EPOOL_TOTAL_COINS_OVERFLOW">EPOOL_TOTAL_COINS_OVERFLOW</a>: u64 = 6;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_EPOOL_TOTAL_SHARES_OVERFLOW"></a></p>
+<p>Pool's total shares cannot exceed u64.max.</p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EPOOL_TOTAL_SHARES_OVERFLOW">EPOOL_TOTAL_SHARES_OVERFLOW</a>: u64 = 7;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_ESHAREHOLDER_NOT_FOUND"></a></p>
+<p>Shareholder not present in pool.</p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_ESHAREHOLDER_NOT_FOUND">ESHAREHOLDER_NOT_FOUND</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_ESHAREHOLDER_SHARES_OVERFLOW"></a></p>
+<p>Shareholder cannot have more than u64.max shares.</p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_ESHAREHOLDER_SHARES_OVERFLOW">ESHAREHOLDER_SHARES_OVERFLOW</a>: u64 = 5;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_ETOO_MANY_SHAREHOLDERS"></a></p>
+<p>There are too many shareholders in the pool.</p>
+<pre><code><b>const</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_ETOO_MANY_SHAREHOLDERS">ETOO_MANY_SHAREHOLDERS</a>: u64 = 2;
+</code></pre>
+<h2 id="function-new"><a class="header" href="#function-new">Function <code>new</code> <a id="0x1_pool_u64_unbound_new"></a></a></h2>
+<p>Create a new pool.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_new">new</a>(): <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_new">new</a>(): <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a> {
+    // Default <b>to</b> a scaling factor of 1 (effectively no scaling).
+    <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_create_with_scaling_factor">create_with_scaling_factor</a>(1)
+}
+</code></pre>
+</details>
+<h2 id="function-create"><a class="header" href="#function-create">Function <code>create</code> <a id="0x1_pool_u64_unbound_create"></a></a></h2>
+<p>Deprecated. Use <code>new</code> instead.
+Create a new pool.</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_create">create</a>(): <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_create">create</a>(): <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a> {
+    <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_new">new</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-create_with_scaling_factor"><a class="header" href="#function-create_with_scaling_factor">Function <code>create_with_scaling_factor</code> <a id="0x1_pool_u64_unbound_create_with_scaling_factor"></a></a></h2>
+<p>Create a new pool with custom <code>scaling_factor</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_create_with_scaling_factor">create_with_scaling_factor</a>(scaling_factor: u64): <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_create_with_scaling_factor">create_with_scaling_factor</a>(scaling_factor: u64): <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a> {
+    <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a> {
+        total_coins: 0,
+        total_shares: 0,
+        shares: <a href="table.html#0x1_table_new">table::new</a>&lt;<b>address</b>, u128&gt;(),
+        scaling_factor,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-destroy_empty"><a class="header" href="#function-destroy_empty">Function <code>destroy_empty</code> <a id="0x1_pool_u64_unbound_destroy_empty"></a></a></h2>
+<p>Destroy an empty pool. This will fail if the pool has any balance of coins.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_destroy_empty">destroy_empty</a>(self: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_destroy_empty">destroy_empty</a>(self: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>) {
+    <b>assert</b>!(self.total_coins == 0, <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EPOOL_IS_NOT_EMPTY">EPOOL_IS_NOT_EMPTY</a>));
+    <b>let</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a> {
+        total_coins: _,
+        total_shares: _,
+        shares,
+        scaling_factor: _,
+    } = self;
+    shares.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_destroy_empty">destroy_empty</a>&lt;<b>address</b>, u128&gt;();
+}
+</code></pre>
+</details>
+<h2 id="function-total_coins"><a class="header" href="#function-total_coins">Function <code>total_coins</code> <a id="0x1_pool_u64_unbound_total_coins"></a></a></h2>
+<p>Return <code>self</code>'s total balance of coins.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_total_coins">total_coins</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_total_coins">total_coins</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>): u64 {
+    self.total_coins
+}
+</code></pre>
+</details>
+<h2 id="function-total_shares"><a class="header" href="#function-total_shares">Function <code>total_shares</code> <a id="0x1_pool_u64_unbound_total_shares"></a></a></h2>
+<p>Return the total number of shares across all shareholders in <code>self</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_total_shares">total_shares</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_total_shares">total_shares</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>): u128 {
+    self.total_shares
+}
+</code></pre>
+</details>
+<h2 id="function-contains"><a class="header" href="#function-contains">Function <code>contains</code> <a id="0x1_pool_u64_unbound_contains"></a></a></h2>
+<p>Return true if <code>shareholder</code> is in <code>self</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>): bool {
+    self.shares.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(shareholder)
+}
+</code></pre>
+</details>
+<h2 id="function-shares"><a class="header" href="#function-shares">Function <code>shares</code> <a id="0x1_pool_u64_unbound_shares"></a></a></h2>
+<p>Return the number of shares of <code>stakeholder</code> in <code>self</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares">shares</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares">shares</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>): u128 {
+    <b>if</b> (self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(shareholder)) {
+        *self.shares.borrow(shareholder)
+    } <b>else</b> {
+        0
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-balance"><a class="header" href="#function-balance">Function <code>balance</code> <a id="0x1_pool_u64_unbound_balance"></a></a></h2>
+<p>Return the balance in coins of <code>shareholder</code> in <code>self</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_balance">balance</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_balance">balance</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>): u64 {
+    <b>let</b> num_shares = self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares">shares</a>(shareholder);
+    self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount">shares_to_amount</a>(num_shares)
+}
+</code></pre>
+</details>
+<h2 id="function-shareholders_count"><a class="header" href="#function-shareholders_count">Function <code>shareholders_count</code> <a id="0x1_pool_u64_unbound_shareholders_count"></a></a></h2>
+<p>Return the number of shareholders in <code>self</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shareholders_count">shareholders_count</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shareholders_count">shareholders_count</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>): u64 {
+    self.shares.length()
+}
+</code></pre>
+</details>
+<h2 id="function-update_total_coins"><a class="header" href="#function-update_total_coins">Function <code>update_total_coins</code> <a id="0x1_pool_u64_unbound_update_total_coins"></a></a></h2>
+<p>Update <code>self</code>'s total balance of coins.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_update_total_coins">update_total_coins</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, new_total_coins: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_update_total_coins">update_total_coins</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, new_total_coins: u64) {
+    self.total_coins = new_total_coins;
+}
+</code></pre>
+</details>
+<h2 id="function-buy_in"><a class="header" href="#function-buy_in">Function <code>buy_in</code> <a id="0x1_pool_u64_unbound_buy_in"></a></a></h2>
+<p>Allow an existing or new shareholder to add their coins to the pool in exchange for new shares.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_buy_in">buy_in</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>, coins_amount: u64): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_buy_in">buy_in</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>, coins_amount: u64): u128 {
+    <b>if</b> (coins_amount == 0) <b>return</b> 0;
+
+    <b>let</b> new_shares = self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_amount_to_shares">amount_to_shares</a>(coins_amount);
+    <b>assert</b>!(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U64">MAX_U64</a> - self.total_coins &gt;= coins_amount, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EPOOL_TOTAL_COINS_OVERFLOW">EPOOL_TOTAL_COINS_OVERFLOW</a>));
+    <b>assert</b>!(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a> - self.total_shares &gt;= new_shares, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EPOOL_TOTAL_SHARES_OVERFLOW">EPOOL_TOTAL_SHARES_OVERFLOW</a>));
+
+    self.total_coins += coins_amount;
+    self.total_shares += new_shares;
+    self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_add_shares">add_shares</a>(shareholder, new_shares);
+    new_shares
+}
+</code></pre>
+</details>
+<h2 id="function-add_shares"><a class="header" href="#function-add_shares">Function <code>add_shares</code> <a id="0x1_pool_u64_unbound_add_shares"></a></a></h2>
+<p>Add the number of shares directly for <code>shareholder</code> in <code>self</code>.
+This would dilute other shareholders if the pool's balance of coins didn't change.</p>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_add_shares">add_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>, new_shares: u128): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_add_shares">add_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>, new_shares: u128): u128 {
+    <b>if</b> (self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(shareholder)) {
+        <b>let</b> existing_shares = self.shares.borrow_mut(shareholder);
+        <b>let</b> current_shares = *existing_shares;
+        <b>assert</b>!(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a> - current_shares &gt;= new_shares, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_ESHAREHOLDER_SHARES_OVERFLOW">ESHAREHOLDER_SHARES_OVERFLOW</a>));
+
+        *existing_shares = current_shares + new_shares;
+        *existing_shares
+    } <b>else</b> <b>if</b> (new_shares &gt; 0) {
+        self.shares.add(shareholder, new_shares);
+        new_shares
+    } <b>else</b> {
+        new_shares
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-redeem_shares"><a class="header" href="#function-redeem_shares">Function <code>redeem_shares</code> <a id="0x1_pool_u64_unbound_redeem_shares"></a></a></h2>
+<p>Allow <code>shareholder</code> to redeem their shares in <code>self</code> for coins.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_redeem_shares">redeem_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>, shares_to_redeem: u128): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_redeem_shares">redeem_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>, shares_to_redeem: u128): u64 {
+    <b>assert</b>!(self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(shareholder), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_ESHAREHOLDER_NOT_FOUND">ESHAREHOLDER_NOT_FOUND</a>));
+    <b>assert</b>!(self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares">shares</a>(shareholder) &gt;= shares_to_redeem, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EINSUFFICIENT_SHARES">EINSUFFICIENT_SHARES</a>));
+
+    <b>if</b> (shares_to_redeem == 0) <b>return</b> 0;
+
+    <b>let</b> redeemed_coins = self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount">shares_to_amount</a>(shares_to_redeem);
+    self.total_coins -= redeemed_coins;
+    self.total_shares -= shares_to_redeem;
+    self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_deduct_shares">deduct_shares</a>(shareholder, shares_to_redeem);
+
+    redeemed_coins
+}
+</code></pre>
+</details>
+<h2 id="function-transfer_shares"><a class="header" href="#function-transfer_shares">Function <code>transfer_shares</code> <a id="0x1_pool_u64_unbound_transfer_shares"></a></a></h2>
+<p>Transfer shares from <code>shareholder_1</code> to <code>shareholder_2</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_transfer_shares">transfer_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder_1: <b>address</b>, shareholder_2: <b>address</b>, shares_to_transfer: u128)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_transfer_shares">transfer_shares</a>(
+    self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>,
+    shareholder_1: <b>address</b>,
+    shareholder_2: <b>address</b>,
+    shares_to_transfer: u128,
+) {
+    <b>assert</b>!(self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(shareholder_1), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_ESHAREHOLDER_NOT_FOUND">ESHAREHOLDER_NOT_FOUND</a>));
+    <b>assert</b>!(self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares">shares</a>(shareholder_1) &gt;= shares_to_transfer, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EINSUFFICIENT_SHARES">EINSUFFICIENT_SHARES</a>));
+    <b>if</b> (shares_to_transfer == 0) <b>return</b>;
+
+    self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_deduct_shares">deduct_shares</a>(shareholder_1, shares_to_transfer);
+    self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_add_shares">add_shares</a>(shareholder_2, shares_to_transfer);
+}
+</code></pre>
+</details>
+<h2 id="function-deduct_shares"><a class="header" href="#function-deduct_shares">Function <code>deduct_shares</code> <a id="0x1_pool_u64_unbound_deduct_shares"></a></a></h2>
+<p>Directly deduct <code>shareholder</code>'s number of shares in <code>self</code> and return the number of remaining shares.</p>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_deduct_shares">deduct_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>, num_shares: u128): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_deduct_shares">deduct_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>, num_shares: u128): u128 {
+    <b>assert</b>!(self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(shareholder), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_ESHAREHOLDER_NOT_FOUND">ESHAREHOLDER_NOT_FOUND</a>));
+    <b>assert</b>!(self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares">shares</a>(shareholder) &gt;= num_shares, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_EINSUFFICIENT_SHARES">EINSUFFICIENT_SHARES</a>));
+
+    <b>let</b> existing_shares = self.shares.borrow_mut(shareholder);
+    *existing_shares -= num_shares;
+
+    // Remove the shareholder completely <b>if</b> they have no shares left.
+    <b>let</b> remaining_shares = *existing_shares;
+    <b>if</b> (remaining_shares == 0) {
+        self.shares.remove(shareholder);
+    };
+
+    remaining_shares
+}
+</code></pre>
+</details>
+<h2 id="function-amount_to_shares"><a class="header" href="#function-amount_to_shares">Function <code>amount_to_shares</code> <a id="0x1_pool_u64_unbound_amount_to_shares"></a></a></h2>
+<p>Return the number of new shares <code>coins_amount</code> can buy in <code>self</code>.
+<code>amount</code> needs to big enough to avoid rounding number.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_amount_to_shares">amount_to_shares</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, coins_amount: u64): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_amount_to_shares">amount_to_shares</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, coins_amount: u64): u128 {
+    self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_amount_to_shares_with_total_coins">amount_to_shares_with_total_coins</a>(coins_amount, self.total_coins)
+}
+</code></pre>
+</details>
+<h2 id="function-amount_to_shares_with_total_coins"><a class="header" href="#function-amount_to_shares_with_total_coins">Function <code>amount_to_shares_with_total_coins</code> <a id="0x1_pool_u64_unbound_amount_to_shares_with_total_coins"></a></a></h2>
+<p>Return the number of new shares <code>coins_amount</code> can buy in <code>self</code> with a custom total coins number.
+<code>amount</code> needs to big enough to avoid rounding number.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_amount_to_shares_with_total_coins">amount_to_shares_with_total_coins</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, coins_amount: u64, total_coins: u64): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_amount_to_shares_with_total_coins">amount_to_shares_with_total_coins</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, coins_amount: u64, total_coins: u64): u128 {
+    // No shares yet so amount is worth the same number of shares.
+    <b>if</b> (self.total_coins == 0 || self.total_shares == 0) {
+        // Multiply by scaling factor <b>to</b> minimize rounding errors during <b>internal</b> calculations for buy ins/redeems.
+        // This can overflow but scaling factor is expected <b>to</b> be chosen carefully so this would not overflow.
+        (coins_amount <b>as</b> u128) * (self.scaling_factor <b>as</b> u128)
+    } <b>else</b> {
+        // Shares price = total_coins / total existing shares.
+        // New number of shares = new_amount / shares_price = new_amount * existing_shares / total_amount.
+        // We rearrange the calc and do multiplication first <b>to</b> avoid rounding errors.
+        self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_multiply_then_divide">multiply_then_divide</a>(coins_amount <b>as</b> u128, self.total_shares, total_coins <b>as</b> u128)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-shares_to_amount"><a class="header" href="#function-shares_to_amount">Function <code>shares_to_amount</code> <a id="0x1_pool_u64_unbound_shares_to_amount"></a></a></h2>
+<p>Return the number of coins <code>shares</code> are worth in <code>self</code>.
+<code>shares</code> needs to big enough to avoid rounding number.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount">shares_to_amount</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shares: u128): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount">shares_to_amount</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shares: u128): u64 {
+    self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount_with_total_coins">shares_to_amount_with_total_coins</a>(shares, self.total_coins)
+}
+</code></pre>
+</details>
+<h2 id="function-shares_to_amount_with_total_coins"><a class="header" href="#function-shares_to_amount_with_total_coins">Function <code>shares_to_amount_with_total_coins</code> <a id="0x1_pool_u64_unbound_shares_to_amount_with_total_coins"></a></a></h2>
+<p>Return the number of coins <code>shares</code> are worth in <code>self</code> with a custom total coins number.
+<code>shares</code> needs to big enough to avoid rounding number.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount_with_total_coins">shares_to_amount_with_total_coins</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shares: u128, total_coins: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount_with_total_coins">shares_to_amount_with_total_coins</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shares: u128, total_coins: u64): u64 {
+    // No shares or coins yet so shares are worthless.
+    <b>if</b> (self.total_coins == 0 || self.total_shares == 0) {
+        0
+    } <b>else</b> {
+        // Shares price = total_coins / total existing shares.
+        // Shares worth = shares * shares price = shares * total_coins / total existing shares.
+        // We rearrange the calc and do multiplication first <b>to</b> avoid rounding errors.
+        (self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_multiply_then_divide">multiply_then_divide</a>(shares, total_coins <b>as</b> u128, self.total_shares) <b>as</b> u64)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-shares_to_amount_with_total_stats"><a class="header" href="#function-shares_to_amount_with_total_stats">Function <code>shares_to_amount_with_total_stats</code> <a id="0x1_pool_u64_unbound_shares_to_amount_with_total_stats"></a></a></h2>
+<p>Return the number of coins <code>shares</code> are worth in <code>pool</code> with custom total coins and shares numbers.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount_with_total_stats">shares_to_amount_with_total_stats</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shares: u128, total_coins: u64, total_shares: u128): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount_with_total_stats">shares_to_amount_with_total_stats</a>(
+    self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>,
+    shares: u128,
+    total_coins: u64,
+    total_shares: u128,
+): u64 {
+    <b>if</b> (self.total_coins == 0 || total_shares == 0) {
+        0
+    } <b>else</b> {
+        (self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_multiply_then_divide">multiply_then_divide</a>(shares, total_coins <b>as</b> u128, total_shares) <b>as</b> u64)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-multiply_then_divide"><a class="header" href="#function-multiply_then_divide">Function <code>multiply_then_divide</code> <a id="0x1_pool_u64_unbound_multiply_then_divide"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_multiply_then_divide">multiply_then_divide</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, x: u128, y: u128, z: u128): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_multiply_then_divide">multiply_then_divide</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, x: u128, y: u128, z: u128): u128 {
+    <a href="math128.html#0x1_math128_mul_div">math128::mul_div</a>(x, y, z)
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="struct-pool-1"><a class="header" href="#struct-pool-1">Struct <code>Pool</code> <a id="@Specification_1_Pool"></a></a></h3>
+<pre><code><b>struct</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a> <b>has</b> store
+</code></pre>
+<dl>
+<dt>
+<code>total_coins: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>total_shares: u128</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>shares: <a href="table_with_length.html#0x1_table_with_length_TableWithLength">table_with_length::TableWithLength</a>&lt;<b>address</b>, u128&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>scaling_factor: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code><b>invariant</b> <b>forall</b> addr: <b>address</b>:
+    <a href="table.html#0x1_table_spec_contains">table::spec_contains</a>(shares, addr) ==&gt; (<a href="table.html#0x1_table_spec_get">table::spec_get</a>(shares, addr) &gt; 0);
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_spec_contains"></a></p>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(pool: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>): bool {
+   <a href="table.html#0x1_table_spec_contains">table::spec_contains</a>(pool.shares, shareholder)
+}
+</code></pre>
+<h3 id="function-contains-1"><a class="header" href="#function-contains-1">Function <code>contains</code> <a id="@Specification_1_contains"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_contains">contains</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>): bool
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder);
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_spec_shares"></a></p>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(pool: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shareholder: <b>address</b>): u64 {
+   <b>if</b> (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(pool, shareholder)) {
+       <a href="table.html#0x1_table_spec_get">table::spec_get</a>(pool.shares, shareholder)
+   }
+   <b>else</b> {
+       0
+   }
+}
+</code></pre>
+<h3 id="function-shares-1"><a class="header" href="#function-shares-1">Function <code>shares</code> <a id="@Specification_1_shares"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares">shares</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>): u128
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder);
+</code></pre>
+<h3 id="function-balance-1"><a class="header" href="#function-balance-1">Function <code>balance</code> <a id="@Specification_1_balance"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_balance">balance</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>): u64
+</code></pre>
+<pre><code><b>let</b> shares = <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder);
+<b>let</b> total_coins = self.total_coins;
+<b>aborts_if</b> self.total_coins &gt; 0 && self.total_shares &gt; 0 && (shares * total_coins) / self.total_shares &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U64">MAX_U64</a>;
+<b>ensures</b> result == <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares_to_amount_with_total_coins">spec_shares_to_amount_with_total_coins</a>(self, shares, total_coins);
+</code></pre>
+<h3 id="function-buy_in-1"><a class="header" href="#function-buy_in-1">Function <code>buy_in</code> <a id="@Specification_1_buy_in"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_buy_in">buy_in</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>, coins_amount: u64): u128
+</code></pre>
+<pre><code><b>let</b> new_shares = <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(self, coins_amount, self.total_coins);
+<b>aborts_if</b> self.total_coins + coins_amount &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U64">MAX_U64</a>;
+<b>aborts_if</b> self.total_shares + new_shares &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a>;
+<b>include</b> coins_amount &gt; 0 ==&gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_AddSharesAbortsIf">AddSharesAbortsIf</a> { new_shares };
+<b>include</b> coins_amount &gt; 0 ==&gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_AddSharesEnsures">AddSharesEnsures</a> { new_shares };
+<b>ensures</b> self.total_coins == <b>old</b>(self.total_coins) + coins_amount;
+<b>ensures</b> self.total_shares == <b>old</b>(self.total_shares) + new_shares;
+<b>ensures</b> result == new_shares;
+</code></pre>
+<h3 id="function-add_shares-1"><a class="header" href="#function-add_shares-1">Function <code>add_shares</code> <a id="@Specification_1_add_shares"></a></a></h3>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_add_shares">add_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>, new_shares: u128): u128
+</code></pre>
+<pre><code><b>include</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_AddSharesAbortsIf">AddSharesAbortsIf</a>;
+<b>include</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_AddSharesEnsures">AddSharesEnsures</a>;
+<b>let</b> key_exists = <a href="table.html#0x1_table_spec_contains">table::spec_contains</a>(self.shares, shareholder);
+<b>ensures</b> result == <b>if</b> (key_exists) { <a href="table.html#0x1_table_spec_get">table::spec_get</a>(self.shares, shareholder) }
+<b>else</b> { new_shares };
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_AddSharesAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_AddSharesAbortsIf">AddSharesAbortsIf</a> {
+    self: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>;
+    shareholder: <b>address</b>;
+    new_shares: u64;
+    <b>let</b> key_exists = <a href="table.html#0x1_table_spec_contains">table::spec_contains</a>(self.shares, shareholder);
+    <b>let</b> current_shares = <a href="table.html#0x1_table_spec_get">table::spec_get</a>(self.shares, shareholder);
+    <b>aborts_if</b> key_exists && current_shares + new_shares &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a>;
+}
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_AddSharesEnsures"></a></p>
+<pre><code><b>schema</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_AddSharesEnsures">AddSharesEnsures</a> {
+    self: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>;
+    shareholder: <b>address</b>;
+    new_shares: u64;
+    <b>let</b> key_exists = <a href="table.html#0x1_table_spec_contains">table::spec_contains</a>(self.shares, shareholder);
+    <b>let</b> current_shares = <a href="table.html#0x1_table_spec_get">table::spec_get</a>(self.shares, shareholder);
+    <b>ensures</b> key_exists ==&gt;
+        self.shares == <a href="table.html#0x1_table_spec_set">table::spec_set</a>(<b>old</b>(self.shares), shareholder, current_shares + new_shares);
+    <b>ensures</b> (!key_exists && new_shares &gt; 0) ==&gt;
+        self.shares == <a href="table.html#0x1_table_spec_set">table::spec_set</a>(<b>old</b>(self.shares), shareholder, new_shares);
+}
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_spec_amount_to_shares_with_total_coins"></a></p>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(pool: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, coins_amount: u64, total_coins: u64): u128 {
+   <b>if</b> (pool.total_coins == 0 || pool.total_shares == 0) {
+       coins_amount * pool.scaling_factor
+   }
+   <b>else</b> {
+       (coins_amount * pool.total_shares) / total_coins
+   }
+}
+</code></pre>
+<h3 id="function-redeem_shares-1"><a class="header" href="#function-redeem_shares-1">Function <code>redeem_shares</code> <a id="@Specification_1_redeem_shares"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_redeem_shares">redeem_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>, shares_to_redeem: u128): u64
+</code></pre>
+<pre><code><b>let</b> redeemed_coins = <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares_to_amount_with_total_coins">spec_shares_to_amount_with_total_coins</a>(self, shares_to_redeem, self.total_coins);
+<b>aborts_if</b> !<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder);
+<b>aborts_if</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder) &lt; shares_to_redeem;
+<b>aborts_if</b> self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_total_coins">total_coins</a> &lt; redeemed_coins;
+<b>aborts_if</b> self.<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_total_shares">total_shares</a> &lt; shares_to_redeem;
+<b>ensures</b> self.total_coins == <b>old</b>(self.total_coins) - redeemed_coins;
+<b>ensures</b> self.total_shares == <b>old</b>(self.total_shares) - shares_to_redeem;
+<b>include</b> shares_to_redeem &gt; 0 ==&gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_DeductSharesEnsures">DeductSharesEnsures</a> {
+    num_shares: shares_to_redeem
+};
+<b>ensures</b> result == redeemed_coins;
+</code></pre>
+<h3 id="function-transfer_shares-1"><a class="header" href="#function-transfer_shares-1">Function <code>transfer_shares</code> <a id="@Specification_1_transfer_shares"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_transfer_shares">transfer_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder_1: <b>address</b>, shareholder_2: <b>address</b>, shares_to_transfer: u128)
+</code></pre>
+<pre><code><b>aborts_if</b> (shareholder_1 != shareholder_2) && shares_to_transfer &gt; 0 && <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder_2) &&
+    (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder_2) + shares_to_transfer &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a>);
+<b>aborts_if</b> !<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder_1);
+<b>aborts_if</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder_1) &lt; shares_to_transfer;
+<b>ensures</b> shareholder_1 == shareholder_2 ==&gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(<b>old</b>(self), shareholder_1) == <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(
+    self, shareholder_1);
+<b>ensures</b> ((shareholder_1 != shareholder_2) && (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(<b>old</b>(self), shareholder_1) == shares_to_transfer)) ==&gt;
+    !<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder_1);
+<b>ensures</b> (shareholder_1 != shareholder_2 && shares_to_transfer &gt; 0) ==&gt;
+    (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder_2));
+<b>ensures</b> (shareholder_1 != shareholder_2 && shares_to_transfer &gt; 0 && !<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(<b>old</b>(self), shareholder_2)) ==&gt;
+    (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder_2) && <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder_2) == shares_to_transfer);
+<b>ensures</b> (shareholder_1 != shareholder_2 && shares_to_transfer &gt; 0 && <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(<b>old</b>(self), shareholder_2)) ==&gt;
+    (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder_2) && <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder_2) == <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(<b>old</b>(self), shareholder_2) + shares_to_transfer);
+<b>ensures</b> ((shareholder_1 != shareholder_2) && (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(<b>old</b>(self), shareholder_1) &gt; shares_to_transfer)) ==&gt;
+    (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder_1) && (<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder_1) == <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(<b>old</b>(self), shareholder_1) - shares_to_transfer));
+</code></pre>
+<h3 id="function-deduct_shares-1"><a class="header" href="#function-deduct_shares-1">Function <code>deduct_shares</code> <a id="@Specification_1_deduct_shares"></a></a></h3>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_deduct_shares">deduct_shares</a>(self: &<b>mut</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shareholder: <b>address</b>, num_shares: u128): u128
+</code></pre>
+<pre><code><b>aborts_if</b> !<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_contains">spec_contains</a>(self, shareholder);
+<b>aborts_if</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares">spec_shares</a>(self, shareholder) &lt; num_shares;
+<b>include</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_DeductSharesEnsures">DeductSharesEnsures</a>;
+<b>let</b> remaining_shares = <a href="table.html#0x1_table_spec_get">table::spec_get</a>(self.shares, shareholder) - num_shares;
+<b>ensures</b> remaining_shares &gt; 0 ==&gt; result == <a href="table.html#0x1_table_spec_get">table::spec_get</a>(self.shares, shareholder);
+<b>ensures</b> remaining_shares == 0 ==&gt; result == 0;
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_DeductSharesEnsures"></a></p>
+<pre><code><b>schema</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_DeductSharesEnsures">DeductSharesEnsures</a> {
+    self: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>;
+    shareholder: <b>address</b>;
+    num_shares: u64;
+    <b>let</b> remaining_shares = <a href="table.html#0x1_table_spec_get">table::spec_get</a>(self.shares, shareholder) - num_shares;
+    <b>ensures</b> remaining_shares &gt; 0 ==&gt; <a href="table.html#0x1_table_spec_get">table::spec_get</a>(self.shares, shareholder) == remaining_shares;
+    <b>ensures</b> remaining_shares == 0 ==&gt; !<a href="table.html#0x1_table_spec_contains">table::spec_contains</a>(self.shares, shareholder);
+}
+</code></pre>
+<h3 id="function-amount_to_shares_with_total_coins-1"><a class="header" href="#function-amount_to_shares_with_total_coins-1">Function <code>amount_to_shares_with_total_coins</code> <a id="@Specification_1_amount_to_shares_with_total_coins"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_amount_to_shares_with_total_coins">amount_to_shares_with_total_coins</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, coins_amount: u64, total_coins: u64): u128
+</code></pre>
+<pre><code><b>aborts_if</b> self.total_coins &gt; 0 && self.total_shares &gt; 0
+    && (coins_amount * self.total_shares) / total_coins &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a>;
+<b>aborts_if</b> (self.total_coins == 0 || self.total_shares == 0)
+    && coins_amount * self.scaling_factor &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a>;
+<b>aborts_if</b> self.total_coins &gt; 0 && self.total_shares &gt; 0 && total_coins == 0;
+<b>ensures</b> result == <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(self, coins_amount, total_coins);
+</code></pre>
+<h3 id="function-shares_to_amount_with_total_coins-1"><a class="header" href="#function-shares_to_amount_with_total_coins-1">Function <code>shares_to_amount_with_total_coins</code> <a id="@Specification_1_shares_to_amount_with_total_coins"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_shares_to_amount_with_total_coins">shares_to_amount_with_total_coins</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, shares: u128, total_coins: u64): u64
+</code></pre>
+<pre><code><b>aborts_if</b> self.total_coins &gt; 0 && self.total_shares &gt; 0
+    && (shares * total_coins) / self.total_shares &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U64">MAX_U64</a>;
+<b>ensures</b> result == <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares_to_amount_with_total_coins">spec_shares_to_amount_with_total_coins</a>(self, shares, total_coins);
+</code></pre>
+<p><a id="0x1_pool_u64_unbound_spec_shares_to_amount_with_total_coins"></a></p>
+<pre><code><b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_spec_shares_to_amount_with_total_coins">spec_shares_to_amount_with_total_coins</a>(pool: <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">Pool</a>, shares: u128, total_coins: u64): u64 {
+   <b>if</b> (pool.total_coins == 0 || pool.total_shares == 0) {
+       0
+   }
+   <b>else</b> {
+       (shares * total_coins) / pool.total_shares
+   }
+}
+</code></pre>
+<h3 id="function-multiply_then_divide-1"><a class="header" href="#function-multiply_then_divide-1">Function <code>multiply_then_divide</code> <a id="@Specification_1_multiply_then_divide"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_multiply_then_divide">multiply_then_divide</a>(self: &<a href="pool_u64_unbound.html#0x1_pool_u64_unbound_Pool">pool_u64_unbound::Pool</a>, x: u128, y: u128, z: u128): u128
+</code></pre>
+<pre><code><b>aborts_if</b> z == 0;
+<b>aborts_if</b> (x * y) / z &gt; <a href="pool_u64_unbound.html#0x1_pool_u64_unbound_MAX_U128">MAX_U128</a>;
+<b>ensures</b> result == (x * y) / z;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/pool_u64.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/ristretto255.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/pool_u64.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/ristretto255.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

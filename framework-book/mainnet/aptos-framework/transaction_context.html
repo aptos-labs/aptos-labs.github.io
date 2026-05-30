@@ -1,0 +1,891 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>transaction_context - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/transaction_context.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1transaction_context"><a class="header" href="#module-0x1transaction_context">Module <code>0x1::transaction_context</code> <a id="0x1_transaction_context"></a></a></h1>
+<ul>
+<li><a href="#0x1_transaction_context_AUID">Struct <code>AUID</code></a></li>
+<li><a href="#0x1_transaction_context_EntryFunctionPayload">Struct <code>EntryFunctionPayload</code></a></li>
+<li><a href="#0x1_transaction_context_MultisigPayload">Struct <code>MultisigPayload</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_transaction_context_get_txn_hash">Function <code>get_txn_hash</code></a></li>
+<li><a href="#0x1_transaction_context_get_transaction_hash">Function <code>get_transaction_hash</code></a></li>
+<li><a href="#0x1_transaction_context_generate_unique_address">Function <code>generate_unique_address</code></a></li>
+<li><a href="#0x1_transaction_context_generate_auid_address">Function <code>generate_auid_address</code></a></li>
+<li><a href="#0x1_transaction_context_get_script_hash">Function <code>get_script_hash</code></a></li>
+<li><a href="#0x1_transaction_context_generate_auid">Function <code>generate_auid</code></a></li>
+<li><a href="#0x1_transaction_context_auid_address">Function <code>auid_address</code></a></li>
+<li><a href="#0x1_transaction_context_sender">Function <code>sender</code></a></li>
+<li><a href="#0x1_transaction_context_sender_internal">Function <code>sender_internal</code></a></li>
+<li><a href="#0x1_transaction_context_secondary_signers">Function <code>secondary_signers</code></a></li>
+<li><a href="#0x1_transaction_context_secondary_signers_internal">Function <code>secondary_signers_internal</code></a></li>
+<li><a href="#0x1_transaction_context_gas_payer">Function <code>gas_payer</code></a></li>
+<li><a href="#0x1_transaction_context_gas_payer_internal">Function <code>gas_payer_internal</code></a></li>
+<li><a href="#0x1_transaction_context_max_gas_amount">Function <code>max_gas_amount</code></a></li>
+<li><a href="#0x1_transaction_context_max_gas_amount_internal">Function <code>max_gas_amount_internal</code></a></li>
+<li><a href="#0x1_transaction_context_gas_unit_price">Function <code>gas_unit_price</code></a></li>
+<li><a href="#0x1_transaction_context_gas_unit_price_internal">Function <code>gas_unit_price_internal</code></a></li>
+<li><a href="#0x1_transaction_context_chain_id">Function <code>chain_id</code></a></li>
+<li><a href="#0x1_transaction_context_chain_id_internal">Function <code>chain_id_internal</code></a></li>
+<li><a href="#0x1_transaction_context_entry_function_payload">Function <code>entry_function_payload</code></a></li>
+<li><a href="#0x1_transaction_context_entry_function_payload_internal">Function <code>entry_function_payload_internal</code></a></li>
+<li><a href="#0x1_transaction_context_account_address">Function <code>account_address</code></a></li>
+<li><a href="#0x1_transaction_context_module_name">Function <code>module_name</code></a></li>
+<li><a href="#0x1_transaction_context_function_name">Function <code>function_name</code></a></li>
+<li><a href="#0x1_transaction_context_type_arg_names">Function <code>type_arg_names</code></a></li>
+<li><a href="#0x1_transaction_context_args">Function <code>args</code></a></li>
+<li><a href="#0x1_transaction_context_multisig_payload">Function <code>multisig_payload</code></a></li>
+<li><a href="#0x1_transaction_context_multisig_payload_internal">Function <code>multisig_payload_internal</code></a></li>
+<li><a href="#0x1_transaction_context_multisig_address">Function <code>multisig_address</code></a></li>
+<li><a href="#0x1_transaction_context_inner_entry_function_payload">Function <code>inner_entry_function_payload</code></a></li>
+<li><a href="#0x1_transaction_context_monotonically_increasing_counter">Function <code>monotonically_increasing_counter</code></a></li>
+<li><a href="#0x1_transaction_context_monotonically_increasing_counter_internal">Function <code>monotonically_increasing_counter_internal</code></a></li>
+<li><a href="#0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only">Function <code>monotonically_increasing_counter_internal_for_test_only</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_get_txn_hash">Function <code>get_txn_hash</code></a></li>
+<li><a href="#@Specification_1_get_transaction_hash">Function <code>get_transaction_hash</code></a></li>
+<li><a href="#@Specification_1_generate_unique_address">Function <code>generate_unique_address</code></a></li>
+<li><a href="#@Specification_1_generate_auid_address">Function <code>generate_auid_address</code></a></li>
+<li><a href="#@Specification_1_get_script_hash">Function <code>get_script_hash</code></a></li>
+<li><a href="#high-level-req">High-level Requirements</a></li>
+<li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_auid_address">Function <code>auid_address</code></a></li>
+<li><a href="#@Specification_1_sender_internal">Function <code>sender_internal</code></a></li>
+<li><a href="#@Specification_1_secondary_signers_internal">Function <code>secondary_signers_internal</code></a></li>
+<li><a href="#@Specification_1_gas_payer_internal">Function <code>gas_payer_internal</code></a></li>
+<li><a href="#@Specification_1_max_gas_amount_internal">Function <code>max_gas_amount_internal</code></a></li>
+<li><a href="#@Specification_1_gas_unit_price_internal">Function <code>gas_unit_price_internal</code></a></li>
+<li><a href="#@Specification_1_chain_id_internal">Function <code>chain_id_internal</code></a></li>
+<li><a href="#@Specification_1_entry_function_payload_internal">Function <code>entry_function_payload_internal</code></a></li>
+<li><a href="#@Specification_1_multisig_payload_internal">Function <code>multisig_payload_internal</code></a></li>
+<li><a href="#@Specification_1_monotonically_increasing_counter_internal">Function <code>monotonically_increasing_counter_internal</code></a></li>
+<li><a href="#@Specification_1_monotonically_increasing_counter_internal_for_test_only">Function <code>monotonically_increasing_counter_internal_for_test_only</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="timestamp.html#0x1_timestamp">0x1::timestamp</a>;
+</code></pre>
+<h2 id="struct-auid"><a class="header" href="#struct-auid">Struct <code>AUID</code> <a id="0x1_transaction_context_AUID"></a></a></h2>
+<p>A wrapper denoting aptos unique identifer (AUID)
+for storing an address</p>
+<pre><code><b>struct</b> <a href="transaction_context.html#0x1_transaction_context_AUID">AUID</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>unique_address: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-entryfunctionpayload"><a class="header" href="#struct-entryfunctionpayload">Struct <code>EntryFunctionPayload</code> <a id="0x1_transaction_context_EntryFunctionPayload"></a></a></h2>
+<p>Represents the entry function payload.</p>
+<pre><code><b>struct</b> <a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a> <b>has</b> <b>copy</b>, drop
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>account_address: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>module_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>function_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ty_args_names: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>args: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-multisigpayload"><a class="header" href="#struct-multisigpayload">Struct <code>MultisigPayload</code> <a id="0x1_transaction_context_MultisigPayload"></a></a></h2>
+<p>Represents the multisig payload.</p>
+<pre><code><b>struct</b> <a href="transaction_context.html#0x1_transaction_context_MultisigPayload">MultisigPayload</a> <b>has</b> <b>copy</b>, drop
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>multisig_address: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>entry_function_payload: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_transaction_context_EMONOTONICALLY_INCREASING_COUNTER_OVERFLOW"></a></p>
+<p>The monotonically increasing counter has overflowed (too many calls in a single session).</p>
+<pre><code><b>const</b> <a href="transaction_context.html#0x1_transaction_context_EMONOTONICALLY_INCREASING_COUNTER_OVERFLOW">EMONOTONICALLY_INCREASING_COUNTER_OVERFLOW</a>: u64 = 4;
+</code></pre>
+<p><a id="0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED"></a></p>
+<p>The transaction context extension feature is not enabled.</p>
+<pre><code><b>const</b> <a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_transaction_context_ETRANSACTION_CONTEXT_NOT_AVAILABLE"></a></p>
+<p>Transaction context is only available in the user transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>const</b> <a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_NOT_AVAILABLE">ETRANSACTION_CONTEXT_NOT_AVAILABLE</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_transaction_context_ETRANSACTION_INDEX_NOT_AVAILABLE"></a></p>
+<p>Transaction index is not avaulable in this execution context.</p>
+<pre><code><b>const</b> <a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_INDEX_NOT_AVAILABLE">ETRANSACTION_INDEX_NOT_AVAILABLE</a>: u64 = 5;
+</code></pre>
+<h2 id="function-get_txn_hash"><a class="header" href="#function-get_txn_hash">Function <code>get_txn_hash</code> <a id="0x1_transaction_context_get_txn_hash"></a></a></h2>
+<p>Returns the transaction hash of the current transaction.</p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_txn_hash">get_txn_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_txn_hash">get_txn_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="function-get_transaction_hash"><a class="header" href="#function-get_transaction_hash">Function <code>get_transaction_hash</code> <a id="0x1_transaction_context_get_transaction_hash"></a></a></h2>
+<p>Returns the transaction hash of the current transaction.
+Internally calls the private function <code>get_txn_hash</code>.
+This function is created for to feature gate the <code>get_txn_hash</code> function.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_transaction_hash">get_transaction_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_transaction_hash">get_transaction_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <a href="transaction_context.html#0x1_transaction_context_get_txn_hash">get_txn_hash</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-generate_unique_address"><a class="header" href="#function-generate_unique_address">Function <code>generate_unique_address</code> <a id="0x1_transaction_context_generate_unique_address"></a></a></h2>
+<p>Returns a universally unique identifier (of type address) generated
+by hashing the transaction hash of this transaction and a sequence number
+specific to this transaction. This function can be called any
+number of times inside a single transaction. Each such call increments
+the sequence number and generates a new unique address.
+Uses Scheme in types/src/transaction/authenticator.rs for domain separation
+from other ways of generating unique addresses.</p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_unique_address">generate_unique_address</a>(): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_unique_address">generate_unique_address</a>(): <b>address</b>;
+</code></pre>
+</details>
+<h2 id="function-generate_auid_address"><a class="header" href="#function-generate_auid_address">Function <code>generate_auid_address</code> <a id="0x1_transaction_context_generate_auid_address"></a></a></h2>
+<p>Returns a aptos unique identifier. Internally calls
+the private function <code>generate_unique_address</code>. This function is
+created for to feature gate the <code>generate_unique_address</code> function.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_auid_address">generate_auid_address</a>(): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_auid_address">generate_auid_address</a>(): <b>address</b> {
+    <a href="transaction_context.html#0x1_transaction_context_generate_unique_address">generate_unique_address</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-get_script_hash"><a class="header" href="#function-get_script_hash">Function <code>get_script_hash</code> <a id="0x1_transaction_context_get_script_hash"></a></a></h2>
+<p>Returns the script hash of the current entry function.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_script_hash">get_script_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_script_hash">get_script_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="function-generate_auid"><a class="header" href="#function-generate_auid">Function <code>generate_auid</code> <a id="0x1_transaction_context_generate_auid"></a></a></h2>
+<p>This method runs <code>generate_unique_address</code> native function and returns
+the generated unique address wrapped in the AUID class.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_auid">generate_auid</a>(): <a href="transaction_context.html#0x1_transaction_context_AUID">transaction_context::AUID</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_auid">generate_auid</a>(): <a href="transaction_context.html#0x1_transaction_context_AUID">AUID</a> {
+    <b>return</b> <a href="transaction_context.html#0x1_transaction_context_AUID">AUID</a> {
+        unique_address: <a href="transaction_context.html#0x1_transaction_context_generate_unique_address">generate_unique_address</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-auid_address"><a class="header" href="#function-auid_address">Function <code>auid_address</code> <a id="0x1_transaction_context_auid_address"></a></a></h2>
+<p>Returns the unique address wrapped in the given AUID struct.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_auid_address">auid_address</a>(auid: &<a href="transaction_context.html#0x1_transaction_context_AUID">transaction_context::AUID</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_auid_address">auid_address</a>(auid: &<a href="transaction_context.html#0x1_transaction_context_AUID">AUID</a>): <b>address</b> {
+    auid.unique_address
+}
+</code></pre>
+</details>
+<h2 id="function-sender"><a class="header" href="#function-sender">Function <code>sender</code> <a id="0x1_transaction_context_sender"></a></a></h2>
+<p>Returns the sender's address for the current transaction.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_sender">sender</a>(): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_sender">sender</a>(): <b>address</b> {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    <a href="transaction_context.html#0x1_transaction_context_sender_internal">sender_internal</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-sender_internal"><a class="header" href="#function-sender_internal">Function <code>sender_internal</code> <a id="0x1_transaction_context_sender_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_sender_internal">sender_internal</a>(): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_sender_internal">sender_internal</a>(): <b>address</b>;
+</code></pre>
+</details>
+<h2 id="function-secondary_signers"><a class="header" href="#function-secondary_signers">Function <code>secondary_signers</code> <a id="0x1_transaction_context_secondary_signers"></a></a></h2>
+<p>Returns the list of the secondary signers for the current transaction.
+If the current transaction has no secondary signers, this function returns an empty vector.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_secondary_signers">secondary_signers</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_secondary_signers">secondary_signers</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt; {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    <a href="transaction_context.html#0x1_transaction_context_secondary_signers_internal">secondary_signers_internal</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-secondary_signers_internal"><a class="header" href="#function-secondary_signers_internal">Function <code>secondary_signers_internal</code> <a id="0x1_transaction_context_secondary_signers_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_secondary_signers_internal">secondary_signers_internal</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_secondary_signers_internal">secondary_signers_internal</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;;
+</code></pre>
+</details>
+<h2 id="function-gas_payer"><a class="header" href="#function-gas_payer">Function <code>gas_payer</code> <a id="0x1_transaction_context_gas_payer"></a></a></h2>
+<p>Returns the gas payer address for the current transaction.
+It is either the sender's address if no separate gas fee payer is specified for the current transaction,
+or the address of the separate gas fee payer if one is specified.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_payer">gas_payer</a>(): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_payer">gas_payer</a>(): <b>address</b> {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    <a href="transaction_context.html#0x1_transaction_context_gas_payer_internal">gas_payer_internal</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-gas_payer_internal"><a class="header" href="#function-gas_payer_internal">Function <code>gas_payer_internal</code> <a id="0x1_transaction_context_gas_payer_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_payer_internal">gas_payer_internal</a>(): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_payer_internal">gas_payer_internal</a>(): <b>address</b>;
+</code></pre>
+</details>
+<h2 id="function-max_gas_amount"><a class="header" href="#function-max_gas_amount">Function <code>max_gas_amount</code> <a id="0x1_transaction_context_max_gas_amount"></a></a></h2>
+<p>Returns the max gas amount in units which is specified for the current transaction.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_max_gas_amount">max_gas_amount</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_max_gas_amount">max_gas_amount</a>(): u64 {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    <a href="transaction_context.html#0x1_transaction_context_max_gas_amount_internal">max_gas_amount_internal</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-max_gas_amount_internal"><a class="header" href="#function-max_gas_amount_internal">Function <code>max_gas_amount_internal</code> <a id="0x1_transaction_context_max_gas_amount_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_max_gas_amount_internal">max_gas_amount_internal</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_max_gas_amount_internal">max_gas_amount_internal</a>(): u64;
+</code></pre>
+</details>
+<h2 id="function-gas_unit_price"><a class="header" href="#function-gas_unit_price">Function <code>gas_unit_price</code> <a id="0x1_transaction_context_gas_unit_price"></a></a></h2>
+<p>Returns the gas unit price in Octas which is specified for the current transaction.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_unit_price">gas_unit_price</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_unit_price">gas_unit_price</a>(): u64 {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    <a href="transaction_context.html#0x1_transaction_context_gas_unit_price_internal">gas_unit_price_internal</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-gas_unit_price_internal"><a class="header" href="#function-gas_unit_price_internal">Function <code>gas_unit_price_internal</code> <a id="0x1_transaction_context_gas_unit_price_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_unit_price_internal">gas_unit_price_internal</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_unit_price_internal">gas_unit_price_internal</a>(): u64;
+</code></pre>
+</details>
+<h2 id="function-chain_id"><a class="header" href="#function-chain_id">Function <code>chain_id</code> <a id="0x1_transaction_context_chain_id"></a></a></h2>
+<p>Returns the chain ID specified for the current transaction.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="chain_id.html#0x1_chain_id">chain_id</a>(): u8
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="chain_id.html#0x1_chain_id">chain_id</a>(): u8 {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    <a href="transaction_context.html#0x1_transaction_context_chain_id_internal">chain_id_internal</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-chain_id_internal"><a class="header" href="#function-chain_id_internal">Function <code>chain_id_internal</code> <a id="0x1_transaction_context_chain_id_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_chain_id_internal">chain_id_internal</a>(): u8
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_chain_id_internal">chain_id_internal</a>(): u8;
+</code></pre>
+</details>
+<h2 id="function-entry_function_payload"><a class="header" href="#function-entry_function_payload">Function <code>entry_function_payload</code> <a id="0x1_transaction_context_entry_function_payload"></a></a></h2>
+<p>Returns the entry function payload if the current transaction has such a payload. Otherwise, return <code>None</code>.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_entry_function_payload">entry_function_payload</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_entry_function_payload">entry_function_payload</a>(): Option&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a>&gt; {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    <a href="transaction_context.html#0x1_transaction_context_entry_function_payload_internal">entry_function_payload_internal</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-entry_function_payload_internal"><a class="header" href="#function-entry_function_payload_internal">Function <code>entry_function_payload_internal</code> <a id="0x1_transaction_context_entry_function_payload_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_entry_function_payload_internal">entry_function_payload_internal</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_entry_function_payload_internal">entry_function_payload_internal</a>(): Option&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a>&gt;;
+</code></pre>
+</details>
+<h2 id="function-account_address"><a class="header" href="#function-account_address">Function <code>account_address</code> <a id="0x1_transaction_context_account_address"></a></a></h2>
+<p>Returns the account address of the entry function payload.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_account_address">account_address</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_account_address">account_address</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a>): <b>address</b> {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    payload.account_address
+}
+</code></pre>
+</details>
+<h2 id="function-module_name"><a class="header" href="#function-module_name">Function <code>module_name</code> <a id="0x1_transaction_context_module_name"></a></a></h2>
+<p>Returns the module name of the entry function payload.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_module_name">module_name</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_module_name">module_name</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a>): String {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    payload.module_name
+}
+</code></pre>
+</details>
+<h2 id="function-function_name"><a class="header" href="#function-function_name">Function <code>function_name</code> <a id="0x1_transaction_context_function_name"></a></a></h2>
+<p>Returns the function name of the entry function payload.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_function_name">function_name</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_function_name">function_name</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a>): String {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    payload.function_name
+}
+</code></pre>
+</details>
+<h2 id="function-type_arg_names"><a class="header" href="#function-type_arg_names">Function <code>type_arg_names</code> <a id="0x1_transaction_context_type_arg_names"></a></a></h2>
+<p>Returns the type arguments names of the entry function payload.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_type_arg_names">type_arg_names</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_type_arg_names">type_arg_names</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt; {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    payload.ty_args_names
+}
+</code></pre>
+</details>
+<h2 id="function-args"><a class="header" href="#function-args">Function <code>args</code> <a id="0x1_transaction_context_args"></a></a></h2>
+<p>Returns the arguments of the entry function payload.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_args">args</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_args">args</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt; {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    payload.args
+}
+</code></pre>
+</details>
+<h2 id="function-multisig_payload"><a class="header" href="#function-multisig_payload">Function <code>multisig_payload</code> <a id="0x1_transaction_context_multisig_payload"></a></a></h2>
+<p>Returns the multisig payload if the current transaction has such a payload. Otherwise, return <code>None</code>.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_multisig_payload">multisig_payload</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">transaction_context::MultisigPayload</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_multisig_payload">multisig_payload</a>(): Option&lt;<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">MultisigPayload</a>&gt; {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    <a href="transaction_context.html#0x1_transaction_context_multisig_payload_internal">multisig_payload_internal</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-multisig_payload_internal"><a class="header" href="#function-multisig_payload_internal">Function <code>multisig_payload_internal</code> <a id="0x1_transaction_context_multisig_payload_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_multisig_payload_internal">multisig_payload_internal</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">transaction_context::MultisigPayload</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_multisig_payload_internal">multisig_payload_internal</a>(): Option&lt;<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">MultisigPayload</a>&gt;;
+</code></pre>
+</details>
+<h2 id="function-multisig_address"><a class="header" href="#function-multisig_address">Function <code>multisig_address</code> <a id="0x1_transaction_context_multisig_address"></a></a></h2>
+<p>Returns the multisig account address of the multisig payload.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_multisig_address">multisig_address</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">transaction_context::MultisigPayload</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_multisig_address">multisig_address</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">MultisigPayload</a>): <b>address</b> {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    payload.multisig_address
+}
+</code></pre>
+</details>
+<h2 id="function-inner_entry_function_payload"><a class="header" href="#function-inner_entry_function_payload">Function <code>inner_entry_function_payload</code> <a id="0x1_transaction_context_inner_entry_function_payload"></a></a></h2>
+<p>Returns the inner entry function payload of the multisig payload.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_inner_entry_function_payload">inner_entry_function_payload</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">transaction_context::MultisigPayload</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_inner_entry_function_payload">inner_entry_function_payload</a>(payload: &<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">MultisigPayload</a>): Option&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">EntryFunctionPayload</a>&gt; {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_transaction_context_extension_enabled">features::transaction_context_extension_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="transaction_context.html#0x1_transaction_context_ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED">ETRANSACTION_CONTEXT_EXTENSION_NOT_ENABLED</a>));
+    payload.entry_function_payload
+}
+</code></pre>
+</details>
+<h2 id="function-monotonically_increasing_counter"><a class="header" href="#function-monotonically_increasing_counter">Function <code>monotonically_increasing_counter</code> <a id="0x1_transaction_context_monotonically_increasing_counter"></a></a></h2>
+<p>Returns a monotonically increasing counter value that combines timestamp, transaction index,
+session counter, and local counter into a 128-bit value.
+Format: <code>&lt;reserved_byte (8 bits)&gt; || timestamp_us (64 bits) || transaction_index (32 bits) || session_counter (8 bits) || local_counter (16 bits)</code>
+The function aborts if the local counter overflows (after 65535 calls in a single session).
+When compiled for testing, this function bypasses feature checks and returns a simplified counter value.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter">monotonically_increasing_counter</a>(): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter">monotonically_increasing_counter</a>(): u128 {
+    <b>if</b> (__COMPILE_FOR_TESTING__) {
+        <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only">monotonically_increasing_counter_internal_for_test_only</a>()
+    } <b>else</b> {
+        <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal">monotonically_increasing_counter_internal</a>(<a href="timestamp.html#0x1_timestamp_now_microseconds">timestamp::now_microseconds</a>())
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-monotonically_increasing_counter_internal"><a class="header" href="#function-monotonically_increasing_counter_internal">Function <code>monotonically_increasing_counter_internal</code> <a id="0x1_transaction_context_monotonically_increasing_counter_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal">monotonically_increasing_counter_internal</a>(timestamp_us: u64): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal">monotonically_increasing_counter_internal</a>(timestamp_us: u64): u128;
+</code></pre>
+</details>
+<h2 id="function-monotonically_increasing_counter_internal_for_test_only"><a class="header" href="#function-monotonically_increasing_counter_internal_for_test_only">Function <code>monotonically_increasing_counter_internal_for_test_only</code> <a id="0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only"></a></a></h2>
+<p>Test-only version of monotonically_increasing_counter that returns increasing values
+without requiring a user transaction context. This allows unit tests to verify
+the monotonically increasing behavior.</p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only">monotonically_increasing_counter_internal_for_test_only</a>(): u128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only">monotonically_increasing_counter_internal_for_test_only</a>(): u128;
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-get_txn_hash-1"><a class="header" href="#function-get_txn_hash-1">Function <code>get_txn_hash</code> <a id="@Specification_1_get_txn_hash"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_txn_hash">get_txn_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="transaction_context.html#0x1_transaction_context_spec_get_txn_hash">spec_get_txn_hash</a>();
+</code></pre>
+<p><a id="0x1_transaction_context_spec_get_txn_hash"></a></p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_spec_get_txn_hash">spec_get_txn_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+<h3 id="function-get_transaction_hash-1"><a class="header" href="#function-get_transaction_hash-1">Function <code>get_transaction_hash</code> <a id="@Specification_1_get_transaction_hash"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_transaction_hash">get_transaction_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> result == <a href="transaction_context.html#0x1_transaction_context_spec_get_txn_hash">spec_get_txn_hash</a>();
+// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
+<b>ensures</b> [abstract] len(result) == 32;
+</code></pre>
+<h3 id="function-generate_unique_address-1"><a class="header" href="#function-generate_unique_address-1">Function <code>generate_unique_address</code> <a id="@Specification_1_generate_unique_address"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_unique_address">generate_unique_address</a>(): <b>address</b>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="transaction_context.html#0x1_transaction_context_spec_generate_unique_address">spec_generate_unique_address</a>();
+</code></pre>
+<p><a id="0x1_transaction_context_spec_generate_unique_address"></a></p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_spec_generate_unique_address">spec_generate_unique_address</a>(): <b>address</b>;
+</code></pre>
+<h3 id="function-generate_auid_address-1"><a class="header" href="#function-generate_auid_address-1">Function <code>generate_auid_address</code> <a id="@Specification_1_generate_auid_address"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_auid_address">generate_auid_address</a>(): <b>address</b>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+// This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
+<b>ensures</b> [abstract] result == <a href="transaction_context.html#0x1_transaction_context_spec_generate_unique_address">spec_generate_unique_address</a>();
+</code></pre>
+<h3 id="function-get_script_hash-1"><a class="header" href="#function-get_script_hash-1">Function <code>get_script_hash</code> <a id="@Specification_1_get_script_hash"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_get_script_hash">get_script_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<h3 id="high-level-requirements"><a class="header" href="#high-level-requirements">High-level Requirements <a id="high-level-req"></a></a></h3>
+<table>
+<tr>
+<th>No.</th><th>Requirement</th><th>Criticality</th><th>Implementation</th><th>Enforcement</th>
+</tr>
+<tr>
+<td>1</td>
+<td>Fetching the transaction hash should return a vector with 32 bytes.</td>
+<td>Medium</td>
+<td>The get_transaction_hash function calls the native function get_txn_hash, which fetches the NativeTransactionContext struct and returns the txn_hash field.</td>
+<td>Audited that the native function returns the txn hash, whose size is 32 bytes. This has been modeled as the abstract postcondition that the returned vector is of length 32. Formally verified via <a href="#high-level-req-1">get_txn_hash</a>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Fetching the unique address should never abort.</td>
+<td>Low</td>
+<td>The function auid_address returns the unique address from a supplied AUID resource.</td>
+<td>Formally verified via <a href="#high-level-req-2">auid_address</a>.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Generating the unique address should return a vector with 32 bytes.</td>
+<td>Medium</td>
+<td>The generate_auid_address function checks calls the native function generate_unique_address which fetches the NativeTransactionContext struct, increments the auid_counter by one, and then creates a new authentication key from a preimage, which is then returned.</td>
+<td>Audited that the native function returns an address, and the length of an address is 32 bytes. This has been modeled as the abstract postcondition that the returned vector is of length 32. Formally verified via <a href="#high-level-req-3">generate_auid_address</a>.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Fetching the script hash of the current entry function should never fail and should return a vector with 32 bytes if the transaction payload is a script, otherwise an empty vector.</td>
+<td>Low</td>
+<td>The native function get_script_hash returns the NativeTransactionContext.script_hash field.</td>
+<td>Audited that the native function holds the required property. This has been modeled as the abstract spec. Formally verified via <a href="#high-level-req-4">get_script_hash</a>.</td>
+</tr>
+</table>
+<h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-4" href="#high-level-req">high-level requirement 4</a>:
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="transaction_context.html#0x1_transaction_context_spec_get_script_hash">spec_get_script_hash</a>();
+<b>ensures</b> [abstract] len(result) == 32;
+</code></pre>
+<p><a id="0x1_transaction_context_spec_get_script_hash"></a></p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_spec_get_script_hash">spec_get_script_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+<h3 id="function-auid_address-1"><a class="header" href="#function-auid_address-1">Function <code>auid_address</code> <a id="@Specification_1_auid_address"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_auid_address">auid_address</a>(auid: &<a href="transaction_context.html#0x1_transaction_context_AUID">transaction_context::AUID</a>): <b>address</b>
+</code></pre>
+<pre><code>// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
+<b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-sender_internal-1"><a class="header" href="#function-sender_internal-1">Function <code>sender_internal</code> <a id="@Specification_1_sender_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_sender_internal">sender_internal</a>(): <b>address</b>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-secondary_signers_internal-1"><a class="header" href="#function-secondary_signers_internal-1">Function <code>secondary_signers_internal</code> <a id="@Specification_1_secondary_signers_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_secondary_signers_internal">secondary_signers_internal</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-gas_payer_internal-1"><a class="header" href="#function-gas_payer_internal-1">Function <code>gas_payer_internal</code> <a id="@Specification_1_gas_payer_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_payer_internal">gas_payer_internal</a>(): <b>address</b>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-max_gas_amount_internal-1"><a class="header" href="#function-max_gas_amount_internal-1">Function <code>max_gas_amount_internal</code> <a id="@Specification_1_max_gas_amount_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_max_gas_amount_internal">max_gas_amount_internal</a>(): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-gas_unit_price_internal-1"><a class="header" href="#function-gas_unit_price_internal-1">Function <code>gas_unit_price_internal</code> <a id="@Specification_1_gas_unit_price_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_gas_unit_price_internal">gas_unit_price_internal</a>(): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-chain_id_internal-1"><a class="header" href="#function-chain_id_internal-1">Function <code>chain_id_internal</code> <a id="@Specification_1_chain_id_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_chain_id_internal">chain_id_internal</a>(): u8
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-entry_function_payload_internal-1"><a class="header" href="#function-entry_function_payload_internal-1">Function <code>entry_function_payload_internal</code> <a id="@Specification_1_entry_function_payload_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_entry_function_payload_internal">entry_function_payload_internal</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-multisig_payload_internal-1"><a class="header" href="#function-multisig_payload_internal-1">Function <code>multisig_payload_internal</code> <a id="@Specification_1_multisig_payload_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_multisig_payload_internal">multisig_payload_internal</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_MultisigPayload">transaction_context::MultisigPayload</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-monotonically_increasing_counter_internal-1"><a class="header" href="#function-monotonically_increasing_counter_internal-1">Function <code>monotonically_increasing_counter_internal</code> <a id="@Specification_1_monotonically_increasing_counter_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal">monotonically_increasing_counter_internal</a>(timestamp_us: u64): u128
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-monotonically_increasing_counter_internal_for_test_only-1"><a class="header" href="#function-monotonically_increasing_counter_internal_for_test_only-1">Function <code>monotonically_increasing_counter_internal_for_test_only</code> <a id="@Specification_1_monotonically_increasing_counter_internal_for_test_only"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only">monotonically_increasing_counter_internal_for_test_only</a>(): u128
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/timestamp.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/transaction_fee.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/timestamp.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/transaction_fee.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

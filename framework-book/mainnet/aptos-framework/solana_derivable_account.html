@@ -1,0 +1,486 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>solana_derivable_account - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/solana_derivable_account.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1solana_derivable_account"><a class="header" href="#module-0x1solana_derivable_account">Module <code>0x1::solana_derivable_account</code> <a id="0x1_solana_derivable_account"></a></a></h1>
+<p>Derivable account abstraction that verifies a message signed by
+SIWS.</p>
+<ol>
+<li>The message format is as follows:</li>
+</ol>
+<p><domain> wants you to sign in with your Solana account:
+&lt;base58_public_key&gt;</p>
+<p>Please confirm you explicitly initiated this request from <domain>. You are approving to execute transaction &lt;entry_function_name&gt; on Aptos blockchain (&lt;network_name&gt;).</p>
+<p>Nonce: &lt;aptos_txn_digest&gt;</p>
+<ol start="2">
+<li>The abstract public key is a BCS serialized <code>SIWSAbstractPublicKey</code>.</li>
+<li>The abstract signature is a BCS serialized <code><a href="solana_derivable_account.html#0x1_solana_derivable_account_SIWSAbstractSignature">SIWSAbstractSignature</a></code>.</li>
+<li>This module has been tested for the following wallets:</li>
+</ol>
+<ul>
+<li>
+<p>Phantom</p>
+</li>
+<li>
+<p>Solflare</p>
+</li>
+<li>
+<p>Backpack</p>
+</li>
+<li>
+<p>OKX</p>
+</li>
+<li>
+<p><a href="#0x1_solana_derivable_account_SIWSAbstractSignature">Enum <code>SIWSAbstractSignature</code></a></p>
+</li>
+<li>
+<p><a href="#@Constants_0">Constants</a></p>
+</li>
+<li>
+<p><a href="#0x1_solana_derivable_account_deserialize_abstract_public_key">Function <code>deserialize_abstract_public_key</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_solana_derivable_account_deserialize_abstract_signature">Function <code>deserialize_abstract_signature</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_solana_derivable_account_to_public_key_bytes">Function <code>to_public_key_bytes</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_solana_derivable_account_authenticate_auth_data">Function <code>authenticate_auth_data</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_solana_derivable_account_authenticate">Function <code>authenticate</code></a></p>
+</li>
+<li>
+<p><a href="#@Specification_1">Specification</a></p>
+<ul>
+<li><a href="#@Specification_1_to_public_key_bytes">Function <code>to_public_key_bytes</code></a></li>
+<li><a href="#@Specification_1_authenticate_auth_data">Function <code>authenticate_auth_data</code></a></li>
+<li><a href="#@Specification_1_authenticate">Function <code>authenticate</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="auth_data.html#0x1_auth_data">0x1::auth_data</a>;
+<b>use</b> <a href="../aptos-stdlib/bcs_stream.html#0x1_bcs_stream">0x1::bcs_stream</a>;
+<b>use</b> <a href="common_account_abstractions_utils.html#0x1_common_account_abstractions_utils">0x1::common_account_abstractions_utils</a>;
+<b>use</b> <a href="../aptos-stdlib/ed25519.html#0x1_ed25519">0x1::ed25519</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="../aptos-stdlib/string_utils.html#0x1_string_utils">0x1::string_utils</a>;
+<b>use</b> <a href="transaction_context.html#0x1_transaction_context">0x1::transaction_context</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+<h2 id="enum-siwsabstractsignature"><a class="header" href="#enum-siwsabstractsignature">Enum <code>SIWSAbstractSignature</code> <a id="0x1_solana_derivable_account_SIWSAbstractSignature"></a></a></h2>
+<pre><code>enum <a href="solana_derivable_account.html#0x1_solana_derivable_account_SIWSAbstractSignature">SIWSAbstractSignature</a> <b>has</b> drop
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>MessageV1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_solana_derivable_account_PUBLIC_KEY_NUM_BYTES"></a></p>
+<pre><code><b>const</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_PUBLIC_KEY_NUM_BYTES">PUBLIC_KEY_NUM_BYTES</a>: u64 = 32;
+</code></pre>
+<p><a id="0x1_solana_derivable_account_EINVALID_PUBLIC_KEY"></a></p>
+<p>Invalid public key.</p>
+<pre><code><b>const</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_PUBLIC_KEY">EINVALID_PUBLIC_KEY</a>: u64 = 5;
+</code></pre>
+<p><a id="0x1_solana_derivable_account_EINVALID_SIGNATURE"></a></p>
+<p>Signature failed to verify.</p>
+<pre><code><b>const</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_SIGNATURE">EINVALID_SIGNATURE</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_solana_derivable_account_EINVALID_SIGNATURE_TYPE"></a></p>
+<p>Invalid signature type.</p>
+<pre><code><b>const</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_SIGNATURE_TYPE">EINVALID_SIGNATURE_TYPE</a>: u64 = 4;
+</code></pre>
+<p><a id="0x1_solana_derivable_account_BASE_58_ALPHABET"></a></p>
+<pre><code><b>const</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_BASE_58_ALPHABET">BASE_58_ALPHABET</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70, 71, 72, 74, 75, 76, 77, 78, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122];
+</code></pre>
+<p><a id="0x1_solana_derivable_account_EINVALID_BASE_58_PUBLIC_KEY"></a></p>
+<p>Non base58 character found in public key.</p>
+<pre><code><b>const</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_BASE_58_PUBLIC_KEY">EINVALID_BASE_58_PUBLIC_KEY</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_solana_derivable_account_EINVALID_PUBLIC_KEY_LENGTH"></a></p>
+<p>Invalid public key length.</p>
+<pre><code><b>const</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_PUBLIC_KEY_LENGTH">EINVALID_PUBLIC_KEY_LENGTH</a>: u64 = 6;
+</code></pre>
+<p><a id="0x1_solana_derivable_account_HEX_ALPHABET"></a></p>
+<pre><code><b>const</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_HEX_ALPHABET">HEX_ALPHABET</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102];
+</code></pre>
+<h2 id="function-deserialize_abstract_public_key"><a class="header" href="#function-deserialize_abstract_public_key">Function <code>deserialize_abstract_public_key</code> <a id="0x1_solana_derivable_account_deserialize_abstract_public_key"></a></a></h2>
+<p>Deserializes the abstract public key which is supposed to be a bcs
+serialized <code>SIWSAbstractPublicKey</code>.  The base58_public_key is
+represented in UTF8. We prefer this format because it's computationally
+cheaper to decode a base58 string than to encode from raw bytes.  We
+require both the base58 public key in UTF8 to construct the message and
+the raw bytes version to do signature verification.</p>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_deserialize_abstract_public_key">deserialize_abstract_public_key</a>(abstract_public_key: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_deserialize_abstract_public_key">deserialize_abstract_public_key</a>(abstract_public_key: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;):
+(<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) {
+    <b>let</b> stream = <a href="../aptos-stdlib/bcs_stream.html#0x1_bcs_stream_new">bcs_stream::new</a>(*abstract_public_key);
+    <b>let</b> base58_public_key = <a href="../aptos-stdlib/bcs_stream.html#0x1_bcs_stream_deserialize_vector">bcs_stream::deserialize_vector</a>&lt;u8&gt;(&<b>mut</b> stream, |x| deserialize_u8(x));
+    <b>let</b> domain = <a href="../aptos-stdlib/bcs_stream.html#0x1_bcs_stream_deserialize_vector">bcs_stream::deserialize_vector</a>&lt;u8&gt;(&<b>mut</b> stream, |x| deserialize_u8(x));
+    (base58_public_key, domain)
+}
+</code></pre>
+</details>
+<h2 id="function-deserialize_abstract_signature"><a class="header" href="#function-deserialize_abstract_signature">Function <code>deserialize_abstract_signature</code> <a id="0x1_solana_derivable_account_deserialize_abstract_signature"></a></a></h2>
+<p>Returns a tuple of the signature type and the signature.</p>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_deserialize_abstract_signature">deserialize_abstract_signature</a>(abstract_signature: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="solana_derivable_account.html#0x1_solana_derivable_account_SIWSAbstractSignature">solana_derivable_account::SIWSAbstractSignature</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_deserialize_abstract_signature">deserialize_abstract_signature</a>(abstract_signature: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="solana_derivable_account.html#0x1_solana_derivable_account_SIWSAbstractSignature">SIWSAbstractSignature</a> {
+    <b>let</b> stream = <a href="../aptos-stdlib/bcs_stream.html#0x1_bcs_stream_new">bcs_stream::new</a>(*abstract_signature);
+    <b>let</b> signature_type = <a href="../aptos-stdlib/bcs_stream.html#0x1_bcs_stream_deserialize_u8">bcs_stream::deserialize_u8</a>(&<b>mut</b> stream);
+    <b>if</b> (signature_type == 0x00) {
+        <b>let</b> signature = <a href="../aptos-stdlib/bcs_stream.html#0x1_bcs_stream_deserialize_vector">bcs_stream::deserialize_vector</a>&lt;u8&gt;(&<b>mut</b> stream, |x| deserialize_u8(x));
+        SIWSAbstractSignature::MessageV1 { signature }
+    } <b>else</b> {
+        <b>abort</b>(<a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_SIGNATURE_TYPE">EINVALID_SIGNATURE_TYPE</a>)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-to_public_key_bytes"><a class="header" href="#function-to_public_key_bytes">Function <code>to_public_key_bytes</code> <a id="0x1_solana_derivable_account_to_public_key_bytes"></a></a></h2>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_to_public_key_bytes">to_public_key_bytes</a>(base58_public_key: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_to_public_key_bytes">to_public_key_bytes</a>(base58_public_key: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <b>let</b> bytes = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[0u8];
+    <b>let</b> base = 58u16;
+
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; base58_public_key.length()) {
+        <b>let</b> char = base58_public_key[i];
+        <b>let</b> (found, char_index) = <a href="solana_derivable_account.html#0x1_solana_derivable_account_BASE_58_ALPHABET">BASE_58_ALPHABET</a>.index_of(&char);
+        <b>assert</b>!(found, <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_BASE_58_PUBLIC_KEY">EINVALID_BASE_58_PUBLIC_KEY</a>);
+
+        <b>let</b> j = 0;
+        <b>let</b> carry = (char_index <b>as</b> u16);
+
+        // For each existing byte, multiply by 58 and add carry
+        <b>while</b> (j &lt; bytes.length()) {
+            <b>let</b> current = (bytes[j] <b>as</b> u16);
+            <b>let</b> new_carry = current * base + carry;
+            bytes[j] = ((new_carry & 0xff) <b>as</b> u8);
+            carry = new_carry &gt;&gt; 8;
+            j += 1;
+        };
+
+        // Add <a href="../aptos-stdlib/any.html#0x1_any">any</a> remaining carry <b>as</b> new bytes
+        <b>while</b> (carry &gt; 0) {
+            bytes.push_back((carry & 0xff) <b>as</b> u8);
+            carry &gt;&gt;= 8;
+        };
+
+        i += 1;
+    };
+
+    // Handle leading zeros (1's in Base58)
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; base58_public_key.length() && base58_public_key[i] == 49) { // '1' is 49 in ASCII
+        bytes.push_back(0);
+        i += 1;
+    };
+
+    bytes.reverse();
+    <b>assert</b>!(bytes.length() == <a href="solana_derivable_account.html#0x1_solana_derivable_account_PUBLIC_KEY_NUM_BYTES">PUBLIC_KEY_NUM_BYTES</a>, <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_PUBLIC_KEY_LENGTH">EINVALID_PUBLIC_KEY_LENGTH</a>);
+    bytes
+}
+</code></pre>
+</details>
+<h2 id="function-authenticate_auth_data"><a class="header" href="#function-authenticate_auth_data">Function <code>authenticate_auth_data</code> <a id="0x1_solana_derivable_account_authenticate_auth_data"></a></a></h2>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_authenticate_auth_data">authenticate_auth_data</a>(aa_auth_data: <a href="auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>, entry_function_name: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_authenticate_auth_data">authenticate_auth_data</a>(
+    aa_auth_data: AbstractionAuthData,
+    entry_function_name: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+) {
+    <b>let</b> abstract_public_key = aa_auth_data.derivable_abstract_public_key();
+    <b>let</b> (base58_public_key, domain) = <a href="solana_derivable_account.html#0x1_solana_derivable_account_deserialize_abstract_public_key">deserialize_abstract_public_key</a>(abstract_public_key);
+    <b>let</b> digest_utf8 = <a href="../aptos-stdlib/string_utils.html#0x1_string_utils_to_string">string_utils::to_string</a>(aa_auth_data.digest()).bytes();
+
+    <b>let</b> public_key_bytes = <a href="solana_derivable_account.html#0x1_solana_derivable_account_to_public_key_bytes">to_public_key_bytes</a>(&base58_public_key);
+    <b>let</b> public_key = new_validated_public_key_from_bytes(public_key_bytes);
+    <b>assert</b>!(public_key.is_some(), <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_PUBLIC_KEY">EINVALID_PUBLIC_KEY</a>);
+    <b>let</b> abstract_signature = <a href="solana_derivable_account.html#0x1_solana_derivable_account_deserialize_abstract_signature">deserialize_abstract_signature</a>(aa_auth_data.derivable_abstract_signature());
+    match (abstract_signature) {
+        SIWSAbstractSignature::MessageV1 { signature: signature_bytes } =&gt; {
+            <b>let</b> message = construct_message(&b"Solana", &base58_public_key, &domain, entry_function_name, digest_utf8);
+
+            <b>let</b> signature = new_signature_from_bytes(signature_bytes);
+            <b>assert</b>!(
+                <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_signature_verify_strict">ed25519::signature_verify_strict</a>(
+                    &signature,
+                    &public_key_into_unvalidated(public_key.destroy_some()),
+                    message,
+                ),
+                <a href="solana_derivable_account.html#0x1_solana_derivable_account_EINVALID_SIGNATURE">EINVALID_SIGNATURE</a>
+            );
+        },
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-authenticate"><a class="header" href="#function-authenticate">Function <code>authenticate</code> <a id="0x1_solana_derivable_account_authenticate"></a></a></h2>
+<p>Authorization function for domain account abstraction.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_authenticate">authenticate</a>(<a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, aa_auth_data: <a href="auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_authenticate">authenticate</a>(<a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, aa_auth_data: AbstractionAuthData): <a href="../move-stdlib/signer.html#0x1_signer">signer</a> {
+    daa_authenticate(<a href="account.html#0x1_account">account</a>, aa_auth_data, |<a href="auth_data.html#0x1_auth_data">auth_data</a>, entry_name| <a href="solana_derivable_account.html#0x1_solana_derivable_account_authenticate_auth_data">authenticate_auth_data</a>(<a href="auth_data.html#0x1_auth_data">auth_data</a>, entry_name))
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-to_public_key_bytes-1"><a class="header" href="#function-to_public_key_bytes-1">Function <code>to_public_key_bytes</code> <a id="@Specification_1_to_public_key_bytes"></a></a></h3>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_to_public_key_bytes">to_public_key_bytes</a>(base58_public_key: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>ensures</b> result.length() == <a href="solana_derivable_account.html#0x1_solana_derivable_account_PUBLIC_KEY_NUM_BYTES">PUBLIC_KEY_NUM_BYTES</a>;
+</code></pre>
+<h3 id="function-authenticate_auth_data-1"><a class="header" href="#function-authenticate_auth_data-1">Function <code>authenticate_auth_data</code> <a id="@Specification_1_authenticate_auth_data"></a></a></h3>
+<pre><code><b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_authenticate_auth_data">authenticate_auth_data</a>(aa_auth_data: <a href="auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>, entry_function_name: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-authenticate-1"><a class="header" href="#function-authenticate-1">Function <code>authenticate</code> <a id="@Specification_1_authenticate"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="solana_derivable_account.html#0x1_solana_derivable_account_authenticate">authenticate</a>(<a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, aa_auth_data: <a href="auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/sigma_protocol_witness.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/stake.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/sigma_protocol_witness.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/stake.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>math64 - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/math64.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1math64"><a class="header" href="#module-0x1math64">Module <code>0x1::math64</code> <a id="0x1_math64"></a></a></h1>
+<p>Standard math utilities missing in the Move Language.</p>
+<ul>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_math64_max">Function <code>max</code></a></li>
+<li><a href="#0x1_math64_min">Function <code>min</code></a></li>
+<li><a href="#0x1_math64_average">Function <code>average</code></a></li>
+<li><a href="#0x1_math64_gcd">Function <code>gcd</code></a></li>
+<li><a href="#0x1_math64_lcm">Function <code>lcm</code></a></li>
+<li><a href="#0x1_math64_mul_div">Function <code>mul_div</code></a></li>
+<li><a href="#0x1_math64_clamp">Function <code>clamp</code></a></li>
+<li><a href="#0x1_math64_pow">Function <code>pow</code></a></li>
+<li><a href="#0x1_math64_floor_log2">Function <code>floor_log2</code></a></li>
+<li><a href="#0x1_math64_log2">Function <code>log2</code></a></li>
+<li><a href="#0x1_math64_sqrt">Function <code>sqrt</code></a></li>
+<li><a href="#0x1_math64_ceil_div">Function <code>ceil_div</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_max">Function <code>max</code></a></li>
+<li><a href="#@Specification_1_min">Function <code>min</code></a></li>
+<li><a href="#@Specification_1_average">Function <code>average</code></a></li>
+<li><a href="#@Specification_1_clamp">Function <code>clamp</code></a></li>
+<li><a href="#@Specification_1_pow">Function <code>pow</code></a></li>
+<li><a href="#@Specification_1_floor_log2">Function <code>floor_log2</code></a></li>
+<li><a href="#@Specification_1_sqrt">Function <code>sqrt</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32">0x1::fixed_point32</a>;
+</code></pre>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_math64_EINVALID_ARG_FLOOR_LOG2"></a></p>
+<p>Cannot log2 the value 0</p>
+<pre><code><b>const</b> <a href="math64.html#0x1_math64_EINVALID_ARG_FLOOR_LOG2">EINVALID_ARG_FLOOR_LOG2</a>: u64 = 1;
+</code></pre>
+<h2 id="function-max"><a class="header" href="#function-max">Function <code>max</code> <a id="0x1_math64_max"></a></a></h2>
+<p>Return the largest of two numbers.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_max">max</a>(a: u64, b: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_max">max</a>(a: u64, b: u64): u64 {
+    <b>if</b> (a &gt;= b) a <b>else</b> b
+}
+</code></pre>
+</details>
+<h2 id="function-min"><a class="header" href="#function-min">Function <code>min</code> <a id="0x1_math64_min"></a></a></h2>
+<p>Return the smallest of two numbers.</p>
+<pre><code><b>public</b> <b>fun</b> <b>min</b>(a: u64, b: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <b>min</b>(a: u64, b: u64): u64 {
+    <b>if</b> (a &lt; b) a <b>else</b> b
+}
+</code></pre>
+</details>
+<h2 id="function-average"><a class="header" href="#function-average">Function <code>average</code> <a id="0x1_math64_average"></a></a></h2>
+<p>Return the average of two.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_average">average</a>(a: u64, b: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_average">average</a>(a: u64, b: u64): u64 {
+    <b>if</b> (a &lt; b) {
+        a + (b - a) / 2
+    } <b>else</b> {
+        b + (a - b) / 2
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-gcd"><a class="header" href="#function-gcd">Function <code>gcd</code> <a id="0x1_math64_gcd"></a></a></h2>
+<p>Return greatest common divisor of <code>a</code> &amp; <code>b</code>, via the Euclidean algorithm.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_gcd">gcd</a>(a: u64, b: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="math64.html#0x1_math64_gcd">gcd</a>(a: u64, b: u64): u64 {
+    <b>let</b> (large, small) = <b>if</b> (a &gt; b) (a, b) <b>else</b> (b, a);
+    <b>while</b> (small != 0) {
+        <b>let</b> tmp = small;
+        small = large % small;
+        large = tmp;
+    };
+    large
+}
+</code></pre>
+</details>
+<h2 id="function-lcm"><a class="header" href="#function-lcm">Function <code>lcm</code> <a id="0x1_math64_lcm"></a></a></h2>
+<p>Returns least common multiple of <code>a</code> &amp; <code>b</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_lcm">lcm</a>(a: u64, b: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="math64.html#0x1_math64_lcm">lcm</a>(a: u64, b: u64): u64 {
+    <b>if</b> (a == 0 || b == 0) {
+        0
+    } <b>else</b> {
+        a / <a href="math64.html#0x1_math64_gcd">gcd</a>(a, b) * b
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-mul_div"><a class="header" href="#function-mul_div">Function <code>mul_div</code> <a id="0x1_math64_mul_div"></a></a></h2>
+<p>Returns a * b / c going through u128 to prevent intermediate overflow</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_mul_div">mul_div</a>(a: u64, b: u64, c: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="math64.html#0x1_math64_mul_div">mul_div</a>(a: u64, b: u64, c: u64): u64 {
+    // Inline functions cannot take constants, <b>as</b> then every <b>module</b> using it needs the constant
+    <b>assert</b>!(c != 0, std::error::invalid_argument(4));
+    (((a <b>as</b> u128) * (b <b>as</b> u128) / (c <b>as</b> u128)) <b>as</b> u64)
+}
+</code></pre>
+</details>
+<h2 id="function-clamp"><a class="header" href="#function-clamp">Function <code>clamp</code> <a id="0x1_math64_clamp"></a></a></h2>
+<p>Return x clamped to the interval [lower, upper].</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_clamp">clamp</a>(x: u64, lower: u64, upper: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_clamp">clamp</a>(x: u64, lower: u64, upper: u64): u64 {
+    <b>min</b>(upper, <a href="math64.html#0x1_math64_max">max</a>(lower, x))
+}
+</code></pre>
+</details>
+<h2 id="function-pow"><a class="header" href="#function-pow">Function <code>pow</code> <a id="0x1_math64_pow"></a></a></h2>
+<p>Return the value of n raised to power e</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_pow">pow</a>(n: u64, e: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_pow">pow</a>(n: u64, e: u64): u64 {
+    <b>if</b> (e == 0) {
+        1
+    } <b>else</b> {
+        <b>let</b> p = 1;
+        <b>while</b> (e &gt; 1) {
+            <b>if</b> (e % 2 == 1) {
+                p *= n;
+            };
+            e /= 2;
+            n *= n;
+        };
+        p * n
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-floor_log2"><a class="header" href="#function-floor_log2">Function <code>floor_log2</code> <a id="0x1_math64_floor_log2"></a></a></h2>
+<p>Returns floor(lg2(x))</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_floor_log2">floor_log2</a>(x: u64): u8
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_floor_log2">floor_log2</a>(x: u64): u8 {
+    <b>let</b> res = 0;
+    <b>assert</b>!(x != 0, std::error::invalid_argument(<a href="math64.html#0x1_math64_EINVALID_ARG_FLOOR_LOG2">EINVALID_ARG_FLOOR_LOG2</a>));
+    // Effectively the position of the most significant set bit
+    <b>let</b> n = 32;
+    <b>while</b> (n &gt; 0) {
+        <b>if</b> (x &gt;= (1 &lt;&lt; n)) {
+            x &gt;&gt;= n;
+            res += n;
+        };
+        n &gt;&gt;= 1;
+    };
+    res
+}
+</code></pre>
+</details>
+<h2 id="function-log2"><a class="header" href="#function-log2">Function <code>log2</code> <a id="0x1_math64_log2"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_log2">log2</a>(x: u64): <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32_FixedPoint32">fixed_point32::FixedPoint32</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_log2">log2</a>(x: u64): FixedPoint32 {
+    <b>let</b> integer_part = <a href="math64.html#0x1_math64_floor_log2">floor_log2</a>(x);
+    // Normalize x <b>to</b> [1, 2) in fixed point 32.
+    <b>let</b> y = (<b>if</b> (x &gt;= 1 &lt;&lt; 32) {
+        x &gt;&gt; (integer_part - 32)
+    } <b>else</b> {
+        x &lt;&lt; (32 - integer_part)
+    } <b>as</b> u128);
+    <b>let</b> frac = 0;
+    <b>let</b> delta = 1 &lt;&lt; 31;
+    <b>while</b> (delta != 0) {
+        // log x = 1/2 log x^2
+        // x in [1, 2)
+        y = (y * y) &gt;&gt; 32;
+        // x is now in [1, 4)
+        // <b>if</b> x in [2, 4) then log x = 1 + log (x / 2)
+        <b>if</b> (y &gt;= (2 &lt;&lt; 32)) { frac += delta; y &gt;&gt;= 1; };
+        delta &gt;&gt;= 1;
+    };
+    <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32_create_from_raw_value">fixed_point32::create_from_raw_value</a> (((integer_part <b>as</b> u64) &lt;&lt; 32) + frac)
+}
+</code></pre>
+</details>
+<h2 id="function-sqrt"><a class="header" href="#function-sqrt">Function <code>sqrt</code> <a id="0x1_math64_sqrt"></a></a></h2>
+<p>Returns square root of x, precisely floor(sqrt(x))</p>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_sqrt">sqrt</a>(x: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_sqrt">sqrt</a>(x: u64): u64 {
+    <b>if</b> (x == 0) <b>return</b> 0;
+    // Note the plus 1 in the expression. Let n = floor_lg2(x) we have x in [2^n, 2^(n+1)&gt; and thus the answer in
+    // the half-open interval [2^(n/2), 2^((n+1)/2)&gt;. For even n we can write this <b>as</b> [2^(n/2), <a href="math64.html#0x1_math64_sqrt">sqrt</a>(2) 2^(n/2)&gt;
+    // for odd n [2^((n+1)/2)/<a href="math64.html#0x1_math64_sqrt">sqrt</a>(2), 2^((n+1)/2&gt;. For even n the left end point is integer for odd the right
+    // end point is integer. If we <b>choose</b> <b>as</b> our first approximation the integer end point we have <b>as</b> maximum
+    // relative <a href="../move-stdlib/error.html#0x1_error">error</a> either (<a href="math64.html#0x1_math64_sqrt">sqrt</a>(2) - 1) or (1 - 1/<a href="math64.html#0x1_math64_sqrt">sqrt</a>(2)) both are smaller then 1/2.
+    <b>let</b> res = 1 &lt;&lt; ((<a href="math64.html#0x1_math64_floor_log2">floor_log2</a>(x) + 1) &gt;&gt; 1);
+    // We <b>use</b> standard newton-rhapson iteration <b>to</b> improve the initial approximation.
+    // The <a href="../move-stdlib/error.html#0x1_error">error</a> term evolves <b>as</b> delta_i+1 = delta_i^2 / 2 (quadratic convergence).
+    // It turns out that after 4 iterations the delta is smaller than 2^-32 and thus below the treshold.
+    res = (res + x / res) &gt;&gt; 1;
+    res = (res + x / res) &gt;&gt; 1;
+    res = (res + x / res) &gt;&gt; 1;
+    res = (res + x / res) &gt;&gt; 1;
+    <b>min</b>(res, x / res)
+}
+</code></pre>
+</details>
+<h2 id="function-ceil_div"><a class="header" href="#function-ceil_div">Function <code>ceil_div</code> <a id="0x1_math64_ceil_div"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_ceil_div">ceil_div</a>(x: u64, y: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="math64.html#0x1_math64_ceil_div">ceil_div</a>(x: u64, y: u64): u64 {
+    // <a href="math64.html#0x1_math64_ceil_div">ceil_div</a>(x, y) = floor((x + y - 1) / y) = floor((x - 1) / y) + 1
+    // (x + y - 1) could spuriously overflow. so we <b>use</b> the later version
+    <b>if</b> (x == 0) {
+        // Inline functions cannot take constants, <b>as</b> then every <b>module</b> using it needs the constant
+        <b>assert</b>!(y != 0, std::error::invalid_argument(4));
+        0
+    }
+    <b>else</b> (x - 1) / y + 1
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-max-1"><a class="header" href="#function-max-1">Function <code>max</code> <a id="@Specification_1_max"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_max">max</a>(a: u64, b: u64): u64
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> a &gt;= b ==&gt; result == a;
+<b>ensures</b> a &lt; b ==&gt; result == b;
+</code></pre>
+<h3 id="function-min-1"><a class="header" href="#function-min-1">Function <code>min</code> <a id="@Specification_1_min"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <b>min</b>(a: u64, b: u64): u64
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> a &lt; b ==&gt; result == a;
+<b>ensures</b> a &gt;= b ==&gt; result == b;
+</code></pre>
+<h3 id="function-average-1"><a class="header" href="#function-average-1">Function <code>average</code> <a id="@Specification_1_average"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_average">average</a>(a: u64, b: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (a + b) / 2;
+</code></pre>
+<h3 id="function-clamp-1"><a class="header" href="#function-clamp-1">Function <code>clamp</code> <a id="@Specification_1_clamp"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_clamp">clamp</a>(x: u64, lower: u64, upper: u64): u64
+</code></pre>
+<pre><code><b>requires</b> (lower &lt;= upper);
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> (lower &lt;=x && x &lt;= upper) ==&gt; result == x;
+<b>ensures</b> (x &lt; lower) ==&gt; result == lower;
+<b>ensures</b> (upper &lt; x) ==&gt; result == upper;
+</code></pre>
+<h3 id="function-pow-1"><a class="header" href="#function-pow-1">Function <code>pow</code> <a id="@Specification_1_pow"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_pow">pow</a>(n: u64, e: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n, e) &gt; MAX_U64;
+<b>ensures</b> [abstract] result == <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n, e);
+</code></pre>
+<h3 id="function-floor_log2-1"><a class="header" href="#function-floor_log2-1">Function <code>floor_log2</code> <a id="@Specification_1_floor_log2"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_floor_log2">floor_log2</a>(x: u64): u8
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] x == 0;
+<b>ensures</b> [abstract] <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(2, result) &lt;= x;
+<b>ensures</b> [abstract] x &lt; <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(2, result+1);
+</code></pre>
+<h3 id="function-sqrt-1"><a class="header" href="#function-sqrt-1">Function <code>sqrt</code> <a id="@Specification_1_sqrt"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_sqrt">sqrt</a>(x: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] x &gt; 0 ==&gt; result * result &lt;= x;
+<b>ensures</b> [abstract] x &gt; 0 ==&gt; x &lt; (result+1) * (result+1);
+</code></pre>
+<p><a id="0x1_math64_spec_pow"></a></p>
+<pre><code><b>fun</b> <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n: u64, e: u64): u64 {
+   <b>if</b> (e == 0) {
+       1
+   }
+   <b>else</b> {
+       n * <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n, e-1)
+   }
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/math128.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/math_fixed.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/math128.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/math_fixed.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

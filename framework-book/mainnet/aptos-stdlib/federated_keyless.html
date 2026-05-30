@@ -1,0 +1,323 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>federated_keyless - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/federated_keyless.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1federated_keyless"><a class="header" href="#module-0x1federated_keyless">Module <code>0x1::federated_keyless</code> <a id="0x1_federated_keyless"></a></a></h1>
+<p>This module implements the Federated Keyless authentication scheme.</p>
+<ul>
+<li><a href="#0x1_federated_keyless_PublicKey">Struct <code>PublicKey</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_federated_keyless_new_public_key_from_bytes">Function <code>new_public_key_from_bytes</code></a></li>
+<li><a href="#0x1_federated_keyless_deserialize_public_key">Function <code>deserialize_public_key</code></a></li>
+<li><a href="#0x1_federated_keyless_new">Function <code>new</code></a></li>
+<li><a href="#0x1_federated_keyless_get_jwk_address">Function <code>get_jwk_address</code></a></li>
+<li><a href="#0x1_federated_keyless_get_keyless_public_key">Function <code>get_keyless_public_key</code></a></li>
+<li><a href="#@Specification_1">Specification</a></li>
+</ul>
+<pre><code><b>use</b> <a href="bcs_stream.html#0x1_bcs_stream">0x1::bcs_stream</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="keyless.html#0x1_keyless">0x1::keyless</a>;
+</code></pre>
+<h2 id="struct-publickey"><a class="header" href="#struct-publickey">Struct <code>PublicKey</code> <a id="0x1_federated_keyless_PublicKey"></a></a></h2>
+<p>An <em>unvalidated</em> any public key: not necessarily an elliptic curve point, just a sequence of 32 bytes</p>
+<pre><code><b>struct</b> <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">PublicKey</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>jwk_address: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>keyless_public_key: <a href="keyless.html#0x1_keyless_PublicKey">keyless::PublicKey</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_federated_keyless_E_INVALID_FEDERATED_KEYLESS_PUBLIC_KEY_EXTRA_BYTES"></a></p>
+<p>There are extra bytes in the input when deserializing a Federated Keyless public key.</p>
+<pre><code><b>const</b> <a href="federated_keyless.html#0x1_federated_keyless_E_INVALID_FEDERATED_KEYLESS_PUBLIC_KEY_EXTRA_BYTES">E_INVALID_FEDERATED_KEYLESS_PUBLIC_KEY_EXTRA_BYTES</a>: u64 = 1;
+</code></pre>
+<h2 id="function-new_public_key_from_bytes"><a class="header" href="#function-new_public_key_from_bytes">Function <code>new_public_key_from_bytes</code> <a id="0x1_federated_keyless_new_public_key_from_bytes"></a></a></h2>
+<p>Parses the input bytes into a keyless public key.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_new_public_key_from_bytes">new_public_key_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">federated_keyless::PublicKey</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_new_public_key_from_bytes">new_public_key_from_bytes</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">PublicKey</a> {
+    <b>let</b> stream = <a href="bcs_stream.html#0x1_bcs_stream_new">bcs_stream::new</a>(bytes);
+    <b>let</b> pk = <a href="federated_keyless.html#0x1_federated_keyless_deserialize_public_key">deserialize_public_key</a>(&<b>mut</b> stream);
+    <b>assert</b>!(!<a href="bcs_stream.html#0x1_bcs_stream_has_remaining">bcs_stream::has_remaining</a>(&<b>mut</b> stream), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="federated_keyless.html#0x1_federated_keyless_E_INVALID_FEDERATED_KEYLESS_PUBLIC_KEY_EXTRA_BYTES">E_INVALID_FEDERATED_KEYLESS_PUBLIC_KEY_EXTRA_BYTES</a>));
+    pk
+}
+</code></pre>
+</details>
+<h2 id="function-deserialize_public_key"><a class="header" href="#function-deserialize_public_key">Function <code>deserialize_public_key</code> <a id="0x1_federated_keyless_deserialize_public_key"></a></a></h2>
+<p>Deserializes a Federated Keyless public key from a BCS stream.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_deserialize_public_key">deserialize_public_key</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">federated_keyless::PublicKey</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_deserialize_public_key">deserialize_public_key</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">PublicKey</a> {
+    <b>let</b> jwk_address = <a href="bcs_stream.html#0x1_bcs_stream_deserialize_address">bcs_stream::deserialize_address</a>(stream);
+    <b>let</b> keyless_public_key = <a href="keyless.html#0x1_keyless_deserialize_public_key">keyless::deserialize_public_key</a>(stream);
+    <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">PublicKey</a> { keyless_public_key, jwk_address }
+}
+</code></pre>
+</details>
+<h2 id="function-new"><a class="header" href="#function-new">Function <code>new</code> <a id="0x1_federated_keyless_new"></a></a></h2>
+<p>Creates a new Federated Keyless public key from a keyless public key and a JWK address.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_new">new</a>(keyless_public_key: <a href="keyless.html#0x1_keyless_PublicKey">keyless::PublicKey</a>, jwk_address: <b>address</b>): <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">federated_keyless::PublicKey</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_new">new</a>(keyless_public_key: <a href="keyless.html#0x1_keyless_PublicKey">keyless::PublicKey</a>, jwk_address: <b>address</b>): <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">PublicKey</a> {
+    <a href="federated_keyless.html#0x1_federated_keyless_PublicKey">PublicKey</a> { keyless_public_key, jwk_address }
+}
+</code></pre>
+</details>
+<h2 id="function-get_jwk_address"><a class="header" href="#function-get_jwk_address">Function <code>get_jwk_address</code> <a id="0x1_federated_keyless_get_jwk_address"></a></a></h2>
+<p>Returns the identifier bytes of the public key</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_get_jwk_address">get_jwk_address</a>(self: &<a href="federated_keyless.html#0x1_federated_keyless_PublicKey">federated_keyless::PublicKey</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>friend</b> <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_get_jwk_address">get_jwk_address</a>(self: &<a href="federated_keyless.html#0x1_federated_keyless_PublicKey">PublicKey</a>): <b>address</b> {
+    self.jwk_address
+}
+</code></pre>
+</details>
+<h2 id="function-get_keyless_public_key"><a class="header" href="#function-get_keyless_public_key">Function <code>get_keyless_public_key</code> <a id="0x1_federated_keyless_get_keyless_public_key"></a></a></h2>
+<p>Returns the keyless public key of the public key</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_get_keyless_public_key">get_keyless_public_key</a>(self: &<a href="federated_keyless.html#0x1_federated_keyless_PublicKey">federated_keyless::PublicKey</a>): <a href="keyless.html#0x1_keyless_PublicKey">keyless::PublicKey</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>friend</b> <b>fun</b> <a href="federated_keyless.html#0x1_federated_keyless_get_keyless_public_key">get_keyless_public_key</a>(self: &<a href="federated_keyless.html#0x1_federated_keyless_PublicKey">PublicKey</a>): <a href="keyless.html#0x1_keyless_PublicKey">keyless::PublicKey</a> {
+    self.keyless_public_key
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/ed25519.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/fixed_point64.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/ed25519.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/fixed_point64.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

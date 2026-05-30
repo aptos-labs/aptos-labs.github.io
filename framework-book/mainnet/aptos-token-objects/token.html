@@ -1,0 +1,1412 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>token - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-token-objects/token.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x4token"><a class="header" href="#module-0x4token">Module <code>0x4::token</code> <a id="0x4_token"></a></a></h1>
+<p>This defines an object-based Token. The key differentiating features from the Aptos standard
+token are:</p>
+<ul>
+<li>Decoupled token ownership from token data.</li>
+<li>Explicit data model for token metadata via adjacent resources</li>
+<li>Extensible framework for tokens</li>
+</ul>
+<ul>
+<li><a href="#0x4_token_Token">Resource <code>Token</code></a></li>
+<li><a href="#0x4_token_TokenIdentifiers">Resource <code>TokenIdentifiers</code></a></li>
+<li><a href="#0x4_token_ConcurrentTokenIdentifiers">Resource <code>ConcurrentTokenIdentifiers</code></a></li>
+<li><a href="#0x4_token_BurnRef">Struct <code>BurnRef</code></a></li>
+<li><a href="#0x4_token_MutatorRef">Struct <code>MutatorRef</code></a></li>
+<li><a href="#0x4_token_MutationEvent">Struct <code>MutationEvent</code></a></li>
+<li><a href="#0x4_token_Mutation">Struct <code>Mutation</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x4_token_create_common">Function <code>create_common</code></a></li>
+<li><a href="#0x4_token_create_common_with_collection">Function <code>create_common_with_collection</code></a></li>
+<li><a href="#0x4_token_create_common_with_collection_as_owner">Function <code>create_common_with_collection_as_owner</code></a></li>
+<li><a href="#0x4_token_create_common_with_collection_internal">Function <code>create_common_with_collection_internal</code></a></li>
+<li><a href="#0x4_token_create_token">Function <code>create_token</code></a></li>
+<li><a href="#0x4_token_create">Function <code>create</code></a></li>
+<li><a href="#0x4_token_create_token_as_collection_owner">Function <code>create_token_as_collection_owner</code></a></li>
+<li><a href="#0x4_token_create_numbered_token_object">Function <code>create_numbered_token_object</code></a></li>
+<li><a href="#0x4_token_create_numbered_token">Function <code>create_numbered_token</code></a></li>
+<li><a href="#0x4_token_create_numbered_token_as_collection_owner">Function <code>create_numbered_token_as_collection_owner</code></a></li>
+<li><a href="#0x4_token_create_named_token_object">Function <code>create_named_token_object</code></a></li>
+<li><a href="#0x4_token_create_named_token">Function <code>create_named_token</code></a></li>
+<li><a href="#0x4_token_create_named_token_as_collection_owner">Function <code>create_named_token_as_collection_owner</code></a></li>
+<li><a href="#0x4_token_create_named_token_from_seed">Function <code>create_named_token_from_seed</code></a></li>
+<li><a href="#0x4_token_create_named_token_from_seed_as_collection_owner">Function <code>create_named_token_from_seed_as_collection_owner</code></a></li>
+<li><a href="#0x4_token_create_from_account">Function <code>create_from_account</code></a></li>
+<li><a href="#0x4_token_create_token_address">Function <code>create_token_address</code></a></li>
+<li><a href="#0x4_token_create_token_address_with_seed">Function <code>create_token_address_with_seed</code></a></li>
+<li><a href="#0x4_token_create_token_seed">Function <code>create_token_seed</code></a></li>
+<li><a href="#0x4_token_create_token_name_with_seed">Function <code>create_token_name_with_seed</code></a></li>
+<li><a href="#0x4_token_generate_mutator_ref">Function <code>generate_mutator_ref</code></a></li>
+<li><a href="#0x4_token_generate_burn_ref">Function <code>generate_burn_ref</code></a></li>
+<li><a href="#0x4_token_address_from_burn_ref">Function <code>address_from_burn_ref</code></a></li>
+<li><a href="#0x4_token_borrow">Function <code>borrow</code></a></li>
+<li><a href="#0x4_token_creator">Function <code>creator</code></a></li>
+<li><a href="#0x4_token_collection_name">Function <code>collection_name</code></a></li>
+<li><a href="#0x4_token_collection_object">Function <code>collection_object</code></a></li>
+<li><a href="#0x4_token_description">Function <code>description</code></a></li>
+<li><a href="#0x4_token_name">Function <code>name</code></a></li>
+<li><a href="#0x4_token_uri">Function <code>uri</code></a></li>
+<li><a href="#0x4_token_royalty">Function <code>royalty</code></a></li>
+<li><a href="#0x4_token_index">Function <code>index</code></a></li>
+<li><a href="#0x4_token_borrow_mut">Function <code>borrow_mut</code></a></li>
+<li><a href="#0x4_token_burn">Function <code>burn</code></a></li>
+<li><a href="#0x4_token_set_description">Function <code>set_description</code></a></li>
+<li><a href="#0x4_token_set_name">Function <code>set_name</code></a></li>
+<li><a href="#0x4_token_set_uri">Function <code>set_uri</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2">0x1::aggregator_v2</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../aptos-framework/event.html#0x1_event">0x1::event</a>;
+<b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="../aptos-framework/object.html#0x1_object">0x1::object</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+<b>use</b> <a href="collection.html#0x4_collection">0x4::collection</a>;
+<b>use</b> <a href="royalty.html#0x4_royalty">0x4::royalty</a>;
+</code></pre>
+<h2 id="resource-token"><a class="header" href="#resource-token">Resource <code>Token</code> <a id="0x4_token_Token"></a></a></h2>
+<p>Represents the common fields to all tokens.</p>
+<pre><code>#[resource_group_member(#[group = <a href="../aptos-framework/object.html#0x1_object_ObjectGroup">0x1::object::ObjectGroup</a>])]
+<b>struct</b> <a href="token.html#0x4_token_Token">Token</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;</code>
+</dt>
+<dd>
+ The collection from which this token resides.
+</dd>
+<dt>
+<code>index: u64</code>
+</dt>
+<dd>
+ Deprecated in favor of <code>index</code> inside TokenIdentifiers.
+ Was populated until concurrent_token_v2_enabled feature flag was enabled.
+<p>Unique identifier within the collection, optional, 0 means unassigned</p>
+</dd>
+<dt>
+<code>description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+ A brief description of the token.
+</dd>
+<dt>
+<code>name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+ Deprecated in favor of <code>name</code> inside TokenIdentifiers.
+ Was populated until concurrent_token_v2_enabled feature flag was enabled.
+<p>The name of the token, which should be unique within the collection; the length of name
+should be smaller than 128, characters, eg: "Aptos Animal #1234"</p>
+</dd>
+<dt>
+<code>uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+ The Uniform Resource Identifier (uri) pointing to the JSON file stored in off-chain
+ storage; the URL length will likely need a maximum any suggestions?
+</dd>
+<dt>
+<code>mutation_events: <a href="../aptos-framework/event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="token.html#0x4_token_MutationEvent">token::MutationEvent</a>&gt;</code>
+</dt>
+<dd>
+ Emitted upon any mutation of the token.
+</dd>
+</dl>
+</details>
+<h2 id="resource-tokenidentifiers"><a class="header" href="#resource-tokenidentifiers">Resource <code>TokenIdentifiers</code> <a id="0x4_token_TokenIdentifiers"></a></a></h2>
+<p>Represents first addition to the common fields for all tokens
+Started being populated once aggregator_v2_api_enabled was enabled.</p>
+<pre><code>#[resource_group_member(#[group = <a href="../aptos-framework/object.html#0x1_object_ObjectGroup">0x1::object::ObjectGroup</a>])]
+<b>struct</b> <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>index: <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+ Unique identifier within the collection, optional, 0 means unassigned
+</dd>
+<dt>
+<code>name: <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_DerivedStringSnapshot">aggregator_v2::DerivedStringSnapshot</a></code>
+</dt>
+<dd>
+ The name of the token, which should be unique within the collection; the length of name
+ should be smaller than 128, characters, eg: "Aptos Animal #1234"
+</dd>
+</dl>
+</details>
+<h2 id="resource-concurrenttokenidentifiers"><a class="header" href="#resource-concurrenttokenidentifiers">Resource <code>ConcurrentTokenIdentifiers</code> <a id="0x4_token_ConcurrentTokenIdentifiers"></a></a></h2>
+<pre><code>#[resource_group_member(#[group = <a href="../aptos-framework/object.html#0x1_object_ObjectGroup">0x1::object::ObjectGroup</a>])]
+#[deprecated]
+<b>struct</b> <a href="token.html#0x4_token_ConcurrentTokenIdentifiers">ConcurrentTokenIdentifiers</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>index: <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>name: <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-burnref"><a class="header" href="#struct-burnref">Struct <code>BurnRef</code> <a id="0x4_token_BurnRef"></a></a></h2>
+<p>This enables burning an NFT, if possible, it will also delete the object. Note, the data
+in inner and self occupies 32-bytes each, rather than have both, this data structure makes
+a small optimization to support either and take a fixed amount of 34-bytes.</p>
+<pre><code><b>struct</b> <a href="token.html#0x4_token_BurnRef">BurnRef</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>inner: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-framework/object.html#0x1_object_DeleteRef">object::DeleteRef</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>self: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-mutatorref"><a class="header" href="#struct-mutatorref">Struct <code>MutatorRef</code> <a id="0x4_token_MutatorRef"></a></a></h2>
+<p>This enables mutating description and URI by higher level services.</p>
+<pre><code><b>struct</b> <a href="token.html#0x4_token_MutatorRef">MutatorRef</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>self: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-mutationevent"><a class="header" href="#struct-mutationevent">Struct <code>MutationEvent</code> <a id="0x4_token_MutationEvent"></a></a></h2>
+<p>Contains the mutated fields name. This makes the life of indexers easier, so that they can
+directly understand the behavior in a writeset.</p>
+<pre><code><b>struct</b> <a href="token.html#0x4_token_MutationEvent">MutationEvent</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>mutated_field_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>old_value: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>new_value: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-mutation"><a class="header" href="#struct-mutation">Struct <code>Mutation</code> <a id="0x4_token_Mutation"></a></a></h2>
+<pre><code>#[<a href="../aptos-framework/event.html#0x1_event">event</a>]
+<b>struct</b> <a href="token.html#0x4_token_Mutation">Mutation</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>token_address: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>mutated_field_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>old_value: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>new_value: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x4_token_EURI_TOO_LONG"></a></p>
+<p>The URI is over the maximum length</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_EURI_TOO_LONG">EURI_TOO_LONG</a>: u64 = 5;
+</code></pre>
+<p><a id="0x4_token_MAX_URI_LENGTH"></a></p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_MAX_URI_LENGTH">MAX_URI_LENGTH</a>: u64 = 512;
+</code></pre>
+<p><a id="0x4_token_ENOT_OWNER"></a></p>
+<p>The calling signer is not the owner</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_ENOT_OWNER">ENOT_OWNER</a>: u64 = 8;
+</code></pre>
+<p><a id="0x4_token_ECOLLECTION_OWNER_NOT_SUPPORTED"></a></p>
+<p>The collection owner feature is not supported</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_ECOLLECTION_OWNER_NOT_SUPPORTED">ECOLLECTION_OWNER_NOT_SUPPORTED</a>: u64 = 9;
+</code></pre>
+<p><a id="0x4_token_EDESCRIPTION_TOO_LONG"></a></p>
+<p>The description is over the maximum length</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_EDESCRIPTION_TOO_LONG">EDESCRIPTION_TOO_LONG</a>: u64 = 6;
+</code></pre>
+<p><a id="0x4_token_MAX_DESCRIPTION_LENGTH"></a></p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_MAX_DESCRIPTION_LENGTH">MAX_DESCRIPTION_LENGTH</a>: u64 = 2048;
+</code></pre>
+<p><a id="0x4_token_EFIELD_NOT_MUTABLE"></a></p>
+<p>The field being changed is not mutable</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_EFIELD_NOT_MUTABLE">EFIELD_NOT_MUTABLE</a>: u64 = 3;
+</code></pre>
+<p><a id="0x4_token_ENOT_CREATOR"></a></p>
+<p>The provided signer is not the creator</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_ENOT_CREATOR">ENOT_CREATOR</a>: u64 = 2;
+</code></pre>
+<p><a id="0x4_token_ESEED_TOO_LONG"></a></p>
+<p>The seed is over the maximum length</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_ESEED_TOO_LONG">ESEED_TOO_LONG</a>: u64 = 7;
+</code></pre>
+<p><a id="0x4_token_ETOKEN_DOES_NOT_EXIST"></a></p>
+<p>The token does not exist</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_ETOKEN_DOES_NOT_EXIST">ETOKEN_DOES_NOT_EXIST</a>: u64 = 1;
+</code></pre>
+<p><a id="0x4_token_ETOKEN_NAME_TOO_LONG"></a></p>
+<p>The token name is over the maximum length</p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_ETOKEN_NAME_TOO_LONG">ETOKEN_NAME_TOO_LONG</a>: u64 = 4;
+</code></pre>
+<p><a id="0x4_token_MAX_TOKEN_NAME_LENGTH"></a></p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_MAX_TOKEN_NAME_LENGTH">MAX_TOKEN_NAME_LENGTH</a>: u64 = 128;
+</code></pre>
+<p><a id="0x4_token_MAX_TOKEN_SEED_LENGTH"></a></p>
+<pre><code><b>const</b> <a href="token.html#0x4_token_MAX_TOKEN_SEED_LENGTH">MAX_TOKEN_SEED_LENGTH</a>: u64 = 128;
+</code></pre>
+<h2 id="function-create_common"><a class="header" href="#function-create_common">Function <code>create_common</code> <a id="0x4_token_create_common"></a></a></h2>
+<pre><code><b>fun</b> <a href="token.html#0x4_token_create_common">create_common</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, constructor_ref: &<a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, collection_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_prefix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_suffix: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="token.html#0x4_token_create_common">create_common</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    constructor_ref: &ConstructorRef,
+    collection_name: String,
+    description: String,
+    name_prefix: String,
+    // If <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>, numbered <a href="token.html#0x4_token">token</a> is created - i.e. index is appended <b>to</b> the name.
+    // If <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>, name_prefix is the full name of the <a href="token.html#0x4_token">token</a>.
+    name_with_index_suffix: Option&lt;String&gt;,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+) {
+    <b>let</b> creator_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+    <b>let</b> collection_addr = <a href="collection.html#0x4_collection_create_collection_address">collection::create_collection_address</a>(&creator_address, &collection_name);
+    <b>let</b> <a href="collection.html#0x4_collection">collection</a> = <a href="../aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;Collection&gt;(collection_addr);
+
+    <a href="token.html#0x4_token_create_common_with_collection">create_common_with_collection</a>(
+        creator,
+        constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name_prefix,
+        name_with_index_suffix,
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    )
+}
+</code></pre>
+</details>
+<h2 id="function-create_common_with_collection"><a class="header" href="#function-create_common_with_collection">Function <code>create_common_with_collection</code> <a id="0x4_token_create_common_with_collection"></a></a></h2>
+<pre><code><b>fun</b> <a href="token.html#0x4_token_create_common_with_collection">create_common_with_collection</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, constructor_ref: &<a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_prefix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_suffix: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="token.html#0x4_token_create_common_with_collection">create_common_with_collection</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    constructor_ref: &ConstructorRef,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name_prefix: String,
+    // If <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>, numbered <a href="token.html#0x4_token">token</a> is created - i.e. index is appended <b>to</b> the name.
+    // If <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>, name_prefix is the full name of the <a href="token.html#0x4_token">token</a>.
+    name_with_index_suffix: Option&lt;String&gt;,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+) {
+    <b>assert</b>!(<a href="collection.html#0x4_collection_creator">collection::creator</a>(<a href="collection.html#0x4_collection">collection</a>) == <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator), <a href="../move-stdlib/error.html#0x1_error_unauthenticated">error::unauthenticated</a>(<a href="token.html#0x4_token_ENOT_CREATOR">ENOT_CREATOR</a>));
+
+    <a href="token.html#0x4_token_create_common_with_collection_internal">create_common_with_collection_internal</a>(
+        constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name_prefix,
+        name_with_index_suffix,
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-create_common_with_collection_as_owner"><a class="header" href="#function-create_common_with_collection_as_owner">Function <code>create_common_with_collection_as_owner</code> <a id="0x4_token_create_common_with_collection_as_owner"></a></a></h2>
+<pre><code><b>fun</b> <a href="token.html#0x4_token_create_common_with_collection_as_owner">create_common_with_collection_as_owner</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, constructor_ref: &<a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_prefix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_suffix: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="token.html#0x4_token_create_common_with_collection_as_owner">create_common_with_collection_as_owner</a>(
+    owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    constructor_ref: &ConstructorRef,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name_prefix: String,
+    // If <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>, numbered <a href="token.html#0x4_token">token</a> is created - i.e. index is appended <b>to</b> the name.
+    // If <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>, name_prefix is the full name of the <a href="token.html#0x4_token">token</a>.
+    name_with_index_suffix: Option&lt;String&gt;,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+) {
+    <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_is_collection_owner_enabled">features::is_collection_owner_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="token.html#0x4_token_ECOLLECTION_OWNER_NOT_SUPPORTED">ECOLLECTION_OWNER_NOT_SUPPORTED</a>));
+    <b>assert</b>!(<a href="collection.html#0x4_collection">collection</a>.owner() == <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner), <a href="../move-stdlib/error.html#0x1_error_unauthenticated">error::unauthenticated</a>(<a href="token.html#0x4_token_ENOT_OWNER">ENOT_OWNER</a>));
+
+    <a href="token.html#0x4_token_create_common_with_collection_internal">create_common_with_collection_internal</a>(
+        constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name_prefix,
+        name_with_index_suffix,
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-create_common_with_collection_internal"><a class="header" href="#function-create_common_with_collection_internal">Function <code>create_common_with_collection_internal</code> <a id="0x4_token_create_common_with_collection_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="token.html#0x4_token_create_common_with_collection_internal">create_common_with_collection_internal</a>(constructor_ref: &<a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_prefix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_suffix: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="token.html#0x4_token_create_common_with_collection_internal">create_common_with_collection_internal</a>(
+    constructor_ref: &ConstructorRef,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name_prefix: String,
+    // If <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>, numbered <a href="token.html#0x4_token">token</a> is created - i.e. index is appended <b>to</b> the name.
+    // If <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>, name_prefix is the full name of the <a href="token.html#0x4_token">token</a>.
+    name_with_index_suffix: Option&lt;String&gt;,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+) {
+    <b>if</b> (name_with_index_suffix.is_some()) {
+        // Be conservative, <b>as</b> we don't know what length the index will be, and <b>assume</b> worst case (20 chars in MAX_U64)
+        <b>assert</b>!(
+            name_prefix.length() + 20 + name_with_index_suffix.<a href="token.html#0x4_token_borrow">borrow</a>().length() &lt;= <a href="token.html#0x4_token_MAX_TOKEN_NAME_LENGTH">MAX_TOKEN_NAME_LENGTH</a>,
+            <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_ETOKEN_NAME_TOO_LONG">ETOKEN_NAME_TOO_LONG</a>)
+        );
+    } <b>else</b> {
+        <b>assert</b>!(name_prefix.length() &lt;= <a href="token.html#0x4_token_MAX_TOKEN_NAME_LENGTH">MAX_TOKEN_NAME_LENGTH</a>, <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_ETOKEN_NAME_TOO_LONG">ETOKEN_NAME_TOO_LONG</a>));
+    };
+    <b>assert</b>!(description.length() &lt;= <a href="token.html#0x4_token_MAX_DESCRIPTION_LENGTH">MAX_DESCRIPTION_LENGTH</a>, <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_EDESCRIPTION_TOO_LONG">EDESCRIPTION_TOO_LONG</a>));
+    <b>assert</b>!(uri.length() &lt;= <a href="token.html#0x4_token_MAX_URI_LENGTH">MAX_URI_LENGTH</a>, <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_EURI_TOO_LONG">EURI_TOO_LONG</a>));
+
+    <b>let</b> object_signer = constructor_ref.generate_signer();
+
+    <b>let</b> index = <a href="collection.html#0x4_collection_increment_supply">collection::increment_supply</a>(&<a href="collection.html#0x4_collection">collection</a>, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(&object_signer)).destroy_with_default(
+        <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_create_snapshot">aggregator_v2::create_snapshot</a>&lt;u64&gt;(0)
+    );
+
+    // If create_numbered_token called us, add index <b>to</b> the name.
+    <b>let</b> name = <b>if</b> (name_with_index_suffix.is_some()) {
+        <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_derive_string_concat">aggregator_v2::derive_string_concat</a>(name_prefix, &index, name_with_index_suffix.extract())
+    } <b>else</b> {
+        <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_create_derived_string">aggregator_v2::create_derived_string</a>(name_prefix)
+    };
+
+    <b>let</b> deprecated_index = 0;
+    <b>let</b> deprecated_name = <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(b"");
+
+    <b>let</b> token_concurrent = <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a> {
+        index,
+        name,
+    };
+    <b>move_to</b>(&object_signer, token_concurrent);
+
+    <b>let</b> <a href="token.html#0x4_token">token</a> = <a href="token.html#0x4_token_Token">Token</a> {
+        <a href="collection.html#0x4_collection">collection</a>,
+        index: deprecated_index,
+        description,
+        name: deprecated_name,
+        uri,
+        mutation_events: <a href="../aptos-framework/object.html#0x1_object_new_event_handle">object::new_event_handle</a>(&object_signer),
+    };
+    <b>move_to</b>(&object_signer, <a href="token.html#0x4_token">token</a>);
+
+    <b>if</b> (<a href="royalty.html#0x4_royalty">royalty</a>.is_some()) {
+        <a href="royalty.html#0x4_royalty_init">royalty::init</a>(constructor_ref, <a href="royalty.html#0x4_royalty">royalty</a>.extract())
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-create_token"><a class="header" href="#function-create_token">Function <code>create_token</code> <a id="0x4_token_create_token"></a></a></h2>
+<p>Creates a new token object with a unique address and returns the ConstructorRef
+for additional specialization.
+This takes in the collection object instead of the collection name.
+This function must be called if the collection name has been previously changed.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token">create_token</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token">create_token</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> creator_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_object">object::create_object</a>(creator_address);
+    <a href="token.html#0x4_token_create_common_with_collection">create_common_with_collection</a>(
+        creator,
+        &constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create"><a class="header" href="#function-create">Function <code>create</code> <a id="0x4_token_create"></a></a></h2>
+<p>Creates a new token object with a unique address and returns the ConstructorRef
+for additional specialization.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create">create</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, collection_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create">create</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    collection_name: String,
+    description: String,
+    name: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> creator_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_object">object::create_object</a>(creator_address);
+    <a href="token.html#0x4_token_create_common">create_common</a>(
+        creator,
+        &constructor_ref,
+        collection_name,
+        description,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_token_as_collection_owner"><a class="header" href="#function-create_token_as_collection_owner">Function <code>create_token_as_collection_owner</code> <a id="0x4_token_create_token_as_collection_owner"></a></a></h2>
+<p>Same functionality as <code>create_token</code>, but the token can only be created by the collection owner.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_as_collection_owner">create_token_as_collection_owner</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_as_collection_owner">create_token_as_collection_owner</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> creator_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_object">object::create_object</a>(creator_address);
+    <a href="token.html#0x4_token_create_common_with_collection_as_owner">create_common_with_collection_as_owner</a>(
+        creator,
+        &constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_numbered_token_object"><a class="header" href="#function-create_numbered_token_object">Function <code>create_numbered_token_object</code> <a id="0x4_token_create_numbered_token_object"></a></a></h2>
+<p>Creates a new token object with a unique address and returns the ConstructorRef
+for additional specialization.
+The name is created by concatenating the (name_prefix, index, name_suffix).
+This function allows creating tokens in parallel, from the same collection,
+while providing sequential names.</p>
+<p>This takes in the collection object instead of the collection name.
+This function must be called if the collection name has been previously changed.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_numbered_token_object">create_numbered_token_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_prefix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_suffix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_numbered_token_object">create_numbered_token_object</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name_with_index_prefix: String,
+    name_with_index_suffix: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> creator_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_object">object::create_object</a>(creator_address);
+    <a href="token.html#0x4_token_create_common_with_collection">create_common_with_collection</a>(
+        creator,
+        &constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name_with_index_prefix,
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(name_with_index_suffix),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_numbered_token"><a class="header" href="#function-create_numbered_token">Function <code>create_numbered_token</code> <a id="0x4_token_create_numbered_token"></a></a></h2>
+<p>Creates a new token object with a unique address and returns the ConstructorRef
+for additional specialization.
+The name is created by concatenating the (name_prefix, index, name_suffix).
+This function will allow creating tokens in parallel, from the same collection,
+while providing sequential names.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_numbered_token">create_numbered_token</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, collection_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_prefix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_suffix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_numbered_token">create_numbered_token</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    collection_name: String,
+    description: String,
+    name_with_index_prefix: String,
+    name_with_index_suffix: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> creator_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_object">object::create_object</a>(creator_address);
+    <a href="token.html#0x4_token_create_common">create_common</a>(
+        creator,
+        &constructor_ref,
+        collection_name,
+        description,
+        name_with_index_prefix,
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(name_with_index_suffix),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_numbered_token_as_collection_owner"><a class="header" href="#function-create_numbered_token_as_collection_owner">Function <code>create_numbered_token_as_collection_owner</code> <a id="0x4_token_create_numbered_token_as_collection_owner"></a></a></h2>
+<p>Same functionality as <code>create_numbered_token_object</code>, but the token can only be created by the collection owner.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_numbered_token_as_collection_owner">create_numbered_token_as_collection_owner</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_prefix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name_with_index_suffix: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_numbered_token_as_collection_owner">create_numbered_token_as_collection_owner</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name_with_index_prefix: String,
+    name_with_index_suffix: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> creator_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_object">object::create_object</a>(creator_address);
+    <a href="token.html#0x4_token_create_common_with_collection_as_owner">create_common_with_collection_as_owner</a>(
+        creator,
+        &constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name_with_index_prefix,
+        <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(name_with_index_suffix),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_named_token_object"><a class="header" href="#function-create_named_token_object">Function <code>create_named_token_object</code> <a id="0x4_token_create_named_token_object"></a></a></h2>
+<p>Creates a new token object from a token name and returns the ConstructorRef for
+additional specialization.
+This function must be called if the collection name has been previously changed.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token_object">create_named_token_object</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token_object">create_named_token_object</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> seed = <a href="token.html#0x4_token_create_token_seed">create_token_seed</a>(&<a href="collection.html#0x4_collection_name">collection::name</a>(<a href="collection.html#0x4_collection">collection</a>), &name);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_named_object">object::create_named_object</a>(creator, seed);
+    <a href="token.html#0x4_token_create_common_with_collection">create_common_with_collection</a>(
+        creator,
+        &constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_named_token"><a class="header" href="#function-create_named_token">Function <code>create_named_token</code> <a id="0x4_token_create_named_token"></a></a></h2>
+<p>Creates a new token object from a token name and returns the ConstructorRef for
+additional specialization.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token">create_named_token</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, collection_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token">create_named_token</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    collection_name: String,
+    description: String,
+    name: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> seed = <a href="token.html#0x4_token_create_token_seed">create_token_seed</a>(&collection_name, &name);
+
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_named_object">object::create_named_object</a>(creator, seed);
+    <a href="token.html#0x4_token_create_common">create_common</a>(
+        creator,
+        &constructor_ref,
+        collection_name,
+        description,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_named_token_as_collection_owner"><a class="header" href="#function-create_named_token_as_collection_owner">Function <code>create_named_token_as_collection_owner</code> <a id="0x4_token_create_named_token_as_collection_owner"></a></a></h2>
+<p>Same functionality as <code>create_named_token_object</code>, but the token can only be created by the collection owner.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token_as_collection_owner">create_named_token_as_collection_owner</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token_as_collection_owner">create_named_token_as_collection_owner</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> seed = <a href="token.html#0x4_token_create_token_seed">create_token_seed</a>(&<a href="collection.html#0x4_collection_name">collection::name</a>(<a href="collection.html#0x4_collection">collection</a>), &name);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_named_object">object::create_named_object</a>(creator, seed);
+    <a href="token.html#0x4_token_create_common_with_collection_as_owner">create_common_with_collection_as_owner</a>(
+        creator,
+        &constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_named_token_from_seed"><a class="header" href="#function-create_named_token_from_seed">Function <code>create_named_token_from_seed</code> <a id="0x4_token_create_named_token_from_seed"></a></a></h2>
+<p>Creates a new token object from a token name and seed.
+Returns the ConstructorRef for additional specialization.
+This function must be called if the collection name has been previously changed.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token_from_seed">create_named_token_from_seed</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, seed: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token_from_seed">create_named_token_from_seed</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name: String,
+    seed: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> seed = <a href="token.html#0x4_token_create_token_name_with_seed">create_token_name_with_seed</a>(&<a href="collection.html#0x4_collection_name">collection::name</a>(<a href="collection.html#0x4_collection">collection</a>), &name, &seed);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_named_object">object::create_named_object</a>(creator, seed);
+    <a href="token.html#0x4_token_create_common_with_collection">create_common_with_collection</a>(creator, &constructor_ref, <a href="collection.html#0x4_collection">collection</a>, description, name, <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), <a href="royalty.html#0x4_royalty">royalty</a>, uri);
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_named_token_from_seed_as_collection_owner"><a class="header" href="#function-create_named_token_from_seed_as_collection_owner">Function <code>create_named_token_from_seed_as_collection_owner</code> <a id="0x4_token_create_named_token_from_seed_as_collection_owner"></a></a></h2>
+<p>Same functionality as <code>create_named_token_from_seed</code>, but the token can only be created by the collection owner.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token_from_seed_as_collection_owner">create_named_token_from_seed_as_collection_owner</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="collection.html#0x4_collection">collection</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, seed: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_named_token_from_seed_as_collection_owner">create_named_token_from_seed_as_collection_owner</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    <a href="collection.html#0x4_collection">collection</a>: Object&lt;Collection&gt;,
+    description: String,
+    name: String,
+    seed: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> seed = <a href="token.html#0x4_token_create_token_name_with_seed">create_token_name_with_seed</a>(&<a href="collection.html#0x4_collection_name">collection::name</a>(<a href="collection.html#0x4_collection">collection</a>), &name, &seed);
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_named_object">object::create_named_object</a>(creator, seed);
+    <a href="token.html#0x4_token_create_common_with_collection_as_owner">create_common_with_collection_as_owner</a>(
+        creator,
+        &constructor_ref,
+        <a href="collection.html#0x4_collection">collection</a>,
+        description,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_from_account"><a class="header" href="#function-create_from_account">Function <code>create_from_account</code> <a id="0x4_token_create_from_account"></a></a></h2>
+<p>DEPRECATED: Use <code>create</code> instead for identical behavior.</p>
+<p>Creates a new token object from an account GUID and returns the ConstructorRef for
+additional specialization.</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_from_account">create_from_account</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, collection_name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="royalty.html#0x4_royalty">royalty</a>: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_from_account">create_from_account</a>(
+    creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    collection_name: String,
+    description: String,
+    name: String,
+    <a href="royalty.html#0x4_royalty">royalty</a>: Option&lt;Royalty&gt;,
+    uri: String,
+): ConstructorRef {
+    <b>let</b> constructor_ref = <a href="../aptos-framework/object.html#0x1_object_create_object_from_account">object::create_object_from_account</a>(creator);
+    <a href="token.html#0x4_token_create_common">create_common</a>(
+        creator,
+        &constructor_ref,
+        collection_name,
+        description,
+        name,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        <a href="royalty.html#0x4_royalty">royalty</a>,
+        uri
+    );
+    constructor_ref
+}
+</code></pre>
+</details>
+<h2 id="function-create_token_address"><a class="header" href="#function-create_token_address">Function <code>create_token_address</code> <a id="0x4_token_create_token_address"></a></a></h2>
+<p>Generates the token's address based upon the creator's address, the collection's name and the token's name.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_address">create_token_address</a>(creator: &<b>address</b>, <a href="collection.html#0x4_collection">collection</a>: &<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: &<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_address">create_token_address</a>(creator: &<b>address</b>, <a href="collection.html#0x4_collection">collection</a>: &String, name: &String): <b>address</b> {
+    <a href="../aptos-framework/object.html#0x1_object_create_object_address">object::create_object_address</a>(creator, <a href="token.html#0x4_token_create_token_seed">create_token_seed</a>(<a href="collection.html#0x4_collection">collection</a>, name))
+}
+</code></pre>
+</details>
+<h2 id="function-create_token_address_with_seed"><a class="header" href="#function-create_token_address_with_seed">Function <code>create_token_address_with_seed</code> <a id="0x4_token_create_token_address_with_seed"></a></a></h2>
+<p>Generates the token's address based upon the creator's address, the collection object and the token's name and seed.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_address_with_seed">create_token_address_with_seed</a>(creator: <b>address</b>, <a href="collection.html#0x4_collection">collection</a>: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, seed: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_address_with_seed">create_token_address_with_seed</a>(creator: <b>address</b>, <a href="collection.html#0x4_collection">collection</a>: String, name: String, seed: String): <b>address</b> {
+    <b>let</b> seed = <a href="token.html#0x4_token_create_token_name_with_seed">create_token_name_with_seed</a>(&<a href="collection.html#0x4_collection">collection</a>, &name, &seed);
+    <a href="../aptos-framework/object.html#0x1_object_create_object_address">object::create_object_address</a>(&creator, seed)
+}
+</code></pre>
+</details>
+<h2 id="function-create_token_seed"><a class="header" href="#function-create_token_seed">Function <code>create_token_seed</code> <a id="0x4_token_create_token_seed"></a></a></h2>
+<p>Named objects are derived from a seed, the token's seed is its name appended to the collection's name.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_seed">create_token_seed</a>(<a href="collection.html#0x4_collection">collection</a>: &<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: &<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_seed">create_token_seed</a>(<a href="collection.html#0x4_collection">collection</a>: &String, name: &String): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <b>assert</b>!(name.length() &lt;= <a href="token.html#0x4_token_MAX_TOKEN_NAME_LENGTH">MAX_TOKEN_NAME_LENGTH</a>, <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_ETOKEN_NAME_TOO_LONG">ETOKEN_NAME_TOO_LONG</a>));
+    <b>let</b> seed = *<a href="collection.html#0x4_collection">collection</a>.bytes();
+    seed.append(b"::");
+    seed.append(*name.bytes());
+    seed
+}
+</code></pre>
+</details>
+<h2 id="function-create_token_name_with_seed"><a class="header" href="#function-create_token_name_with_seed">Function <code>create_token_name_with_seed</code> <a id="0x4_token_create_token_name_with_seed"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_name_with_seed">create_token_name_with_seed</a>(<a href="collection.html#0x4_collection">collection</a>: &<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, name: &<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, seed: &<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_create_token_name_with_seed">create_token_name_with_seed</a>(<a href="collection.html#0x4_collection">collection</a>: &String, name: &String, seed: &String): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <b>assert</b>!(seed.length() &lt;= <a href="token.html#0x4_token_MAX_TOKEN_SEED_LENGTH">MAX_TOKEN_SEED_LENGTH</a>, <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_ESEED_TOO_LONG">ESEED_TOO_LONG</a>));
+    <b>let</b> seeds = <a href="token.html#0x4_token_create_token_seed">create_token_seed</a>(<a href="collection.html#0x4_collection">collection</a>, name);
+    seeds.append(*seed.bytes());
+    seeds
+}
+</code></pre>
+</details>
+<h2 id="function-generate_mutator_ref"><a class="header" href="#function-generate_mutator_ref">Function <code>generate_mutator_ref</code> <a id="0x4_token_generate_mutator_ref"></a></a></h2>
+<p>Creates a MutatorRef, which gates the ability to mutate any fields that support mutation.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_generate_mutator_ref">generate_mutator_ref</a>(ref: &<a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>): <a href="token.html#0x4_token_MutatorRef">token::MutatorRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_generate_mutator_ref">generate_mutator_ref</a>(ref: &ConstructorRef): <a href="token.html#0x4_token_MutatorRef">MutatorRef</a> {
+    <b>let</b> <a href="../aptos-framework/object.html#0x1_object">object</a> = ref.object_from_constructor_ref&lt;<a href="token.html#0x4_token_Token">Token</a>&gt;();
+    <a href="token.html#0x4_token_MutatorRef">MutatorRef</a> { self: <a href="../aptos-framework/object.html#0x1_object">object</a>.object_address() }
+}
+</code></pre>
+</details>
+<h2 id="function-generate_burn_ref"><a class="header" href="#function-generate_burn_ref">Function <code>generate_burn_ref</code> <a id="0x4_token_generate_burn_ref"></a></a></h2>
+<p>Creates a BurnRef, which gates the ability to burn the given token.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_generate_burn_ref">generate_burn_ref</a>(ref: &<a href="../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>): <a href="token.html#0x4_token_BurnRef">token::BurnRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_generate_burn_ref">generate_burn_ref</a>(ref: &ConstructorRef): <a href="token.html#0x4_token_BurnRef">BurnRef</a> {
+    <b>let</b> (inner, self) = <b>if</b> (ref.can_generate_delete_ref()) {
+        <b>let</b> delete_ref = ref.generate_delete_ref();
+        (<a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(delete_ref), <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>())
+    } <b>else</b> {
+        <b>let</b> addr = ref.address_from_constructor_ref();
+        (<a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(addr))
+    };
+    <a href="token.html#0x4_token_BurnRef">BurnRef</a> { self, inner }
+}
+</code></pre>
+</details>
+<h2 id="function-address_from_burn_ref"><a class="header" href="#function-address_from_burn_ref">Function <code>address_from_burn_ref</code> <a id="0x4_token_address_from_burn_ref"></a></a></h2>
+<p>Extracts the tokens address from a BurnRef.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_address_from_burn_ref">address_from_burn_ref</a>(ref: &<a href="token.html#0x4_token_BurnRef">token::BurnRef</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_address_from_burn_ref">address_from_burn_ref</a>(ref: &<a href="token.html#0x4_token_BurnRef">BurnRef</a>): <b>address</b> {
+    <b>if</b> (ref.inner.is_some()) {
+        ref.inner.<a href="token.html#0x4_token_borrow">borrow</a>().address_from_delete_ref()
+    } <b>else</b> {
+        *ref.self.<a href="token.html#0x4_token_borrow">borrow</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-borrow"><a class="header" href="#function-borrow">Function <code>borrow</code> <a id="0x4_token_borrow"></a></a></h2>
+<pre><code><b>fun</b> <a href="token.html#0x4_token_borrow">borrow</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: &<a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): &<a href="token.html#0x4_token_Token">token::Token</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="token.html#0x4_token_borrow">borrow</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: &Object&lt;T&gt;): &<a href="token.html#0x4_token_Token">Token</a> {
+    <b>let</b> token_address = <a href="token.html#0x4_token">token</a>.object_address();
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="token.html#0x4_token_Token">Token</a>&gt;(token_address),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="token.html#0x4_token_ETOKEN_DOES_NOT_EXIST">ETOKEN_DOES_NOT_EXIST</a>),
+    );
+    &<a href="token.html#0x4_token_Token">Token</a>[token_address]
+}
+</code></pre>
+</details>
+<h2 id="function-creator"><a class="header" href="#function-creator">Function <code>creator</code> <a id="0x4_token_creator"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_creator">creator</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_creator">creator</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): <b>address</b> <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <a href="collection.html#0x4_collection_creator">collection::creator</a>(<a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).<a href="collection.html#0x4_collection">collection</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-collection_name"><a class="header" href="#function-collection_name">Function <code>collection_name</code> <a id="0x4_token_collection_name"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_collection_name">collection_name</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_collection_name">collection_name</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): String <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <a href="collection.html#0x4_collection_name">collection::name</a>(<a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).<a href="collection.html#0x4_collection">collection</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-collection_object"><a class="header" href="#function-collection_object">Function <code>collection_object</code> <a id="0x4_token_collection_object"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_collection_object">collection_object</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_collection_object">collection_object</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): Object&lt;Collection&gt; <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).<a href="collection.html#0x4_collection">collection</a>
+}
+</code></pre>
+</details>
+<h2 id="function-description"><a class="header" href="#function-description">Function <code>description</code> <a id="0x4_token_description"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_description">description</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_description">description</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): String <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).description
+}
+</code></pre>
+</details>
+<h2 id="function-name"><a class="header" href="#function-name">Function <code>name</code> <a id="0x4_token_name"></a></a></h2>
+<p>Avoid this method in the same transaction as the token is minted
+as that would prohibit transactions to be executed in parallel.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_name">name</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_name">name</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): String <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a>, <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a> {
+    <b>let</b> token_address = <a href="token.html#0x4_token">token</a>.object_address();
+    <b>if</b> (<b>exists</b>&lt;<a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a>&gt;(token_address)) {
+        <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a>[token_address].name.read_derived_string()
+    } <b>else</b> {
+        <a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).name
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-uri"><a class="header" href="#function-uri">Function <code>uri</code> <a id="0x4_token_uri"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_uri">uri</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_uri">uri</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): String <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).uri
+}
+</code></pre>
+</details>
+<h2 id="function-royalty"><a class="header" href="#function-royalty">Function <code>royalty</code> <a id="0x4_token_royalty"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="royalty.html#0x4_royalty">royalty</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="royalty.html#0x4_royalty">royalty</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): Option&lt;Royalty&gt; <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>);
+    <b>let</b> <a href="royalty.html#0x4_royalty">royalty</a> = <a href="royalty.html#0x4_royalty_get">royalty::get</a>(<a href="token.html#0x4_token">token</a>);
+    <b>if</b> (<a href="royalty.html#0x4_royalty">royalty</a>.is_some()) {
+        <a href="royalty.html#0x4_royalty">royalty</a>
+    } <b>else</b> {
+        <b>let</b> creator = <a href="token.html#0x4_token_creator">creator</a>(<a href="token.html#0x4_token">token</a>);
+        <b>let</b> collection_name = <a href="token.html#0x4_token_collection_name">collection_name</a>(<a href="token.html#0x4_token">token</a>);
+        <b>let</b> collection_address = <a href="collection.html#0x4_collection_create_collection_address">collection::create_collection_address</a>(&creator, &collection_name);
+        <b>let</b> <a href="collection.html#0x4_collection">collection</a> = <a href="../aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;(collection_address);
+        <a href="royalty.html#0x4_royalty_get">royalty::get</a>(<a href="collection.html#0x4_collection">collection</a>)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-index"><a class="header" href="#function-index">Function <code>index</code> <a id="0x4_token_index"></a></a></h2>
+<p>Avoid this method in the same transaction as the token is minted
+as that would prohibit transactions to be executed in parallel.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="token.html#0x4_token_index">index</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: <a href="../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_index">index</a>&lt;T: key&gt;(<a href="token.html#0x4_token">token</a>: Object&lt;T&gt;): u64 <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a>, <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a> {
+    <b>let</b> token_address = <a href="token.html#0x4_token">token</a>.object_address();
+    <b>if</b> (<b>exists</b>&lt;<a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a>&gt;(token_address)) {
+        <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a>[token_address].index.read_snapshot()
+    } <b>else</b> {
+        <a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).index
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_mut"><a class="header" href="#function-borrow_mut">Function <code>borrow_mut</code> <a id="0x4_token_borrow_mut"></a></a></h2>
+<pre><code><b>fun</b> <a href="token.html#0x4_token_borrow_mut">borrow_mut</a>(mutator_ref: &<a href="token.html#0x4_token_MutatorRef">token::MutatorRef</a>): &<b>mut</b> <a href="token.html#0x4_token_Token">token::Token</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="token.html#0x4_token_borrow_mut">borrow_mut</a>(mutator_ref: &<a href="token.html#0x4_token_MutatorRef">MutatorRef</a>): &<b>mut</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="token.html#0x4_token_Token">Token</a>&gt;(mutator_ref.self),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="token.html#0x4_token_ETOKEN_DOES_NOT_EXIST">ETOKEN_DOES_NOT_EXIST</a>),
+    );
+    &<b>mut</b> <a href="token.html#0x4_token_Token">Token</a>[mutator_ref.self]
+}
+</code></pre>
+</details>
+<h2 id="function-burn"><a class="header" href="#function-burn">Function <code>burn</code> <a id="0x4_token_burn"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_burn">burn</a>(burn_ref: <a href="token.html#0x4_token_BurnRef">token::BurnRef</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_burn">burn</a>(burn_ref: <a href="token.html#0x4_token_BurnRef">BurnRef</a>) <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a>, <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a> {
+    <b>let</b> (addr, previous_owner) = <b>if</b> (burn_ref.inner.is_some()) {
+        <b>let</b> delete_ref = burn_ref.inner.extract();
+        <b>let</b> addr = delete_ref.address_from_delete_ref();
+        <b>let</b> previous_owner = <a href="../aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="token.html#0x4_token_Token">Token</a>&gt;(addr).owner();
+        delete_ref.delete();
+        (addr, previous_owner)
+    } <b>else</b> {
+        <b>let</b> addr = burn_ref.self.extract();
+        <b>let</b> previous_owner = <a href="../aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="token.html#0x4_token_Token">Token</a>&gt;(addr).owner();
+        (addr, previous_owner)
+    };
+
+    <b>if</b> (<a href="royalty.html#0x4_royalty_exists_at">royalty::exists_at</a>(addr)) {
+        <a href="royalty.html#0x4_royalty_delete">royalty::delete</a>(addr)
+    };
+
+    <b>let</b> <a href="token.html#0x4_token_Token">Token</a> {
+        <a href="collection.html#0x4_collection">collection</a>,
+        index: deprecated_index,
+        description: _,
+        name: _,
+        uri: _,
+        mutation_events,
+    } = <b>move_from</b>&lt;<a href="token.html#0x4_token_Token">Token</a>&gt;(addr);
+
+    <b>let</b> index = <b>if</b> (<b>exists</b>&lt;<a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a>&gt;(addr)) {
+        <b>let</b> <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a> {
+            index,
+            name: _,
+        } = <b>move_from</b>&lt;<a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a>&gt;(addr);
+        index.read_snapshot()
+    } <b>else</b> {
+        deprecated_index
+    };
+
+    <a href="../aptos-framework/event.html#0x1_event_destroy_handle">event::destroy_handle</a>(mutation_events);
+    <a href="collection.html#0x4_collection_decrement_supply">collection::decrement_supply</a>(&<a href="collection.html#0x4_collection">collection</a>, addr, <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(index), previous_owner);
+}
+</code></pre>
+</details>
+<h2 id="function-set_description"><a class="header" href="#function-set_description">Function <code>set_description</code> <a id="0x4_token_set_description"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_set_description">set_description</a>(mutator_ref: &<a href="token.html#0x4_token_MutatorRef">token::MutatorRef</a>, description: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_set_description">set_description</a>(mutator_ref: &<a href="token.html#0x4_token_MutatorRef">MutatorRef</a>, description: String) <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <b>assert</b>!(description.length() &lt;= <a href="token.html#0x4_token_MAX_DESCRIPTION_LENGTH">MAX_DESCRIPTION_LENGTH</a>, <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_EDESCRIPTION_TOO_LONG">EDESCRIPTION_TOO_LONG</a>));
+    <b>let</b> <a href="token.html#0x4_token">token</a> = <a href="token.html#0x4_token_borrow_mut">borrow_mut</a>(mutator_ref);
+    <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(<a href="token.html#0x4_token_Mutation">Mutation</a> {
+        token_address: mutator_ref.self,
+        mutated_field_name: <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(b"description"),
+        old_value: <a href="token.html#0x4_token">token</a>.description,
+        new_value: description
+    });
+    <a href="token.html#0x4_token">token</a>.description = description;
+}
+</code></pre>
+</details>
+<h2 id="function-set_name"><a class="header" href="#function-set_name">Function <code>set_name</code> <a id="0x4_token_set_name"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_set_name">set_name</a>(mutator_ref: &<a href="token.html#0x4_token_MutatorRef">token::MutatorRef</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_set_name">set_name</a>(mutator_ref: &<a href="token.html#0x4_token_MutatorRef">MutatorRef</a>, name: String) <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a>, <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a> {
+    <b>assert</b>!(name.length() &lt;= <a href="token.html#0x4_token_MAX_TOKEN_NAME_LENGTH">MAX_TOKEN_NAME_LENGTH</a>, <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_ETOKEN_NAME_TOO_LONG">ETOKEN_NAME_TOO_LONG</a>));
+
+    <b>let</b> <a href="token.html#0x4_token">token</a> = <a href="token.html#0x4_token_borrow_mut">borrow_mut</a>(mutator_ref);
+
+    <b>let</b> old_name = <b>if</b> (<b>exists</b>&lt;<a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a>&gt;(mutator_ref.self)) {
+        <b>let</b> token_concurrent = &<b>mut</b> <a href="token.html#0x4_token_TokenIdentifiers">TokenIdentifiers</a>[mutator_ref.self];
+        <b>let</b> old_name = token_concurrent.name.read_derived_string();
+        token_concurrent.name = <a href="../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_create_derived_string">aggregator_v2::create_derived_string</a>(name);
+        old_name
+    } <b>else</b> {
+        <b>let</b> old_name = <a href="token.html#0x4_token">token</a>.name;
+        <a href="token.html#0x4_token">token</a>.name = name;
+        old_name
+    };
+
+    <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(<a href="token.html#0x4_token_Mutation">Mutation</a> {
+        token_address: mutator_ref.self,
+        mutated_field_name: <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(b"name"),
+        old_value: old_name,
+        new_value: name
+    });
+}
+</code></pre>
+</details>
+<h2 id="function-set_uri"><a class="header" href="#function-set_uri">Function <code>set_uri</code> <a id="0x4_token_set_uri"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_set_uri">set_uri</a>(mutator_ref: &<a href="token.html#0x4_token_MutatorRef">token::MutatorRef</a>, uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="token.html#0x4_token_set_uri">set_uri</a>(mutator_ref: &<a href="token.html#0x4_token_MutatorRef">MutatorRef</a>, uri: String) <b>acquires</b> <a href="token.html#0x4_token_Token">Token</a> {
+    <b>assert</b>!(uri.length() &lt;= <a href="token.html#0x4_token_MAX_URI_LENGTH">MAX_URI_LENGTH</a>, <a href="../move-stdlib/error.html#0x1_error_out_of_range">error::out_of_range</a>(<a href="token.html#0x4_token_EURI_TOO_LONG">EURI_TOO_LONG</a>));
+    <b>let</b> <a href="token.html#0x4_token">token</a> = <a href="token.html#0x4_token_borrow_mut">borrow_mut</a>(mutator_ref);
+    <a href="../aptos-framework/event.html#0x1_event_emit">event::emit</a>(<a href="token.html#0x4_token_Mutation">Mutation</a> {
+        token_address: mutator_ref.self,
+        mutated_field_name: <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(b"uri"),
+        old_value: <a href="token.html#0x4_token">token</a>.uri,
+        new_value: uri,
+    });
+    <a href="token.html#0x4_token">token</a>.uri = uri;
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-token-objects/royalty.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-trading/overview.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-token-objects/royalty.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-trading/overview.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>managed_coin - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/managed_coin.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1managed_coin"><a class="header" href="#module-0x1managed_coin">Module <code>0x1::managed_coin</code> <a id="0x1_managed_coin"></a></a></h1>
+<p>ManagedCoin is built to make a simple walkthrough of the Coins module.
+It contains scripts you will need to initialize, mint, burn, transfer coins.
+By utilizing this current module, a developer can create his own coin and care less about mint and burn capabilities,</p>
+<ul>
+<li><a href="#0x1_managed_coin_Capabilities">Resource <code>Capabilities</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_managed_coin_burn">Function <code>burn</code></a></li>
+<li><a href="#0x1_managed_coin_initialize">Function <code>initialize</code></a></li>
+<li><a href="#0x1_managed_coin_mint">Function <code>mint</code></a></li>
+<li><a href="#0x1_managed_coin_register">Function <code>register</code></a></li>
+<li><a href="#0x1_managed_coin_destroy_caps">Function <code>destroy_caps</code></a></li>
+<li><a href="#0x1_managed_coin_remove_caps">Function <code>remove_caps</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#high-level-req">High-level Requirements</a></li>
+<li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_burn">Function <code>burn</code></a></li>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_1_mint">Function <code>mint</code></a></li>
+<li><a href="#@Specification_1_register">Function <code>register</code></a></li>
+<li><a href="#@Specification_1_destroy_caps">Function <code>destroy_caps</code></a></li>
+<li><a href="#@Specification_1_remove_caps">Function <code>remove_caps</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="coin.html#0x1_coin">0x1::coin</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+</code></pre>
+<h2 id="resource-capabilities"><a class="header" href="#resource-capabilities">Resource <code>Capabilities</code> <a id="0x1_managed_coin_Capabilities"></a></a></h2>
+<p>Capabilities resource storing mint and burn capabilities.
+The resource is stored on the account that initialized coin <code>CoinType</code>.</p>
+<pre><code><b>struct</b> <a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt; <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>burn_cap: <a href="coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;CoinType&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>freeze_cap: <a href="coin.html#0x1_coin_FreezeCapability">coin::FreezeCapability</a>&lt;CoinType&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>mint_cap: <a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_managed_coin_ENO_CAPABILITIES"></a></p>
+<p>Account has no capabilities (burn/mint).</p>
+<pre><code><b>const</b> <a href="managed_coin.html#0x1_managed_coin_ENO_CAPABILITIES">ENO_CAPABILITIES</a>: u64 = 1;
+</code></pre>
+<h2 id="function-burn"><a class="header" href="#function-burn">Function <code>burn</code> <a id="0x1_managed_coin_burn"></a></a></h2>
+<p>Withdraw an <code>amount</code> of coin <code>CoinType</code> from <code><a href="account.html#0x1_account">account</a></code> and burn it.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_burn">burn</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_burn">burn</a>&lt;CoinType&gt;(
+    <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    amount: u64,
+) <b>acquires</b> <a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a> {
+    <b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="managed_coin.html#0x1_managed_coin_ENO_CAPABILITIES">ENO_CAPABILITIES</a>),
+    );
+
+    <b>let</b> capabilities = <b>borrow_global</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+
+    <b>let</b> to_burn = <a href="coin.html#0x1_coin_withdraw">coin::withdraw</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>, amount);
+    <a href="coin.html#0x1_coin_burn">coin::burn</a>(to_burn, &capabilities.burn_cap);
+}
+</code></pre>
+</details>
+<h2 id="function-initialize"><a class="header" href="#function-initialize">Function <code>initialize</code> <a id="0x1_managed_coin_initialize"></a></a></h2>
+<p>Initialize new coin <code>CoinType</code> in Aptos Blockchain.
+Mint and Burn Capabilities will be stored under <code><a href="account.html#0x1_account">account</a></code> in <code><a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a></code> resource.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_initialize">initialize</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, symbol: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, decimals: u8, monitor_supply: bool)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_initialize">initialize</a>&lt;CoinType&gt;(
+    <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    symbol: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    decimals: u8,
+    monitor_supply: bool,
+) {
+    <b>let</b> (burn_cap, freeze_cap, mint_cap) = <a href="coin.html#0x1_coin_initialize">coin::initialize</a>&lt;CoinType&gt;(
+        <a href="account.html#0x1_account">account</a>,
+        <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(name),
+        <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(symbol),
+        decimals,
+        monitor_supply,
+    );
+
+    <b>move_to</b>(<a href="account.html#0x1_account">account</a>, <a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt; {
+        burn_cap,
+        freeze_cap,
+        mint_cap,
+    });
+}
+</code></pre>
+</details>
+<h2 id="function-mint"><a class="header" href="#function-mint">Function <code>mint</code> <a id="0x1_managed_coin_mint"></a></a></h2>
+<p>Create new coins <code>CoinType</code> and deposit them into dst_addr's account.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_mint">mint</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, dst_addr: <b>address</b>, amount: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_mint">mint</a>&lt;CoinType&gt;(
+    <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    dst_addr: <b>address</b>,
+    amount: u64,
+) <b>acquires</b> <a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a> {
+    <b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="managed_coin.html#0x1_managed_coin_ENO_CAPABILITIES">ENO_CAPABILITIES</a>),
+    );
+
+    <b>let</b> capabilities = <b>borrow_global</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+    <b>let</b> coins_minted = <a href="coin.html#0x1_coin_mint">coin::mint</a>(amount, &capabilities.mint_cap);
+    <a href="coin.html#0x1_coin_deposit">coin::deposit</a>(dst_addr, coins_minted);
+}
+</code></pre>
+</details>
+<h2 id="function-register"><a class="header" href="#function-register">Function <code>register</code> <a id="0x1_managed_coin_register"></a></a></h2>
+<p>Creating a resource that stores balance of <code>CoinType</code> on user's account, withdraw and deposit event handlers.
+Required if user wants to start accepting deposits of <code>CoinType</code> in his account.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_register">register</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_register">register</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <a href="coin.html#0x1_coin_register">coin::register</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>);
+}
+</code></pre>
+</details>
+<h2 id="function-destroy_caps"><a class="header" href="#function-destroy_caps">Function <code>destroy_caps</code> <a id="0x1_managed_coin_destroy_caps"></a></a></h2>
+<p>Destroys capabilities from the account, so that the user no longer has access to mint or burn.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_destroy_caps">destroy_caps</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_destroy_caps">destroy_caps</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a> {
+    <b>let</b> (burn_cap, freeze_cap, mint_cap) = <a href="managed_coin.html#0x1_managed_coin_remove_caps">remove_caps</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>);
+    destroy_burn_cap(burn_cap);
+    destroy_freeze_cap(freeze_cap);
+    destroy_mint_cap(mint_cap);
+}
+</code></pre>
+</details>
+<h2 id="function-remove_caps"><a class="header" href="#function-remove_caps">Function <code>remove_caps</code> <a id="0x1_managed_coin_remove_caps"></a></a></h2>
+<p>Removes capabilities from the account to be stored or destroyed elsewhere</p>
+<pre><code><b>public</b> <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_remove_caps">remove_caps</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): (<a href="coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_FreezeCapability">coin::FreezeCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_remove_caps">remove_caps</a>&lt;CoinType&gt;(
+    <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+): (BurnCapability&lt;CoinType&gt;, FreezeCapability&lt;CoinType&gt;, MintCapability&lt;CoinType&gt;) <b>acquires</b> <a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a> {
+    <b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="managed_coin.html#0x1_managed_coin_ENO_CAPABILITIES">ENO_CAPABILITIES</a>),
+    );
+
+    <b>let</b> <a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt; {
+        burn_cap,
+        freeze_cap,
+        mint_cap,
+    } = <b>move_from</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+    (burn_cap, freeze_cap, mint_cap)
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="high-level-requirements"><a class="header" href="#high-level-requirements">High-level Requirements <a id="high-level-req"></a></a></h3>
+<table>
+<tr>
+<th>No.</th><th>Requirement</th><th>Criticality</th><th>Implementation</th><th>Enforcement</th>
+</tr>
+<tr>
+<td>1</td>
+<td>The initializing account should hold the capabilities to operate the coin.</td>
+<td>Critical</td>
+<td>The capabilities are stored under the initializing account under the Capabilities resource, which is distinct for a distinct type of coin.</td>
+<td>Enforced via <a href="#high-level-req-1">initialize</a>.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>A new coin should be properly initialized.</td>
+<td>High</td>
+<td>In the initialize function, a new coin is initialized via the coin module with the specified properties.</td>
+<td>Enforced via <a href="coin.html#high-level-req-2">initialize_internal</a>.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Minting/Burning should only be done by the account who hold the valid capabilities.</td>
+<td>High</td>
+<td>The mint and burn capabilities are moved under the initializing account and retrieved, while minting/burning</td>
+<td>Enforced via: <a href="#high-level-req-3.1">initialize</a>, <a href="#high-level-req-3.2">burn</a>, <a href="#high-level-req-3.3">mint</a>.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>If the total supply of coins is being monitored, burn and mint operations will appropriately adjust the total supply.</td>
+<td>High</td>
+<td>The coin::burn and coin::mint functions, when tracking the supply, adjusts the total coin supply accordingly.</td>
+<td>Enforced via <a href="coin.html#high-level-req-4">TotalSupplyNoChange</a>.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Before burning coins, exact amount of coins are withdrawn.</td>
+<td>High</td>
+<td>After utilizing the coin::withdraw function to withdraw coins, they are then burned, and the function ensures the precise return of the initially specified coin amount.</td>
+<td>Enforced via <a href="coin.html#high-level-req-5">burn_from</a>.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Minted coins are deposited to the provided destination address.</td>
+<td>High</td>
+<td>After the coins are minted via coin::mint they are deposited into the coinstore of the destination address.</td>
+<td>Enforced via <a href="#high-level-req-6">mint</a>.</td>
+</tr>
+</table>
+<h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
+<pre><code><b>pragma</b> verify = <b>true</b>;
+<b>pragma</b> aborts_if_is_partial;
+</code></pre>
+<h3 id="function-burn-1"><a class="header" href="#function-burn-1">Function <code>burn</code> <a id="@Specification_1_burn"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_burn">burn</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+<b>let</b> coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
+<b>let</b> balance = coin_store.<a href="coin.html#0x1_coin">coin</a>.value;
+// This enforces <a id="high-level-req-3.2" href="#high-level-req">high-level requirement 3</a> and <a id="high-level-req-4.1" href="#high-level-req">high-level requirement 4</a>:
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
+<b>aborts_if</b> coin_store.frozen;
+<b>aborts_if</b> balance &lt; amount;
+<b>let</b> addr =  <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
+<b>let</b> maybe_supply = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;CoinType&gt;&gt;(addr).supply;
+<b>aborts_if</b> amount == 0;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;CoinType&gt;&gt;(addr);
+<b>include</b> <a href="coin.html#0x1_coin_CoinSubAbortsIf">coin::CoinSubAbortsIf</a>&lt;CoinType&gt; { amount:amount };
+<b>ensures</b> <a href="coin.html#0x1_coin_supply">coin::supply</a>&lt;CoinType&gt; == <b>old</b>(<a href="coin.html#0x1_coin_supply">coin::supply</a>&lt;CoinType&gt;) - amount;
+</code></pre>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_initialize">initialize</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, symbol: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, decimals: u8, monitor_supply: bool)
+</code></pre>
+<p>Make sure <code>name</code> and <code>symbol</code> are legal length.
+Only the creator of <code>CoinType</code> can initialize.
+The 'name' and 'symbol' should be valid utf8 bytes
+The Capabilities<CoinType> should not be under the signer before creating;
+The Capabilities<CoinType> should be under the signer after creating;</p>
+<pre><code><b>include</b> <a href="coin.html#0x1_coin_InitializeInternalSchema">coin::InitializeInternalSchema</a>&lt;CoinType&gt;;
+<b>aborts_if</b> !<a href="../move-stdlib/string.html#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(name);
+<b>aborts_if</b> !<a href="../move-stdlib/string.html#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(symbol);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
+// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a> and <a id="high-level-req-3.1" href="#high-level-req">high-level requirement 3</a>:
+<b>ensures</b> <b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
+</code></pre>
+<h3 id="function-mint-1"><a class="header" href="#function-mint-1">Function <code>mint</code> <a id="@Specification_1_mint"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_mint">mint</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, dst_addr: <b>address</b>, amount: u64)
+</code></pre>
+<p>The Capabilities<CoinType> should not exist in the signer address.
+The <code>dst_addr</code> should not be frozen.</p>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+// This enforces <a id="high-level-req-3.3" href="#high-level-req">high-level requirement 3</a>:
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+<b>let</b> addr = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
+<b>aborts_if</b> (amount != 0) && !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;CoinType&gt;&gt;(addr);
+<b>let</b> coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(dst_addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(dst_addr);
+<b>aborts_if</b> coin_store.frozen;
+<b>include</b> <a href="coin.html#0x1_coin_CoinAddAbortsIf">coin::CoinAddAbortsIf</a>&lt;CoinType&gt;;
+<b>ensures</b> <a href="coin.html#0x1_coin_supply">coin::supply</a>&lt;CoinType&gt; == <b>old</b>(<a href="coin.html#0x1_coin_supply">coin::supply</a>&lt;CoinType&gt;) + amount;
+// This enforces <a id="high-level-req-6" href="#high-level-req">high-level requirement 6</a>:
+<b>ensures</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(dst_addr).<a href="coin.html#0x1_coin">coin</a>.value == <b>old</b>(<b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(dst_addr)).<a href="coin.html#0x1_coin">coin</a>.value + amount;
+</code></pre>
+<h3 id="function-register-1"><a class="header" href="#function-register-1">Function <code>register</code> <a id="@Specification_1_register"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_register">register</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<p>An account can only be registered once.
+Updating <code>Account.guid_creation_num</code> will not overflow.</p>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>let</b> acc = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(account_addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr) && acc.guid_creation_num + 2 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">account::MAX_GUID_CREATION_NUM</a>;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr) && acc.guid_creation_num + 2 &gt; MAX_U64;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr) && !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(account_addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr) && !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
+<b>ensures</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
+</code></pre>
+<h3 id="function-destroy_caps-1"><a class="header" href="#function-destroy_caps-1">Function <code>destroy_caps</code> <a id="@Specification_1_destroy_caps"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_destroy_caps">destroy_caps</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+<b>ensures</b> !<b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+</code></pre>
+<h3 id="function-remove_caps-1"><a class="header" href="#function-remove_caps-1">Function <code>remove_caps</code> <a id="@Specification_1_remove_caps"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_remove_caps">remove_caps</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): (<a href="coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_FreezeCapability">coin::FreezeCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;)
+</code></pre>
+<pre><code><b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+<b>ensures</b> !<b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/keyless_account.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/multisig_account.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/keyless_account.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/multisig_account.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

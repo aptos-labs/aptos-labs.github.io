@@ -1,0 +1,445 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>dead_mans_switch_operations - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-experimental/dead_mans_switch_operations.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x7dead_mans_switch_operations"><a class="header" href="#module-0x7dead_mans_switch_operations">Module <code>0x7::dead_mans_switch_operations</code> <a id="0x7_dead_mans_switch_operations"></a></a></h1>
+<p>This module provides dead man's switch operations for the market.
+It includes functions for cleaning up expired orders based on keep-alive timeouts.</p>
+<ul>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x7_dead_mans_switch_operations_cleanup_expired_orders">Function <code>cleanup_expired_orders</code></a></li>
+<li><a href="#0x7_dead_mans_switch_operations_cleanup_expired_bulk_order">Function <code>cleanup_expired_bulk_order</code></a></li>
+<li><a href="#0x7_dead_mans_switch_operations_keep_alive">Function <code>keep_alive</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types">0x5::bulk_order_types</a>;
+<b>use</b> <a href="../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+<b>use</b> <a href="../aptos-trading/single_order_types.html#0x5_single_order_types">0x5::single_order_types</a>;
+<b>use</b> <a href="dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker">0x7::dead_mans_switch_tracker</a>;
+<b>use</b> <a href="market_bulk_order.html#0x7_market_bulk_order">0x7::market_bulk_order</a>;
+<b>use</b> <a href="market_types.html#0x7_market_types">0x7::market_types</a>;
+<b>use</b> <a href="order_book.html#0x7_order_book">0x7::order_book</a>;
+<b>use</b> <a href="order_operations.html#0x7_order_operations">0x7::order_operations</a>;
+</code></pre>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x7_dead_mans_switch_operations_E_DEAD_MANS_SWITCH_NOT_ENABLED"></a></p>
+<pre><code><b>const</b> <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_E_DEAD_MANS_SWITCH_NOT_ENABLED">E_DEAD_MANS_SWITCH_NOT_ENABLED</a>: u64 = 0;
+</code></pre>
+<p><a id="0x7_dead_mans_switch_operations_E_TOO_MANY_ORDERS"></a></p>
+<pre><code><b>const</b> <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_E_TOO_MANY_ORDERS">E_TOO_MANY_ORDERS</a>: u64 = 1;
+</code></pre>
+<p><a id="0x7_dead_mans_switch_operations_MAX_ORDERS_CLEANED_PER_CALL"></a></p>
+<pre><code><b>const</b> <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_MAX_ORDERS_CLEANED_PER_CALL">MAX_ORDERS_CLEANED_PER_CALL</a>: u64 = 100;
+</code></pre>
+<p><a id="0x7_dead_mans_switch_operations_MICROS_PER_SECOND"></a></p>
+<pre><code><b>const</b> <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_MICROS_PER_SECOND">MICROS_PER_SECOND</a>: u64 = 1000000;
+</code></pre>
+<h2 id="function-cleanup_expired_orders"><a class="header" href="#function-cleanup_expired_orders">Function <code>cleanup_expired_orders</code> <a id="0x7_dead_mans_switch_operations_cleanup_expired_orders"></a></a></h2>
+<p>Cleans up expired orders based on dead man's switch rules.</p>
+<p>This function validates that each order's creation timestamp is valid according to
+the dead man's switch tracker. If an order was created before the current keep-alive
+session or if the session has expired, the order will be cancelled.</p>
+<p>Parameters:</p>
+<ul>
+<li>market: The market instance</li>
+<li>order_ids: Vector of order IDs to check and potentially cancel</li>
+<li>callbacks: The market clearinghouse callbacks for cleanup operations</li>
+</ul>
+<p>Aborts:</p>
+<ul>
+<li>E_DEAD_MANS_SWITCH_NOT_ENABLED: If dead man's switch is not enabled for this market</li>
+<li>E_TOO_MANY_ORDERS: If more than MAX_ORDERS_CLEANED_PER_CALL order IDs are provided</li>
+</ul>
+<pre><code><b>public</b> <b>fun</b> <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_cleanup_expired_orders">cleanup_expired_orders</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, order_ids: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;, callbacks: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_cleanup_expired_orders">cleanup_expired_orders</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &<b>mut</b> Market&lt;M&gt;,
+    order_ids: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;OrderId&gt;,
+    callbacks: &MarketClearinghouseCallbacks&lt;M, R&gt;
+) {
+    // Check <b>if</b> dead man's switch is enabled
+    <b>assert</b>!(market.is_dead_mans_switch_enabled(), <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_E_DEAD_MANS_SWITCH_NOT_ENABLED">E_DEAD_MANS_SWITCH_NOT_ENABLED</a>);
+    // Cap the number of orders that can be cleaned in a single call
+    <b>assert</b>!(order_ids.length() &lt;= <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_MAX_ORDERS_CLEANED_PER_CALL">MAX_ORDERS_CLEANED_PER_CALL</a>, <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_E_TOO_MANY_ORDERS">E_TOO_MANY_ORDERS</a>);
+
+    // Loop through each order ID
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; order_ids.length()) {
+        <b>let</b> order_id = order_ids[i];
+
+        // Get the order from the order book
+        <b>let</b> order_opt = market.get_order_book().get_single_order(order_id);
+
+        <b>if</b> (order_opt.is_some()) {
+            <b>let</b> order_with_state = order_opt.destroy_some();
+            <b>let</b> (order, is_active) = order_with_state.destroy_order_from_state();
+
+            <b>if</b> (!is_active) {
+                // Order is already inactive, skip
+                i += 1;
+                <b>continue</b>;
+            };
+            // Get <a href="../aptos-framework/account.html#0x1_account">account</a> from the order
+            <b>let</b> <a href="../aptos-framework/account.html#0x1_account">account</a> = order.get_order_request().get_account();
+
+            // Get creation <a href="../aptos-framework/timestamp.html#0x1_timestamp">timestamp</a> in microseconds and convert <b>to</b> seconds
+            <b>let</b> creation_time_micros =
+                order.get_order_request().get_creation_time_micros();
+            <b>let</b> creation_time_secs = creation_time_micros / <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_MICROS_PER_SECOND">MICROS_PER_SECOND</a>;
+
+            // Check <b>if</b> order is valid according <b>to</b> dead man's switch
+            // We get tracker each time <b>to</b> avoid borrowing conflicts
+            <b>let</b> tracker = market.get_dead_mans_switch_tracker();
+            <b>let</b> is_valid =
+                is_order_valid(tracker, <a href="../aptos-framework/account.html#0x1_account">account</a>, <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(creation_time_secs));
+
+            <b>if</b> (!is_valid) {
+                // Cancel the order
+                <a href="order_operations.html#0x7_order_operations_cancel_order">order_operations::cancel_order</a>(
+                    market,
+                    <a href="../aptos-framework/account.html#0x1_account">account</a>,
+                    order_id,
+                    <b>true</b>, // emit_event
+                    <a href="market_types.html#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">market_types::order_cancellation_reason_dead_mans_switch_expired</a>(),
+                    <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(b"Dead man's switch: Order expired"),
+                    callbacks
+                );
+            }
+        };
+        i += 1;
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-cleanup_expired_bulk_order"><a class="header" href="#function-cleanup_expired_bulk_order">Function <code>cleanup_expired_bulk_order</code> <a id="0x7_dead_mans_switch_operations_cleanup_expired_bulk_order"></a></a></h2>
+<p>Cleans up an expired bulk order for a given account based on dead man's switch rules.</p>
+<p>This function checks if the bulk order's creation timestamp is valid according to
+the dead man's switch tracker. If the order was created before the current keep-alive
+session or if the session has expired, the bulk order will be cancelled.</p>
+<p>Parameters:</p>
+<ul>
+<li>market: The market instance</li>
+<li>account: The account whose bulk order should be checked and cleaned up</li>
+<li>callbacks: The market clearinghouse callbacks for cleanup operations</li>
+</ul>
+<p>Aborts:</p>
+<ul>
+<li>E_DEAD_MANS_SWITCH_NOT_ENABLED: If dead man's switch is not enabled for this market</li>
+</ul>
+<pre><code><b>public</b> <b>fun</b> <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_cleanup_expired_bulk_order">cleanup_expired_bulk_order</a>&lt;M: <b>copy</b>, drop, store, R: <b>copy</b>, drop, store&gt;(market: &<b>mut</b> <a href="market_types.html#0x7_market_types_Market">market_types::Market</a>&lt;M&gt;, <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, callbacks: &<a href="market_types.html#0x7_market_types_MarketClearinghouseCallbacks">market_types::MarketClearinghouseCallbacks</a>&lt;M, R&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_cleanup_expired_bulk_order">cleanup_expired_bulk_order</a>&lt;M: store + <b>copy</b> + drop, R: store + <b>copy</b> + drop&gt;(
+    market: &<b>mut</b> Market&lt;M&gt;,
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    callbacks: &MarketClearinghouseCallbacks&lt;M, R&gt;
+) {
+    // Check <b>if</b> dead man's switch is enabled
+    <b>assert</b>!(market.is_dead_mans_switch_enabled(), <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_E_DEAD_MANS_SWITCH_NOT_ENABLED">E_DEAD_MANS_SWITCH_NOT_ENABLED</a>);
+
+    // Get the bulk order from the order book
+    <b>let</b> bulk_order = market.get_order_book().get_bulk_order(<a href="../aptos-framework/account.html#0x1_account">account</a>);
+
+    // Get creation <a href="../aptos-framework/timestamp.html#0x1_timestamp">timestamp</a> in microseconds and convert <b>to</b> seconds
+    <b>let</b> creation_time_micros = bulk_order.get_creation_time_micros();
+    <b>let</b> creation_time_secs = creation_time_micros / <a href="dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_MICROS_PER_SECOND">MICROS_PER_SECOND</a>;
+
+    // Check <b>if</b> order is valid according <b>to</b> dead man's switch
+    <b>let</b> tracker = market.get_dead_mans_switch_tracker();
+    <b>let</b> is_valid = is_order_valid(
+        tracker, <a href="../aptos-framework/account.html#0x1_account">account</a>, <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(creation_time_secs)
+    );
+
+    <b>if</b> (!is_valid) {
+        // Cancel the bulk order
+        <a href="market_bulk_order.html#0x7_market_bulk_order_cancel_bulk_order_internal">market_bulk_order::cancel_bulk_order_internal</a>(
+            market,
+            <a href="../aptos-framework/account.html#0x1_account">account</a>,
+            <a href="market_types.html#0x7_market_types_order_cancellation_reason_dead_mans_switch_expired">market_types::order_cancellation_reason_dead_mans_switch_expired</a>(),
+            callbacks
+        );
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-keep_alive"><a class="header" href="#function-keep_alive">Function <code>keep_alive</code> <a id="0x7_dead_mans_switch_operations_keep_alive"></a></a></h2>
+<p>Updates the keep-alive state for a trader in the dead man's switch.
+This function should be called periodically by traders to keep their orders active.</p>
+<p>This function does not validate the account parameter. It is the caller's responsibility
+to ensure proper signer validation is performed before calling this function if needed.</p>
+<p>Behavior:</p>
+<ul>
+<li>First update: Creates a new session starting at time 0 (all existing orders remain valid)</li>
+<li>Subsequent updates before expiration: Extends the current session</li>
+<li>Update after expiration: Starts a new session (invalidates all orders placed before now)</li>
+</ul>
+<p>Parameters:</p>
+<ul>
+<li>market: The market instance</li>
+<li>account: The trader's address</li>
+<li>timeout_seconds: Duration in seconds until the session expires.
+Must be &gt;= min_keep_alive_time_secs or 0 to disable.
+Pass 0 to disable the dead man's switch for this account.</li>
+</ul>
+<p>Aborts:</p>
+<ul>
+<li>E_DEAD_MANS_SWITCH_NOT_ENABLED: If dead man's switch is not enabled for this market</li>
+<li>E_KEEP_ALIVE_TIMEOUT_TOO_SHORT: If timeout is less than minimum and not zero</li>
+</ul>
+<pre><code>
+
+&lt;pre&gt;&lt;code&gt;&lt;b&gt;public&lt;/b&gt; &lt;b&gt;fun&lt;/b&gt; &lt;a href="dead_mans_switch_operations.md#0x7_dead_mans_switch_operations_keep_alive"&gt;keep_alive&lt;/a&gt;&amp;lt;M: &lt;b&gt;copy&lt;/b&gt;, drop, store&amp;gt;(market: &amp;&lt;b&gt;mut&lt;/b&gt; &lt;a href="market_types.md#0x7_market_types_Market"&gt;market_types::Market&lt;/a&gt;&amp;lt;M&amp;gt;, &lt;a href="../aptos-framework/account.md#0x1_account"&gt;account&lt;/a&gt;: &lt;b&gt;address&lt;/b&gt;, timeout_seconds: u64)
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+&lt;details&gt;
+&lt;summary&gt;Implementation&lt;/summary&gt;
+
+
+&lt;pre&gt;&lt;code&gt;&lt;b&gt;public&lt;/b&gt; &lt;b&gt;fun&lt;/b&gt; &lt;a href="dead_mans_switch_operations.md#0x7_dead_mans_switch_operations_keep_alive"&gt;keep_alive&lt;/a&gt;&amp;lt;M: store + &lt;b&gt;copy&lt;/b&gt; + drop&amp;gt;(
+    market: &amp;&lt;b&gt;mut&lt;/b&gt; Market&amp;lt;M&amp;gt;, &lt;a href="../aptos-framework/account.md#0x1_account"&gt;account&lt;/a&gt;: &lt;b&gt;address&lt;/b&gt;, timeout_seconds: u64
+) {
+    // Check &lt;b&gt;if&lt;/b&gt; dead man's switch is enabled
+    &lt;b&gt;assert&lt;/b&gt;!(market.is_dead_mans_switch_enabled(), &lt;a href="dead_mans_switch_operations.md#0x7_dead_mans_switch_operations_E_DEAD_MANS_SWITCH_NOT_ENABLED"&gt;E_DEAD_MANS_SWITCH_NOT_ENABLED&lt;/a&gt;);
+
+    &lt;b&gt;let&lt;/b&gt; parent = market.get_parent();
+    &lt;b&gt;let&lt;/b&gt; market_addr = market.get_market();
+    &lt;b&gt;let&lt;/b&gt; tracker = market.get_dead_mans_switch_tracker_mut();
+    &lt;a href="dead_mans_switch_tracker.md#0x7_dead_mans_switch_tracker_keep_alive"&gt;dead_mans_switch_tracker::keep_alive&lt;/a&gt;(
+        tracker,
+        parent,
+        market_addr,
+        &lt;a href="../aptos-framework/account.md#0x1_account"&gt;account&lt;/a&gt;,
+        timeout_seconds
+    );
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+&lt;/details&gt;
+
+
+[move-book]: https://aptos.dev/move/book/SUMMARY
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-experimental/bulk_order_utils.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-experimental/dead_mans_switch_tracker.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-experimental/bulk_order_utils.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-experimental/dead_mans_switch_tracker.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

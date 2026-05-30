@@ -1,0 +1,742 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>simple_map - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/simple_map.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1simple_map"><a class="header" href="#module-0x1simple_map">Module <code>0x1::simple_map</code> <a id="0x1_simple_map"></a></a></h1>
+<p>This module provides a solution for unsorted maps, that is it has the properties that</p>
+<ol>
+<li>Keys point to Values</li>
+<li>Each Key must be unique</li>
+<li>A Key can be found within O(N) time</li>
+<li>The keys are unsorted.</li>
+<li>Adds and removals take O(N) time</li>
+</ol>
+<p>DEPRECATED: since it's implementation is inneficient, it
+has been deprecated in favor of <code>ordered_map.<b>move</b></code>.</p>
+<ul>
+<li><a href="#0x1_simple_map_SimpleMap">Struct <code>SimpleMap</code></a></li>
+<li><a href="#0x1_simple_map_Element">Struct <code>Element</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_simple_map_length">Function <code>length</code></a></li>
+<li><a href="#0x1_simple_map_new">Function <code>new</code></a></li>
+<li><a href="#0x1_simple_map_new_from">Function <code>new_from</code></a></li>
+<li><a href="#0x1_simple_map_create">Function <code>create</code></a></li>
+<li><a href="#0x1_simple_map_borrow">Function <code>borrow</code></a></li>
+<li><a href="#0x1_simple_map_borrow_mut">Function <code>borrow_mut</code></a></li>
+<li><a href="#0x1_simple_map_contains_key">Function <code>contains_key</code></a></li>
+<li><a href="#0x1_simple_map_destroy_empty">Function <code>destroy_empty</code></a></li>
+<li><a href="#0x1_simple_map_add">Function <code>add</code></a></li>
+<li><a href="#0x1_simple_map_add_all">Function <code>add_all</code></a></li>
+<li><a href="#0x1_simple_map_upsert">Function <code>upsert</code></a></li>
+<li><a href="#0x1_simple_map_keys">Function <code>keys</code></a></li>
+<li><a href="#0x1_simple_map_values">Function <code>values</code></a></li>
+<li><a href="#0x1_simple_map_to_vec_pair">Function <code>to_vec_pair</code></a></li>
+<li><a href="#0x1_simple_map_destroy">Function <code>destroy</code></a></li>
+<li><a href="#0x1_simple_map_remove">Function <code>remove</code></a></li>
+<li><a href="#0x1_simple_map_find">Function <code>find</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_SimpleMap">Struct <code>SimpleMap</code></a></li>
+<li><a href="#@Specification_1_length">Function <code>length</code></a></li>
+<li><a href="#@Specification_1_new">Function <code>new</code></a></li>
+<li><a href="#@Specification_1_new_from">Function <code>new_from</code></a></li>
+<li><a href="#@Specification_1_create">Function <code>create</code></a></li>
+<li><a href="#@Specification_1_borrow">Function <code>borrow</code></a></li>
+<li><a href="#@Specification_1_borrow_mut">Function <code>borrow_mut</code></a></li>
+<li><a href="#@Specification_1_contains_key">Function <code>contains_key</code></a></li>
+<li><a href="#@Specification_1_destroy_empty">Function <code>destroy_empty</code></a></li>
+<li><a href="#@Specification_1_add">Function <code>add</code></a></li>
+<li><a href="#@Specification_1_add_all">Function <code>add_all</code></a></li>
+<li><a href="#@Specification_1_upsert">Function <code>upsert</code></a></li>
+<li><a href="#@Specification_1_keys">Function <code>keys</code></a></li>
+<li><a href="#@Specification_1_values">Function <code>values</code></a></li>
+<li><a href="#@Specification_1_to_vec_pair">Function <code>to_vec_pair</code></a></li>
+<li><a href="#@Specification_1_remove">Function <code>remove</code></a></li>
+<li><a href="#@Specification_1_find">Function <code>find</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+<h2 id="struct-simplemap"><a class="header" href="#struct-simplemap">Struct <code>SimpleMap</code> <a id="0x1_simple_map_SimpleMap"></a></a></h2>
+<p>DEPRECATED: since it's implementation is inneficient, it
+has been deprecated in favor of <code>ordered_map.<b>move</b></code>.</p>
+<pre><code><b>struct</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>data: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="simple_map.html#0x1_simple_map_Element">simple_map::Element</a>&lt;Key, Value&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-element"><a class="header" href="#struct-element">Struct <code>Element</code> <a id="0x1_simple_map_Element"></a></a></h2>
+<pre><code><b>struct</b> <a href="simple_map.html#0x1_simple_map_Element">Element</a>&lt;Key, Value&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>key: Key</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>value: Value</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_simple_map_EKEY_ALREADY_EXISTS"></a></p>
+<p>Map key already exists</p>
+<pre><code><b>const</b> <a href="simple_map.html#0x1_simple_map_EKEY_ALREADY_EXISTS">EKEY_ALREADY_EXISTS</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_simple_map_EKEY_NOT_FOUND"></a></p>
+<p>Map key is not found</p>
+<pre><code><b>const</b> <a href="simple_map.html#0x1_simple_map_EKEY_NOT_FOUND">EKEY_NOT_FOUND</a>: u64 = 2;
+</code></pre>
+<h2 id="function-length"><a class="header" href="#function-length">Function <code>length</code> <a id="0x1_simple_map_length"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_length">length</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_length">length</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;): u64 {
+    self.data.<a href="simple_map.html#0x1_simple_map_length">length</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-new"><a class="header" href="#function-new">Function <code>new</code> <a id="0x1_simple_map_new"></a></a></h2>
+<p>Create an empty SimpleMap.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_new">new</a>&lt;Key: store, Value: store&gt;(): <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_new">new</a>&lt;Key: store, Value: store&gt;(): <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt; {
+    <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a> {
+        data: <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>(),
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_from"><a class="header" href="#function-new_from">Function <code>new_from</code> <a id="0x1_simple_map_new_from"></a></a></h2>
+<p>Create a SimpleMap from a vector of keys and values. The keys must be unique.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_new_from">new_from</a>&lt;Key: store, Value: store&gt;(keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;): <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_new_from">new_from</a>&lt;Key: store, Value: store&gt;(
+    keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;,
+    values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;,
+): <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt; {
+    <b>let</b> map = <a href="simple_map.html#0x1_simple_map_new">new</a>();
+    map.<a href="simple_map.html#0x1_simple_map_add_all">add_all</a>(keys, values);
+    map
+}
+</code></pre>
+</details>
+<h2 id="function-create"><a class="header" href="#function-create">Function <code>create</code> <a id="0x1_simple_map_create"></a></a></h2>
+<p>Create an empty SimpleMap.
+This function is deprecated, use <code>new</code> instead.</p>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_create">create</a>&lt;Key: store, Value: store&gt;(): <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_create">create</a>&lt;Key: store, Value: store&gt;(): <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt; {
+    <a href="simple_map.html#0x1_simple_map_new">new</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-borrow"><a class="header" href="#function-borrow">Function <code>borrow</code> <a id="0x1_simple_map_borrow"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_borrow">borrow</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): &Value
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_borrow">borrow</a>&lt;Key: store, Value: store&gt;(
+    self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    key: &Key,
+): &Value {
+    <b>let</b> maybe_idx = self.<a href="simple_map.html#0x1_simple_map_find">find</a>(key);
+    <b>assert</b>!(maybe_idx.is_some(), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="simple_map.html#0x1_simple_map_EKEY_NOT_FOUND">EKEY_NOT_FOUND</a>));
+    <b>let</b> idx = maybe_idx.extract();
+    &self.data.<a href="simple_map.html#0x1_simple_map_borrow">borrow</a>(idx).value
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_mut"><a class="header" href="#function-borrow_mut">Function <code>borrow_mut</code> <a id="0x1_simple_map_borrow_mut"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_borrow_mut">borrow_mut</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): &<b>mut</b> Value
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_borrow_mut">borrow_mut</a>&lt;Key: store, Value: store&gt;(
+    self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    key: &Key,
+): &<b>mut</b> Value {
+    <b>let</b> maybe_idx = self.<a href="simple_map.html#0x1_simple_map_find">find</a>(key);
+    <b>assert</b>!(maybe_idx.is_some(), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="simple_map.html#0x1_simple_map_EKEY_NOT_FOUND">EKEY_NOT_FOUND</a>));
+    <b>let</b> idx = maybe_idx.extract();
+    &<b>mut</b> self.data.<a href="simple_map.html#0x1_simple_map_borrow_mut">borrow_mut</a>(idx).value
+}
+</code></pre>
+</details>
+<h2 id="function-contains_key"><a class="header" href="#function-contains_key">Function <code>contains_key</code> <a id="0x1_simple_map_contains_key"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_contains_key">contains_key</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_contains_key">contains_key</a>&lt;Key: store, Value: store&gt;(
+    self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    key: &Key,
+): bool {
+    <b>let</b> maybe_idx = self.<a href="simple_map.html#0x1_simple_map_find">find</a>(key);
+    maybe_idx.is_some()
+}
+</code></pre>
+</details>
+<h2 id="function-destroy_empty"><a class="header" href="#function-destroy_empty">Function <code>destroy_empty</code> <a id="0x1_simple_map_destroy_empty"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_destroy_empty">destroy_empty</a>&lt;Key: store, Value: store&gt;(self: <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_destroy_empty">destroy_empty</a>&lt;Key: store, Value: store&gt;(self: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;) {
+    <b>let</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a> { data } = self;
+    data.<a href="simple_map.html#0x1_simple_map_destroy_empty">destroy_empty</a>();
+}
+</code></pre>
+</details>
+<h2 id="function-add"><a class="header" href="#function-add">Function <code>add</code> <a id="0x1_simple_map_add"></a></a></h2>
+<p>Add a key/value pair to the map. The key must not already exist.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_add">add</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: Key, value: Value)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_add">add</a>&lt;Key: store, Value: store&gt;(
+    self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    key: Key,
+    value: Value,
+) {
+    <b>let</b> maybe_idx = self.<a href="simple_map.html#0x1_simple_map_find">find</a>(&key);
+    <b>assert</b>!(maybe_idx.is_none(), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="simple_map.html#0x1_simple_map_EKEY_ALREADY_EXISTS">EKEY_ALREADY_EXISTS</a>));
+
+    self.data.push_back(<a href="simple_map.html#0x1_simple_map_Element">Element</a> { key, value });
+}
+</code></pre>
+</details>
+<h2 id="function-add_all"><a class="header" href="#function-add_all">Function <code>add_all</code> <a id="0x1_simple_map_add_all"></a></a></h2>
+<p>Add multiple key/value pairs to the map. The keys must not already exist.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_add_all">add_all</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_add_all">add_all</a>&lt;Key: store, Value: store&gt;(
+    self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;,
+    values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;,
+) {
+    keys.zip(values, |key, value| {
+        self.<a href="simple_map.html#0x1_simple_map_add">add</a>(key, value);
+    });
+}
+</code></pre>
+</details>
+<h2 id="function-upsert"><a class="header" href="#function-upsert">Function <code>upsert</code> <a id="0x1_simple_map_upsert"></a></a></h2>
+<p>Insert key/value pair or update an existing key to a new value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_upsert">upsert</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: Key, value: Value): (<a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;Key&gt;, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;Value&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_upsert">upsert</a>&lt;Key: store, Value: store&gt;(
+    self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    key: Key,
+    value: Value
+): (std::option::Option&lt;Key&gt;, std::option::Option&lt;Value&gt;) {
+    <b>let</b> data = &<b>mut</b> self.data;
+    <b>let</b> len = data.<a href="simple_map.html#0x1_simple_map_length">length</a>();
+    for (i in 0..len) {
+        <b>let</b> element = data.<a href="simple_map.html#0x1_simple_map_borrow">borrow</a>(i);
+        <b>if</b> (&element.key == &key) {
+            data.push_back(<a href="simple_map.html#0x1_simple_map_Element">Element</a> { key, value });
+            data.swap(i, len);
+            <b>let</b> <a href="simple_map.html#0x1_simple_map_Element">Element</a> { key, value } = data.pop_back();
+            <b>return</b> (std::option::some(key), std::option::some(value))
+        };
+    };
+    self.data.push_back(<a href="simple_map.html#0x1_simple_map_Element">Element</a> { key, value });
+    (std::option::none(), std::option::none())
+}
+</code></pre>
+</details>
+<h2 id="function-keys"><a class="header" href="#function-keys">Function <code>keys</code> <a id="0x1_simple_map_keys"></a></a></h2>
+<p>Return all keys in the map. This requires keys to be copyable.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_keys">keys</a>&lt;Key: <b>copy</b>, Value&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_keys">keys</a>&lt;Key: <b>copy</b>, Value&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt; {
+    self.data.map_ref(|e| {
+        e.key
+    })
+}
+</code></pre>
+</details>
+<h2 id="function-values"><a class="header" href="#function-values">Function <code>values</code> <a id="0x1_simple_map_values"></a></a></h2>
+<p>Return all values in the map. This requires values to be copyable.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_values">values</a>&lt;Key, Value: <b>copy</b>&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_values">values</a>&lt;Key, Value: <b>copy</b>&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt; {
+    self.data.map_ref(|e| {
+        e.value
+    })
+}
+</code></pre>
+</details>
+<h2 id="function-to_vec_pair"><a class="header" href="#function-to_vec_pair">Function <code>to_vec_pair</code> <a id="0x1_simple_map_to_vec_pair"></a></a></h2>
+<p>Transform the map into two vectors with the keys and values respectively
+Primarily used to destroy a map</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_to_vec_pair">to_vec_pair</a>&lt;Key: store, Value: store&gt;(self: <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_to_vec_pair">to_vec_pair</a>&lt;Key: store, Value: store&gt;(
+    self: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;) {
+    <b>let</b> keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt; = <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
+    <b>let</b> values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt; = <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
+    <b>let</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a> { data } = self;
+    data.for_each(|e| {
+        <b>let</b> <a href="simple_map.html#0x1_simple_map_Element">Element</a> { key, value } = e;
+        keys.push_back(key);
+        values.push_back(value);
+    });
+    (keys, values)
+}
+</code></pre>
+</details>
+<h2 id="function-destroy"><a class="header" href="#function-destroy">Function <code>destroy</code> <a id="0x1_simple_map_destroy"></a></a></h2>
+<p>For maps that cannot be dropped this is a utility to destroy them
+using lambdas to destroy the individual keys and values.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_destroy">destroy</a>&lt;Key: store, Value: store&gt;(self: <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, dk: |Key|, dv: |Value|)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="simple_map.html#0x1_simple_map_destroy">destroy</a>&lt;Key: store, Value: store&gt;(
+    self: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    dk: |Key|,
+    dv: |Value|
+) {
+    <b>let</b> (keys, values) = self.<a href="simple_map.html#0x1_simple_map_to_vec_pair">to_vec_pair</a>();
+    keys.<a href="simple_map.html#0x1_simple_map_destroy">destroy</a>(|_k| dk(_k));
+    values.<a href="simple_map.html#0x1_simple_map_destroy">destroy</a>(|_v| dv(_v));
+}
+</code></pre>
+</details>
+<h2 id="function-remove"><a class="header" href="#function-remove">Function <code>remove</code> <a id="0x1_simple_map_remove"></a></a></h2>
+<p>Remove a key/value pair from the map. The key must exist.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_remove">remove</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): (Key, Value)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_remove">remove</a>&lt;Key: store, Value: store&gt;(
+    self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    key: &Key,
+): (Key, Value) {
+    <b>let</b> maybe_idx = self.<a href="simple_map.html#0x1_simple_map_find">find</a>(key);
+    <b>assert</b>!(maybe_idx.is_some(), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="simple_map.html#0x1_simple_map_EKEY_NOT_FOUND">EKEY_NOT_FOUND</a>));
+    <b>let</b> placement = maybe_idx.extract();
+    <b>let</b> <a href="simple_map.html#0x1_simple_map_Element">Element</a> { key, value } = self.data.swap_remove(placement);
+    (key, value)
+}
+</code></pre>
+</details>
+<h2 id="function-find"><a class="header" href="#function-find">Function <code>find</code> <a id="0x1_simple_map_find"></a></a></h2>
+<pre><code><b>fun</b> <a href="simple_map.html#0x1_simple_map_find">find</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="simple_map.html#0x1_simple_map_find">find</a>&lt;Key: store, Value: store&gt;(
+    self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt;,
+    key: &Key,
+): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt; {
+    <b>let</b> len = self.data.<a href="simple_map.html#0x1_simple_map_length">length</a>();
+    for (i in 0..len) {
+        <b>let</b> element = self.data.<a href="simple_map.html#0x1_simple_map_borrow">borrow</a>(i);
+        <b>if</b> (&element.key == key) {
+            <b>return</b> <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(i)
+        };
+    };
+    <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>&lt;u64&gt;()
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="struct-simplemap-1"><a class="header" href="#struct-simplemap-1">Struct <code>SimpleMap</code> <a id="@Specification_1_SimpleMap"></a></a></h3>
+<pre><code><b>struct</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<dl>
+<dt>
+<code>data: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="simple_map.html#0x1_simple_map_Element">simple_map::Element</a>&lt;Key, Value&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code><b>pragma</b> intrinsic = map,
+    map_new = create,
+    map_len = length,
+    map_destroy_empty = destroy_empty,
+    map_has_key = contains_key,
+    map_add_no_override = add,
+    map_del_return_key = remove,
+    map_borrow = borrow,
+    map_borrow_mut = borrow_mut,
+    map_spec_get = spec_get,
+    map_spec_set = spec_set,
+    map_spec_del = spec_remove,
+    map_spec_len = spec_len,
+    map_spec_has_key = spec_contains_key;
+</code></pre>
+<h3 id="function-length-1"><a class="header" href="#function-length-1">Function <code>length</code> <a id="@Specification_1_length"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_length">length</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): u64
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-new-1"><a class="header" href="#function-new-1">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_new">new</a>&lt;Key: store, Value: store&gt;(): <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+<b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] <a href="simple_map.html#0x1_simple_map_spec_len">spec_len</a>(result) == 0;
+<b>ensures</b> [abstract] <b>forall</b> k: Key: !<a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(result, k);
+</code></pre>
+<h3 id="function-new_from-1"><a class="header" href="#function-new_from-1">Function <code>new_from</code> <a id="@Specification_1_new_from"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_new_from">new_from</a>&lt;Key: store, Value: store&gt;(keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;): <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+<b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] <a href="simple_map.html#0x1_simple_map_spec_len">spec_len</a>(result) == len(keys);
+<b>ensures</b> [abstract] <b>forall</b> k: Key: <a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(result, k) &lt;==&gt; <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(keys, k);
+<b>ensures</b> [abstract] <b>forall</b> i in 0..len(keys):
+    <a href="simple_map.html#0x1_simple_map_spec_get">spec_get</a>(result, keys.<a href="simple_map.html#0x1_simple_map_borrow">borrow</a>(i)) == values.<a href="simple_map.html#0x1_simple_map_borrow">borrow</a>(i);
+</code></pre>
+<h3 id="function-create-1"><a class="header" href="#function-create-1">Function <code>create</code> <a id="@Specification_1_create"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_create">create</a>&lt;Key: store, Value: store&gt;(): <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-borrow-1"><a class="header" href="#function-borrow-1">Function <code>borrow</code> <a id="@Specification_1_borrow"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_borrow">borrow</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): &Value
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-borrow_mut-1"><a class="header" href="#function-borrow_mut-1">Function <code>borrow_mut</code> <a id="@Specification_1_borrow_mut"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_borrow_mut">borrow_mut</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): &<b>mut</b> Value
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-contains_key-1"><a class="header" href="#function-contains_key-1">Function <code>contains_key</code> <a id="@Specification_1_contains_key"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_contains_key">contains_key</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): bool
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-destroy_empty-1"><a class="header" href="#function-destroy_empty-1">Function <code>destroy_empty</code> <a id="@Specification_1_destroy_empty"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_destroy_empty">destroy_empty</a>&lt;Key: store, Value: store&gt;(self: <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;)
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-add-1"><a class="header" href="#function-add-1">Function <code>add</code> <a id="@Specification_1_add"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_add">add</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: Key, value: Value)
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-add_all-1"><a class="header" href="#function-add_all-1">Function <code>add_all</code> <a id="@Specification_1_add_all"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_add_all">add_all</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;)
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-upsert-1"><a class="header" href="#function-upsert-1">Function <code>upsert</code> <a id="@Specification_1_upsert"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_upsert">upsert</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: Key, value: Value): (<a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;Key&gt;, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;Value&gt;)
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+<b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] !<a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result_1);
+<b>ensures</b> [abstract] !<a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result_2);
+<b>ensures</b> [abstract] <a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(self, key);
+<b>ensures</b> [abstract] <a href="simple_map.html#0x1_simple_map_spec_get">spec_get</a>(self, key) == value;
+<b>ensures</b> [abstract] <a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; ((<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result_1)) && (<a href="../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result_1) == key));
+<b>ensures</b> [abstract] <a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; ((<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result_2)) && (<a href="../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result_2) == <a href="simple_map.html#0x1_simple_map_spec_get">spec_get</a>(<b>old</b>(
+    self
+), key)));
+</code></pre>
+<p><a id="0x1_simple_map_spec_len"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_len">spec_len</a>&lt;K, V&gt;(t: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;): num;
+</code></pre>
+<p><a id="0x1_simple_map_spec_contains_key"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>&lt;K, V&gt;(t: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_simple_map_spec_set"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_set">spec_set</a>&lt;K, V&gt;(t: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K, v: V): <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;;
+</code></pre>
+<p><a id="0x1_simple_map_spec_remove"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_remove">spec_remove</a>&lt;K, V&gt;(t: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;;
+</code></pre>
+<p><a id="0x1_simple_map_spec_get"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): V;
+</code></pre>
+<h3 id="function-keys-1"><a class="header" href="#function-keys-1">Function <code>keys</code> <a id="@Specification_1_keys"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_keys">keys</a>&lt;Key: <b>copy</b>, Value&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;
+</code></pre>
+<pre><code><b>pragma</b> verify=<b>false</b>;
+</code></pre>
+<h3 id="function-values-1"><a class="header" href="#function-values-1">Function <code>values</code> <a id="@Specification_1_values"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_values">values</a>&lt;Key, Value: <b>copy</b>&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;
+</code></pre>
+<pre><code><b>pragma</b> verify=<b>false</b>;
+</code></pre>
+<h3 id="function-to_vec_pair-1"><a class="header" href="#function-to_vec_pair-1">Function <code>to_vec_pair</code> <a id="@Specification_1_to_vec_pair"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_to_vec_pair">to_vec_pair</a>&lt;Key: store, Value: store&gt;(self: <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Value&gt;)
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+<b>pragma</b> opaque;
+<b>ensures</b> [abstract]
+    <b>forall</b> k: Key: <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(result_1, k) &lt;==&gt;
+        <a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(self, k);
+<b>ensures</b> [abstract] <b>forall</b> i in 0..len(result_1):
+    <a href="simple_map.html#0x1_simple_map_spec_get">spec_get</a>(self, result_1.<a href="simple_map.html#0x1_simple_map_borrow">borrow</a>(i)) == result_2.<a href="simple_map.html#0x1_simple_map_borrow">borrow</a>(i);
+</code></pre>
+<h3 id="function-remove-1"><a class="header" href="#function-remove-1">Function <code>remove</code> <a id="@Specification_1_remove"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_remove">remove</a>&lt;Key: store, Value: store&gt;(self: &<b>mut</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): (Key, Value)
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-find-1"><a class="header" href="#function-find-1">Function <code>find</code> <a id="@Specification_1_find"></a></a></h3>
+<pre><code><b>fun</b> <a href="simple_map.html#0x1_simple_map_find">find</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;, key: &Key): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<pre><code><b>pragma</b> verify=<b>false</b>;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/secp256r1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/single_key.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/secp256r1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/single_key.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

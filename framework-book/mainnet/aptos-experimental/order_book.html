@@ -1,0 +1,646 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>order_book - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-experimental/order_book.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x7order_book"><a class="header" href="#module-0x7order_book">Module <code>0x7::order_book</code> <a id="0x7_order_book"></a></a></h1>
+<ul>
+<li><a href="#0x7_order_book_OrderBook">Enum <code>OrderBook</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x7_order_book_new_order_book">Function <code>new_order_book</code></a></li>
+<li><a href="#0x7_order_book_client_order_id_exists">Function <code>client_order_id_exists</code></a></li>
+<li><a href="#0x7_order_book_get_single_order_metadata">Function <code>get_single_order_metadata</code></a></li>
+<li><a href="#0x7_order_book_get_order_id_by_client_id">Function <code>get_order_id_by_client_id</code></a></li>
+<li><a href="#0x7_order_book_get_single_order">Function <code>get_single_order</code></a></li>
+<li><a href="#0x7_order_book_get_single_remaining_size">Function <code>get_single_remaining_size</code></a></li>
+<li><a href="#0x7_order_book_cancel_single_order">Function <code>cancel_single_order</code></a></li>
+<li><a href="#0x7_order_book_try_cancel_single_order">Function <code>try_cancel_single_order</code></a></li>
+<li><a href="#0x7_order_book_try_cancel_single_order_with_client_order_id">Function <code>try_cancel_single_order_with_client_order_id</code></a></li>
+<li><a href="#0x7_order_book_place_maker_order">Function <code>place_maker_order</code></a></li>
+<li><a href="#0x7_order_book_decrease_single_order_size">Function <code>decrease_single_order_size</code></a></li>
+<li><a href="#0x7_order_book_set_single_order_metadata">Function <code>set_single_order_metadata</code></a></li>
+<li><a href="#0x7_order_book_take_ready_price_based_orders">Function <code>take_ready_price_based_orders</code></a></li>
+<li><a href="#0x7_order_book_take_ready_time_based_orders">Function <code>take_ready_time_based_orders</code></a></li>
+<li><a href="#0x7_order_book_best_bid_price">Function <code>best_bid_price</code></a></li>
+<li><a href="#0x7_order_book_best_ask_price">Function <code>best_ask_price</code></a></li>
+<li><a href="#0x7_order_book_get_slippage_price">Function <code>get_slippage_price</code></a></li>
+<li><a href="#0x7_order_book_is_taker_order">Function <code>is_taker_order</code></a></li>
+<li><a href="#0x7_order_book_get_single_match_for_taker">Function <code>get_single_match_for_taker</code></a></li>
+<li><a href="#0x7_order_book_reinsert_order">Function <code>reinsert_order</code></a></li>
+<li><a href="#0x7_order_book_get_bulk_order_remaining_size">Function <code>get_bulk_order_remaining_size</code></a></li>
+<li><a href="#0x7_order_book_place_bulk_order">Function <code>place_bulk_order</code></a></li>
+<li><a href="#0x7_order_book_get_bulk_order">Function <code>get_bulk_order</code></a></li>
+<li><a href="#0x7_order_book_cancel_bulk_order">Function <code>cancel_bulk_order</code></a></li>
+<li><a href="#0x7_order_book_cancel_bulk_order_at_price">Function <code>cancel_bulk_order_at_price</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types">0x5::bulk_order_types</a>;
+<b>use</b> <a href="../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+<b>use</b> <a href="../aptos-trading/order_match_types.html#0x5_order_match_types">0x5::order_match_types</a>;
+<b>use</b> <a href="../aptos-trading/single_order_types.html#0x5_single_order_types">0x5::single_order_types</a>;
+<b>use</b> <a href="bulk_order_book.html#0x7_bulk_order_book">0x7::bulk_order_book</a>;
+<b>use</b> <a href="price_time_index.html#0x7_price_time_index">0x7::price_time_index</a>;
+<b>use</b> <a href="single_order_book.html#0x7_single_order_book">0x7::single_order_book</a>;
+</code></pre>
+<h2 id="enum-orderbook"><a class="header" href="#enum-orderbook">Enum <code>OrderBook</code> <a id="0x7_order_book_OrderBook"></a></a></h2>
+<pre><code>enum <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M: <b>copy</b>, drop, store&gt; <b>has</b> store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>UnifiedV1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="single_order_book.html#0x7_single_order_book">single_order_book</a>: <a href="single_order_book.html#0x7_single_order_book_SingleOrderBook">single_order_book::SingleOrderBook</a>&lt;M&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>: <a href="bulk_order_book.html#0x7_bulk_order_book_BulkOrderBook">bulk_order_book::BulkOrderBook</a>&lt;M&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>price_time_idx: <a href="price_time_index.html#0x7_price_time_index_PriceTimeIndex">price_time_index::PriceTimeIndex</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x7_order_book_E_REINSERT_ORDER_MISMATCH"></a></p>
+<pre><code><b>const</b> <a href="order_book.html#0x7_order_book_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>: u64 = 8;
+</code></pre>
+<h2 id="function-new_order_book"><a class="header" href="#function-new_order_book">Function <code>new_order_book</code> <a id="0x7_order_book_new_order_book"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_new_order_book">new_order_book</a>&lt;M: <b>copy</b>, drop, store&gt;(): <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_new_order_book">new_order_book</a>&lt;M: store + <b>copy</b> + drop&gt;(): <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt; {
+    OrderBook::UnifiedV1 {
+        <a href="single_order_book.html#0x7_single_order_book">single_order_book</a>: new_single_order_book(),
+        <a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>: new_bulk_order_book(),
+        price_time_idx: new_price_time_idx()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-client_order_id_exists"><a class="header" href="#function-client_order_id_exists">Function <code>client_order_id_exists</code> <a id="0x7_order_book_client_order_id_exists"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_client_order_id_exists">client_order_id_exists</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, client_order_id: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_client_order_id_exists">client_order_id_exists</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, client_order_id: String
+): bool {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.<a href="order_book.html#0x7_order_book_client_order_id_exists">client_order_id_exists</a>(order_creator, client_order_id)
+}
+</code></pre>
+</details>
+<h2 id="function-get_single_order_metadata"><a class="header" href="#function-get_single_order_metadata">Function <code>get_single_order_metadata</code> <a id="0x7_order_book_get_single_order_metadata"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_single_order_metadata">get_single_order_metadata</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_single_order_metadata">get_single_order_metadata</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_id: OrderId
+): Option&lt;M&gt; {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.get_order_metadata(order_id)
+}
+</code></pre>
+</details>
+<h2 id="function-get_order_id_by_client_id"><a class="header" href="#function-get_order_id_by_client_id">Function <code>get_order_id_by_client_id</code> <a id="0x7_order_book_get_order_id_by_client_id"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_order_id_by_client_id">get_order_id_by_client_id</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, client_order_id: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_order_id_by_client_id">get_order_id_by_client_id</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, client_order_id: String
+): Option&lt;OrderId&gt; {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.<a href="order_book.html#0x7_order_book_get_order_id_by_client_id">get_order_id_by_client_id</a>(order_creator, client_order_id)
+}
+</code></pre>
+</details>
+<h2 id="function-get_single_order"><a class="header" href="#function-get_single_order">Function <code>get_single_order</code> <a id="0x7_order_book_get_single_order"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_single_order">get_single_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_single_order">get_single_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_id: OrderId
+): Option&lt;aptos_trading::single_order_types::OrderWithState&lt;M&gt;&gt; {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.get_order(order_id)
+}
+</code></pre>
+</details>
+<h2 id="function-get_single_remaining_size"><a class="header" href="#function-get_single_remaining_size">Function <code>get_single_remaining_size</code> <a id="0x7_order_book_get_single_remaining_size"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_get_single_remaining_size">get_single_remaining_size</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_get_single_remaining_size">get_single_remaining_size</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_id: OrderId
+): u64 {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.get_remaining_size(order_id)
+}
+</code></pre>
+</details>
+<h2 id="function-cancel_single_order"><a class="header" href="#function-cancel_single_order">Function <code>cancel_single_order</code> <a id="0x7_order_book_cancel_single_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_cancel_single_order">cancel_single_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>): <a href="../aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_cancel_single_order">cancel_single_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, order_id: OrderId
+): SingleOrder&lt;M&gt; {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.cancel_order(
+        &<b>mut</b> self.price_time_idx, order_creator, order_id
+    )
+}
+</code></pre>
+</details>
+<h2 id="function-try_cancel_single_order"><a class="header" href="#function-try_cancel_single_order">Function <code>try_cancel_single_order</code> <a id="0x7_order_book_try_cancel_single_order"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_try_cancel_single_order">try_cancel_single_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_try_cancel_single_order">try_cancel_single_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, order_id: OrderId
+): Option&lt;SingleOrder&lt;M&gt;&gt; {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.try_cancel_order(
+        &<b>mut</b> self.price_time_idx, order_creator, order_id
+    )
+}
+</code></pre>
+</details>
+<h2 id="function-try_cancel_single_order_with_client_order_id"><a class="header" href="#function-try_cancel_single_order_with_client_order_id">Function <code>try_cancel_single_order_with_client_order_id</code> <a id="0x7_order_book_try_cancel_single_order_with_client_order_id"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_try_cancel_single_order_with_client_order_id">try_cancel_single_order_with_client_order_id</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, client_order_id: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_try_cancel_single_order_with_client_order_id">try_cancel_single_order_with_client_order_id</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, client_order_id: String
+): Option&lt;SingleOrder&lt;M&gt;&gt; {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.try_cancel_order_with_client_order_id(
+        &<b>mut</b> self.price_time_idx, order_creator, client_order_id
+    )
+}
+</code></pre>
+</details>
+<h2 id="function-place_maker_order"><a class="header" href="#function-place_maker_order">Function <code>place_maker_order</code> <a id="0x7_order_book_place_maker_order"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_place_maker_order">place_maker_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_req: <a href="../aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrderRequest">single_order_types::SingleOrderRequest</a>&lt;M&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_place_maker_order">place_maker_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_req: SingleOrderRequest&lt;M&gt;
+) {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.place_maker_or_pending_order(
+        &<b>mut</b> self.price_time_idx, order_req
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-decrease_single_order_size"><a class="header" href="#function-decrease_single_order_size">Function <code>decrease_single_order_size</code> <a id="0x7_order_book_decrease_single_order_size"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_decrease_single_order_size">decrease_single_order_size</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, size_delta: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_decrease_single_order_size">decrease_single_order_size</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;,
+    order_creator: <b>address</b>,
+    order_id: OrderId,
+    size_delta: u64
+) {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.decrease_order_size(
+        &<b>mut</b> self.price_time_idx,
+        order_creator,
+        order_id,
+        size_delta
+    )
+}
+</code></pre>
+</details>
+<h2 id="function-set_single_order_metadata"><a class="header" href="#function-set_single_order_metadata">Function <code>set_single_order_metadata</code> <a id="0x7_order_book_set_single_order_metadata"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_set_single_order_metadata">set_single_order_metadata</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, metadata: M)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_set_single_order_metadata">set_single_order_metadata</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_id: OrderId, metadata: M
+) {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.set_order_metadata(order_id, metadata)
+}
+</code></pre>
+</details>
+<h2 id="function-take_ready_price_based_orders"><a class="header" href="#function-take_ready_price_based_orders">Function <code>take_ready_price_based_orders</code> <a id="0x7_order_book_take_ready_price_based_orders"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_take_ready_price_based_orders">take_ready_price_based_orders</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, oracle_price: u64, order_limit: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_take_ready_price_based_orders">take_ready_price_based_orders</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, oracle_price: u64, order_limit: u64
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;SingleOrder&lt;M&gt;&gt; {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.<a href="order_book.html#0x7_order_book_take_ready_price_based_orders">take_ready_price_based_orders</a>(oracle_price, order_limit)
+}
+</code></pre>
+</details>
+<h2 id="function-take_ready_time_based_orders"><a class="header" href="#function-take_ready_time_based_orders">Function <code>take_ready_time_based_orders</code> <a id="0x7_order_book_take_ready_time_based_orders"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_take_ready_time_based_orders">take_ready_time_based_orders</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_limit: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_take_ready_time_based_orders">take_ready_time_based_orders</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_limit: u64
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;SingleOrder&lt;M&gt;&gt; {
+    self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.<a href="order_book.html#0x7_order_book_take_ready_time_based_orders">take_ready_time_based_orders</a>(order_limit)
+}
+</code></pre>
+</details>
+<h2 id="function-best_bid_price"><a class="header" href="#function-best_bid_price">Function <code>best_bid_price</code> <a id="0x7_order_book_best_bid_price"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_best_bid_price">best_bid_price</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_best_bid_price">best_bid_price</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;
+): Option&lt;u64&gt; {
+    self.price_time_idx.<a href="order_book.html#0x7_order_book_best_bid_price">best_bid_price</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-best_ask_price"><a class="header" href="#function-best_ask_price">Function <code>best_ask_price</code> <a id="0x7_order_book_best_ask_price"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_best_ask_price">best_ask_price</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_best_ask_price">best_ask_price</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;
+): Option&lt;u64&gt; {
+    self.price_time_idx.<a href="order_book.html#0x7_order_book_best_ask_price">best_ask_price</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-get_slippage_price"><a class="header" href="#function-get_slippage_price">Function <code>get_slippage_price</code> <a id="0x7_order_book_get_slippage_price"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_get_slippage_price">get_slippage_price</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, is_bid: bool, slippage_bps: u64): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_get_slippage_price">get_slippage_price</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, is_bid: bool, slippage_bps: u64
+): Option&lt;u64&gt; {
+    self.price_time_idx.<a href="order_book.html#0x7_order_book_get_slippage_price">get_slippage_price</a>(is_bid, slippage_bps)
+}
+</code></pre>
+</details>
+<h2 id="function-is_taker_order"><a class="header" href="#function-is_taker_order">Function <code>is_taker_order</code> <a id="0x7_order_book_is_taker_order"></a></a></h2>
+<p>Checks if the order is a taker order i.e., matched immediately with the active order book.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_is_taker_order">is_taker_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, price: u64, is_bid: bool, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_is_taker_order">is_taker_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;,
+    price: u64,
+    is_bid: bool,
+    trigger_condition: Option&lt;TriggerCondition&gt;
+): bool {
+    <b>if</b> (trigger_condition.is_some()) {
+        <b>return</b> <b>false</b>;
+    };
+    self.price_time_idx.<a href="order_book.html#0x7_order_book_is_taker_order">is_taker_order</a>(price, is_bid)
+}
+</code></pre>
+</details>
+<h2 id="function-get_single_match_for_taker"><a class="header" href="#function-get_single_match_for_taker">Function <code>get_single_match_for_taker</code> <a id="0x7_order_book_get_single_match_for_taker"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_get_single_match_for_taker">get_single_match_for_taker</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, price: u64, size: u64, is_bid: bool): <a href="../aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatch">order_match_types::OrderMatch</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="order_book.html#0x7_order_book_get_single_match_for_taker">get_single_match_for_taker</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;,
+    price: u64,
+    size: u64,
+    is_bid: bool
+): OrderMatch&lt;M&gt; {
+    <b>let</b> result = self.price_time_idx.get_single_match_result(price, size, is_bid);
+    <b>if</b> (result.is_active_matched_book_type_single_order()) {
+        self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.<a href="order_book.html#0x7_order_book_get_single_match_for_taker">get_single_match_for_taker</a>(result)
+    } <b>else</b> {
+        self.<a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>.<a href="order_book.html#0x7_order_book_get_single_match_for_taker">get_single_match_for_taker</a>(
+            &<b>mut</b> self.price_time_idx, result, is_bid
+        )
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-reinsert_order"><a class="header" href="#function-reinsert_order">Function <code>reinsert_order</code> <a id="0x7_order_book_reinsert_order"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_reinsert_order">reinsert_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, reinsert_order: <a href="../aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, original_order: &<a href="../aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_reinsert_order">reinsert_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;,
+    reinsert_order: OrderMatchDetails&lt;M&gt;,
+    original_order: &OrderMatchDetails&lt;M&gt;
+) {
+    <b>if</b> (reinsert_order.is_single_order_from_match_details()) {
+        self.<a href="single_order_book.html#0x7_single_order_book">single_order_book</a>.<a href="order_book.html#0x7_order_book_reinsert_order">reinsert_order</a>(
+            &<b>mut</b> self.price_time_idx, reinsert_order, original_order
+        )
+    } <b>else</b> {
+        self.<a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>.<a href="order_book.html#0x7_order_book_reinsert_order">reinsert_order</a>(
+            &<b>mut</b> self.price_time_idx, reinsert_order, original_order
+        );
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-get_bulk_order_remaining_size"><a class="header" href="#function-get_bulk_order_remaining_size">Function <code>get_bulk_order_remaining_size</code> <a id="0x7_order_book_get_bulk_order_remaining_size"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_bulk_order_remaining_size">get_bulk_order_remaining_size</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, is_bid: bool): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_bulk_order_remaining_size">get_bulk_order_remaining_size</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, is_bid: bool
+): u64 {
+    self.<a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>.get_remaining_size(order_creator, is_bid)
+}
+</code></pre>
+</details>
+<h2 id="function-place_bulk_order"><a class="header" href="#function-place_bulk_order">Function <code>place_bulk_order</code> <a id="0x7_order_book_place_bulk_order"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_place_bulk_order">place_bulk_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_req: <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrderRequest">bulk_order_types::BulkOrderRequest</a>&lt;M&gt;): <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrderPlaceResponse">bulk_order_types::BulkOrderPlaceResponse</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_place_bulk_order">place_bulk_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_req: BulkOrderRequest&lt;M&gt;
+): BulkOrderPlaceResponse&lt;M&gt; {
+    self.<a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>.<a href="order_book.html#0x7_order_book_place_bulk_order">place_bulk_order</a>(&<b>mut</b> self.price_time_idx, order_req)
+}
+</code></pre>
+</details>
+<h2 id="function-get_bulk_order"><a class="header" href="#function-get_bulk_order">Function <code>get_bulk_order</code> <a id="0x7_order_book_get_bulk_order"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_bulk_order">get_bulk_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>): <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrder">bulk_order_types::BulkOrder</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_get_bulk_order">get_bulk_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>
+): BulkOrder&lt;M&gt; {
+    self.<a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>.<a href="order_book.html#0x7_order_book_get_bulk_order">get_bulk_order</a>(order_creator)
+}
+</code></pre>
+</details>
+<h2 id="function-cancel_bulk_order"><a class="header" href="#function-cancel_bulk_order">Function <code>cancel_bulk_order</code> <a id="0x7_order_book_cancel_bulk_order"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_cancel_bulk_order">cancel_bulk_order</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>): <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrder">bulk_order_types::BulkOrder</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_cancel_bulk_order">cancel_bulk_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>
+): BulkOrder&lt;M&gt; {
+    self.<a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>.<a href="order_book.html#0x7_order_book_cancel_bulk_order">cancel_bulk_order</a>(&<b>mut</b> self.price_time_idx, order_creator)
+}
+</code></pre>
+</details>
+<h2 id="function-cancel_bulk_order_at_price"><a class="header" href="#function-cancel_bulk_order_at_price">Function <code>cancel_bulk_order_at_price</code> <a id="0x7_order_book_cancel_bulk_order_at_price"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_cancel_bulk_order_at_price">cancel_bulk_order_at_price</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">order_book::OrderBook</a>&lt;M&gt;, order_creator: <b>address</b>, price: u64, is_bid: bool): (u64, <a href="../aptos-trading/bulk_order_types.html#0x5_bulk_order_types_BulkOrder">bulk_order_types::BulkOrder</a>&lt;M&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="order_book.html#0x7_order_book_cancel_bulk_order_at_price">cancel_bulk_order_at_price</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    self: &<b>mut</b> <a href="order_book.html#0x7_order_book_OrderBook">OrderBook</a>&lt;M&gt;,
+    order_creator: <b>address</b>,
+    price: u64,
+    is_bid: bool
+): (u64, BulkOrder&lt;M&gt;) {
+    self.<a href="bulk_order_book.html#0x7_bulk_order_book">bulk_order_book</a>.<a href="order_book.html#0x7_order_book_cancel_bulk_order_at_price">cancel_bulk_order_at_price</a>(
+        &<b>mut</b> self.price_time_idx,
+        order_creator,
+        price,
+        is_bid
+    )
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-experimental/market_types.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-experimental/order_book_utils.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-experimental/market_types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-experimental/order_book_utils.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

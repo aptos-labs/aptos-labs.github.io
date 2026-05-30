@@ -1,0 +1,605 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>capability - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/capability.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1capability"><a class="header" href="#module-0x1capability">Module <code>0x1::capability</code> <a id="0x1_capability"></a></a></h1>
+<p>A module which defines the basic concept of
+<a href="https://en.wikipedia.org/wiki/Capability-based_security"><em>capabilities</em></a> for managing access control.</p>
+<p>EXPERIMENTAL</p>
+<h2 id="overview"><a class="header" href="#overview">Overview <a id="@Overview_0"></a></a></h2>
+<p>A capability is a unforgeable token which testifies that a signer has authorized a certain operation.
+The token is valid during the transaction where it is obtained. Since the type <code><a href="capability.html#0x1_capability_Cap">capability::Cap</a></code> has
+no ability to be stored in global memory, capabilities cannot leak out of a transaction. For every function
+called within a transaction which has a capability as a parameter, it is guaranteed that the capability
+has been obtained via a proper signer-based authorization step previously in the transaction's execution.</p>
+<h3 id="usage"><a class="header" href="#usage">Usage <a id="@Usage_1"></a></a></h3>
+<p>Initializing and acquiring capabilities is usually encapsulated in a module with a type
+tag which can only be constructed by this module.</p>
+<pre><code>module Pkg::Feature {
+use std::capability::Cap;
+
+/// A type tag used in Cap&lt;Feature&gt;. Only this module can create an instance,
+/// and there is no public function other than Self::acquire which returns a value of this type.
+/// This way, this module has full control how Cap&lt;Feature&gt; is given out.
+struct Feature has drop {}
+
+/// Initializes this module.
+public fun initialize(s: &amp;signer) {
+// Create capability. This happens once at module initialization time.
+// One needs to provide a witness for being the owner of Feature
+// in the 2nd parameter.
+&lt;&lt;additional conditions allowing to initialize this capability&gt;&gt;
+capability::create&lt;Feature&gt;(s, &amp;Feature{});
+}
+
+/// Acquires the capability to work with this feature.
+public fun acquire(s: &amp;signer): Cap&lt;Feature&gt; {
+&lt;&lt;additional conditions allowing to acquire this capability&gt;&gt;
+capability::acquire&lt;Feature&gt;(s, &amp;Feature{});
+}
+
+/// Does something related to the feature. The caller must pass a Cap&lt;Feature&gt;.
+public fun do_something(_cap: Cap&lt;Feature&gt;) { ... }
+}
+</code></pre>
+<h3 id="delegation"><a class="header" href="#delegation">Delegation <a id="@Delegation_2"></a></a></h3>
+<p>Capabilities come with the optional feature of <em>delegation</em>. Via <code><a href="capability.html#0x1_capability_delegate">Self::delegate</a></code>, an owner of a capability
+can designate another signer to be also capable of acquiring the capability. Like the original creator,
+the delegate needs to present his signer to obtain the capability in his transactions. Delegation can
+be revoked via <code><a href="capability.html#0x1_capability_revoke">Self::revoke</a></code>, removing this access right from the delegate.</p>
+<p>While the basic authorization mechanism for delegates is the same as with core capabilities, the
+target of delegation might be subject of restrictions which need to be specified and verified. This can
+be done via global invariants in the specification language. For example, in order to prevent delegation
+all together for a capability, one can use the following invariant:</p>
+<pre><code>invariant forall a: address where capability::spec_has_cap&lt;Feature&gt;(a):
+len(capability::spec_delegates&lt;Feature&gt;(a)) == 0;
+</code></pre>
+<p>Similarly, the following invariant would enforce that delegates, if existent, must satisfy a certain
+predicate:</p>
+<pre><code>invariant forall a: address where capability::spec_has_cap&lt;Feature&gt;(a):
+forall d in capability::spec_delegates&lt;Feature&gt;(a):
+is_valid_delegate_for_feature(d);
+</code></pre>
+<ul>
+<li><a href="#@Overview_0">Overview</a>
+<ul>
+<li><a href="#@Usage_1">Usage</a></li>
+<li><a href="#@Delegation_2">Delegation</a></li>
+</ul>
+</li>
+<li><a href="#0x1_capability_Cap">Struct <code>Cap</code></a></li>
+<li><a href="#0x1_capability_LinearCap">Struct <code>LinearCap</code></a></li>
+<li><a href="#0x1_capability_CapState">Resource <code>CapState</code></a></li>
+<li><a href="#0x1_capability_CapDelegateState">Resource <code>CapDelegateState</code></a></li>
+<li><a href="#@Constants_3">Constants</a></li>
+<li><a href="#0x1_capability_create">Function <code>create</code></a></li>
+<li><a href="#0x1_capability_acquire">Function <code>acquire</code></a></li>
+<li><a href="#0x1_capability_acquire_linear">Function <code>acquire_linear</code></a></li>
+<li><a href="#0x1_capability_validate_acquire">Function <code>validate_acquire</code></a></li>
+<li><a href="#0x1_capability_root_addr">Function <code>root_addr</code></a></li>
+<li><a href="#0x1_capability_linear_root_addr">Function <code>linear_root_addr</code></a></li>
+<li><a href="#0x1_capability_delegate">Function <code>delegate</code></a></li>
+<li><a href="#0x1_capability_revoke">Function <code>revoke</code></a></li>
+<li><a href="#0x1_capability_remove_element">Function <code>remove_element</code></a></li>
+<li><a href="#0x1_capability_add_element">Function <code>add_element</code></a></li>
+<li><a href="#@Specification_4">Specification</a>
+<ul>
+<li><a href="#@Specification_4_create">Function <code>create</code></a></li>
+<li><a href="#@Specification_4_acquire">Function <code>acquire</code></a></li>
+<li><a href="#@Specification_4_acquire_linear">Function <code>acquire_linear</code></a></li>
+<li><a href="#@Specification_4_delegate">Function <code>delegate</code></a></li>
+<li><a href="#@Specification_4_revoke">Function <code>revoke</code></a></li>
+<li><a href="#@Specification_4_remove_element">Function <code>remove_element</code></a></li>
+<li><a href="#@Specification_4_add_element">Function <code>add_element</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+<h2 id="struct-cap"><a class="header" href="#struct-cap">Struct <code>Cap</code> <a id="0x1_capability_Cap"></a></a></h2>
+<p>The token representing an acquired capability. Cannot be stored in memory, but copied and dropped freely.</p>
+<pre><code><b>struct</b> <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt; <b>has</b> <b>copy</b>, drop
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>root: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-linearcap"><a class="header" href="#struct-linearcap">Struct <code>LinearCap</code> <a id="0x1_capability_LinearCap"></a></a></h2>
+<p>A linear version of a capability token. This can be used if an acquired capability should be enforced
+to be used only once for an authorization.</p>
+<pre><code><b>struct</b> <a href="capability.html#0x1_capability_LinearCap">LinearCap</a>&lt;Feature&gt; <b>has</b> drop
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>root: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-capstate"><a class="header" href="#resource-capstate">Resource <code>CapState</code> <a id="0x1_capability_CapState"></a></a></h2>
+<p>An internal data structure for representing a configured capability.</p>
+<pre><code><b>struct</b> <a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt; <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>delegates: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-capdelegatestate"><a class="header" href="#resource-capdelegatestate">Resource <code>CapDelegateState</code> <a id="0x1_capability_CapDelegateState"></a></a></h2>
+<p>An internal data structure for representing a configured delegated capability.</p>
+<pre><code><b>struct</b> <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt; <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>root: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_3"></a></a></h2>
+<p><a id="0x1_capability_ECAPABILITY_ALREADY_EXISTS"></a></p>
+<p>Capability resource already exists on the specified account</p>
+<pre><code><b>const</b> <a href="capability.html#0x1_capability_ECAPABILITY_ALREADY_EXISTS">ECAPABILITY_ALREADY_EXISTS</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_capability_ECAPABILITY_NOT_FOUND"></a></p>
+<p>Capability resource not found</p>
+<pre><code><b>const</b> <a href="capability.html#0x1_capability_ECAPABILITY_NOT_FOUND">ECAPABILITY_NOT_FOUND</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_capability_EDELEGATE"></a></p>
+<p>Account does not have delegated permissions</p>
+<pre><code><b>const</b> <a href="capability.html#0x1_capability_EDELEGATE">EDELEGATE</a>: u64 = 3;
+</code></pre>
+<h2 id="function-create"><a class="header" href="#function-create">Function <code>create</code> <a id="0x1_capability_create"></a></a></h2>
+<p>Creates a new capability class, owned by the passed signer. A caller must pass a witness that
+they own the <code>Feature</code> type parameter.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_create">create</a>&lt;Feature&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_create">create</a>&lt;Feature&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature) {
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+    <b>assert</b>!(!<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(addr), <a href="../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="capability.html#0x1_capability_ECAPABILITY_ALREADY_EXISTS">ECAPABILITY_ALREADY_EXISTS</a>));
+    <b>move_to</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(owner, <a href="capability.html#0x1_capability_CapState">CapState</a> { delegates: <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>() });
+}
+</code></pre>
+</details>
+<h2 id="function-acquire"><a class="header" href="#function-acquire">Function <code>acquire</code> <a id="0x1_capability_acquire"></a></a></h2>
+<p>Acquires a capability token. Only the owner of the capability class, or an authorized delegate,
+can succeed with this operation. A caller must pass a witness that they own the <code>Feature</code> type
+parameter.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire">acquire</a>&lt;Feature&gt;(requester: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature): <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire">acquire</a>&lt;Feature&gt;(requester: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature): <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt;
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a> {
+    <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt; { root: <a href="capability.html#0x1_capability_validate_acquire">validate_acquire</a>&lt;Feature&gt;(requester) }
+}
+</code></pre>
+</details>
+<h2 id="function-acquire_linear"><a class="header" href="#function-acquire_linear">Function <code>acquire_linear</code> <a id="0x1_capability_acquire_linear"></a></a></h2>
+<p>Acquires a linear capability token. It is up to the module which owns <code>Feature</code> to decide
+whether to expose a linear or non-linear capability.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire_linear">acquire_linear</a>&lt;Feature&gt;(requester: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature): <a href="capability.html#0x1_capability_LinearCap">capability::LinearCap</a>&lt;Feature&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire_linear">acquire_linear</a>&lt;Feature&gt;(requester: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature): <a href="capability.html#0x1_capability_LinearCap">LinearCap</a>&lt;Feature&gt;
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a> {
+    <a href="capability.html#0x1_capability_LinearCap">LinearCap</a>&lt;Feature&gt; { root: <a href="capability.html#0x1_capability_validate_acquire">validate_acquire</a>&lt;Feature&gt;(requester) }
+}
+</code></pre>
+</details>
+<h2 id="function-validate_acquire"><a class="header" href="#function-validate_acquire">Function <code>validate_acquire</code> <a id="0x1_capability_validate_acquire"></a></a></h2>
+<p>Helper to validate an acquire. Returns the root address of the capability.</p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_validate_acquire">validate_acquire</a>&lt;Feature&gt;(requester: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_validate_acquire">validate_acquire</a>&lt;Feature&gt;(requester: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <b>address</b>
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a> {
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(requester);
+    <b>if</b> (<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr)) {
+        <b>let</b> root_addr = <b>borrow_global</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr).root;
+        // double check that requester is actually registered <b>as</b> a delegate
+        <b>assert</b>!(<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(root_addr), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="capability.html#0x1_capability_EDELEGATE">EDELEGATE</a>));
+        <b>assert</b>!(<b>borrow_global</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(root_addr).delegates.contains(&addr),
+            <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="capability.html#0x1_capability_EDELEGATE">EDELEGATE</a>));
+        root_addr
+    } <b>else</b> {
+        <b>assert</b>!(<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(addr), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="capability.html#0x1_capability_ECAPABILITY_NOT_FOUND">ECAPABILITY_NOT_FOUND</a>));
+        addr
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-root_addr"><a class="header" href="#function-root_addr">Function <code>root_addr</code> <a id="0x1_capability_root_addr"></a></a></h2>
+<p>Returns the root address associated with the given capability token. Only the owner
+of the feature can do this.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_root_addr">root_addr</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &Feature): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_root_addr">root_addr</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt;, _feature_witness: &Feature): <b>address</b> {
+    self.root
+}
+</code></pre>
+</details>
+<h2 id="function-linear_root_addr"><a class="header" href="#function-linear_root_addr">Function <code>linear_root_addr</code> <a id="0x1_capability_linear_root_addr"></a></a></h2>
+<p>Returns the root address associated with the given linear capability token.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_linear_root_addr">linear_root_addr</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_LinearCap">capability::LinearCap</a>&lt;Feature&gt;, _feature_witness: &Feature): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_linear_root_addr">linear_root_addr</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_LinearCap">LinearCap</a>&lt;Feature&gt;, _feature_witness: &Feature): <b>address</b> {
+    self.root
+}
+</code></pre>
+</details>
+<h2 id="function-delegate"><a class="header" href="#function-delegate">Function <code>delegate</code> <a id="0x1_capability_delegate"></a></a></h2>
+<p>Registers a delegation relation. If the relation already exists, this function does
+nothing.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_delegate">delegate</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &Feature, <b>to</b>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_delegate">delegate</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt;, _feature_witness: &Feature, <b>to</b>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a> {
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<b>to</b>);
+    <b>if</b> (<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr)) <b>return</b>;
+    <b>move_to</b>(<b>to</b>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt; { root: self.root });
+    <a href="capability.html#0x1_capability_add_element">add_element</a>(&<b>mut</b> <b>borrow_global_mut</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(self.root).delegates, addr);
+}
+</code></pre>
+</details>
+<h2 id="function-revoke"><a class="header" href="#function-revoke">Function <code>revoke</code> <a id="0x1_capability_revoke"></a></a></h2>
+<p>Revokes a delegation relation. If no relation exists, this function does nothing.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_revoke">revoke</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &Feature, from: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_revoke">revoke</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">Cap</a>&lt;Feature&gt;, _feature_witness: &Feature, from: <b>address</b>)
+<b>acquires</b> <a href="capability.html#0x1_capability_CapState">CapState</a>, <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>
+{
+    <b>if</b> (!<b>exists</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(from)) <b>return</b>;
+    <b>let</b> <a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a> { root: _root } = <b>move_from</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(from);
+    <a href="capability.html#0x1_capability_remove_element">remove_element</a>(&<b>mut</b> <b>borrow_global_mut</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(self.root).delegates, &from);
+}
+</code></pre>
+</details>
+<h2 id="function-remove_element"><a class="header" href="#function-remove_element">Function <code>remove_element</code> <a id="0x1_capability_remove_element"></a></a></h2>
+<p>Helper to remove an element from a vector.</p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_remove_element">remove_element</a>&lt;E: drop&gt;(v: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: &E)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_remove_element">remove_element</a>&lt;E: drop&gt;(v: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: &E) {
+    <b>let</b> (found, index) = v.index_of(x);
+    <b>if</b> (found) {
+        v.remove(index);
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-add_element"><a class="header" href="#function-add_element">Function <code>add_element</code> <a id="0x1_capability_add_element"></a></a></h2>
+<p>Helper to add an element to a vector.</p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_add_element">add_element</a>&lt;E: drop&gt;(v: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: E)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_add_element">add_element</a>&lt;E: drop&gt;(v: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: E) {
+    <b>if</b> (!v.contains(&x)) {
+        v.push_back(x)
+    }
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_4"></a></a></h2>
+<p>Helper specification function to check whether a capability exists at address.</p>
+<p><a id="0x1_capability_spec_has_cap"></a></p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(addr: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(addr)
+}
+</code></pre>
+<p>Helper specification function to obtain the delegates of a capability.</p>
+<p><a id="0x1_capability_spec_delegates"></a></p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_spec_delegates">spec_delegates</a>&lt;Feature&gt;(addr: <b>address</b>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt; {
+   <b>global</b>&lt;<a href="capability.html#0x1_capability_CapState">CapState</a>&lt;Feature&gt;&gt;(addr).delegates
+}
+</code></pre>
+<p>Helper specification function to check whether a delegated capability exists at address.</p>
+<p><a id="0x1_capability_spec_has_delegate_cap"></a></p>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr)
+}
+</code></pre>
+<h3 id="function-create-1"><a class="header" href="#function-create-1">Function <code>create</code> <a id="@Specification_4_create"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_create">create</a>&lt;Feature&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature)
+</code></pre>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>aborts_if</b> <a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(addr);
+<b>ensures</b> <a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(addr);
+</code></pre>
+<h3 id="function-acquire-1"><a class="header" href="#function-acquire-1">Function <code>acquire</code> <a id="@Specification_4_acquire"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire">acquire</a>&lt;Feature&gt;(requester: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature): <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;
+</code></pre>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(requester);
+<b>let</b> root_addr = <b>global</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr).root;
+<b>include</b> <a href="capability.html#0x1_capability_AcquireSchema">AcquireSchema</a>&lt;Feature&gt;;
+<b>ensures</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) ==&gt; result.root == root_addr;
+<b>ensures</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) ==&gt; result.root == addr;
+</code></pre>
+<h3 id="function-acquire_linear-1"><a class="header" href="#function-acquire_linear-1">Function <code>acquire_linear</code> <a id="@Specification_4_acquire_linear"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_acquire_linear">acquire_linear</a>&lt;Feature&gt;(requester: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _feature_witness: &Feature): <a href="capability.html#0x1_capability_LinearCap">capability::LinearCap</a>&lt;Feature&gt;
+</code></pre>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(requester);
+<b>let</b> root_addr = <b>global</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr).root;
+<b>include</b> <a href="capability.html#0x1_capability_AcquireSchema">AcquireSchema</a>&lt;Feature&gt;;
+<b>ensures</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) ==&gt; result.root == root_addr;
+<b>ensures</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) ==&gt; result.root == addr;
+</code></pre>
+<p><a id="0x1_capability_AcquireSchema"></a></p>
+<pre><code><b>schema</b> <a href="capability.html#0x1_capability_AcquireSchema">AcquireSchema</a>&lt;Feature&gt; {
+    addr: <b>address</b>;
+    root_addr: <b>address</b>;
+    <b>aborts_if</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) && !<a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(root_addr);
+    <b>aborts_if</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) && !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<a href="capability.html#0x1_capability_spec_delegates">spec_delegates</a>&lt;Feature&gt;(root_addr), addr);
+    <b>aborts_if</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr) && !<a href="capability.html#0x1_capability_spec_has_cap">spec_has_cap</a>&lt;Feature&gt;(addr);
+}
+</code></pre>
+<h3 id="function-delegate-1"><a class="header" href="#function-delegate-1">Function <code>delegate</code> <a id="@Specification_4_delegate"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_delegate">delegate</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &Feature, <b>to</b>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<b>to</b>);
+<b>ensures</b> <a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr);
+<b>ensures</b> !<b>old</b>(<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr)) ==&gt; <b>global</b>&lt;<a href="capability.html#0x1_capability_CapDelegateState">CapDelegateState</a>&lt;Feature&gt;&gt;(addr).root == self.root;
+<b>ensures</b> !<b>old</b>(<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(addr)) ==&gt; <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<a href="capability.html#0x1_capability_spec_delegates">spec_delegates</a>&lt;Feature&gt;(self.root), addr);
+</code></pre>
+<h3 id="function-revoke-1"><a class="header" href="#function-revoke-1">Function <code>revoke</code> <a id="@Specification_4_revoke"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="capability.html#0x1_capability_revoke">revoke</a>&lt;Feature&gt;(self: <a href="capability.html#0x1_capability_Cap">capability::Cap</a>&lt;Feature&gt;, _feature_witness: &Feature, from: <b>address</b>)
+</code></pre>
+<pre><code><b>ensures</b> !<a href="capability.html#0x1_capability_spec_has_delegate_cap">spec_has_delegate_cap</a>&lt;Feature&gt;(from);
+</code></pre>
+<h3 id="function-remove_element-1"><a class="header" href="#function-remove_element-1">Function <code>remove_element</code> <a id="@Specification_4_remove_element"></a></a></h3>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_remove_element">remove_element</a>&lt;E: drop&gt;(v: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: &E)
+</code></pre>
+<h3 id="function-add_element-1"><a class="header" href="#function-add_element-1">Function <code>add_element</code> <a id="@Specification_4_add_element"></a></a></h3>
+<pre><code><b>fun</b> <a href="capability.html#0x1_capability_add_element">add_element</a>&lt;E: drop&gt;(v: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;E&gt;, x: E)
+</code></pre>
+<pre><code><b>ensures</b> <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(v, x);
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/bn254_algebra.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/comparator.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/bn254_algebra.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/comparator.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

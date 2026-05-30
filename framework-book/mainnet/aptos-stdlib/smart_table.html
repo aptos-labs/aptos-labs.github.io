@@ -1,0 +1,1170 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>smart_table - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/smart_table.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1smart_table"><a class="header" href="#module-0x1smart_table">Module <code>0x1::smart_table</code> <a id="0x1_smart_table"></a></a></h1>
+<p>A smart table implementation based on linear hashing. (https://en.wikipedia.org/wiki/Linear_hashing)
+Compare to Table, it uses less storage slots but has higher chance of collision, a trade-off between space and time.
+Compare to other dynamic hashing implementation, linear hashing splits one bucket a time instead of doubling buckets
+when expanding to avoid unexpected gas cost.
+SmartTable uses faster hash function SipHash instead of cryptographically secure hash functions like sha3-256 since
+it tolerates collisions.</p>
+<p>DEPRECATED: since it's implementation is inneficient, it
+has been deprecated in favor of <code>big_ordered_map.<b>move</b></code>.</p>
+<ul>
+<li><a href="#0x1_smart_table_Entry">Struct <code>Entry</code></a></li>
+<li><a href="#0x1_smart_table_SmartTable">Struct <code>SmartTable</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_smart_table_new">Function <code>new</code></a></li>
+<li><a href="#0x1_smart_table_new_with_config">Function <code>new_with_config</code></a></li>
+<li><a href="#0x1_smart_table_destroy_empty">Function <code>destroy_empty</code></a></li>
+<li><a href="#0x1_smart_table_destroy">Function <code>destroy</code></a></li>
+<li><a href="#0x1_smart_table_clear">Function <code>clear</code></a></li>
+<li><a href="#0x1_smart_table_add">Function <code>add</code></a></li>
+<li><a href="#0x1_smart_table_add_all">Function <code>add_all</code></a></li>
+<li><a href="#0x1_smart_table_unzip_entries">Function <code>unzip_entries</code></a></li>
+<li><a href="#0x1_smart_table_to_simple_map">Function <code>to_simple_map</code></a></li>
+<li><a href="#0x1_smart_table_keys">Function <code>keys</code></a></li>
+<li><a href="#0x1_smart_table_keys_paginated">Function <code>keys_paginated</code></a></li>
+<li><a href="#0x1_smart_table_split_one_bucket">Function <code>split_one_bucket</code></a></li>
+<li><a href="#0x1_smart_table_bucket_index">Function <code>bucket_index</code></a></li>
+<li><a href="#0x1_smart_table_borrow">Function <code>borrow</code></a></li>
+<li><a href="#0x1_smart_table_borrow_with_default">Function <code>borrow_with_default</code></a></li>
+<li><a href="#0x1_smart_table_borrow_mut">Function <code>borrow_mut</code></a></li>
+<li><a href="#0x1_smart_table_borrow_mut_with_default">Function <code>borrow_mut_with_default</code></a></li>
+<li><a href="#0x1_smart_table_contains">Function <code>contains</code></a></li>
+<li><a href="#0x1_smart_table_remove">Function <code>remove</code></a></li>
+<li><a href="#0x1_smart_table_upsert">Function <code>upsert</code></a></li>
+<li><a href="#0x1_smart_table_length">Function <code>length</code></a></li>
+<li><a href="#0x1_smart_table_load_factor">Function <code>load_factor</code></a></li>
+<li><a href="#0x1_smart_table_update_split_load_threshold">Function <code>update_split_load_threshold</code></a></li>
+<li><a href="#0x1_smart_table_update_target_bucket_size">Function <code>update_target_bucket_size</code></a></li>
+<li><a href="#0x1_smart_table_for_each_ref">Function <code>for_each_ref</code></a></li>
+<li><a href="#0x1_smart_table_for_each_mut">Function <code>for_each_mut</code></a></li>
+<li><a href="#0x1_smart_table_map_ref">Function <code>map_ref</code></a></li>
+<li><a href="#0x1_smart_table_any">Function <code>any</code></a></li>
+<li><a href="#0x1_smart_table_borrow_kv">Function <code>borrow_kv</code></a></li>
+<li><a href="#0x1_smart_table_borrow_kv_mut">Function <code>borrow_kv_mut</code></a></li>
+<li><a href="#0x1_smart_table_num_buckets">Function <code>num_buckets</code></a></li>
+<li><a href="#0x1_smart_table_borrow_buckets">Function <code>borrow_buckets</code></a></li>
+<li><a href="#0x1_smart_table_borrow_buckets_mut">Function <code>borrow_buckets_mut</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_SmartTable">Struct <code>SmartTable</code></a></li>
+<li><a href="#@Specification_1_new_with_config">Function <code>new_with_config</code></a></li>
+<li><a href="#@Specification_1_destroy">Function <code>destroy</code></a></li>
+<li><a href="#@Specification_1_clear">Function <code>clear</code></a></li>
+<li><a href="#@Specification_1_add_all">Function <code>add_all</code></a></li>
+<li><a href="#@Specification_1_to_simple_map">Function <code>to_simple_map</code></a></li>
+<li><a href="#@Specification_1_keys">Function <code>keys</code></a></li>
+<li><a href="#@Specification_1_keys_paginated">Function <code>keys_paginated</code></a></li>
+<li><a href="#@Specification_1_split_one_bucket">Function <code>split_one_bucket</code></a></li>
+<li><a href="#@Specification_1_bucket_index">Function <code>bucket_index</code></a></li>
+<li><a href="#@Specification_1_borrow_with_default">Function <code>borrow_with_default</code></a></li>
+<li><a href="#@Specification_1_load_factor">Function <code>load_factor</code></a></li>
+<li><a href="#@Specification_1_update_split_load_threshold">Function <code>update_split_load_threshold</code></a></li>
+<li><a href="#@Specification_1_update_target_bucket_size">Function <code>update_target_bucket_size</code></a></li>
+<li><a href="#@Specification_1_borrow_kv">Function <code>borrow_kv</code></a></li>
+<li><a href="#@Specification_1_borrow_kv_mut">Function <code>borrow_kv_mut</code></a></li>
+<li><a href="#@Specification_1_num_buckets">Function <code>num_buckets</code></a></li>
+<li><a href="#@Specification_1_borrow_buckets">Function <code>borrow_buckets</code></a></li>
+<li><a href="#@Specification_1_borrow_buckets_mut">Function <code>borrow_buckets_mut</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="hash.html#0x1_aptos_hash">0x1::aptos_hash</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="math64.html#0x1_math64">0x1::math64</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="simple_map.html#0x1_simple_map">0x1::simple_map</a>;
+<b>use</b> <a href="table_with_length.html#0x1_table_with_length">0x1::table_with_length</a>;
+<b>use</b> <a href="type_info.html#0x1_type_info">0x1::type_info</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+<h2 id="struct-entry"><a class="header" href="#struct-entry">Struct <code>Entry</code> <a id="0x1_smart_table_Entry"></a></a></h2>
+<p>SmartTable entry contains both the key and value.</p>
+<pre><code><b>struct</b> <a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="../move-stdlib/hash.html#0x1_hash">hash</a>: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>key: K</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>value: V</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-smarttable"><a class="header" href="#struct-smarttable">Struct <code>SmartTable</code> <a id="0x1_smart_table_SmartTable"></a></a></h2>
+<pre><code><b>struct</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt; <b>has</b> store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>buckets: <a href="table_with_length.html#0x1_table_with_length_TableWithLength">table_with_length::TableWithLength</a>&lt;u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>num_buckets: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>level: u8</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>split_load_threshold: u8</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>target_bucket_size: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_smart_table_ENOT_EMPTY"></a></p>
+<p>Cannot destroy non-empty hashmap</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_ENOT_EMPTY">ENOT_EMPTY</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_smart_table_ENOT_FOUND"></a></p>
+<p>Key not found in the smart table</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_ENOT_FOUND">ENOT_FOUND</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_smart_table_EALREADY_EXIST"></a></p>
+<p>Key already exists</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_EALREADY_EXIST">EALREADY_EXIST</a>: u64 = 4;
+</code></pre>
+<p><a id="0x1_smart_table_EEXCEED_MAX_BUCKET_SIZE"></a></p>
+<p>Invalid target bucket size.</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_EEXCEED_MAX_BUCKET_SIZE">EEXCEED_MAX_BUCKET_SIZE</a>: u64 = 7;
+</code></pre>
+<p><a id="0x1_smart_table_EINVALID_BUCKET_INDEX"></a></p>
+<p>Invalid bucket index.</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_EINVALID_BUCKET_INDEX">EINVALID_BUCKET_INDEX</a>: u64 = 8;
+</code></pre>
+<p><a id="0x1_smart_table_EINVALID_LOAD_THRESHOLD_PERCENT"></a></p>
+<p>Invalid load threshold percent to trigger split.</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_EINVALID_LOAD_THRESHOLD_PERCENT">EINVALID_LOAD_THRESHOLD_PERCENT</a>: u64 = 5;
+</code></pre>
+<p><a id="0x1_smart_table_EINVALID_TARGET_BUCKET_SIZE"></a></p>
+<p>Invalid target bucket size.</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_EINVALID_TARGET_BUCKET_SIZE">EINVALID_TARGET_BUCKET_SIZE</a>: u64 = 6;
+</code></pre>
+<p><a id="0x1_smart_table_EINVALID_VECTOR_INDEX"></a></p>
+<p>Invalid vector index within a bucket.</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_EINVALID_VECTOR_INDEX">EINVALID_VECTOR_INDEX</a>: u64 = 9;
+</code></pre>
+<p><a id="0x1_smart_table_EZERO_CAPACITY"></a></p>
+<p>Smart table capacity must be larger than 0</p>
+<pre><code><b>const</b> <a href="smart_table.html#0x1_smart_table_EZERO_CAPACITY">EZERO_CAPACITY</a>: u64 = 2;
+</code></pre>
+<h2 id="function-new"><a class="header" href="#function-new">Function <code>new</code> <a id="0x1_smart_table_new"></a></a></h2>
+<p>Create an empty SmartTable with default configurations.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_new">new</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(): <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_new">new</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(): <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt; {
+    <a href="smart_table.html#0x1_smart_table_new_with_config">new_with_config</a>&lt;K, V&gt;(0, 0, 0)
+}
+</code></pre>
+</details>
+<h2 id="function-new_with_config"><a class="header" href="#function-new_with_config">Function <code>new_with_config</code> <a id="0x1_smart_table_new_with_config"></a></a></h2>
+<p>Create an empty SmartTable with customized configurations.
+<code>num_initial_buckets</code>: The number of buckets on initialization. 0 means using default value.
+<code>split_load_threshold</code>: The percent number which once reached, split will be triggered. 0 means using default
+value.
+<code>target_bucket_size</code>: The target number of entries per bucket, though not guaranteed. 0 means not set and will
+dynamically assgined by the contract code.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_new_with_config">new_with_config</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(num_initial_buckets: u64, split_load_threshold: u8, target_bucket_size: u64): <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_new_with_config">new_with_config</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(
+    num_initial_buckets: u64,
+    split_load_threshold: u8,
+    target_bucket_size: u64
+): <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt; {
+    <b>assert</b>!(split_load_threshold &lt;= 100, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="smart_table.html#0x1_smart_table_EINVALID_LOAD_THRESHOLD_PERCENT">EINVALID_LOAD_THRESHOLD_PERCENT</a>));
+    <b>let</b> buckets = <a href="table_with_length.html#0x1_table_with_length_new">table_with_length::new</a>();
+    buckets.<a href="smart_table.html#0x1_smart_table_add">add</a>(0, <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>());
+    <b>let</b> <a href="table.html#0x1_table">table</a> = <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a> {
+        buckets,
+        num_buckets: 1,
+        level: 0,
+        size: 0,
+        // The default split load threshold is 75%.
+        split_load_threshold: <b>if</b> (split_load_threshold == 0) { 75 } <b>else</b> { split_load_threshold },
+        target_bucket_size,
+    };
+    // The default number of initial buckets is 2.
+    <b>if</b> (num_initial_buckets == 0) {
+        num_initial_buckets = 2;
+    };
+    <b>while</b> (num_initial_buckets &gt; 1) {
+        num_initial_buckets -= 1;
+        <a href="table.html#0x1_table">table</a>.<a href="smart_table.html#0x1_smart_table_split_one_bucket">split_one_bucket</a>();
+    };
+    <a href="table.html#0x1_table">table</a>
+}
+</code></pre>
+</details>
+<h2 id="function-destroy_empty"><a class="header" href="#function-destroy_empty">Function <code>destroy_empty</code> <a id="0x1_smart_table_destroy_empty"></a></a></h2>
+<p>Destroy empty table.
+Aborts if it's not empty.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_destroy_empty">destroy_empty</a>&lt;K, V&gt;(self: <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_destroy_empty">destroy_empty</a>&lt;K, V&gt;(self: <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;) {
+    <b>assert</b>!(self.size == 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="smart_table.html#0x1_smart_table_ENOT_EMPTY">ENOT_EMPTY</a>));
+    for (i in 0..self.num_buckets) {
+        self.buckets.<a href="smart_table.html#0x1_smart_table_remove">remove</a>(i).<a href="smart_table.html#0x1_smart_table_destroy_empty">destroy_empty</a>();
+    };
+    <b>let</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a> { buckets, num_buckets: _, level: _, size: _, split_load_threshold: _, target_bucket_size: _ } = self;
+    buckets.<a href="smart_table.html#0x1_smart_table_destroy_empty">destroy_empty</a>();
+}
+</code></pre>
+</details>
+<h2 id="function-destroy"><a class="header" href="#function-destroy">Function <code>destroy</code> <a id="0x1_smart_table_destroy"></a></a></h2>
+<p>Destroy a table completely when V has <code>drop</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_destroy">destroy</a>&lt;K: drop, V: drop&gt;(self: <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_destroy">destroy</a>&lt;K: drop, V: drop&gt;(self: <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;) {
+    self.<a href="smart_table.html#0x1_smart_table_clear">clear</a>();
+    self.<a href="smart_table.html#0x1_smart_table_destroy_empty">destroy_empty</a>();
+}
+</code></pre>
+</details>
+<h2 id="function-clear"><a class="header" href="#function-clear">Function <code>clear</code> <a id="0x1_smart_table_clear"></a></a></h2>
+<p>Clear a table completely when T has <code>drop</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_clear">clear</a>&lt;K: drop, V: drop&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_clear">clear</a>&lt;K: drop, V: drop&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;) {
+    *self.buckets.<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(0) = <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
+    for (i in 1..self.num_buckets) {
+        self.buckets.<a href="smart_table.html#0x1_smart_table_remove">remove</a>(i);
+    };
+    self.num_buckets = 1;
+    self.level = 0;
+    self.size = 0;
+}
+</code></pre>
+</details>
+<h2 id="function-add"><a class="header" href="#function-add">Function <code>add</code> <a id="0x1_smart_table_add"></a></a></h2>
+<p>Add (key, value) pair in the hash map, it may grow one bucket if current load factor exceeds the threshold.
+Note it may not split the actual overflowed bucket. Instead, it was determined by <code>num_buckets</code> and <code>level</code>.
+For standard linear hash algorithm, it is stored as a variable but <code>num_buckets</code> here could be leveraged.
+Abort if <code>key</code> already exists.
+Note: This method may occasionally cost much more gas when triggering bucket split.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_add">add</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K, value: V)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_add">add</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, key: K, value: V) {
+    <b>let</b> <a href="../move-stdlib/hash.html#0x1_hash">hash</a> = sip_hash_from_value(&key);
+    <b>let</b> index = <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(self.level, self.num_buckets, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>);
+    <b>let</b> bucket = self.buckets.<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(index);
+    // We set a per-bucket limit here <b>with</b> a upper bound (10000) that nobody should normally reach.
+    <b>assert</b>!(bucket.<a href="smart_table.html#0x1_smart_table_length">length</a>() &lt;= 10000, <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="smart_table.html#0x1_smart_table_EEXCEED_MAX_BUCKET_SIZE">EEXCEED_MAX_BUCKET_SIZE</a>));
+    <b>assert</b>!(bucket.all(| entry | {
+        <b>let</b> e: &<a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt; = entry;
+        &e.key != &key
+    }), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="smart_table.html#0x1_smart_table_EALREADY_EXIST">EALREADY_EXIST</a>));
+    <b>let</b> e = <a href="smart_table.html#0x1_smart_table_Entry">Entry</a> { <a href="../move-stdlib/hash.html#0x1_hash">hash</a>, key, value };
+    <b>if</b> (self.target_bucket_size == 0) {
+        <b>let</b> estimated_entry_size = max(size_of_val(&e), 1);
+        self.target_bucket_size = max(1024 /* free_write_quota */ / estimated_entry_size, 1);
+    };
+    bucket.push_back(e);
+    self.size += 1;
+
+    <b>if</b> (self.<a href="smart_table.html#0x1_smart_table_load_factor">load_factor</a>() &gt;= (self.split_load_threshold <b>as</b> u64)) {
+        self.<a href="smart_table.html#0x1_smart_table_split_one_bucket">split_one_bucket</a>();
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-add_all"><a class="header" href="#function-add_all">Function <code>add_all</code> <a id="0x1_smart_table_add_all"></a></a></h2>
+<p>Add multiple key/value pairs to the smart table. The keys must not already exist.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_add_all">add_all</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_add_all">add_all</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;) {
+    keys.zip(values, |key, value| { self.<a href="smart_table.html#0x1_smart_table_add">add</a>(key, value); });
+}
+</code></pre>
+</details>
+<h2 id="function-unzip_entries"><a class="header" href="#function-unzip_entries">Function <code>unzip_entries</code> <a id="0x1_smart_table_unzip_entries"></a></a></h2>
+<pre><code><b>fun</b> <a href="smart_table.html#0x1_smart_table_unzip_entries">unzip_entries</a>&lt;K: <b>copy</b>, V: <b>copy</b>&gt;(entries: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="smart_table.html#0x1_smart_table_unzip_entries">unzip_entries</a>&lt;K: <b>copy</b>, V: <b>copy</b>&gt;(entries: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt;&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;) {
+    <b>let</b> keys = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+    <b>let</b> values = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+    entries.<a href="smart_table.html#0x1_smart_table_for_each_ref">for_each_ref</a>(|e|{
+        <b>let</b> entry: &<a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt; = e;
+        keys.push_back(entry.key);
+        values.push_back(entry.value);
+    });
+    (keys, values)
+}
+</code></pre>
+</details>
+<h2 id="function-to_simple_map"><a class="header" href="#function-to_simple_map">Function <code>to_simple_map</code> <a id="0x1_smart_table_to_simple_map"></a></a></h2>
+<p>Convert a smart table to a simple_map, which is supposed to be called mostly by view functions to get an atomic
+view of the whole table.
+Disclaimer: This function may be costly as the smart table may be huge in size. Use it at your own discretion.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_to_simple_map">to_simple_map</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;K, V&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_to_simple_map">to_simple_map</a>&lt;K: store + <b>copy</b> + drop, V: store + <b>copy</b>&gt;(
+    self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;,
+): SimpleMap&lt;K, V&gt; {
+    <b>let</b> res = <a href="simple_map.html#0x1_simple_map_new">simple_map::new</a>&lt;K, V&gt;();
+    for (i in 0..self.num_buckets) {
+        <b>let</b> (keys, values) = <a href="smart_table.html#0x1_smart_table_unzip_entries">unzip_entries</a>(self.buckets.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(i));
+        res.<a href="smart_table.html#0x1_smart_table_add_all">add_all</a>(keys, values);
+    };
+    res
+}
+</code></pre>
+</details>
+<h2 id="function-keys"><a class="header" href="#function-keys">Function <code>keys</code> <a id="0x1_smart_table_keys"></a></a></h2>
+<p>Get all keys in a smart table.</p>
+<p>For a large enough smart table this function will fail due to execution gas limits, and
+<code>keys_paginated</code> should be used instead.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_keys">keys</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_keys">keys</a>&lt;K: store + <b>copy</b> + drop, V: store + <b>copy</b>&gt;(
+    self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt; {
+    <b>let</b> (keys, _, _) = self.<a href="smart_table.html#0x1_smart_table_keys_paginated">keys_paginated</a>(0, 0, self.<a href="smart_table.html#0x1_smart_table_length">length</a>());
+    keys
+}
+</code></pre>
+</details>
+<h2 id="function-keys_paginated"><a class="header" href="#function-keys_paginated">Function <code>keys_paginated</code> <a id="0x1_smart_table_keys_paginated"></a></a></h2>
+<p>Get keys from a smart table, paginated.</p>
+<p>This function can be used to paginate all keys in a large smart table outside of runtime,
+e.g. through chained view function calls. The maximum <code>num_keys_to_get</code> before hitting gas
+limits depends on the data types in the smart table.</p>
+<p>When starting pagination, pass <code>starting_bucket_index</code> = <code>starting_vector_index</code> = 0.</p>
+<p>The function will then return a vector of keys, an optional bucket index, and an optional
+vector index. The unpacked return indices can then be used as inputs to another pagination
+call, which will return a vector of more keys. This process can be repeated until the
+returned bucket index and vector index value options are both none, which means that
+pagination is complete. For an example, see <code>test_keys()</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_keys_paginated">keys_paginated</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, starting_bucket_index: u64, starting_vector_index: u64, num_keys_to_get: u64): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_keys_paginated">keys_paginated</a>&lt;K: store + <b>copy</b> + drop, V: store + <b>copy</b>&gt;(
+    self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;,
+    starting_bucket_index: u64,
+    starting_vector_index: u64,
+    num_keys_to_get: u64,
+): (
+    <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;,
+    Option&lt;u64&gt;,
+    Option&lt;u64&gt;,
+) {
+    <b>let</b> num_buckets = self.num_buckets;
+    <b>let</b> buckets_ref = &self.buckets;
+    <b>assert</b>!(starting_bucket_index &lt; num_buckets, <a href="smart_table.html#0x1_smart_table_EINVALID_BUCKET_INDEX">EINVALID_BUCKET_INDEX</a>);
+    <b>let</b> bucket_ref = buckets_ref.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(starting_bucket_index);
+    <b>let</b> bucket_length = bucket_ref.<a href="smart_table.html#0x1_smart_table_length">length</a>();
+    <b>assert</b>!(
+        // In the general case, starting <a href="../move-stdlib/vector.html#0x1_vector">vector</a> index should never be equal <b>to</b> bucket length
+        // because then iteration will attempt <b>to</b> borrow a <a href="../move-stdlib/vector.html#0x1_vector">vector</a> element that is out of bounds.
+        // However starting <a href="../move-stdlib/vector.html#0x1_vector">vector</a> index can be equal <b>to</b> bucket length in the special case of
+        // starting iteration at the beginning of an empty bucket since buckets are never
+        // destroyed, only emptied.
+        starting_vector_index &lt; bucket_length || starting_vector_index == 0,
+        <a href="smart_table.html#0x1_smart_table_EINVALID_VECTOR_INDEX">EINVALID_VECTOR_INDEX</a>
+    );
+    <b>let</b> keys = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+    <b>if</b> (num_keys_to_get == 0) <b>return</b>
+        (keys, <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(starting_bucket_index), <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(starting_vector_index));
+    for (bucket_index in starting_bucket_index..num_buckets) {
+        bucket_ref = buckets_ref.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(bucket_index);
+        bucket_length = bucket_ref.<a href="smart_table.html#0x1_smart_table_length">length</a>();
+        for (vector_index in starting_vector_index..bucket_length) {
+            keys.push_back(bucket_ref.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(vector_index).key);
+            num_keys_to_get -= 1;
+            <b>if</b> (num_keys_to_get == 0) {
+                vector_index += 1;
+                <b>return</b> <b>if</b> (vector_index == bucket_length) {
+                    bucket_index += 1;
+                    <b>if</b> (<a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a> &lt; num_buckets) {
+                        (keys, <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(bucket_index), <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(0))
+                    } <b>else</b> {
+                        (keys, <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>())
+                    }
+                } <b>else</b> {
+                    (keys, <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(bucket_index), <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(vector_index))
+                }
+            };
+        };
+        starting_vector_index = 0; // Start parsing the next bucket at <a href="../move-stdlib/vector.html#0x1_vector">vector</a> index 0.
+    };
+    (keys, <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(), <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>())
+}
+</code></pre>
+</details>
+<h2 id="function-split_one_bucket"><a class="header" href="#function-split_one_bucket">Function <code>split_one_bucket</code> <a id="0x1_smart_table_split_one_bucket"></a></a></h2>
+<p>Decide which is the next bucket to split and split it into two with the elements inside the bucket.</p>
+<pre><code><b>fun</b> <a href="smart_table.html#0x1_smart_table_split_one_bucket">split_one_bucket</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="smart_table.html#0x1_smart_table_split_one_bucket">split_one_bucket</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;) {
+    <b>let</b> new_bucket_index = self.num_buckets;
+    // the next bucket <b>to</b> split is num_bucket without the most significant bit.
+    <b>let</b> to_split = new_bucket_index ^ (1 &lt;&lt; self.level);
+    self.num_buckets = new_bucket_index + 1;
+    // <b>if</b> the whole level is splitted once, bump the level.
+    <b>if</b> (to_split + 1 == 1 &lt;&lt; self.level) {
+        self.level += 1;
+    };
+    <b>let</b> old_bucket = self.buckets.<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(to_split);
+    // partition the bucket, [0..p) stays in <b>old</b> bucket, [p..len) goes <b>to</b> new bucket
+    <b>let</b> p = old_bucket.partition(|e| {
+        <b>let</b> entry: &<a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt; = e; // Explicit type <b>to</b> satisfy compiler
+        <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(self.level, self.num_buckets, entry.<a href="../move-stdlib/hash.html#0x1_hash">hash</a>) != new_bucket_index
+    });
+    <b>let</b> new_bucket = old_bucket.trim_reverse(p);
+    self.buckets.<a href="smart_table.html#0x1_smart_table_add">add</a>(new_bucket_index, new_bucket);
+}
+</code></pre>
+</details>
+<h2 id="function-bucket_index"><a class="header" href="#function-bucket_index">Function <code>bucket_index</code> <a id="0x1_smart_table_bucket_index"></a></a></h2>
+<p>Return the expected bucket index to find the hash.
+Basically, it use different base <code>1 &lt;&lt; level</code> vs <code>1 &lt;&lt; (level + 1)</code> in modulo operation based on the target
+bucket index compared to the index of the next bucket to split.</p>
+<pre><code><b>fun</b> <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(level: u8, num_buckets: u64, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(level: u8, num_buckets: u64, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: u64): u64 {
+    <b>let</b> index = <a href="../move-stdlib/hash.html#0x1_hash">hash</a> % (1 &lt;&lt; (level + 1));
+    <b>if</b> (index &lt; num_buckets) {
+        // in existing bucket
+        index
+    } <b>else</b> {
+        // in unsplitted bucket
+        index % (1 &lt;&lt; level)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-borrow"><a class="header" href="#function-borrow">Function <code>borrow</code> <a id="0x1_smart_table_borrow"></a></a></h2>
+<p>Acquire an immutable reference to the value which <code>key</code> maps to.
+Aborts if there is no entry for <code>key</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow">borrow</a>&lt;K: drop, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K): &V
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow">borrow</a>&lt;K: drop, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, key: K): &V {
+    <b>let</b> index = <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(self.level, self.num_buckets, sip_hash_from_value(&key));
+    <b>let</b> bucket = self.buckets.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(index);
+    <b>let</b> len = bucket.<a href="smart_table.html#0x1_smart_table_length">length</a>();
+    for (i in 0..len) {
+        <b>let</b> entry = bucket.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(i);
+        <b>if</b> (&entry.key == &key) {
+            <b>return</b> &entry.value
+        };
+    };
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="smart_table.html#0x1_smart_table_ENOT_FOUND">ENOT_FOUND</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_with_default"><a class="header" href="#function-borrow_with_default">Function <code>borrow_with_default</code> <a id="0x1_smart_table_borrow_with_default"></a></a></h2>
+<p>Acquire an immutable reference to the value which <code>key</code> maps to.
+Returns specified default value if there is no entry for <code>key</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_with_default">borrow_with_default</a>&lt;K: <b>copy</b>, drop, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K, default: &V): &V
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_with_default">borrow_with_default</a>&lt;K: <b>copy</b> + drop, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, key: K, default: &V): &V {
+    <b>if</b> (!self.<a href="smart_table.html#0x1_smart_table_contains">contains</a>(<b>copy</b> key)) {
+        default
+    } <b>else</b> {
+        self.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(<b>copy</b> key)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_mut"><a class="header" href="#function-borrow_mut">Function <code>borrow_mut</code> <a id="0x1_smart_table_borrow_mut"></a></a></h2>
+<p>Acquire a mutable reference to the value which <code>key</code> maps to.
+Aborts if there is no entry for <code>key</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K): &<b>mut</b> V
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, key: K): &<b>mut</b> V {
+    <b>let</b> index = <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(self.level, self.num_buckets, sip_hash_from_value(&key));
+    <b>let</b> bucket = self.buckets.<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(index);
+    <b>let</b> len = bucket.<a href="smart_table.html#0x1_smart_table_length">length</a>();
+    for (i in 0..len) {
+        <b>let</b> entry = bucket.<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(i);
+        <b>if</b> (&entry.key == &key) {
+            <b>return</b> &<b>mut</b> entry.value
+        };
+    };
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="smart_table.html#0x1_smart_table_ENOT_FOUND">ENOT_FOUND</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_mut_with_default"><a class="header" href="#function-borrow_mut_with_default">Function <code>borrow_mut_with_default</code> <a id="0x1_smart_table_borrow_mut_with_default"></a></a></h2>
+<p>Acquire a mutable reference to the value which <code>key</code> maps to.
+Insert the pair (<code>key</code>, <code>default</code>) first if there is no entry for <code>key</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_mut_with_default">borrow_mut_with_default</a>&lt;K: <b>copy</b>, drop, V: drop&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K, default: V): &<b>mut</b> V
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_mut_with_default">borrow_mut_with_default</a>&lt;K: <b>copy</b> + drop, V: drop&gt;(
+    self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;,
+    key: K,
+    default: V
+): &<b>mut</b> V {
+    <b>if</b> (!self.<a href="smart_table.html#0x1_smart_table_contains">contains</a>(<b>copy</b> key)) {
+        self.<a href="smart_table.html#0x1_smart_table_add">add</a>(<b>copy</b> key, default)
+    };
+    self.<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(key)
+}
+</code></pre>
+</details>
+<h2 id="function-contains"><a class="header" href="#function-contains">Function <code>contains</code> <a id="0x1_smart_table_contains"></a></a></h2>
+<p>Returns true iff <code><a href="table.html#0x1_table">table</a></code> contains an entry for <code>key</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_contains">contains</a>&lt;K: drop, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_contains">contains</a>&lt;K: drop, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, key: K): bool {
+    <b>let</b> <a href="../move-stdlib/hash.html#0x1_hash">hash</a> = sip_hash_from_value(&key);
+    <b>let</b> index = <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(self.level, self.num_buckets, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>);
+    <b>let</b> bucket = self.buckets.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(index);
+    bucket.<a href="any.html#0x1_any">any</a>(| e | {
+        e.<a href="../move-stdlib/hash.html#0x1_hash">hash</a> == <a href="../move-stdlib/hash.html#0x1_hash">hash</a> && &e.key == &key
+    })
+}
+</code></pre>
+</details>
+<h2 id="function-remove"><a class="header" href="#function-remove">Function <code>remove</code> <a id="0x1_smart_table_remove"></a></a></h2>
+<p>Remove from <code><a href="table.html#0x1_table">table</a></code> and return the value which <code>key</code> maps to.
+Aborts if there is no entry for <code>key</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_remove">remove</a>&lt;K: <b>copy</b>, drop, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K): V
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_remove">remove</a>&lt;K: <b>copy</b> + drop, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, key: K): V {
+    <b>let</b> index = <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(self.level, self.num_buckets, sip_hash_from_value(&key));
+    <b>let</b> bucket = self.buckets.<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(index);
+    <b>let</b> len = bucket.<a href="smart_table.html#0x1_smart_table_length">length</a>();
+    for (i in 0..len) {
+        <b>let</b> entry = bucket.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(i);
+        <b>if</b> (&entry.key == &key) {
+            <b>let</b> <a href="smart_table.html#0x1_smart_table_Entry">Entry</a> { <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: _, key: _, value } = bucket.swap_remove(i);
+            self.size -= 1;
+            <b>return</b> value
+        };
+    };
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="smart_table.html#0x1_smart_table_ENOT_FOUND">ENOT_FOUND</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-upsert"><a class="header" href="#function-upsert">Function <code>upsert</code> <a id="0x1_smart_table_upsert"></a></a></h2>
+<p>Insert the pair (<code>key</code>, <code>value</code>) if there is no entry for <code>key</code>.
+update the value of the entry for <code>key</code> to <code>value</code> otherwise</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_upsert">upsert</a>&lt;K: <b>copy</b>, drop, V: drop&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K, value: V)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_upsert">upsert</a>&lt;K: <b>copy</b> + drop, V: drop&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, key: K, value: V) {
+    <b>if</b> (!self.<a href="smart_table.html#0x1_smart_table_contains">contains</a>(<b>copy</b> key)) {
+        self.<a href="smart_table.html#0x1_smart_table_add">add</a>(<b>copy</b> key, value)
+    } <b>else</b> {
+        <b>let</b> ref = self.<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(key);
+        *ref = value;
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-length"><a class="header" href="#function-length">Function <code>length</code> <a id="0x1_smart_table_length"></a></a></h2>
+<p>Returns the length of the table, i.e. the number of entries.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_length">length</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_length">length</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;): u64 {
+    self.size
+}
+</code></pre>
+</details>
+<h2 id="function-load_factor"><a class="header" href="#function-load_factor">Function <code>load_factor</code> <a id="0x1_smart_table_load_factor"></a></a></h2>
+<p>Return the load factor of the hashtable.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_load_factor">load_factor</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_load_factor">load_factor</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;): u64 {
+    self.size * 100 / self.num_buckets / self.target_bucket_size
+}
+</code></pre>
+</details>
+<h2 id="function-update_split_load_threshold"><a class="header" href="#function-update_split_load_threshold">Function <code>update_split_load_threshold</code> <a id="0x1_smart_table_update_split_load_threshold"></a></a></h2>
+<p>Update <code>split_load_threshold</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_update_split_load_threshold">update_split_load_threshold</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, split_load_threshold: u8)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_update_split_load_threshold">update_split_load_threshold</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, split_load_threshold: u8) {
+    <b>assert</b>!(
+        split_load_threshold &lt;= 100 && split_load_threshold &gt; 0,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="smart_table.html#0x1_smart_table_EINVALID_LOAD_THRESHOLD_PERCENT">EINVALID_LOAD_THRESHOLD_PERCENT</a>)
+    );
+    self.split_load_threshold = split_load_threshold;
+}
+</code></pre>
+</details>
+<h2 id="function-update_target_bucket_size"><a class="header" href="#function-update_target_bucket_size">Function <code>update_target_bucket_size</code> <a id="0x1_smart_table_update_target_bucket_size"></a></a></h2>
+<p>Update <code>target_bucket_size</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_update_target_bucket_size">update_target_bucket_size</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, target_bucket_size: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_update_target_bucket_size">update_target_bucket_size</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, target_bucket_size: u64) {
+    <b>assert</b>!(target_bucket_size &gt; 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="smart_table.html#0x1_smart_table_EINVALID_TARGET_BUCKET_SIZE">EINVALID_TARGET_BUCKET_SIZE</a>));
+    self.target_bucket_size = target_bucket_size;
+}
+</code></pre>
+</details>
+<h2 id="function-for_each_ref"><a class="header" href="#function-for_each_ref">Function <code>for_each_ref</code> <a id="0x1_smart_table_for_each_ref"></a></a></h2>
+<p>Apply the function to a reference of each key-value pair in the table.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_for_each_ref">for_each_ref</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, f: |&K, &V|)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="smart_table.html#0x1_smart_table_for_each_ref">for_each_ref</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, f: |&K, &V|) {
+    for (i in 0..self.<a href="smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>()) {
+        self.<a href="smart_table.html#0x1_smart_table_borrow_buckets">borrow_buckets</a>().<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(i).<a href="smart_table.html#0x1_smart_table_for_each_ref">for_each_ref</a>(|elem| {
+            <b>let</b> (key, value) = elem.<a href="smart_table.html#0x1_smart_table_borrow_kv">borrow_kv</a>();
+            f(key, value)
+        });
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-for_each_mut"><a class="header" href="#function-for_each_mut">Function <code>for_each_mut</code> <a id="0x1_smart_table_for_each_mut"></a></a></h2>
+<p>Apply the function to a mutable reference of each key-value pair in the table.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_for_each_mut">for_each_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, f: |&K, &<b>mut</b> V|)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="smart_table.html#0x1_smart_table_for_each_mut">for_each_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, f: |&K, &<b>mut</b> V|) {
+    for (i in 0..self.<a href="smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>()) {
+        self.<a href="smart_table.html#0x1_smart_table_borrow_buckets_mut">borrow_buckets_mut</a>().<a href="smart_table.html#0x1_smart_table_borrow_mut">borrow_mut</a>(i).<a href="smart_table.html#0x1_smart_table_for_each_mut">for_each_mut</a>(|elem| {
+            <b>let</b> (key, value) = elem.<a href="smart_table.html#0x1_smart_table_borrow_kv_mut">borrow_kv_mut</a>();
+            f(key, value)
+        });
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-map_ref"><a class="header" href="#function-map_ref">Function <code>map_ref</code> <a id="0x1_smart_table_map_ref"></a></a></h2>
+<p>Map the function over the references of key-value pairs in the table without modifying it.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_map_ref">map_ref</a>&lt;K: <b>copy</b>, drop, store, V1, V2: store&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V1&gt;, f: |&V1|V2): <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V2&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="smart_table.html#0x1_smart_table_map_ref">map_ref</a>&lt;K: <b>copy</b> + drop + store, V1, V2: store&gt;(
+    self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V1&gt;,
+    f: |&V1|V2
+): <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V2&gt; {
+    <b>let</b> new_table = <a href="smart_table.html#0x1_smart_table_new">new</a>&lt;K, V2&gt;();
+    self.<a href="smart_table.html#0x1_smart_table_for_each_ref">for_each_ref</a>(|key, value| new_table.<a href="smart_table.html#0x1_smart_table_add">add</a>(*key, f(value)));
+    new_table
+}
+</code></pre>
+</details>
+<h2 id="function-any"><a class="header" href="#function-any">Function <code>any</code> <a id="0x1_smart_table_any"></a></a></h2>
+<p>Return true if any key-value pair in the table satisfies the predicate.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="any.html#0x1_any">any</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, p: |&K, &V|bool): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="any.html#0x1_any">any</a>&lt;K, V&gt;(
+    self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;,
+    p: |&K, &V|bool
+): bool {
+    <b>let</b> found = <b>false</b>;
+    for (i in 0..self.<a href="smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>()) {
+        found = self.<a href="smart_table.html#0x1_smart_table_borrow_buckets">borrow_buckets</a>().<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(i).<a href="any.html#0x1_any">any</a>(|elem| {
+            <b>let</b> (key, value) = elem.<a href="smart_table.html#0x1_smart_table_borrow_kv">borrow_kv</a>();
+            p(key, value)
+        });
+        <b>if</b> (found) <b>break</b>;
+    };
+    found
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_kv"><a class="header" href="#function-borrow_kv">Function <code>borrow_kv</code> <a id="0x1_smart_table_borrow_kv"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_kv">borrow_kv</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;): (&K, &V)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_kv">borrow_kv</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt;): (&K, &V) {
+    (&self.key, &self.value)
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_kv_mut"><a class="header" href="#function-borrow_kv_mut">Function <code>borrow_kv_mut</code> <a id="0x1_smart_table_borrow_kv_mut"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_kv_mut">borrow_kv_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;): (&<b>mut</b> K, &<b>mut</b> V)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_kv_mut">borrow_kv_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt;): (&<b>mut</b> K, &<b>mut</b> V) {
+    (&<b>mut</b> self.key, &<b>mut</b> self.value)
+}
+</code></pre>
+</details>
+<h2 id="function-num_buckets"><a class="header" href="#function-num_buckets">Function <code>num_buckets</code> <a id="0x1_smart_table_num_buckets"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;): u64 {
+    self.num_buckets
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_buckets"><a class="header" href="#function-borrow_buckets">Function <code>borrow_buckets</code> <a id="0x1_smart_table_borrow_buckets"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_buckets">borrow_buckets</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): &<a href="table_with_length.html#0x1_table_with_length_TableWithLength">table_with_length::TableWithLength</a>&lt;u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_buckets">borrow_buckets</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;): &TableWithLength&lt;u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt;&gt;&gt; {
+    &self.buckets
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_buckets_mut"><a class="header" href="#function-borrow_buckets_mut">Function <code>borrow_buckets_mut</code> <a id="0x1_smart_table_borrow_buckets_mut"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_buckets_mut">borrow_buckets_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): &<b>mut</b> <a href="table_with_length.html#0x1_table_with_length_TableWithLength">table_with_length::TableWithLength</a>&lt;u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_buckets_mut">borrow_buckets_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;): &<b>mut</b> TableWithLength&lt;u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">Entry</a>&lt;K, V&gt;&gt;&gt; {
+    &<b>mut</b> self.buckets
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="struct-smarttable-1"><a class="header" href="#struct-smarttable-1">Struct <code>SmartTable</code> <a id="@Specification_1_SmartTable"></a></a></h3>
+<pre><code><b>struct</b> <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt; <b>has</b> store
+</code></pre>
+<dl>
+<dt>
+<code>buckets: <a href="table_with_length.html#0x1_table_with_length_TableWithLength">table_with_length::TableWithLength</a>&lt;u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>num_buckets: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>level: u8</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>split_load_threshold: u8</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>target_bucket_size: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code><b>pragma</b> intrinsic = map,
+    map_new = new,
+    map_destroy_empty = destroy_empty,
+    map_len = length,
+    map_has_key = contains,
+    map_add_no_override = add,
+    map_add_override_if_exists = upsert,
+    map_del_must_exist = remove,
+    map_borrow = borrow,
+    map_borrow_mut = borrow_mut,
+    map_borrow_mut_with_default = borrow_mut_with_default,
+    map_borrow_with_default = borrow_with_default,
+    map_spec_get = spec_get,
+    map_spec_set = spec_set,
+    map_spec_del = spec_remove,
+    map_spec_len = spec_len,
+map_spec_has_key = spec_contains;
+</code></pre>
+<h3 id="function-new_with_config-1"><a class="header" href="#function-new_with_config-1">Function <code>new_with_config</code> <a id="@Specification_1_new_with_config"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_new_with_config">new_with_config</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(num_initial_buckets: u64, split_load_threshold: u8, target_bucket_size: u64): <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-destroy-1"><a class="header" href="#function-destroy-1">Function <code>destroy</code> <a id="@Specification_1_destroy"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_destroy">destroy</a>&lt;K: drop, V: drop&gt;(self: <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-clear-1"><a class="header" href="#function-clear-1">Function <code>clear</code> <a id="@Specification_1_clear"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_clear">clear</a>&lt;K: drop, V: drop&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-add_all-1"><a class="header" href="#function-add_all-1">Function <code>add_all</code> <a id="@Specification_1_add_all"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_add_all">add_all</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-to_simple_map-1"><a class="header" href="#function-to_simple_map-1">Function <code>to_simple_map</code> <a id="@Specification_1_to_simple_map"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_to_simple_map">to_simple_map</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): <a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;K, V&gt;
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-keys-1"><a class="header" href="#function-keys-1">Function <code>keys</code> <a id="@Specification_1_keys"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_keys">keys</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-keys_paginated-1"><a class="header" href="#function-keys_paginated-1">Function <code>keys_paginated</code> <a id="@Specification_1_keys_paginated"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_keys_paginated">keys_paginated</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, starting_bucket_index: u64, starting_vector_index: u64, num_keys_to_get: u64): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;, <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-split_one_bucket-1"><a class="header" href="#function-split_one_bucket-1">Function <code>split_one_bucket</code> <a id="@Specification_1_split_one_bucket"></a></a></h3>
+<pre><code><b>fun</b> <a href="smart_table.html#0x1_smart_table_split_one_bucket">split_one_bucket</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-bucket_index-1"><a class="header" href="#function-bucket_index-1">Function <code>bucket_index</code> <a id="@Specification_1_bucket_index"></a></a></h3>
+<pre><code><b>fun</b> <a href="smart_table.html#0x1_smart_table_bucket_index">bucket_index</a>(level: u8, num_buckets: u64, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-borrow_with_default-1"><a class="header" href="#function-borrow_with_default-1">Function <code>borrow_with_default</code> <a id="@Specification_1_borrow_with_default"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_with_default">borrow_with_default</a>&lt;K: <b>copy</b>, drop, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K, default: &V): &V
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-load_factor-1"><a class="header" href="#function-load_factor-1">Function <code>load_factor</code> <a id="@Specification_1_load_factor"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_load_factor">load_factor</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): u64
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-update_split_load_threshold-1"><a class="header" href="#function-update_split_load_threshold-1">Function <code>update_split_load_threshold</code> <a id="@Specification_1_update_split_load_threshold"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_update_split_load_threshold">update_split_load_threshold</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, split_load_threshold: u8)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-update_target_bucket_size-1"><a class="header" href="#function-update_target_bucket_size-1">Function <code>update_target_bucket_size</code> <a id="@Specification_1_update_target_bucket_size"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_update_target_bucket_size">update_target_bucket_size</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, target_bucket_size: u64)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-borrow_kv-1"><a class="header" href="#function-borrow_kv-1">Function <code>borrow_kv</code> <a id="@Specification_1_borrow_kv"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_kv">borrow_kv</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;): (&K, &V)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-borrow_kv_mut-1"><a class="header" href="#function-borrow_kv_mut-1">Function <code>borrow_kv_mut</code> <a id="@Specification_1_borrow_kv_mut"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_kv_mut">borrow_kv_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;): (&<b>mut</b> K, &<b>mut</b> V)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-num_buckets-1"><a class="header" href="#function-num_buckets-1">Function <code>num_buckets</code> <a id="@Specification_1_num_buckets"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): u64
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-borrow_buckets-1"><a class="header" href="#function-borrow_buckets-1">Function <code>borrow_buckets</code> <a id="@Specification_1_borrow_buckets"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_buckets">borrow_buckets</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): &<a href="table_with_length.html#0x1_table_with_length_TableWithLength">table_with_length::TableWithLength</a>&lt;u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;&gt;&gt;
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-borrow_buckets_mut-1"><a class="header" href="#function-borrow_buckets_mut-1">Function <code>borrow_buckets_mut</code> <a id="@Specification_1_borrow_buckets_mut"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_buckets_mut">borrow_buckets_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): &<b>mut</b> <a href="table_with_length.html#0x1_table_with_length_TableWithLength">table_with_length::TableWithLength</a>&lt;u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;&gt;&gt;
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<p><a id="0x1_smart_table_spec_len"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_spec_len">spec_len</a>&lt;K, V&gt;(t: <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;): num;
+</code></pre>
+<p><a id="0x1_smart_table_spec_contains"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_spec_contains">spec_contains</a>&lt;K, V&gt;(t: <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_smart_table_spec_set"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_spec_set">spec_set</a>&lt;K, V&gt;(t: <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, k: K, v: V): <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;;
+</code></pre>
+<p><a id="0x1_smart_table_spec_remove"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_spec_remove">spec_remove</a>&lt;K, V&gt;(t: <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, k: K): <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;;
+</code></pre>
+<p><a id="0x1_smart_table_spec_get"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V&gt;, k: K): V;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/single_key.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/smart_vector.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/single_key.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/smart_vector.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

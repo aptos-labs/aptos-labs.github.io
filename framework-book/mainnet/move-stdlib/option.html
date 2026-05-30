@@ -1,0 +1,901 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>option - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/move-stdlib/option.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1option"><a class="header" href="#module-0x1option">Module <code>0x1::option</code> <a id="0x1_option"></a></a></h1>
+<p>This module defines the Option type and its methods to represent and handle an optional value.</p>
+<ul>
+<li><a href="#0x1_option_Option">Enum <code>Option</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_option_none">Function <code>none</code></a></li>
+<li><a href="#0x1_option_some">Function <code>some</code></a></li>
+<li><a href="#0x1_option_from_vec">Function <code>from_vec</code></a></li>
+<li><a href="#0x1_option_is_none">Function <code>is_none</code></a></li>
+<li><a href="#0x1_option_is_some">Function <code>is_some</code></a></li>
+<li><a href="#0x1_option_contains">Function <code>contains</code></a></li>
+<li><a href="#0x1_option_borrow">Function <code>borrow</code></a></li>
+<li><a href="#0x1_option_borrow_with_default">Function <code>borrow_with_default</code></a></li>
+<li><a href="#0x1_option_get_with_default">Function <code>get_with_default</code></a></li>
+<li><a href="#0x1_option_fill">Function <code>fill</code></a></li>
+<li><a href="#0x1_option_extract">Function <code>extract</code></a></li>
+<li><a href="#0x1_option_borrow_mut">Function <code>borrow_mut</code></a></li>
+<li><a href="#0x1_option_swap">Function <code>swap</code></a></li>
+<li><a href="#0x1_option_swap_or_fill">Function <code>swap_or_fill</code></a></li>
+<li><a href="#0x1_option_destroy_with_default">Function <code>destroy_with_default</code></a></li>
+<li><a href="#0x1_option_destroy_some">Function <code>destroy_some</code></a></li>
+<li><a href="#0x1_option_destroy_none">Function <code>destroy_none</code></a></li>
+<li><a href="#0x1_option_to_vec">Function <code>to_vec</code></a></li>
+<li><a href="#0x1_option_for_each">Function <code>for_each</code></a></li>
+<li><a href="#0x1_option_for_each_ref">Function <code>for_each_ref</code></a></li>
+<li><a href="#0x1_option_for_each_mut">Function <code>for_each_mut</code></a></li>
+<li><a href="#0x1_option_fold">Function <code>fold</code></a></li>
+<li><a href="#0x1_option_map">Function <code>map</code></a></li>
+<li><a href="#0x1_option_map_ref">Function <code>map_ref</code></a></li>
+<li><a href="#0x1_option_filter">Function <code>filter</code></a></li>
+<li><a href="#0x1_option_any">Function <code>any</code></a></li>
+<li><a href="#0x1_option_destroy">Function <code>destroy</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Helper_Schema_2">Helper Schema</a></li>
+<li><a href="#@Specification_1_none">Function <code>none</code></a></li>
+<li><a href="#@Specification_1_some">Function <code>some</code></a></li>
+<li><a href="#@Specification_1_from_vec">Function <code>from_vec</code></a></li>
+<li><a href="#@Specification_1_is_none">Function <code>is_none</code></a></li>
+<li><a href="#@Specification_1_is_some">Function <code>is_some</code></a></li>
+<li><a href="#@Specification_1_contains">Function <code>contains</code></a></li>
+<li><a href="#@Specification_1_borrow">Function <code>borrow</code></a></li>
+<li><a href="#@Specification_1_borrow_with_default">Function <code>borrow_with_default</code></a></li>
+<li><a href="#@Specification_1_get_with_default">Function <code>get_with_default</code></a></li>
+<li><a href="#@Specification_1_fill">Function <code>fill</code></a></li>
+<li><a href="#@Specification_1_extract">Function <code>extract</code></a></li>
+<li><a href="#@Specification_1_borrow_mut">Function <code>borrow_mut</code></a></li>
+<li><a href="#@Specification_1_swap">Function <code>swap</code></a></li>
+<li><a href="#@Specification_1_swap_or_fill">Function <code>swap_or_fill</code></a></li>
+<li><a href="#@Specification_1_destroy_with_default">Function <code>destroy_with_default</code></a></li>
+<li><a href="#@Specification_1_destroy_some">Function <code>destroy_some</code></a></li>
+<li><a href="#@Specification_1_destroy_none">Function <code>destroy_none</code></a></li>
+<li><a href="#@Specification_1_to_vec">Function <code>to_vec</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="mem.html#0x1_mem">0x1::mem</a>;
+<b>use</b> <a href="vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+<h2 id="enum-option"><a class="header" href="#enum-option">Enum <code>Option</code> <a id="0x1_option_Option"></a></a></h2>
+<p>Abstraction of a value that may or may not be present.</p>
+<pre><code>enum <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>None</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>Some</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>e: Element</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_option_EOPTION_IS_SET"></a></p>
+<p>The <code><a href="option.html#0x1_option_Option">Option</a></code> is in an invalid state for the operation attempted.
+The <code><a href="option.html#0x1_option_Option">Option</a></code> is <code>Some</code> while it should be <code>None</code>.</p>
+<pre><code><b>const</b> <a href="option.html#0x1_option_EOPTION_IS_SET">EOPTION_IS_SET</a>: u64 = 262144;
+</code></pre>
+<p><a id="0x1_option_EOPTION_NOT_SET"></a></p>
+<p>The <code><a href="option.html#0x1_option_Option">Option</a></code> is in an invalid state for the operation attempted.
+The <code><a href="option.html#0x1_option_Option">Option</a></code> is <code>None</code> while it should be <code>Some</code>.</p>
+<pre><code><b>const</b> <a href="option.html#0x1_option_EOPTION_NOT_SET">EOPTION_NOT_SET</a>: u64 = 262145;
+</code></pre>
+<p><a id="0x1_option_EOPTION_VEC_TOO_LONG"></a></p>
+<p>Cannot construct an option from a vector with 2 or more elements.</p>
+<pre><code><b>const</b> <a href="option.html#0x1_option_EOPTION_VEC_TOO_LONG">EOPTION_VEC_TOO_LONG</a>: u64 = 262146;
+</code></pre>
+<h2 id="function-none"><a class="header" href="#function-none">Function <code>none</code> <a id="0x1_option_none"></a></a></h2>
+<p>Return an empty <code><a href="option.html#0x1_option_Option">Option</a></code></p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_none">none</a>&lt;Element&gt;(): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_none">none</a>&lt;Element&gt;(): <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt; {
+    Option::None
+}
+</code></pre>
+</details>
+<h2 id="function-some"><a class="header" href="#function-some">Function <code>some</code> <a id="0x1_option_some"></a></a></h2>
+<p>Return an <code><a href="option.html#0x1_option_Option">Option</a></code> containing <code>e</code></p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_some">some</a>&lt;Element&gt;(e: Element): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_some">some</a>&lt;Element&gt;(e: Element): <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt; {
+    Option::Some { e }
+}
+</code></pre>
+</details>
+<h2 id="function-from_vec"><a class="header" href="#function-from_vec">Function <code>from_vec</code> <a id="0x1_option_from_vec"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_from_vec">from_vec</a>&lt;Element&gt;(vec: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_from_vec">from_vec</a>&lt;Element&gt;(vec: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt; {
+    <b>assert</b>!(vec.length() &lt;= 1, <a href="option.html#0x1_option_EOPTION_VEC_TOO_LONG">EOPTION_VEC_TOO_LONG</a>);
+    <b>if</b> (vec.is_empty()) {
+        vec.destroy_empty();
+        Option::None
+    } <b>else</b> {
+        <b>let</b> e = vec.pop_back();
+        vec.destroy_empty();
+        Option::Some { e }
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-is_none"><a class="header" href="#function-is_none">Function <code>is_none</code> <a id="0x1_option_is_none"></a></a></h2>
+<p>Return true if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_is_none">is_none</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_is_none">is_none</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): bool {
+    self is Option::None&lt;Element&gt;
+}
+</code></pre>
+</details>
+<h2 id="function-is_some"><a class="header" href="#function-is_some">Function <code>is_some</code> <a id="0x1_option_is_some"></a></a></h2>
+<p>Return true if <code>self</code> holds a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_is_some">is_some</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_is_some">is_some</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): bool {
+    self is Option::Some&lt;Element&gt;
+}
+</code></pre>
+</details>
+<h2 id="function-contains"><a class="header" href="#function-contains">Function <code>contains</code> <a id="0x1_option_contains"></a></a></h2>
+<p>Return true if the value in <code>self</code> is equal to <code>e_ref</code>
+Always returns <code><b>false</b></code> if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_contains">contains</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, e_ref: &Element): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_contains">contains</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, e_ref: &Element): bool {
+    <b>if</b> (self is Option::None&lt;Element&gt;) {
+        <b>false</b>
+    } <b>else</b> {
+        &self.e == e_ref
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-borrow"><a class="header" href="#function-borrow">Function <code>borrow</code> <a id="0x1_option_borrow"></a></a></h2>
+<p>Return an immutable reference to the value inside <code>self</code>
+Aborts if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow">borrow</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): &Element
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow">borrow</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): &Element {
+    <b>if</b> (self is Option::None&lt;Element&gt;) {
+        <b>abort</b> <a href="option.html#0x1_option_EOPTION_NOT_SET">EOPTION_NOT_SET</a>
+    } <b>else</b> {
+        &self.e
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_with_default"><a class="header" href="#function-borrow_with_default">Function <code>borrow_with_default</code> <a id="0x1_option_borrow_with_default"></a></a></h2>
+<p>Return a reference to the value inside <code>self</code> if it holds one
+Return <code>default_ref</code> if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow_with_default">borrow_with_default</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, default_ref: &Element): &Element
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow_with_default">borrow_with_default</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, default_ref: &Element): &Element {
+    match (self) {
+        Option::None =&gt; default_ref,
+        Option::Some { e } =&gt; e,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-get_with_default"><a class="header" href="#function-get_with_default">Function <code>get_with_default</code> <a id="0x1_option_get_with_default"></a></a></h2>
+<p>Return the value inside <code>self</code> if it holds one
+Return <code>default</code> if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_get_with_default">get_with_default</a>&lt;Element: <b>copy</b>, drop&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, default: Element): Element
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_get_with_default">get_with_default</a>&lt;Element: <b>copy</b> + drop&gt;(
+    self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;,
+    default: Element,
+): Element {
+    match (self) {
+        Option::None =&gt; default,
+        Option::Some { e } =&gt; *e,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-fill"><a class="header" href="#function-fill">Function <code>fill</code> <a id="0x1_option_fill"></a></a></h2>
+<p>Convert the none option <code>self</code> to a some option by adding <code>e</code>.
+Aborts if <code>self</code> already holds a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_fill">fill</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, e: Element)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_fill">fill</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, e: Element) {
+    <b>let</b> <b>old</b> = <a href="mem.html#0x1_mem_replace">mem::replace</a>(self, Option::Some { e });
+    match (<b>old</b>) {
+        Option::None =&gt; {},
+        Option::Some { e: _ } =&gt; {
+           <b>abort</b> <a href="option.html#0x1_option_EOPTION_IS_SET">EOPTION_IS_SET</a>
+        },
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-extract"><a class="header" href="#function-extract">Function <code>extract</code> <a id="0x1_option_extract"></a></a></h2>
+<p>Convert a <code>some</code> option to a <code>none</code> by removing and returning the value stored inside <code>self</code>
+Aborts if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_extract">extract</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): Element
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_extract">extract</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): Element {
+    <b>let</b> inner = <a href="mem.html#0x1_mem_replace">mem::replace</a>(self, Option::None);
+    match (inner) {
+        Option::Some { e } =&gt; e,
+        Option::None =&gt; {
+           <b>abort</b> <a href="option.html#0x1_option_EOPTION_NOT_SET">EOPTION_NOT_SET</a>
+        },
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_mut"><a class="header" href="#function-borrow_mut">Function <code>borrow_mut</code> <a id="0x1_option_borrow_mut"></a></a></h2>
+<p>Return a mutable reference to the value inside <code>self</code>
+Aborts if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow_mut">borrow_mut</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): &<b>mut</b> Element
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow_mut">borrow_mut</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): &<b>mut</b> Element {
+    match (self) {
+        Option::None =&gt; {
+            <b>abort</b> <a href="option.html#0x1_option_EOPTION_NOT_SET">EOPTION_NOT_SET</a>
+        },
+        Option::Some { e } =&gt; e,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-swap"><a class="header" href="#function-swap">Function <code>swap</code> <a id="0x1_option_swap"></a></a></h2>
+<p>Swap the old value inside <code>self</code> with <code>e</code> and return the old value
+Aborts if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_swap">swap</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, el: Element): Element
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_swap">swap</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, el: Element): Element {
+    match (self) {
+        Option::None =&gt; {
+            <b>abort</b> <a href="option.html#0x1_option_EOPTION_NOT_SET">EOPTION_NOT_SET</a>
+        },
+        Option::Some { e } =&gt; {
+            <a href="mem.html#0x1_mem_replace">mem::replace</a>(e, el)
+        },
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-swap_or_fill"><a class="header" href="#function-swap_or_fill">Function <code>swap_or_fill</code> <a id="0x1_option_swap_or_fill"></a></a></h2>
+<p>Swap the old value inside <code>self</code> with <code>e</code> and return the old value;
+or if there is no old value, fill it with <code>e</code>.
+Different from swap(), swap_or_fill() allows for <code>self</code> not holding a value.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_swap_or_fill">swap_or_fill</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, e: Element): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_swap_or_fill">swap_or_fill</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, e: Element): <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt; {
+    <a href="mem.html#0x1_mem_replace">mem::replace</a>(self, Option::Some { e })
+}
+</code></pre>
+</details>
+<h2 id="function-destroy_with_default"><a class="header" href="#function-destroy_with_default">Function <code>destroy_with_default</code> <a id="0x1_option_destroy_with_default"></a></a></h2>
+<p>Destroys <code>self.</code> If <code>self</code> holds a value, return it. Returns <code>default</code> otherwise</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_with_default">destroy_with_default</a>&lt;Element: drop&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, default: Element): Element
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_with_default">destroy_with_default</a>&lt;Element: drop&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, default: Element): Element {
+    match (self) {
+        Option::None =&gt; default,
+        Option::Some { e } =&gt; e,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-destroy_some"><a class="header" href="#function-destroy_some">Function <code>destroy_some</code> <a id="0x1_option_destroy_some"></a></a></h2>
+<p>Unpack <code>self</code> and return its contents
+Aborts if <code>self</code> does not hold a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_some">destroy_some</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): Element
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_some">destroy_some</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): Element {
+    match (self) {
+        Option::None =&gt; {
+            <b>abort</b> <a href="option.html#0x1_option_EOPTION_NOT_SET">EOPTION_NOT_SET</a>
+        },
+        Option::Some { e } =&gt; e,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-destroy_none"><a class="header" href="#function-destroy_none">Function <code>destroy_none</code> <a id="0x1_option_destroy_none"></a></a></h2>
+<p>Unpack <code>self</code>
+Aborts if <code>self</code> holds a value</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_none">destroy_none</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_none">destroy_none</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;) {
+    match (self) {
+        Option::None =&gt; {},
+        Option::Some { e: _ } =&gt; {
+            <b>abort</b> <a href="option.html#0x1_option_EOPTION_IS_SET">EOPTION_IS_SET</a>
+        },
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-to_vec"><a class="header" href="#function-to_vec">Function <code>to_vec</code> <a id="0x1_option_to_vec"></a></a></h2>
+<p>Convert <code>self</code> into a vector of length 1 if it is <code>Some</code>,
+and an empty vector otherwise</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_to_vec">to_vec</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_to_vec">to_vec</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt; {
+    match (self) {
+        Option::None =&gt; <a href="vector.html#0x1_vector_empty">vector::empty</a>(),
+        Option::Some { e } =&gt; <a href="vector.html#0x1_vector_singleton">vector::singleton</a>(e),
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-for_each"><a class="header" href="#function-for_each">Function <code>for_each</code> <a id="0x1_option_for_each"></a></a></h2>
+<p>Apply the function to the optional element, consuming it. Does nothing if no value present.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_for_each">for_each</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, f: |Element|)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_for_each">for_each</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, f: |Element|) {
+    <b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) {
+        f(self.<a href="option.html#0x1_option_destroy_some">destroy_some</a>())
+    } <b>else</b> {
+        self.<a href="option.html#0x1_option_destroy_none">destroy_none</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-for_each_ref"><a class="header" href="#function-for_each_ref">Function <code>for_each_ref</code> <a id="0x1_option_for_each_ref"></a></a></h2>
+<p>Apply the function to the optional element reference. Does nothing if no value present.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_for_each_ref">for_each_ref</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, f: |&Element|)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_for_each_ref">for_each_ref</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, f: |&Element|) {
+    <b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) {
+        f(self.<a href="option.html#0x1_option_borrow">borrow</a>())
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-for_each_mut"><a class="header" href="#function-for_each_mut">Function <code>for_each_mut</code> <a id="0x1_option_for_each_mut"></a></a></h2>
+<p>Apply the function to the optional element reference. Does nothing if no value present.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_for_each_mut">for_each_mut</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, f: |&<b>mut</b> Element|)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_for_each_mut">for_each_mut</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, f: |&<b>mut</b> Element|) {
+    <b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) {
+        f(self.<a href="option.html#0x1_option_borrow_mut">borrow_mut</a>())
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-fold"><a class="header" href="#function-fold">Function <code>fold</code> <a id="0x1_option_fold"></a></a></h2>
+<p>Folds the function over the optional element.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_fold">fold</a>&lt;Accumulator, Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, init: Accumulator, f: |Accumulator, Element|Accumulator): Accumulator
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_fold">fold</a>&lt;Accumulator, Element&gt;(
+    self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;,
+    init: Accumulator,
+    f: |Accumulator,Element|Accumulator
+): Accumulator {
+    <b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) {
+        f(init, self.<a href="option.html#0x1_option_destroy_some">destroy_some</a>())
+    } <b>else</b> {
+        self.<a href="option.html#0x1_option_destroy_none">destroy_none</a>();
+        init
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-map"><a class="header" href="#function-map">Function <code>map</code> <a id="0x1_option_map"></a></a></h2>
+<p>Maps the content of an option.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_map">map</a>&lt;Element, OtherElement&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, f: |Element|OtherElement): <a href="option.html#0x1_option_Option">option::Option</a>&lt;OtherElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_map">map</a>&lt;Element, OtherElement&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, f: |Element|OtherElement): <a href="option.html#0x1_option_Option">Option</a>&lt;OtherElement&gt; {
+    <b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) {
+        <a href="option.html#0x1_option_some">some</a>(f(self.<a href="option.html#0x1_option_destroy_some">destroy_some</a>()))
+    } <b>else</b> {
+        self.<a href="option.html#0x1_option_destroy_none">destroy_none</a>();
+        <a href="option.html#0x1_option_none">none</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-map_ref"><a class="header" href="#function-map_ref">Function <code>map_ref</code> <a id="0x1_option_map_ref"></a></a></h2>
+<p>Maps the content of an option without destroying the original option.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_map_ref">map_ref</a>&lt;Element, OtherElement&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, f: |&Element|OtherElement): <a href="option.html#0x1_option_Option">option::Option</a>&lt;OtherElement&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_map_ref">map_ref</a>&lt;Element, OtherElement&gt;(
+    self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, f: |&Element|OtherElement): <a href="option.html#0x1_option_Option">Option</a>&lt;OtherElement&gt; {
+    <b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) {
+        <a href="option.html#0x1_option_some">some</a>(f(self.<a href="option.html#0x1_option_borrow">borrow</a>()))
+    } <b>else</b> {
+        <a href="option.html#0x1_option_none">none</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-filter"><a class="header" href="#function-filter">Function <code>filter</code> <a id="0x1_option_filter"></a></a></h2>
+<p>Filters the content of an option</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_filter">filter</a>&lt;Element: drop&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, f: |&Element|bool): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_filter">filter</a>&lt;Element:drop&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, f: |&Element|bool): <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt; {
+    <b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>() && f(self.<a href="option.html#0x1_option_borrow">borrow</a>())) {
+        self
+    } <b>else</b> {
+        <a href="option.html#0x1_option_none">none</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-any"><a class="header" href="#function-any">Function <code>any</code> <a id="0x1_option_any"></a></a></h2>
+<p>Returns true if the option contains an element which satisfies predicate.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_any">any</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, p: |&Element|bool): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_any">any</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, p: |&Element|bool): bool {
+    self.<a href="option.html#0x1_option_is_some">is_some</a>() && p(self.<a href="option.html#0x1_option_borrow">borrow</a>())
+}
+</code></pre>
+</details>
+<h2 id="function-destroy"><a class="header" href="#function-destroy">Function <code>destroy</code> <a id="0x1_option_destroy"></a></a></h2>
+<p>Utility function to destroy an option that is not droppable.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, d: |Element|)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> inline <b>fun</b> <a href="option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
+    <b>let</b> vec = self.<a href="option.html#0x1_option_to_vec">to_vec</a>();
+    vec.<a href="option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+}
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<pre><code><b>pragma</b> aborts_if_is_strict;
+</code></pre>
+<h3 id="helper-schema"><a class="header" href="#helper-schema">Helper Schema <a id="@Helper_Schema_2"></a></a></h3>
+<p><a id="0x1_option_AbortsIfNone"></a></p>
+<pre><code><b>schema</b> <a href="option.html#0x1_option_AbortsIfNone">AbortsIfNone</a>&lt;Element&gt; {
+    self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;;
+    <b>aborts_if</b> self.<a href="option.html#0x1_option_is_none">is_none</a>() <b>with</b> <a href="option.html#0x1_option_EOPTION_NOT_SET">EOPTION_NOT_SET</a>;
+}
+</code></pre>
+<h3 id="function-none-1"><a class="header" href="#function-none-1">Function <code>none</code> <a id="@Specification_1_none"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_none">none</a>&lt;Element&gt;(): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="option.html#0x1_option_spec_none">spec_none</a>&lt;Element&gt;();
+</code></pre>
+<p><a id="0x1_option_spec_none"></a></p>
+<pre><code><b>fun</b> <a href="option.html#0x1_option_spec_none">spec_none</a>&lt;Element&gt;(): <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt; {
+   Option::None
+}
+</code></pre>
+<h3 id="function-some-1"><a class="header" href="#function-some-1">Function <code>some</code> <a id="@Specification_1_some"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_some">some</a>&lt;Element&gt;(e: Element): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="option.html#0x1_option_spec_some">spec_some</a>(e);
+</code></pre>
+<p><a id="0x1_option_spec_some"></a></p>
+<pre><code><b>fun</b> <a href="option.html#0x1_option_spec_some">spec_some</a>&lt;Element&gt;(e: Element): <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt; {
+   Option::Some { e }
+}
+</code></pre>
+<h3 id="function-from_vec-1"><a class="header" href="#function-from_vec-1">Function <code>from_vec</code> <a id="@Specification_1_from_vec"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_from_vec">from_vec</a>&lt;Element&gt;(vec: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> vec.length() &gt; 1;
+</code></pre>
+<h3 id="function-is_none-1"><a class="header" href="#function-is_none-1">Function <code>is_none</code> <a id="@Specification_1_is_none"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_is_none">is_none</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="option.html#0x1_option_spec_is_none">spec_is_none</a>(self);
+</code></pre>
+<p><a id="0x1_option_spec_is_none"></a></p>
+<pre><code><b>fun</b> <a href="option.html#0x1_option_spec_is_none">spec_is_none</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): bool {
+   self is Option::None&lt;Element&gt;
+}
+</code></pre>
+<h3 id="function-is_some-1"><a class="header" href="#function-is_some-1">Function <code>is_some</code> <a id="@Specification_1_is_some"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_is_some">is_some</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="option.html#0x1_option_spec_is_some">spec_is_some</a>(self);
+</code></pre>
+<p><a id="0x1_option_spec_is_some"></a></p>
+<pre><code><b>fun</b> <a href="option.html#0x1_option_spec_is_some">spec_is_some</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): bool {
+   self is Option::Some&lt;Element&gt;
+}
+</code></pre>
+<h3 id="function-contains-1"><a class="header" href="#function-contains-1">Function <code>contains</code> <a id="@Specification_1_contains"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_contains">contains</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, e_ref: &Element): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="option.html#0x1_option_spec_contains">spec_contains</a>(self, e_ref);
+</code></pre>
+<p><a id="0x1_option_spec_contains"></a></p>
+<pre><code><b>fun</b> <a href="option.html#0x1_option_spec_contains">spec_contains</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;, e: Element): bool {
+   (self is Option::Some&lt;Element&gt;) && self.<a href="option.html#0x1_option_borrow">borrow</a>() == e
+}
+</code></pre>
+<h3 id="function-borrow-1"><a class="header" href="#function-borrow-1">Function <code>borrow</code> <a id="@Specification_1_borrow"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow">borrow</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): &Element
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="option.html#0x1_option_AbortsIfNone">AbortsIfNone</a>&lt;Element&gt;;
+<b>ensures</b> result == <a href="option.html#0x1_option_spec_borrow">spec_borrow</a>(self);
+</code></pre>
+<p><a id="0x1_option_spec_borrow"></a></p>
+<pre><code><b>fun</b> <a href="option.html#0x1_option_spec_borrow">spec_borrow</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">Option</a>&lt;Element&gt;): Element
+{
+   <b>if</b> (self is Option::Some&lt;Element&gt;) {
+       self.e
+   } <b>else</b> {
+       <b>abort</b> <a href="option.html#0x1_option_EOPTION_NOT_SET">EOPTION_NOT_SET</a>
+   }
+}
+</code></pre>
+<h3 id="function-borrow_with_default-1"><a class="header" href="#function-borrow_with_default-1">Function <code>borrow_with_default</code> <a id="@Specification_1_borrow_with_default"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow_with_default">borrow_with_default</a>&lt;Element&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, default_ref: &Element): &Element
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (<b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) self.<a href="option.html#0x1_option_borrow">borrow</a>() <b>else</b> default_ref);
+</code></pre>
+<h3 id="function-get_with_default-1"><a class="header" href="#function-get_with_default-1">Function <code>get_with_default</code> <a id="@Specification_1_get_with_default"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_get_with_default">get_with_default</a>&lt;Element: <b>copy</b>, drop&gt;(self: &<a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, default: Element): Element
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (<b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) self.<a href="option.html#0x1_option_borrow">borrow</a>() <b>else</b> default);
+</code></pre>
+<h3 id="function-fill-1"><a class="header" href="#function-fill-1">Function <code>fill</code> <a id="@Specification_1_fill"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_fill">fill</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, e: Element)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> self.<a href="option.html#0x1_option_is_some">is_some</a>() <b>with</b> <a href="option.html#0x1_option_EOPTION_IS_SET">EOPTION_IS_SET</a>;
+<b>ensures</b> self.<a href="option.html#0x1_option_is_some">is_some</a>();
+<b>ensures</b> self.<a href="option.html#0x1_option_borrow">borrow</a>() == e;
+</code></pre>
+<h3 id="function-extract-1"><a class="header" href="#function-extract-1">Function <code>extract</code> <a id="@Specification_1_extract"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_extract">extract</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): Element
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="option.html#0x1_option_AbortsIfNone">AbortsIfNone</a>&lt;Element&gt;;
+<b>ensures</b> result == <b>old</b>(self).<a href="option.html#0x1_option_borrow">borrow</a>();
+<b>ensures</b> self.<a href="option.html#0x1_option_is_none">is_none</a>();
+</code></pre>
+<h3 id="function-borrow_mut-1"><a class="header" href="#function-borrow_mut-1">Function <code>borrow_mut</code> <a id="@Specification_1_borrow_mut"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_borrow_mut">borrow_mut</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): &<b>mut</b> Element
+</code></pre>
+<pre><code><b>include</b> <a href="option.html#0x1_option_AbortsIfNone">AbortsIfNone</a>&lt;Element&gt;;
+<b>ensures</b> result == self.<a href="option.html#0x1_option_borrow">borrow</a>();
+<b>ensures</b> self == <b>old</b>(self);
+</code></pre>
+<h3 id="function-swap-1"><a class="header" href="#function-swap-1">Function <code>swap</code> <a id="@Specification_1_swap"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_swap">swap</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, el: Element): Element
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="option.html#0x1_option_AbortsIfNone">AbortsIfNone</a>&lt;Element&gt;;
+<b>ensures</b> result == <b>old</b>(self).<a href="option.html#0x1_option_borrow">borrow</a>();
+<b>ensures</b> self.<a href="option.html#0x1_option_is_some">is_some</a>();
+<b>ensures</b> self.<a href="option.html#0x1_option_borrow">borrow</a>() == el;
+</code></pre>
+<h3 id="function-swap_or_fill-1"><a class="header" href="#function-swap_or_fill-1">Function <code>swap_or_fill</code> <a id="@Specification_1_swap_or_fill"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_swap_or_fill">swap_or_fill</a>&lt;Element&gt;(self: &<b>mut</b> <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, e: Element): <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <b>old</b>(self);
+<b>ensures</b> self.<a href="option.html#0x1_option_borrow">borrow</a>() == e;
+</code></pre>
+<h3 id="function-destroy_with_default-1"><a class="header" href="#function-destroy_with_default-1">Function <code>destroy_with_default</code> <a id="@Specification_1_destroy_with_default"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_with_default">destroy_with_default</a>&lt;Element: drop&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;, default: Element): Element
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (<b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) self.<a href="option.html#0x1_option_borrow">borrow</a>() <b>else</b> default);
+</code></pre>
+<h3 id="function-destroy_some-1"><a class="header" href="#function-destroy_some-1">Function <code>destroy_some</code> <a id="@Specification_1_destroy_some"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_some">destroy_some</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): Element
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="option.html#0x1_option_AbortsIfNone">AbortsIfNone</a>&lt;Element&gt;;
+<b>ensures</b> result == self.<a href="option.html#0x1_option_borrow">borrow</a>();
+</code></pre>
+<h3 id="function-destroy_none-1"><a class="header" href="#function-destroy_none-1">Function <code>destroy_none</code> <a id="@Specification_1_destroy_none"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_destroy_none">destroy_none</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> self.<a href="option.html#0x1_option_is_some">is_some</a>() <b>with</b> <a href="option.html#0x1_option_EOPTION_IS_SET">EOPTION_IS_SET</a>;
+</code></pre>
+<h3 id="function-to_vec-1"><a class="header" href="#function-to_vec-1">Function <code>to_vec</code> <a id="@Specification_1_to_vec"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="option.html#0x1_option_to_vec">to_vec</a>&lt;Element&gt;(self: <a href="option.html#0x1_option_Option">option::Option</a>&lt;Element&gt;): <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (<b>if</b> (self.<a href="option.html#0x1_option_is_some">is_some</a>()) <a href="vector.html#0x1_vector">vector</a>[self.<a href="option.html#0x1_option_borrow">borrow</a>()] <b>else</b> <a href="vector.html#0x1_vector_empty">vector::empty</a>());
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../move-stdlib/mem.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../move-stdlib/reflect.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../move-stdlib/mem.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../move-stdlib/reflect.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

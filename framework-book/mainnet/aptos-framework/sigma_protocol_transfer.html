@@ -1,0 +1,868 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>sigma_protocol_transfer - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-framework/sigma_protocol_transfer.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1sigma_protocol_transfer"><a class="header" href="#module-0x1sigma_protocol_transfer">Module <code>0x1::sigma_protocol_transfer</code> <a id="0x1_sigma_protocol_transfer"></a></a></h1>
+<h2 id="the-transfer-np-relation-mathcalr-_mathsftxfer"><a class="header" href="#the-transfer-np-relation-mathcalr-_mathsftxfer">The transfer NP relation ($\mathcal{R}^{-}_\mathsf{txfer}$) <a id="@The_transfer_NP_relation_($\mathcal{R}^{-}_\mathsf{txfer}$)_0"></a></a></h2>
+<p>$\def\old#1{{\color{red}{\dot{#1}}}}\def\new#1{{\color{teal}{\widetilde{#1}}}}\def\opt#1{{\color{orange}{\boldsymbol{[}}} #1 {\color{orange}{\boldsymbol{]}}}}$</p>
+<p>A ZKPoK of a correct confidential transfer from sender to recipient. This is a composition of
+$\mathcal{R}^\mathsf{veiled}<em>\mathsf{withdraw}$ (the sender's balance update with SECRET amount $\mathbf{v}$)
+and $\mathcal{R}</em>\mathsf{eq}$ (the transfer amount encrypted identically under all parties' keys).</p>
+<h3 id="notation"><a class="header" href="#notation">Notation <a id="@Notation_1"></a></a></h3>
+<ul>
+<li>$\old{x}$ denotes a stale/old ciphertext component; $\new{x}$ denotes a fresh/new one.</li>
+<li>$\opt{\cdot}$ denotes components present only when has_effective_auditor is true.</li>
+<li>$\langle \mathbf{x}, \mathbf{y} \rangle = \sum_i x_i \cdot y_i$ denotes the inner product.</li>
+<li>$\mathbf{B} = (B^0, B^1, \ldots)$ where $B = 2^{16}$ is the positional weight vector for chunk encoding.</li>
+<li>$\ell$: number of available balance chunks; $n$: number of transfer (pending balance) chunks.</li>
+<li>$T$: number of voluntary auditors ($T \ge 0$).</li>
+<li>The effective auditor (if present) sees the sender's new balance AND the transfer amount.
+Extra auditors see only the transfer amount.</li>
+</ul>
+<h3 id="the-relation"><a class="header" href="#the-relation">The relation <a id="@The_relation_2"></a></a></h3>
+<p>$$
+\mathcal{R}^{-}_\mathsf{txfer}\left(\begin{array}{l}
+G, H, \mathsf{ek}^\mathsf{sid}, \mathsf{ek}^\mathsf{rid},
+\old{\mathbf{P}}, \old{\mathbf{R}}, \new{\mathbf{P}}, \new{\mathbf{R}},
+\mathbf{P}, \mathbf{R}^\mathsf{sid}, \mathbf{R}^\mathsf{rid},\
+\opt{\mathsf{ek}^\mathsf{eff}, \new{\mathbf{R}}^\mathsf{eff}, \mathbf{R}^\mathsf{eff}},;
+(\mathsf{ek}^\mathsf{ex}_i, \mathbf{R}^\mathsf{ex}<em>i)</em>{i \in [T]}
+\textbf{;}\
+\mathsf{dk}, \new{\mathbf{a}}, \new{\mathbf{r}}, \mathbf{v}, \mathbf{r}
+\end{array}\right) = 1
+\Leftrightarrow
+\left{\begin{array}{r@{,,}l@{\quad}l}
+H &amp;= \mathsf{dk} \cdot \mathsf{ek}^\mathsf{sid}\
+\new{P}_i &amp;= \new{a}_i \cdot G + \new{r}_i \cdot H, &amp;\forall i \in [\ell]\
+\new{R}_i &amp;= \new{r}_i \cdot \mathsf{ek}^\mathsf{sid}, &amp;\forall i \in [\ell]\
+\opt{\new{R}^\mathsf{eff}_i} &amp;\opt{= \new{r}_i \cdot \mathsf{ek}^\mathsf{eff},}
+&amp;\opt{\forall i \in [\ell]}\
+\langle \mathbf{B}, \old{\mathbf{P}} \rangle &amp;= \mathsf{dk} \cdot \langle \mathbf{B}, \old{\mathbf{R}} \rangle</p>
+<ul>
+<li>(\langle \mathbf{B}, \new{\mathbf{a}} \rangle + \langle \mathbf{B}, \mathbf{v} \rangle) \cdot G\
+P_j &amp;= v_j \cdot G + r_j \cdot H, &amp;\forall j \in [n]\
+R^\mathsf{sid}_j &amp;= r_j \cdot \mathsf{ek}^\mathsf{sid}, &amp;\forall j \in [n]\
+R^\mathsf{rid}_j &amp;= r_j \cdot \mathsf{ek}^\mathsf{rid}, &amp;\forall j \in [n]\
+\opt{R^\mathsf{eff}<em>j} &amp;\opt{= r_j \cdot \mathsf{ek}^\mathsf{eff},}
+&amp;\opt{\forall j \in [n]}\
+R^\mathsf{ex}</em>{i,j} &amp;= r_j \cdot \mathsf{ek}^\mathsf{ex}_i,
+&amp;\forall j \in [n],; \forall i \in [T]\
+\end{array}\right.
+$$</li>
+</ul>
+<h3 id="homomorphism"><a class="header" href="#homomorphism">Homomorphism <a id="@Homomorphism_3"></a></a></h3>
+<p>This can be framed as a homomorphism check $\psi(\mathbf{w}) = f(\mathbf{X})$ where
+$\mathbf{w} = (\mathsf{dk}, \new{\mathbf{a}}, \new{\mathbf{r}}, \mathbf{v}, \mathbf{r})$
+is the witness and $\mathbf{X}$ is the statement.</p>
+<ol>
+<li>The homomorphism $\psi$ is:</li>
+</ol>
+<p>$$
+\psi(\mathsf{dk}, \new{\mathbf{a}}, \new{\mathbf{r}}, \mathbf{v}, \mathbf{r}) = \begin{pmatrix}
+\mathsf{dk} \cdot \mathsf{ek}^\mathsf{sid}\
+\new{a}_i \cdot G + \new{r}_i \cdot H, &amp;\forall i \in [\ell]\
+\new{r}_i \cdot \mathsf{ek}^\mathsf{sid}, &amp;\forall i \in [\ell]\
+\opt{\new{r}_i \cdot \mathsf{ek}^\mathsf{eff}, ;\forall i \in [\ell]}\
+\mathsf{dk} \cdot \langle \mathbf{B}, \old{\mathbf{R}} \rangle</p>
+<ul>
+<li>(\langle \mathbf{B}, \new{\mathbf{a}} \rangle + \langle \mathbf{B}, \mathbf{v} \rangle) \cdot G\
+v_j \cdot G + r_j \cdot H, &amp;\forall j \in [n]\
+r_j \cdot \mathsf{ek}^\mathsf{sid}, &amp;\forall j \in [n]\
+r_j \cdot \mathsf{ek}^\mathsf{rid}, &amp;\forall j \in [n]\
+\opt{r_j \cdot \mathsf{ek}^\mathsf{eff}, ;\forall j \in [n]}\
+r_j \cdot \mathsf{ek}^\mathsf{ex}_i, &amp;\forall j \in [n],; \forall i \in [T]\
+\end{pmatrix}
+$$</li>
+</ul>
+<ol start="2">
+<li>The transformation function $f$ is:</li>
+</ol>
+<p>$$
+f(\mathbf{X}) = \begin{pmatrix}
+H\
+\new{P}_i, &amp;\forall i \in [\ell]\
+\new{R}_i, &amp;\forall i \in [\ell]\
+\opt{\new{R}^\mathsf{eff}_i, ;\forall i \in [\ell]}\
+\langle \mathbf{B}, \old{\mathbf{P}} \rangle\
+P_j, &amp;\forall j \in [n]\
+R^\mathsf{sid}_j, &amp;\forall j \in [n]\
+R^\mathsf{rid}_j, &amp;\forall j \in [n]\
+\opt{R^\mathsf{eff}<em>j, ;\forall j \in [n]}\
+R^\mathsf{ex}</em>{i,j}, &amp;\forall j \in [n],; \forall i \in [T]\
+\end{pmatrix}
+$$</p>
+<ul>
+<li><a href="#@The_transfer_NP_relation_($%5Cmathcal%7BR%7D^%7B-%7D_%5Cmathsf%7Btxfer%7D$)_0">The transfer NP relation ($\mathcal{R}^{-}_\mathsf{txfer}$)</a>
+<ul>
+<li><a href="#@Notation_1">Notation</a></li>
+<li><a href="#@The_relation_2">The relation</a></li>
+<li><a href="#@Homomorphism_3">Homomorphism</a></li>
+</ul>
+</li>
+<li><a href="#0x1_sigma_protocol_transfer_Transfer">Struct <code>Transfer</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_TransferSession">Struct <code>TransferSession</code></a></li>
+<li><a href="#@Constants_4">Constants</a></li>
+<li><a href="#0x1_sigma_protocol_transfer_get_ell">Function <code>get_ell</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_get_n">Function <code>get_n</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_assert_transfer_statement_is_well_formed">Function <code>assert_transfer_statement_is_well_formed</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_new_session">Function <code>new_session</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_new_transfer_statement">Function <code>new_transfer_statement</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_psi">Function <code>psi</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_expected_output_len">Function <code>expected_output_len</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_f">Function <code>f</code></a></li>
+<li><a href="#0x1_sigma_protocol_transfer_assert_verifies">Function <code>assert_verifies</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/bcs.html#0x1_bcs">0x1::bcs</a>;
+<b>use</b> <a href="chain_id.html#0x1_chain_id">0x1::chain_id</a>;
+<b>use</b> <a href="confidential_amount.html#0x1_confidential_amount">0x1::confidential_amount</a>;
+<b>use</b> <a href="confidential_balance.html#0x1_confidential_balance">0x1::confidential_balance</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="fungible_asset.html#0x1_fungible_asset">0x1::fungible_asset</a>;
+<b>use</b> <a href="object.html#0x1_object">0x1::object</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../aptos-stdlib/ristretto255.html#0x1_ristretto255">0x1::ristretto255</a>;
+<b>use</b> <a href="sigma_protocol_fiat_shamir.html#0x1_sigma_protocol_fiat_shamir">0x1::sigma_protocol_fiat_shamir</a>;
+<b>use</b> <a href="sigma_protocol_proof.html#0x1_sigma_protocol_proof">0x1::sigma_protocol_proof</a>;
+<b>use</b> <a href="sigma_protocol_representation.html#0x1_sigma_protocol_representation">0x1::sigma_protocol_representation</a>;
+<b>use</b> <a href="sigma_protocol_representation_vec.html#0x1_sigma_protocol_representation_vec">0x1::sigma_protocol_representation_vec</a>;
+<b>use</b> <a href="sigma_protocol_statement.html#0x1_sigma_protocol_statement">0x1::sigma_protocol_statement</a>;
+<b>use</b> <a href="sigma_protocol_statement_builder.html#0x1_sigma_protocol_statement_builder">0x1::sigma_protocol_statement_builder</a>;
+<b>use</b> <a href="sigma_protocol_utils.html#0x1_sigma_protocol_utils">0x1::sigma_protocol_utils</a>;
+<b>use</b> <a href="sigma_protocol_witness.html#0x1_sigma_protocol_witness">0x1::sigma_protocol_witness</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+<h2 id="struct-transfer"><a class="header" href="#struct-transfer">Struct <code>Transfer</code> <a id="0x1_sigma_protocol_transfer_Transfer"></a></a></h2>
+<p>Phantom marker type for transfer statements.</p>
+<pre><code><b>struct</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">Transfer</a> <b>has</b> drop
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>dummy_field: bool</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-transfersession"><a class="header" href="#struct-transfersession">Struct <code>TransferSession</code> <a id="0x1_sigma_protocol_transfer_TransferSession"></a></a></h2>
+<p>Used for domain separation in the Fiat-Shamir transform.</p>
+<pre><code><b>struct</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_TransferSession">TransferSession</a> <b>has</b> drop
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>sender: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>recipient: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>asset_type: <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>num_avail_chunks: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>num_transfer_chunks: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>has_effective_auditor: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>num_volun_auditors: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_4"></a></a></h2>
+<p><a id="0x1_sigma_protocol_transfer_E_AUDITOR_COUNT_MISMATCH"></a></p>
+<p>The number of auditor R components does not match the expected auditor count.</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_AUDITOR_COUNT_MISMATCH">E_AUDITOR_COUNT_MISMATCH</a>: u64 = 6;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_E_STATEMENT_BUILDER_INCONSISTENCY"></a></p>
+<p>The homomorphism or transformation function implementation is not inserting points at the expected positions.</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_STATEMENT_BUILDER_INCONSISTENCY">E_STATEMENT_BUILDER_INCONSISTENCY</a>: u64 = 7;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_IDX_DK"></a></p>
+<p>Index of dk (sender's decryption key).</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_DK">IDX_DK</a>: u64 = 0;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_IDX_G"></a></p>
+<p>Index of $G$ (the Ristretto255 basepoint).</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_G">IDX_G</a>: u64 = 0;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_IDX_H"></a></p>
+<p>Index of $H$ (the encryption key basepoint).</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_H">IDX_H</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_START_IDX_OLD_P"></a></p>
+<p>old_P starts at index 4.
+Layout: old_P[1..ℓ], old_R[1..ℓ], new_P[1..ℓ], new_R[1..ℓ], amount_P[1..n], amount_R_sender[1..n], amount_R_recip[1..n]
+With effective auditor: ..., ek_eff_aud, new_R_eff_aud[1..ℓ], amount_R_eff_aud[1..n]
+For each voluntary auditor t: ..., ek_volun_auds[t], amount_R_volun_auds[t][1..n]</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a>: u64 = 4;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_E_INVALID_TRANSFER_PROOF"></a></p>
+<p>new_a[0..ℓ-1] at 1..ℓ. new_r[0..ℓ-1] at 1+ℓ..2ℓ.
+v[0..n-1] at 1+2ℓ..1+2ℓ+n-1. r[0..n-1] at 1+2ℓ+n..1+2ℓ+2n-1.
+The transfer proof was invalid.</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_INVALID_TRANSFER_PROOF">E_INVALID_TRANSFER_PROOF</a>: u64 = 5;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_IDX_EK_RECIP"></a></p>
+<p>Index of $\mathsf{ek}^\mathsf{rid}$ (the recipient's encryption key).</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_EK_RECIP">IDX_EK_RECIP</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_IDX_EK_SENDER"></a></p>
+<p>Index of $\mathsf{ek}^\mathsf{sid}$ (the sender's encryption key).</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_EK_SENDER">IDX_EK_SENDER</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_sigma_protocol_transfer_PROTOCOL_ID"></a></p>
+<p>Protocol ID used for domain separation</p>
+<pre><code><b>const</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_PROTOCOL_ID">PROTOCOL_ID</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [65, 112, 116, 111, 115, 67, 111, 110, 102, 105, 100, 101, 110, 116, 105, 97, 108, 65, 115, 115, 101, 116, 47, 84, 114, 97, 110, 115, 102, 101, 114, 86, 49];
+</code></pre>
+<h2 id="function-get_ell"><a class="header" href="#function-get_ell">Function <code>get_ell</code> <a id="0x1_sigma_protocol_transfer_get_ell"></a></a></h2>
+<p>Returns the fixed number of available balance chunks ℓ.</p>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_ell">get_ell</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_ell">get_ell</a>(): u64 { get_num_available_chunks() }
+</code></pre>
+</details>
+<h2 id="function-get_n"><a class="header" href="#function-get_n">Function <code>get_n</code> <a id="0x1_sigma_protocol_transfer_get_n"></a></a></h2>
+<p>Returns the fixed number of transfer (pending) balance chunks n.</p>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_n">get_n</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_n">get_n</a>(): u64 { get_num_pending_chunks() }
+</code></pre>
+</details>
+<h2 id="function-assert_transfer_statement_is_well_formed"><a class="header" href="#function-assert_transfer_statement_is_well_formed">Function <code>assert_transfer_statement_is_well_formed</code> <a id="0x1_sigma_protocol_transfer_assert_transfer_statement_is_well_formed"></a></a></h2>
+<p>Validates the statement structure.</p>
+<p>Expected point count: 4 + 4ℓ + 3n + (has_eff ? 1+ℓ+n : 0) + num_volun*(1+n)</p>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_assert_transfer_statement_is_well_formed">assert_transfer_statement_is_well_formed</a>(stmt: &<a href="sigma_protocol_statement.html#0x1_sigma_protocol_statement_Statement">sigma_protocol_statement::Statement</a>&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">sigma_protocol_transfer::Transfer</a>&gt;, has_effective_auditor: bool, num_volun_auditors: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_assert_transfer_statement_is_well_formed">assert_transfer_statement_is_well_formed</a>(
+    stmt: &Statement&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">Transfer</a>&gt;, has_effective_auditor: bool, num_volun_auditors: u64,
+) {
+    <b>let</b> ell = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_ell">get_ell</a>();
+    <b>let</b> n = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_n">get_n</a>();
+    <b>let</b> num_points = stmt.get_points().length();
+
+    <b>let</b> expected_num_points = 4 + 4 * ell + 3 * n
+        + <b>if</b> (has_effective_auditor) { 1 + ell + n } <b>else</b> { 0 }
+        + num_volun_auditors * (1 + n);
+    <b>assert</b>!(num_points == expected_num_points, e_wrong_num_points());
+    <b>assert</b>!(stmt.get_scalars().length() == 0, e_wrong_num_scalars());
+}
+</code></pre>
+</details>
+<h2 id="function-new_session"><a class="header" href="#function-new_session">Function <code>new_session</code> <a id="0x1_sigma_protocol_transfer_new_session"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_new_session">new_session</a>(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, recipient: <b>address</b>, asset_type: <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;, has_effective_auditor: bool, num_volun_auditors: u64): <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_TransferSession">sigma_protocol_transfer::TransferSession</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_new_session">new_session</a>(
+    sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    recipient: <b>address</b>,
+    asset_type: Object&lt;Metadata&gt;,
+    has_effective_auditor: bool,
+    num_volun_auditors: u64,
+): <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_TransferSession">TransferSession</a> {
+    <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_TransferSession">TransferSession</a> {
+        sender: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(sender),
+        recipient,
+        asset_type,
+        num_avail_chunks: get_num_available_chunks(),
+        num_transfer_chunks: get_num_pending_chunks(),
+        has_effective_auditor,
+        num_volun_auditors,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_transfer_statement"><a class="header" href="#function-new_transfer_statement">Function <code>new_transfer_statement</code> <a id="0x1_sigma_protocol_transfer_new_transfer_statement"></a></a></h2>
+<p>Creates a transfer statement, optionally including effective and voluntary auditor components.</p>
+<p>Points (base): [G, H, ek_sender, ek_recip, old_P[1..ℓ], old_R[1..ℓ], new_P[1..ℓ], new_R[1..ℓ], amount_P[1..n], amount_R_sender[1..n], amount_R_recip[1..n]]
+If effective: + [ek_eff_aud, new_R_eff_aud[1..ℓ], amount_R_eff_aud[1..n]]
+For each voluntary auditor t: + [ek_volun_auds[t], amount_R_volun_auds[t][1..n]]</p>
+<p>For no effective auditor, pass <code><a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()</code> for <code>compressed_ek_eff_aud</code>
+and ensure <code>amount</code> / <code>new_balance</code> have empty effective-auditor R components.
+For no voluntary auditors, pass an empty vector for <code>compressed_ek_volun_auds</code>.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_new_transfer_statement">new_transfer_statement</a>(compressed_ek_sender: <a href="../aptos-stdlib/ristretto255.html#0x1_ristretto255_CompressedRistretto">ristretto255::CompressedRistretto</a>, compressed_ek_recip: <a href="../aptos-stdlib/ristretto255.html#0x1_ristretto255_CompressedRistretto">ristretto255::CompressedRistretto</a>, compressed_old_balance: &<a href="confidential_balance.html#0x1_confidential_balance_CompressedBalance">confidential_balance::CompressedBalance</a>&lt;<a href="confidential_balance.html#0x1_confidential_balance_Available">confidential_balance::Available</a>&gt;, compressed_new_balance: &<a href="confidential_balance.html#0x1_confidential_balance_CompressedBalance">confidential_balance::CompressedBalance</a>&lt;<a href="confidential_balance.html#0x1_confidential_balance_Available">confidential_balance::Available</a>&gt;, compressed_amount: &<a href="confidential_amount.html#0x1_confidential_amount_CompressedAmount">confidential_amount::CompressedAmount</a>, compressed_ek_eff_aud: &<a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-stdlib/ristretto255.html#0x1_ristretto255_CompressedRistretto">ristretto255::CompressedRistretto</a>&gt;, compressed_ek_volun_auds: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-stdlib/ristretto255.html#0x1_ristretto255_CompressedRistretto">ristretto255::CompressedRistretto</a>&gt;): (<a href="sigma_protocol_statement.html#0x1_sigma_protocol_statement_Statement">sigma_protocol_statement::Statement</a>&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">sigma_protocol_transfer::Transfer</a>&gt;, <a href="confidential_balance.html#0x1_confidential_balance_Balance">confidential_balance::Balance</a>&lt;<a href="confidential_balance.html#0x1_confidential_balance_Pending">confidential_balance::Pending</a>&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_new_transfer_statement">new_transfer_statement</a>(
+    compressed_ek_sender: CompressedRistretto,
+    compressed_ek_recip: CompressedRistretto,
+    compressed_old_balance: &CompressedBalance&lt;Available&gt;,
+    compressed_new_balance: &CompressedBalance&lt;Available&gt;,
+    compressed_amount: &CompressedAmount,
+    compressed_ek_eff_aud: &Option&lt;CompressedRistretto&gt;,
+    compressed_ek_volun_auds: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;CompressedRistretto&gt;,
+): (Statement&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">Transfer</a>&gt;, Balance&lt;Pending&gt;) {
+    <b>let</b> has_eff = compressed_ek_eff_aud.is_some();
+    <b>let</b> num_volun = compressed_ek_volun_auds.length();
+
+    // Validate auditor counts before expensive statement construction
+    <b>assert</b>!(
+        compressed_amount.num_volun_auditors_compressed() == num_volun,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_AUDITOR_COUNT_MISMATCH">E_AUDITOR_COUNT_MISMATCH</a>)
+    );
+    <b>assert</b>!(
+        compressed_amount.has_effective_auditor_compressed() == has_eff,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_AUDITOR_COUNT_MISMATCH">E_AUDITOR_COUNT_MISMATCH</a>)
+    );
+    <b>assert</b>!(
+        compressed_new_balance.get_compressed_R_aud().length() == <b>if</b> (has_eff) { get_num_available_chunks() } <b>else</b> { 0 },
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_AUDITOR_COUNT_MISMATCH">E_AUDITOR_COUNT_MISMATCH</a>)
+    );
+    <b>assert</b>!(
+        compressed_amount.get_compressed_R_volun_auds().all(|r| r.length() == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_n">get_n</a>()),
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_AUDITOR_COUNT_MISMATCH">E_AUDITOR_COUNT_MISMATCH</a>)
+    );
+
+    <b>let</b> ell = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_ell">get_ell</a>();
+    <b>let</b> n = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_n">get_n</a>();
+    <b>let</b> e = <a href="../move-stdlib/error.html#0x1_error_internal">error::internal</a>(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_STATEMENT_BUILDER_INCONSISTENCY">E_STATEMENT_BUILDER_INCONSISTENCY</a>);
+
+    <b>let</b> b = new_builder();
+    <b>assert</b>!(b.add_point(<a href="../aptos-stdlib/ristretto255.html#0x1_ristretto255_basepoint_compressed">ristretto255::basepoint_compressed</a>()) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_G">IDX_G</a>, e);                                            // G
+    <b>assert</b>!(b.add_point(<a href="confidential_balance.html#0x1_confidential_balance_get_encryption_key_basepoint_compressed">confidential_balance::get_encryption_key_basepoint_compressed</a>()) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_H">IDX_H</a>, e);         // H
+    <b>assert</b>!(b.add_point(compressed_ek_sender) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_EK_SENDER">IDX_EK_SENDER</a>, e);                                                       // ek_sender
+    <b>assert</b>!(b.add_point(compressed_ek_recip) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_EK_RECIP">IDX_EK_RECIP</a>, e);                                                         // ek_recip
+    <b>assert</b>!(b.add_points(compressed_old_balance.get_compressed_P()) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a>, e);                            // old_P
+    <b>assert</b>!(b.add_points(compressed_old_balance.get_compressed_R()) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + ell, e);                      // old_R
+    <b>assert</b>!(b.add_points(compressed_new_balance.get_compressed_P()) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 2 * ell, e); // new_P
+    <b>assert</b>!(b.add_points(compressed_new_balance.get_compressed_R()) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 3 * ell, e);                  // new_R
+    <b>let</b> (idx, amount_P) = b.add_points_cloned(compressed_amount.get_compressed_P());           // amount_P
+    <b>assert</b>!(idx == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell, e);
+    <b>assert</b>!(b.add_points(compressed_amount.get_compressed_R_sender()) == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + n, e);            // amount_R_sender
+    <b>let</b> (idx, recip_R) = b.add_points_cloned(compressed_amount.get_compressed_R_recip());      // amount_R_recip
+    <b>assert</b>!(idx == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + 2 * n, e);
+
+    // Effective auditor: ek, new_R[1..ℓ], amount_R[1..n]
+    <b>let</b> idx_eff_start = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + 3 * n;
+    <b>if</b> (has_eff) {
+        <b>let</b> ek_eff = *compressed_ek_eff_aud.borrow();
+        <b>assert</b>!(b.add_point(ek_eff) == idx_eff_start, e);                                                     // ek_eff_aud
+        <b>assert</b>!(b.add_points(compressed_new_balance.get_compressed_R_aud()) == idx_eff_start + 1, e);      // new_R_eff_aud
+        <b>assert</b>!(b.add_points(compressed_amount.get_compressed_R_eff_aud()) == idx_eff_start + 1 + ell, e); // amount_R_eff_aud
+    };
+
+    // Voluntary auditors: for each, append [ek_volun_aud, amount_R_volun_aud[1..n]]
+    <b>let</b> idx_volun_start = idx_eff_start + <b>if</b> (has_eff) { 1 + ell + n } <b>else</b> { 0 };
+    <b>let</b> compressed_R_volun_auds = compressed_amount.get_compressed_R_volun_auds();
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, num_volun).for_each(|i| {
+        <b>let</b> expected_idx = idx_volun_start + i * (1 + n);
+        <b>let</b> ek_volun = compressed_ek_volun_auds[i];
+        <b>assert</b>!(b.add_point(ek_volun) == expected_idx, e);                             // ek_volun_aud
+        <b>assert</b>!(b.add_points(&compressed_R_volun_auds[i]) == expected_idx + 1, e);  // amount_R_volun_aud
+    });
+
+    <b>let</b> stmt = b.build();
+    <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_assert_transfer_statement_is_well_formed">assert_transfer_statement_is_well_formed</a>(&stmt, has_eff, num_volun);
+    <b>let</b> amount = new_pending_from_p_and_r(amount_P, recip_R);
+    (stmt, amount)
+}
+</code></pre>
+</details>
+<h2 id="function-psi"><a class="header" href="#function-psi">Function <code>psi</code> <a id="0x1_sigma_protocol_transfer_psi"></a></a></h2>
+<p>The combined homomorphism $\psi$ for the transfer relation (see module-level doc for full definition).</p>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_psi">psi</a>(stmt: &<a href="sigma_protocol_statement.html#0x1_sigma_protocol_statement_Statement">sigma_protocol_statement::Statement</a>&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">sigma_protocol_transfer::Transfer</a>&gt;, w: &<a href="sigma_protocol_witness.html#0x1_sigma_protocol_witness_Witness">sigma_protocol_witness::Witness</a>, has_effective_auditor: bool, num_volun_auditors: u64): <a href="sigma_protocol_representation_vec.html#0x1_sigma_protocol_representation_vec_RepresentationVec">sigma_protocol_representation_vec::RepresentationVec</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_psi">psi</a>(
+    stmt: &Statement&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">Transfer</a>&gt;, w: &Witness,
+    has_effective_auditor: bool, num_volun_auditors: u64,
+): RepresentationVec {
+    // WARNING: Crucial for security
+    <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_assert_transfer_statement_is_well_formed">assert_transfer_statement_is_well_formed</a>(stmt, has_effective_auditor, num_volun_auditors);
+
+    <b>let</b> ell = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_ell">get_ell</a>();
+    <b>let</b> n = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_n">get_n</a>();
+
+    // WARNING: Crucial for security
+    <b>let</b> expected_witness_len = 1 + 2 * ell + 2 * n;
+    <b>assert</b>!(w.length() == expected_witness_len, e_wrong_witness_len());
+
+    <b>let</b> b_powers_ell = get_b_powers(ell);
+    <b>let</b> b_powers_n = get_b_powers(n);
+
+    <b>let</b> dk = *w.get(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_DK">IDX_DK</a>);
+
+    <b>let</b> reprs = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+
+    // === R^veiled_withdraw part ===
+
+    // 1. dk · ek_sender
+    reprs.push_back(repr_scaled(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_EK_SENDER">IDX_EK_SENDER</a>, dk));
+
+    // 2. new_a[i] · G + new_r[i] · H
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+        <b>let</b> new_a_i = *w.get(1 + i);
+        <b>let</b> new_r_i = *w.get(1 + ell + i);
+        reprs.push_back(new_representation(<a href="../move-stdlib/vector.html#0x1_vector">vector</a>[<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_G">IDX_G</a>, <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_H">IDX_H</a>], <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[new_a_i, new_r_i]));
+    });
+
+    // 3. new_r[i] · ek_sender
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+        <b>let</b> new_r_i = *w.get(1 + ell + i);
+        reprs.push_back(repr_scaled(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_EK_SENDER">IDX_EK_SENDER</a>, new_r_i));
+    });
+
+    // 3b. (effective auditor only) new_r[i] · ek_eff_aud
+    <b>if</b> (has_effective_auditor) {
+        <b>let</b> idx_ek_eff_aud = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + 3 * n;
+        <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+            <b>let</b> new_r_i = *w.get(1 + ell + i);
+            reprs.push_back(repr_scaled(idx_ek_eff_aud, new_r_i));
+        });
+    };
+
+    // 4. Balance equation: dk · ⟨B, old_R⟩ + (⟨B, new_a⟩ + ⟨B, v⟩) · G
+    <b>let</b> idx_old_R_start = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + ell;
+    <b>let</b> point_idxs = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+    <b>let</b> scalars = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+
+    // dk · B^i · old_R[i]
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+        point_idxs.push_back(idx_old_R_start + i);
+        scalars.push_back(dk.scalar_mul(&b_powers_ell[i]));
+    });
+
+    // new_a[i] · B^i · G
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+        <b>let</b> new_a_i = *w.get(1 + i);
+        point_idxs.push_back(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_G">IDX_G</a>);
+        scalars.push_back(new_a_i.scalar_mul(&b_powers_ell[i]));
+    });
+
+    // v[j] · B^j · G (the secret transfer amount)
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+        <b>let</b> v_j = *w.get(1 + 2 * ell + j);
+        point_idxs.push_back(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_G">IDX_G</a>);
+        scalars.push_back(v_j.scalar_mul(&b_powers_n[j]));
+    });
+
+    reprs.push_back(new_representation(point_idxs, scalars));
+
+    // === R_eq part ===
+
+    <b>let</b> idx_v_start = 1 + 2 * ell;
+    <b>let</b> idx_r_start = 1 + 2 * ell + n;
+
+    // 5. v[j] · G + r[j] · H
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+        <b>let</b> v_j = *w.get(idx_v_start + j);
+        <b>let</b> r_j = *w.get(idx_r_start + j);
+        reprs.push_back(new_representation(<a href="../move-stdlib/vector.html#0x1_vector">vector</a>[<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_G">IDX_G</a>, <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_H">IDX_H</a>], <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[v_j, r_j]));
+    });
+
+    // 6. r[j] · ek_sender
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+        <b>let</b> r_j = *w.get(idx_r_start + j);
+        reprs.push_back(repr_scaled(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_EK_SENDER">IDX_EK_SENDER</a>, r_j));
+    });
+
+    // 7. r[j] · ek_recip
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+        <b>let</b> r_j = *w.get(idx_r_start + j);
+        reprs.push_back(repr_scaled(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_EK_RECIP">IDX_EK_RECIP</a>, r_j));
+    });
+
+    // 7b. (effective auditor only) r[j] · ek_eff_aud
+    <b>if</b> (has_effective_auditor) {
+        <b>let</b> idx_ek_eff_aud = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + 3 * n;
+        <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+            <b>let</b> r_j = *w.get(idx_r_start + j);
+            reprs.push_back(repr_scaled(idx_ek_eff_aud, r_j));
+        });
+    };
+
+    // 7c. (voluntary auditors) r[j] · ek_volun_aud_t, for each voluntary auditor t
+    <b>let</b> idx_volun_auds_start = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + 3 * n
+        + <b>if</b> (has_effective_auditor) { 1 + ell + n } <b>else</b> { 0 };
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, num_volun_auditors).for_each(|i| {
+        <b>let</b> idx_ek_volun_aud = idx_volun_auds_start + i * (1 + n);
+        <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+            <b>let</b> r_j = *w.get(idx_r_start + j);
+            reprs.push_back(repr_scaled(idx_ek_volun_aud, r_j));
+        });
+    });
+
+    // WARNING: Crucial for security
+    <b>assert</b>!(reprs.length() == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_expected_output_len">expected_output_len</a>(ell, n, has_effective_auditor, num_volun_auditors), e_wrong_output_len());
+    new_representation_vec(reprs)
+}
+</code></pre>
+</details>
+<h2 id="function-expected_output_len"><a class="header" href="#function-expected_output_len">Function <code>expected_output_len</code> <a id="0x1_sigma_protocol_transfer_expected_output_len"></a></a></h2>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_expected_output_len">expected_output_len</a>(ell: u64, n: u64, has_effective_auditor: bool, num_volun_auditors: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_expected_output_len">expected_output_len</a>(ell: u64, n: u64, has_effective_auditor: bool, num_volun_auditors: u64): u64 {
+    2 + 2 * ell + 3 * n + (<b>if</b> (has_effective_auditor) { ell + n } <b>else</b> { 0 }) + num_volun_auditors * n
+}
+</code></pre>
+</details>
+<h2 id="function-f"><a class="header" href="#function-f">Function <code>f</code> <a id="0x1_sigma_protocol_transfer_f"></a></a></h2>
+<p>The transformation function $f$ for the transfer relation (see module-level doc for full definition).</p>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_f">f</a>(_stmt: &<a href="sigma_protocol_statement.html#0x1_sigma_protocol_statement_Statement">sigma_protocol_statement::Statement</a>&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">sigma_protocol_transfer::Transfer</a>&gt;, has_effective_auditor: bool, num_volun_auditors: u64): <a href="sigma_protocol_representation_vec.html#0x1_sigma_protocol_representation_vec_RepresentationVec">sigma_protocol_representation_vec::RepresentationVec</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_f">f</a>(
+    _stmt: &Statement&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">Transfer</a>&gt;,
+    has_effective_auditor: bool, num_volun_auditors: u64,
+): RepresentationVec {
+    <b>let</b> ell = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_ell">get_ell</a>();
+    <b>let</b> n = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_get_n">get_n</a>();
+    <b>let</b> b_powers_ell = get_b_powers(ell);
+
+    <b>let</b> idx_new_P_start = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 2 * ell;
+    <b>let</b> idx_new_R_start = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 3 * ell;
+    <b>let</b> idx_amount_P_start = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell;
+    <b>let</b> idx_amount_R_sender_start = idx_amount_P_start + n;
+    <b>let</b> idx_amount_R_recip_start = idx_amount_R_sender_start + n;
+
+    <b>let</b> reprs = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+
+    // === R^veiled_withdraw part ===
+
+    // 1. H
+    reprs.push_back(repr_point(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_IDX_H">IDX_H</a>));
+
+    // 2. new_P[i]
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+        reprs.push_back(repr_point(idx_new_P_start + i));
+    });
+
+    // 3. new_R[i]
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+        reprs.push_back(repr_point(idx_new_R_start + i));
+    });
+
+    // 3b. (effective auditor only) new_R_eff_aud[i]
+    <b>if</b> (has_effective_auditor) {
+        <b>let</b> idx_ek_eff_aud = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + 3 * n;
+        <b>let</b> idx_new_R_eff_aud_start = idx_ek_eff_aud + 1;
+        <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+            reprs.push_back(repr_point(idx_new_R_eff_aud_start + i));
+        });
+    };
+
+    // 4. ⟨B, old_P⟩ (no -v·G because v is secret)
+    <b>let</b> point_idxs = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+    <b>let</b> scalars = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, ell).for_each(|i| {
+        point_idxs.push_back(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + i);
+        scalars.push_back(b_powers_ell[i]);
+    });
+    reprs.push_back(new_representation(point_idxs, scalars));
+
+    // === R_eq part ===
+
+    // 5. amount_P[j]
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+        reprs.push_back(repr_point(idx_amount_P_start + j));
+    });
+
+    // 6. amount_R_sender[j]
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+        reprs.push_back(repr_point(idx_amount_R_sender_start + j));
+    });
+
+    // 7. amount_R_recip[j]
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+        reprs.push_back(repr_point(idx_amount_R_recip_start + j));
+    });
+
+    // 7b. (effective auditor only) amount_R_eff_aud[j]
+    <b>if</b> (has_effective_auditor) {
+        <b>let</b> idx_amount_R_eff_aud_start = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + 3 * n + 1 + ell;
+        <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+            reprs.push_back(repr_point(idx_amount_R_eff_aud_start + j));
+        });
+    };
+
+    // 7c. (voluntary auditors) amount_R_volun_aud_t[j], for each voluntary auditor t
+    <b>let</b> idx_volun_auds_start = <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_START_IDX_OLD_P">START_IDX_OLD_P</a> + 4 * ell + 3 * n
+        + <b>if</b> (has_effective_auditor) { 1 + ell + n } <b>else</b> { 0 };
+    <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, num_volun_auditors).for_each(|i| {
+        <b>let</b> idx_amount_R_volun_aud_start = idx_volun_auds_start + i * (1 + n) + 1;
+        <a href="../move-stdlib/vector.html#0x1_vector_range">vector::range</a>(0, n).for_each(|j| {
+            reprs.push_back(repr_point(idx_amount_R_volun_aud_start + j));
+        });
+    });
+
+    // Note: Not needed for security, since a mismatched <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_f">f</a>(X) length will be caught in the verifier. But good practice
+    // for catching mistakes *early* when implementing your <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_f">f</a>(X).
+    <b>assert</b>!(reprs.length() == <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_expected_output_len">expected_output_len</a>(ell, n, has_effective_auditor, num_volun_auditors), e_wrong_output_len());
+    new_representation_vec(reprs)
+}
+</code></pre>
+</details>
+<h2 id="function-assert_verifies"><a class="header" href="#function-assert_verifies">Function <code>assert_verifies</code> <a id="0x1_sigma_protocol_transfer_assert_verifies"></a></a></h2>
+<p>Asserts that a transfer proof verifies.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_assert_verifies">assert_verifies</a>(self: &<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_TransferSession">sigma_protocol_transfer::TransferSession</a>, stmt: &<a href="sigma_protocol_statement.html#0x1_sigma_protocol_statement_Statement">sigma_protocol_statement::Statement</a>&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">sigma_protocol_transfer::Transfer</a>&gt;, proof: &<a href="sigma_protocol_proof.html#0x1_sigma_protocol_proof_Proof">sigma_protocol_proof::Proof</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_assert_verifies">assert_verifies</a>(
+    self: &<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_TransferSession">TransferSession</a>, stmt: &Statement&lt;<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_Transfer">Transfer</a>&gt;, proof: &Proof,
+) {
+    <b>let</b> has_eff = self.has_effective_auditor;
+    <b>let</b> num_volun = self.num_volun_auditors;
+    <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_assert_transfer_statement_is_well_formed">assert_transfer_statement_is_well_formed</a>(stmt, has_eff, num_volun);
+
+    <b>let</b> success = <a href="sigma_protocol.html#0x1_sigma_protocol_verify">sigma_protocol::verify</a>(
+        new_domain_separator(@aptos_framework, <a href="chain_id.html#0x1_chain_id_get">chain_id::get</a>(), <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_PROTOCOL_ID">PROTOCOL_ID</a>, <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(self)),
+        |_X, w| <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_psi">psi</a>(_X, w, has_eff, num_volun),
+        |_X| <a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_f">f</a>(_X, has_eff, num_volun),
+        stmt,
+        proof
+    );
+
+    <b>assert</b>!(success, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_INVALID_TRANSFER_PROOF">E_INVALID_TRANSFER_PROOF</a>));
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-framework/sigma_protocol_statement_builder.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-framework/sigma_protocol_utils.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-framework/sigma_protocol_statement_builder.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-framework/sigma_protocol_utils.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

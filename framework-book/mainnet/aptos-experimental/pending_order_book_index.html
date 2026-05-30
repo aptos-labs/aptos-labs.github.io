@@ -1,0 +1,512 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>pending_order_book_index - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-experimental/pending_order_book_index.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x7pending_order_book_index"><a class="header" href="#module-0x7pending_order_book_index">Module <code>0x7::pending_order_book_index</code> <a id="0x7_pending_order_book_index"></a></a></h1>
+<p>(work in progress)</p>
+<ul>
+<li><a href="#0x7_pending_order_book_index_PendingUpOrderKey">Struct <code>PendingUpOrderKey</code></a></li>
+<li><a href="#0x7_pending_order_book_index_PendingDownOrderKey">Struct <code>PendingDownOrderKey</code></a></li>
+<li><a href="#0x7_pending_order_book_index_PendingTimeKey">Struct <code>PendingTimeKey</code></a></li>
+<li><a href="#0x7_pending_order_book_index_PendingOrderBookIndex">Enum <code>PendingOrderBookIndex</code></a></li>
+<li><a href="#0x7_pending_order_book_index_new_pending_order_book_index">Function <code>new_pending_order_book_index</code></a></li>
+<li><a href="#0x7_pending_order_book_index_cancel_pending_order">Function <code>cancel_pending_order</code></a></li>
+<li><a href="#0x7_pending_order_book_index_place_pending_order">Function <code>place_pending_order</code></a></li>
+<li><a href="#0x7_pending_order_book_index_take_ready_price_move_up_orders">Function <code>take_ready_price_move_up_orders</code></a></li>
+<li><a href="#0x7_pending_order_book_index_take_ready_price_move_down_orders">Function <code>take_ready_price_move_down_orders</code></a></li>
+<li><a href="#0x7_pending_order_book_index_take_ready_price_based_orders">Function <code>take_ready_price_based_orders</code></a></li>
+<li><a href="#0x7_pending_order_book_index_take_ready_time_based_orders">Function <code>take_ready_time_based_orders</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map">0x1::big_ordered_map</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../aptos-framework/timestamp.html#0x1_timestamp">0x1::timestamp</a>;
+<b>use</b> <a href="../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+<b>use</b> <a href="order_book_utils.html#0x7_order_book_utils">0x7::order_book_utils</a>;
+</code></pre>
+<h2 id="struct-pendinguporderkey"><a class="header" href="#struct-pendinguporderkey">Struct <code>PendingUpOrderKey</code> <a id="0x7_pending_order_book_index_PendingUpOrderKey"></a></a></h2>
+<pre><code><b>struct</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingUpOrderKey">PendingUpOrderKey</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>tie_breaker: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-pendingdownorderkey"><a class="header" href="#struct-pendingdownorderkey">Struct <code>PendingDownOrderKey</code> <a id="0x7_pending_order_book_index_PendingDownOrderKey"></a></a></h2>
+<pre><code><b>struct</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingDownOrderKey">PendingDownOrderKey</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>tie_breaker: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_DecreasingIdx">order_book_types::DecreasingIdx</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-pendingtimekey"><a class="header" href="#struct-pendingtimekey">Struct <code>PendingTimeKey</code> <a id="0x7_pending_order_book_index_PendingTimeKey"></a></a></h2>
+<pre><code><b>struct</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingTimeKey">PendingTimeKey</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>time: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>tie_breaker: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="enum-pendingorderbookindex"><a class="header" href="#enum-pendingorderbookindex">Enum <code>PendingOrderBookIndex</code> <a id="0x7_pending_order_book_index_PendingOrderBookIndex"></a></a></h2>
+<pre><code>enum <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">PendingOrderBookIndex</a> <b>has</b> store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>price_move_down_index: <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;<a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingDownOrderKey">pending_order_book_index::PendingDownOrderKey</a>, <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>price_move_up_index: <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;<a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingUpOrderKey">pending_order_book_index::PendingUpOrderKey</a>, <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>time_based_index: <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;<a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingTimeKey">pending_order_book_index::PendingTimeKey</a>, <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="function-new_pending_order_book_index"><a class="header" href="#function-new_pending_order_book_index">Function <code>new_pending_order_book_index</code> <a id="0x7_pending_order_book_index_new_pending_order_book_index"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_new_pending_order_book_index">new_pending_order_book_index</a>(): <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">pending_order_book_index::PendingOrderBookIndex</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_new_pending_order_book_index">new_pending_order_book_index</a>(): <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">PendingOrderBookIndex</a> {
+    PendingOrderBookIndex::V1 {
+        price_move_up_index: <a href="order_book_utils.html#0x7_order_book_utils_new_default_big_ordered_map">order_book_utils::new_default_big_ordered_map</a>(),
+        price_move_down_index: <a href="order_book_utils.html#0x7_order_book_utils_new_default_big_ordered_map">order_book_utils::new_default_big_ordered_map</a>(),
+        time_based_index: <a href="order_book_utils.html#0x7_order_book_utils_new_default_big_ordered_map">order_book_utils::new_default_big_ordered_map</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-cancel_pending_order"><a class="header" href="#function-cancel_pending_order">Function <code>cancel_pending_order</code> <a id="0x7_pending_order_book_index_cancel_pending_order"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_cancel_pending_order">cancel_pending_order</a>(self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">pending_order_book_index::PendingOrderBookIndex</a>, trigger_condition: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>, unique_priority_idx: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_cancel_pending_order">cancel_pending_order</a>(
+    self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">PendingOrderBookIndex</a>,
+    trigger_condition: TriggerCondition,
+    unique_priority_idx: IncreasingIdx
+) {
+    <b>let</b> (price_move_down_index, price_move_up_index, time_based_index) =
+        trigger_condition.get_trigger_condition_indices();
+    <b>if</b> (price_move_up_index.is_some()) {
+        self.price_move_up_index.remove(
+            &<a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingUpOrderKey">PendingUpOrderKey</a> {
+                price: price_move_up_index.destroy_some(),
+                tie_breaker: unique_priority_idx
+            }
+        );
+    };
+    <b>if</b> (price_move_down_index.is_some()) {
+        self.price_move_down_index.remove(
+            &<a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingDownOrderKey">PendingDownOrderKey</a> {
+                price: price_move_down_index.destroy_some(),
+                tie_breaker: unique_priority_idx.into_decreasing_idx_type()
+            }
+        );
+    };
+    <b>if</b> (time_based_index.is_some()) {
+        self.time_based_index.remove(
+            &<a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingTimeKey">PendingTimeKey</a> {
+                time: time_based_index.destroy_some(),
+                tie_breaker: unique_priority_idx
+            }
+        );
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-place_pending_order"><a class="header" href="#function-place_pending_order">Function <code>place_pending_order</code> <a id="0x7_pending_order_book_index_place_pending_order"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_place_pending_order">place_pending_order</a>(self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">pending_order_book_index::PendingOrderBookIndex</a>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, trigger_condition: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>, unique_priority_idx: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_place_pending_order">place_pending_order</a>(
+    self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">PendingOrderBookIndex</a>,
+    order_id: OrderId,
+    trigger_condition: TriggerCondition,
+    unique_priority_idx: IncreasingIdx
+) {
+    // Add this order <b>to</b> the pending order book index
+    <b>let</b> (price_move_down_index, price_move_up_index, time_based_index) =
+        trigger_condition.get_trigger_condition_indices();
+    <b>if</b> (price_move_up_index.is_some()) {
+        self.price_move_up_index.add(
+            <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingUpOrderKey">PendingUpOrderKey</a> {
+                price: price_move_up_index.destroy_some(),
+                tie_breaker: unique_priority_idx
+            },
+            order_id
+        );
+    } <b>else</b> <b>if</b> (price_move_down_index.is_some()) {
+        self.price_move_down_index.add(
+            <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingDownOrderKey">PendingDownOrderKey</a> {
+                price: price_move_down_index.destroy_some(),
+                // Use a descending tie breaker <b>to</b> ensure that for price <b>move</b> down orders,
+                // orders <b>with</b> the same price are processed in FIFO order
+                tie_breaker: unique_priority_idx.into_decreasing_idx_type()
+            },
+            order_id
+        );
+    } <b>else</b> <b>if</b> (time_based_index.is_some()) {
+        self.time_based_index.add(
+            <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingTimeKey">PendingTimeKey</a> {
+                time: time_based_index.destroy_some(),
+                tie_breaker: unique_priority_idx
+            },
+            order_id
+        );
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-take_ready_price_move_up_orders"><a class="header" href="#function-take_ready_price_move_up_orders">Function <code>take_ready_price_move_up_orders</code> <a id="0x7_pending_order_book_index_take_ready_price_move_up_orders"></a></a></h2>
+<pre><code><b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_move_up_orders">take_ready_price_move_up_orders</a>(self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">pending_order_book_index::PendingOrderBookIndex</a>, current_price: u64, orders: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;, limit: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_move_up_orders">take_ready_price_move_up_orders</a>(
+    self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">PendingOrderBookIndex</a>,
+    current_price: u64,
+    orders: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;OrderId&gt;,
+    limit: u64
+) {
+    <b>while</b> (!self.price_move_up_index.is_empty() && orders.length() &lt; limit) {
+        <b>let</b> (key, order_id) = self.price_move_up_index.borrow_front();
+        <b>if</b> (current_price &gt;= key.price) {
+            orders.push_back(*order_id);
+            self.price_move_up_index.remove(&key);
+        } <b>else</b> {
+            <b>break</b>;
+        }
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-take_ready_price_move_down_orders"><a class="header" href="#function-take_ready_price_move_down_orders">Function <code>take_ready_price_move_down_orders</code> <a id="0x7_pending_order_book_index_take_ready_price_move_down_orders"></a></a></h2>
+<pre><code><b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_move_down_orders">take_ready_price_move_down_orders</a>(self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">pending_order_book_index::PendingOrderBookIndex</a>, current_price: u64, orders: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;, limit: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_move_down_orders">take_ready_price_move_down_orders</a>(
+    self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">PendingOrderBookIndex</a>,
+    current_price: u64,
+    orders: &<b>mut</b> <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;OrderId&gt;,
+    limit: u64
+) {
+    <b>while</b> (!self.price_move_down_index.is_empty() && orders.length() &lt; limit) {
+        <b>let</b> (key, order_id) = self.price_move_down_index.borrow_back();
+        <b>if</b> (current_price &lt;= key.price) {
+            orders.push_back(*order_id);
+            self.price_move_down_index.remove(&key);
+        } <b>else</b> {
+            <b>break</b>;
+        }
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-take_ready_price_based_orders"><a class="header" href="#function-take_ready_price_based_orders">Function <code>take_ready_price_based_orders</code> <a id="0x7_pending_order_book_index_take_ready_price_based_orders"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_based_orders">take_ready_price_based_orders</a>(self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">pending_order_book_index::PendingOrderBookIndex</a>, current_price: u64, order_limit: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_based_orders">take_ready_price_based_orders</a>(
+    self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">PendingOrderBookIndex</a>, current_price: u64, order_limit: u64
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;OrderId&gt; {
+    <b>let</b> orders = <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
+    self.<a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_move_up_orders">take_ready_price_move_up_orders</a>(
+        current_price,
+        &<b>mut</b> orders,
+        <a href="../aptos-stdlib/math64.html#0x1_math64_ceil_div">math64::ceil_div</a>(order_limit, 2)
+    );
+    self.<a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_move_down_orders">take_ready_price_move_down_orders</a>(current_price, &<b>mut</b> orders, order_limit);
+    // Try <b>to</b> fill the rest of the space <b>if</b> available.
+    self.<a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_price_move_up_orders">take_ready_price_move_up_orders</a>(current_price, &<b>mut</b> orders, order_limit);
+    orders
+}
+</code></pre>
+</details>
+<h2 id="function-take_ready_time_based_orders"><a class="header" href="#function-take_ready_time_based_orders">Function <code>take_ready_time_based_orders</code> <a id="0x7_pending_order_book_index_take_ready_time_based_orders"></a></a></h2>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_time_based_orders">take_ready_time_based_orders</a>(self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">pending_order_book_index::PendingOrderBookIndex</a>, order_limit: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_take_ready_time_based_orders">take_ready_time_based_orders</a>(
+    self: &<b>mut</b> <a href="pending_order_book_index.html#0x7_pending_order_book_index_PendingOrderBookIndex">PendingOrderBookIndex</a>, order_limit: u64
+): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;OrderId&gt; {
+    <b>let</b> orders = <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
+    <b>while</b> (!self.time_based_index.is_empty() && orders.length() &lt; order_limit) {
+        <b>let</b> current_time = <a href="../aptos-framework/timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>();
+        <b>let</b> (time, order_id) = self.time_based_index.borrow_front();
+        <b>if</b> (current_time &gt;= time.time) {
+            orders.push_back(*order_id);
+            self.time_based_index.remove(&time);
+        } <b>else</b> {
+            <b>break</b>;
+        }
+    };
+    orders
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-experimental/order_placement.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-experimental/pre_cancellation_tracker.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-experimental/order_placement.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-experimental/pre_cancellation_tracker.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

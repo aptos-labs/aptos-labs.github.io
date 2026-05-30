@@ -1,0 +1,1026 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>crypto_algebra - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/crypto_algebra.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1crypto_algebra"><a class="header" href="#module-0x1crypto_algebra">Module <code>0x1::crypto_algebra</code> <a id="0x1_crypto_algebra"></a></a></h1>
+<p>This module provides generic structs/functions for operations of algebraic structures (e.g. fields and groups),
+which can be used to build generic cryptographic schemes atop.
+E.g., a Groth16 ZK proof verifier can be built to work over any pairing supported in this module.</p>
+<p>In general, every structure implements basic operations like (de)serialization, equality check, random sampling.</p>
+<p>A group may also implement the following operations. (Additive group notation is assumed.)</p>
+<ul>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_order">order</a>()</code> for getting the group order.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_zero">zero</a>()</code> for getting the group identity.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_one">one</a>()</code> for getting the group generator (if exists).</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_neg">neg</a>()</code> for group element inversion.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_add">add</a>()</code> for group operation (i.e., a group addition).</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_sub">sub</a>()</code> for group element subtraction.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_double">double</a>()</code> for efficient doubling.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_scalar_mul">scalar_mul</a>()</code> for group scalar multiplication.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_multi_scalar_mul">multi_scalar_mul</a>()</code> for efficient group multi-scalar multiplication.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_hash_to">hash_to</a>()</code> for hash-to-group.</li>
+</ul>
+<p>A field may also implement the following operations.</p>
+<ul>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_zero">zero</a>()</code> for getting the field additive identity.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_one">one</a>()</code> for getting the field multiplicative identity.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_add">add</a>()</code> for field addition.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_sub">sub</a>()</code> for field subtraction.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_mul">mul</a>()</code> for field multiplication.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_div">div</a>()</code> for field division.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_neg">neg</a>()</code> for field negation.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_inv">inv</a>()</code> for field inversion.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_sqr">sqr</a>()</code> for efficient field element squaring.</li>
+<li><code><a href="crypto_algebra.html#0x1_crypto_algebra_from_u64">from_u64</a>()</code> for quick conversion from u64 to field element.</li>
+</ul>
+<p>For 3 groups that admit a bilinear map, <code><a href="crypto_algebra.html#0x1_crypto_algebra_pairing">pairing</a>()</code> and <code><a href="crypto_algebra.html#0x1_crypto_algebra_multi_pairing">multi_pairing</a>()</code> may be implemented.</p>
+<p>For a subset/superset relationship between 2 structures, <code><a href="crypto_algebra.html#0x1_crypto_algebra_upcast">upcast</a>()</code> and <code><a href="crypto_algebra.html#0x1_crypto_algebra_downcast">downcast</a>()</code> may be implemented.
+E.g., in BLS12-381 pairing, since <code>Gt</code> is a subset of <code>Fq12</code>,
+<code><a href="crypto_algebra.html#0x1_crypto_algebra_upcast">upcast</a>&lt;Gt, Fq12&gt;()</code> and <code><a href="crypto_algebra.html#0x1_crypto_algebra_downcast">downcast</a>&lt;Fq12, Gt&gt;()</code> will be supported.</p>
+<p>See <code>*_algebra.<b>move</b></code> for currently implemented algebraic structures.</p>
+<ul>
+<li><a href="#0x1_crypto_algebra_Element">Struct <code>Element</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x1_crypto_algebra_eq">Function <code>eq</code></a></li>
+<li><a href="#0x1_crypto_algebra_from_u64">Function <code>from_u64</code></a></li>
+<li><a href="#0x1_crypto_algebra_zero">Function <code>zero</code></a></li>
+<li><a href="#0x1_crypto_algebra_one">Function <code>one</code></a></li>
+<li><a href="#0x1_crypto_algebra_neg">Function <code>neg</code></a></li>
+<li><a href="#0x1_crypto_algebra_add">Function <code>add</code></a></li>
+<li><a href="#0x1_crypto_algebra_sub">Function <code>sub</code></a></li>
+<li><a href="#0x1_crypto_algebra_mul">Function <code>mul</code></a></li>
+<li><a href="#0x1_crypto_algebra_div">Function <code>div</code></a></li>
+<li><a href="#0x1_crypto_algebra_sqr">Function <code>sqr</code></a></li>
+<li><a href="#0x1_crypto_algebra_inv">Function <code>inv</code></a></li>
+<li><a href="#0x1_crypto_algebra_double">Function <code>double</code></a></li>
+<li><a href="#0x1_crypto_algebra_multi_scalar_mul">Function <code>multi_scalar_mul</code></a></li>
+<li><a href="#0x1_crypto_algebra_scalar_mul">Function <code>scalar_mul</code></a></li>
+<li><a href="#0x1_crypto_algebra_multi_pairing">Function <code>multi_pairing</code></a></li>
+<li><a href="#0x1_crypto_algebra_pairing">Function <code>pairing</code></a></li>
+<li><a href="#0x1_crypto_algebra_deserialize">Function <code>deserialize</code></a></li>
+<li><a href="#0x1_crypto_algebra_serialize">Function <code>serialize</code></a></li>
+<li><a href="#0x1_crypto_algebra_order">Function <code>order</code></a></li>
+<li><a href="#0x1_crypto_algebra_upcast">Function <code>upcast</code></a></li>
+<li><a href="#0x1_crypto_algebra_downcast">Function <code>downcast</code></a></li>
+<li><a href="#0x1_crypto_algebra_hash_to">Function <code>hash_to</code></a></li>
+<li><a href="#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">Function <code>abort_unless_cryptography_algebra_natives_enabled</code></a></li>
+<li><a href="#0x1_crypto_algebra_handles_from_elements">Function <code>handles_from_elements</code></a></li>
+<li><a href="#0x1_crypto_algebra_add_internal">Function <code>add_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_deserialize_internal">Function <code>deserialize_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_div_internal">Function <code>div_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_double_internal">Function <code>double_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_downcast_internal">Function <code>downcast_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_from_u64_internal">Function <code>from_u64_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_eq_internal">Function <code>eq_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_hash_to_internal">Function <code>hash_to_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_inv_internal">Function <code>inv_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_mul_internal">Function <code>mul_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_multi_pairing_internal">Function <code>multi_pairing_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_multi_scalar_mul_internal">Function <code>multi_scalar_mul_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_neg_internal">Function <code>neg_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_one_internal">Function <code>one_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_order_internal">Function <code>order_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_pairing_internal">Function <code>pairing_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_scalar_mul_internal">Function <code>scalar_mul_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_serialize_internal">Function <code>serialize_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_sqr_internal">Function <code>sqr_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_sub_internal">Function <code>sub_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_upcast_internal">Function <code>upcast_internal</code></a></li>
+<li><a href="#0x1_crypto_algebra_zero_internal">Function <code>zero_internal</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_handles_from_elements">Function <code>handles_from_elements</code></a></li>
+<li><a href="#@Specification_1_add_internal">Function <code>add_internal</code></a></li>
+<li><a href="#@Specification_1_deserialize_internal">Function <code>deserialize_internal</code></a></li>
+<li><a href="#@Specification_1_div_internal">Function <code>div_internal</code></a></li>
+<li><a href="#@Specification_1_double_internal">Function <code>double_internal</code></a></li>
+<li><a href="#@Specification_1_downcast_internal">Function <code>downcast_internal</code></a></li>
+<li><a href="#@Specification_1_from_u64_internal">Function <code>from_u64_internal</code></a></li>
+<li><a href="#@Specification_1_eq_internal">Function <code>eq_internal</code></a></li>
+<li><a href="#@Specification_1_hash_to_internal">Function <code>hash_to_internal</code></a></li>
+<li><a href="#@Specification_1_inv_internal">Function <code>inv_internal</code></a></li>
+<li><a href="#@Specification_1_mul_internal">Function <code>mul_internal</code></a></li>
+<li><a href="#@Specification_1_multi_pairing_internal">Function <code>multi_pairing_internal</code></a></li>
+<li><a href="#@Specification_1_multi_scalar_mul_internal">Function <code>multi_scalar_mul_internal</code></a></li>
+<li><a href="#@Specification_1_neg_internal">Function <code>neg_internal</code></a></li>
+<li><a href="#@Specification_1_one_internal">Function <code>one_internal</code></a></li>
+<li><a href="#@Specification_1_order_internal">Function <code>order_internal</code></a></li>
+<li><a href="#@Specification_1_pairing_internal">Function <code>pairing_internal</code></a></li>
+<li><a href="#@Specification_1_scalar_mul_internal">Function <code>scalar_mul_internal</code></a></li>
+<li><a href="#@Specification_1_serialize_internal">Function <code>serialize_internal</code></a></li>
+<li><a href="#@Specification_1_sqr_internal">Function <code>sqr_internal</code></a></li>
+<li><a href="#@Specification_1_sub_internal">Function <code>sub_internal</code></a></li>
+<li><a href="#@Specification_1_upcast_internal">Function <code>upcast_internal</code></a></li>
+<li><a href="#@Specification_1_zero_internal">Function <code>zero_internal</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+</code></pre>
+<h2 id="struct-element"><a class="header" href="#struct-element">Struct <code>Element</code> <a id="0x1_crypto_algebra_Element"></a></a></h2>
+<p>This struct represents an element of a structure <code>S</code>.</p>
+<pre><code><b>struct</b> <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; <b>has</b> <b>copy</b>, drop
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>handle: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_crypto_algebra_E_NON_EQUAL_LENGTHS"></a></p>
+<pre><code><b>const</b> <a href="crypto_algebra.html#0x1_crypto_algebra_E_NON_EQUAL_LENGTHS">E_NON_EQUAL_LENGTHS</a>: u64 = 2;
+</code></pre>
+<p><a id="0x1_crypto_algebra_E_NOT_IMPLEMENTED"></a></p>
+<pre><code><b>const</b> <a href="crypto_algebra.html#0x1_crypto_algebra_E_NOT_IMPLEMENTED">E_NOT_IMPLEMENTED</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_crypto_algebra_E_TOO_MUCH_MEMORY_USED"></a></p>
+<pre><code><b>const</b> <a href="crypto_algebra.html#0x1_crypto_algebra_E_TOO_MUCH_MEMORY_USED">E_TOO_MUCH_MEMORY_USED</a>: u64 = 3;
+</code></pre>
+<h2 id="function-eq"><a class="header" href="#function-eq">Function <code>eq</code> <a id="0x1_crypto_algebra_eq"></a></a></h2>
+<p>Check if <code>x == y</code> for elements <code>x</code> and <code>y</code> of a structure <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_eq">eq</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_eq">eq</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): bool {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_eq_internal">eq_internal</a>&lt;S&gt;(x.handle, y.handle)
+}
+</code></pre>
+</details>
+<h2 id="function-from_u64"><a class="header" href="#function-from_u64">Function <code>from_u64</code> <a id="0x1_crypto_algebra_from_u64"></a></a></h2>
+<p>Convert a u64 to an element of a structure <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_from_u64">from_u64</a>&lt;S&gt;(value: u64): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_from_u64">from_u64</a>&lt;S&gt;(value: u64): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_from_u64_internal">from_u64_internal</a>&lt;S&gt;(value)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-zero"><a class="header" href="#function-zero">Function <code>zero</code> <a id="0x1_crypto_algebra_zero"></a></a></h2>
+<p>Return the additive identity of field <code>S</code>, or the identity of group <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_zero">zero</a>&lt;S&gt;(): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_zero">zero</a>&lt;S&gt;(): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_zero_internal">zero_internal</a>&lt;S&gt;()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-one"><a class="header" href="#function-one">Function <code>one</code> <a id="0x1_crypto_algebra_one"></a></a></h2>
+<p>Return the multiplicative identity of field <code>S</code>, or a fixed generator of group <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_one">one</a>&lt;S&gt;(): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_one">one</a>&lt;S&gt;(): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_one_internal">one_internal</a>&lt;S&gt;()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-neg"><a class="header" href="#function-neg">Function <code>neg</code> <a id="0x1_crypto_algebra_neg"></a></a></h2>
+<p>Compute <code>-x</code> for an element <code>x</code> of a structure <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_neg">neg</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_neg">neg</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_neg_internal">neg_internal</a>&lt;S&gt;(x.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-add"><a class="header" href="#function-add">Function <code>add</code> <a id="0x1_crypto_algebra_add"></a></a></h2>
+<p>Compute <code>x + y</code> for elements <code>x</code> and <code>y</code> of structure <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_add">add</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_add">add</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_add_internal">add_internal</a>&lt;S&gt;(x.handle, y.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-sub"><a class="header" href="#function-sub">Function <code>sub</code> <a id="0x1_crypto_algebra_sub"></a></a></h2>
+<p>Compute <code>x - y</code> for elements <code>x</code> and <code>y</code> of a structure <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sub">sub</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sub">sub</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_sub_internal">sub_internal</a>&lt;S&gt;(x.handle, y.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-mul"><a class="header" href="#function-mul">Function <code>mul</code> <a id="0x1_crypto_algebra_mul"></a></a></h2>
+<p>Compute <code>x * y</code> for elements <code>x</code> and <code>y</code> of a structure <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_mul">mul</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_mul">mul</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_mul_internal">mul_internal</a>&lt;S&gt;(x.handle, y.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-div"><a class="header" href="#function-div">Function <code>div</code> <a id="0x1_crypto_algebra_div"></a></a></h2>
+<p>Try computing <code>x / y</code> for elements <code>x</code> and <code>y</code> of a structure <code>S</code>.
+Return none if <code>y</code> does not have a multiplicative inverse in the structure <code>S</code>
+(e.g., when <code>S</code> is a field, and <code>y</code> is zero).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_div">div</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_div">div</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;, y: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): Option&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <b>let</b> (succ, handle) = <a href="crypto_algebra.html#0x1_crypto_algebra_div_internal">div_internal</a>&lt;S&gt;(x.handle, y.handle);
+    <b>if</b> (succ) {
+        some(<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; { handle })
+    } <b>else</b> {
+        none()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-sqr"><a class="header" href="#function-sqr">Function <code>sqr</code> <a id="0x1_crypto_algebra_sqr"></a></a></h2>
+<p>Compute <code>x^2</code> for an element <code>x</code> of a structure <code>S</code>. Faster and cheaper than <code><a href="crypto_algebra.html#0x1_crypto_algebra_mul">mul</a>(x, x)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sqr">sqr</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sqr">sqr</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_sqr_internal">sqr_internal</a>&lt;S&gt;(x.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-inv"><a class="header" href="#function-inv">Function <code>inv</code> <a id="0x1_crypto_algebra_inv"></a></a></h2>
+<p>Try computing <code>x^(-1)</code> for an element <code>x</code> of a structure <code>S</code>.
+Return none if <code>x</code> does not have a multiplicative inverse in the structure <code>S</code>
+(e.g., when <code>S</code> is a field, and <code>x</code> is zero).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_inv">inv</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_inv">inv</a>&lt;S&gt;(x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): Option&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <b>let</b> (succeeded, handle) = <a href="crypto_algebra.html#0x1_crypto_algebra_inv_internal">inv_internal</a>&lt;S&gt;(x.handle);
+    <b>if</b> (succeeded) {
+        <b>let</b> scalar = <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; { handle };
+        some(scalar)
+    } <b>else</b> {
+        none()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-double"><a class="header" href="#function-double">Function <code>double</code> <a id="0x1_crypto_algebra_double"></a></a></h2>
+<p>Compute <code>2*P</code> for an element <code>P</code> of a structure <code>S</code>. Faster and cheaper than <code><a href="crypto_algebra.html#0x1_crypto_algebra_add">add</a>(P, P)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_double">double</a>&lt;S&gt;(element_p: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_double">double</a>&lt;S&gt;(element_p: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_double_internal">double_internal</a>&lt;S&gt;(element_p.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-multi_scalar_mul"><a class="header" href="#function-multi_scalar_mul">Function <code>multi_scalar_mul</code> <a id="0x1_crypto_algebra_multi_scalar_mul"></a></a></h2>
+<p>Compute <code>k[0]*P[0]+...+k[n-1]*P[n-1]</code>, where
+<code>P[]</code> are <code>n</code> elements of group <code>G</code> represented by parameter <code>elements</code>, and
+<code>k[]</code> are <code>n</code> elements of the scalarfield <code>S</code> of group <code>G</code> represented by parameter <code>scalars</code>.</p>
+<p>Abort with code <code>std::error::invalid_argument(<a href="crypto_algebra.html#0x1_crypto_algebra_E_NON_EQUAL_LENGTHS">E_NON_EQUAL_LENGTHS</a>)</code> if the sizes of <code>elements</code> and <code>scalars</code> do not match.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_scalar_mul">multi_scalar_mul</a>&lt;G, S&gt;(elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;G&gt;&gt;, scalars: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;G&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_scalar_mul">multi_scalar_mul</a>&lt;G, S&gt;(elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G&gt;&gt;, scalars: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <b>let</b> element_handles = <a href="crypto_algebra.html#0x1_crypto_algebra_handles_from_elements">handles_from_elements</a>(elements);
+    <b>let</b> scalar_handles = <a href="crypto_algebra.html#0x1_crypto_algebra_handles_from_elements">handles_from_elements</a>(scalars);
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_multi_scalar_mul_internal">multi_scalar_mul_internal</a>&lt;G, S&gt;(element_handles, scalar_handles)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-scalar_mul"><a class="header" href="#function-scalar_mul">Function <code>scalar_mul</code> <a id="0x1_crypto_algebra_scalar_mul"></a></a></h2>
+<p>Compute <code>k*P</code>, where <code>P</code> is an element of a group <code>G</code> and <code>k</code> is an element of the scalar field <code>S</code> associated to the group <code>G</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_scalar_mul">scalar_mul</a>&lt;G, S&gt;(element_p: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;G&gt;, scalar_k: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;G&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_scalar_mul">scalar_mul</a>&lt;G, S&gt;(element_p: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G&gt;, scalar_k: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_scalar_mul_internal">scalar_mul_internal</a>&lt;G, S&gt;(element_p.handle, scalar_k.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-multi_pairing"><a class="header" href="#function-multi_pairing">Function <code>multi_pairing</code> <a id="0x1_crypto_algebra_multi_pairing"></a></a></h2>
+<p>Efficiently compute <code>e(P[0],Q[0])+...+e(P[n-1],Q[n-1])</code>,
+where <code>e: (G1,G2) -&gt; (Gt)</code> is the pairing function from groups <code>(G1,G2)</code> to group <code>Gt</code>,
+<code>P[]</code> are <code>n</code> elements of group <code>G1</code> represented by parameter <code>g1_elements</code>, and
+<code>Q[]</code> are <code>n</code> elements of group <code>G2</code> represented by parameter <code>g2_elements</code>.</p>
+<p>Abort with code <code>std::error::invalid_argument(<a href="crypto_algebra.html#0x1_crypto_algebra_E_NON_EQUAL_LENGTHS">E_NON_EQUAL_LENGTHS</a>)</code> if the sizes of <code>g1_elements</code> and <code>g2_elements</code> do not match.</p>
+<p>NOTE: we are viewing the target group <code>Gt</code> of the pairing as an additive group,
+rather than a multiplicative one (which is typically the case).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_pairing">multi_pairing</a>&lt;G1, G2, Gt&gt;(g1_elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;G1&gt;&gt;, g2_elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;G2&gt;&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;Gt&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_pairing">multi_pairing</a>&lt;G1,G2,Gt&gt;(g1_elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G1&gt;&gt;, g2_elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G2&gt;&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;Gt&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <b>let</b> g1_handles = <a href="crypto_algebra.html#0x1_crypto_algebra_handles_from_elements">handles_from_elements</a>(g1_elements);
+    <b>let</b> g2_handles = <a href="crypto_algebra.html#0x1_crypto_algebra_handles_from_elements">handles_from_elements</a>(g2_elements);
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;Gt&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_multi_pairing_internal">multi_pairing_internal</a>&lt;G1,G2,Gt&gt;(g1_handles, g2_handles)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-pairing"><a class="header" href="#function-pairing">Function <code>pairing</code> <a id="0x1_crypto_algebra_pairing"></a></a></h2>
+<p>Compute the pairing function (a.k.a., bilinear map) on a <code>G1</code> element and a <code>G2</code> element.
+Return an element in the target group <code>Gt</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_pairing">pairing</a>&lt;G1, G2, Gt&gt;(element_1: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;G1&gt;, element_2: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;G2&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;Gt&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_pairing">pairing</a>&lt;G1,G2,Gt&gt;(element_1: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G1&gt;, element_2: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;G2&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;Gt&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;Gt&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_pairing_internal">pairing_internal</a>&lt;G1,G2,Gt&gt;(element_1.handle, element_2.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-deserialize"><a class="header" href="#function-deserialize">Function <code>deserialize</code> <a id="0x1_crypto_algebra_deserialize"></a></a></h2>
+<p>Try deserializing a byte array to an element of an algebraic structure <code>S</code> using a given serialization format <code>F</code>.
+Return none if the deserialization failed.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_deserialize">deserialize</a>&lt;S, F&gt;(bytes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_deserialize">deserialize</a>&lt;S, F&gt;(bytes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): Option&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <b>let</b> (succeeded, handle) = <a href="crypto_algebra.html#0x1_crypto_algebra_deserialize_internal">deserialize_internal</a>&lt;S, F&gt;(bytes);
+    <b>if</b> (succeeded) {
+        some(<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; { handle })
+    } <b>else</b> {
+        none()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-serialize"><a class="header" href="#function-serialize">Function <code>serialize</code> <a id="0x1_crypto_algebra_serialize"></a></a></h2>
+<p>Serialize an element of an algebraic structure <code>S</code> to a byte array using a given serialization format <code>F</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_serialize">serialize</a>&lt;S, F&gt;(element: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_serialize">serialize</a>&lt;S, F&gt;(element: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_serialize_internal">serialize_internal</a>&lt;S, F&gt;(element.handle)
+}
+</code></pre>
+</details>
+<h2 id="function-order"><a class="header" href="#function-order">Function <code>order</code> <a id="0x1_crypto_algebra_order"></a></a></h2>
+<p>Get the order of structure <code>S</code>, a big integer little-endian encoded as a byte array.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_order">order</a>&lt;S&gt;(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_order">order</a>&lt;S&gt;(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_order_internal">order_internal</a>&lt;S&gt;()
+}
+</code></pre>
+</details>
+<h2 id="function-upcast"><a class="header" href="#function-upcast">Function <code>upcast</code> <a id="0x1_crypto_algebra_upcast"></a></a></h2>
+<p>Cast an element of a structure <code>S</code> to a parent structure <code>L</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_upcast">upcast</a>&lt;S, L&gt;(element: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;L&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_upcast">upcast</a>&lt;S,L&gt;(element: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;L&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;L&gt; {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_upcast_internal">upcast_internal</a>&lt;S,L&gt;(element.handle)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-downcast"><a class="header" href="#function-downcast">Function <code>downcast</code> <a id="0x1_crypto_algebra_downcast"></a></a></h2>
+<p>Try casting an element <code>x</code> of a structure <code>L</code> to a sub-structure <code>S</code>.
+Return none if <code>x</code> is not a member of <code>S</code>.</p>
+<p>NOTE: Membership check in <code>S</code> is performed inside, which can be expensive, depending on the structures <code>L</code> and <code>S</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_downcast">downcast</a>&lt;L, S&gt;(element_x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;L&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_downcast">downcast</a>&lt;L,S&gt;(element_x: &<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;L&gt;): Option&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <b>let</b> (succ, new_handle) = <a href="crypto_algebra.html#0x1_crypto_algebra_downcast_internal">downcast_internal</a>&lt;L,S&gt;(element_x.handle);
+    <b>if</b> (succ) {
+        some(<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; { handle: new_handle })
+    } <b>else</b> {
+        none()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-hash_to"><a class="header" href="#function-hash_to">Function <code>hash_to</code> <a id="0x1_crypto_algebra_hash_to"></a></a></h2>
+<p>Hash an arbitrary-length byte array <code>msg</code> into structure <code>S</code> with a domain separation tag <code>dst</code>
+using the given hash-to-structure suite <code>H</code>.</p>
+<p>NOTE: some hashing methods do not accept a <code>dst</code> and will abort if a non-empty one is provided.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_hash_to">hash_to</a>&lt;S, H&gt;(dst: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, msg: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_hash_to">hash_to</a>&lt;S, H&gt;(dst: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, msg: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt; {
+    <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>();
+    <a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a> {
+        handle: <a href="crypto_algebra.html#0x1_crypto_algebra_hash_to_internal">hash_to_internal</a>&lt;S, H&gt;(dst, msg)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-abort_unless_cryptography_algebra_natives_enabled"><a class="header" href="#function-abort_unless_cryptography_algebra_natives_enabled">Function <code>abort_unless_cryptography_algebra_natives_enabled</code> <a id="0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>()
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_abort_unless_cryptography_algebra_natives_enabled">abort_unless_cryptography_algebra_natives_enabled</a>() {
+    <b>if</b> (<a href="../move-stdlib/features.html#0x1_features_cryptography_algebra_enabled">features::cryptography_algebra_enabled</a>()) <b>return</b>;
+    <b>abort</b>(std::error::not_implemented(0))
+}
+</code></pre>
+</details>
+<h2 id="function-handles_from_elements"><a class="header" href="#function-handles_from_elements">Function <code>handles_from_elements</code> <a id="0x1_crypto_algebra_handles_from_elements"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_handles_from_elements">handles_from_elements</a>&lt;S&gt;(elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_handles_from_elements">handles_from_elements</a>&lt;S&gt;(elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">Element</a>&lt;S&gt;&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt; {
+    <b>let</b> num_elements = elements.length();
+    <b>let</b> element_handles = std::vector::empty();
+    <b>let</b> i = 0;
+    <b>while</b> ({
+        <b>spec</b> {
+            <b>invariant</b> len(element_handles) == i;
+            <b>invariant</b> <b>forall</b> k in 0..i: element_handles[k] == elements[k].handle;
+        };
+        i &lt; num_elements
+    }) {
+        element_handles.push_back(elements[i].handle);
+        i += 1;
+    };
+    element_handles
+}
+</code></pre>
+</details>
+<h2 id="function-add_internal"><a class="header" href="#function-add_internal">Function <code>add_internal</code> <a id="0x1_crypto_algebra_add_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_add_internal">add_internal</a>&lt;S&gt;(handle_1: u64, handle_2: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_add_internal">add_internal</a>&lt;S&gt;(handle_1: u64, handle_2: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-deserialize_internal"><a class="header" href="#function-deserialize_internal">Function <code>deserialize_internal</code> <a id="0x1_crypto_algebra_deserialize_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_deserialize_internal">deserialize_internal</a>&lt;S, F&gt;(bytes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (bool, u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_deserialize_internal">deserialize_internal</a>&lt;S, F&gt;(bytes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (bool, u64);
+</code></pre>
+</details>
+<h2 id="function-div_internal"><a class="header" href="#function-div_internal">Function <code>div_internal</code> <a id="0x1_crypto_algebra_div_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_div_internal">div_internal</a>&lt;F&gt;(handle_1: u64, handle_2: u64): (bool, u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_div_internal">div_internal</a>&lt;F&gt;(handle_1: u64, handle_2: u64): (bool, u64);
+</code></pre>
+</details>
+<h2 id="function-double_internal"><a class="header" href="#function-double_internal">Function <code>double_internal</code> <a id="0x1_crypto_algebra_double_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_double_internal">double_internal</a>&lt;G&gt;(element_handle: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_double_internal">double_internal</a>&lt;G&gt;(element_handle: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-downcast_internal"><a class="header" href="#function-downcast_internal">Function <code>downcast_internal</code> <a id="0x1_crypto_algebra_downcast_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_downcast_internal">downcast_internal</a>&lt;L, S&gt;(handle: u64): (bool, u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_downcast_internal">downcast_internal</a>&lt;L,S&gt;(handle: u64): (bool, u64);
+</code></pre>
+</details>
+<h2 id="function-from_u64_internal"><a class="header" href="#function-from_u64_internal">Function <code>from_u64_internal</code> <a id="0x1_crypto_algebra_from_u64_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_from_u64_internal">from_u64_internal</a>&lt;S&gt;(value: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_from_u64_internal">from_u64_internal</a>&lt;S&gt;(value: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-eq_internal"><a class="header" href="#function-eq_internal">Function <code>eq_internal</code> <a id="0x1_crypto_algebra_eq_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_eq_internal">eq_internal</a>&lt;S&gt;(handle_1: u64, handle_2: u64): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_eq_internal">eq_internal</a>&lt;S&gt;(handle_1: u64, handle_2: u64): bool;
+</code></pre>
+</details>
+<h2 id="function-hash_to_internal"><a class="header" href="#function-hash_to_internal">Function <code>hash_to_internal</code> <a id="0x1_crypto_algebra_hash_to_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_hash_to_internal">hash_to_internal</a>&lt;S, H&gt;(dst: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bytes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_hash_to_internal">hash_to_internal</a>&lt;S, H&gt;(dst: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bytes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): u64;
+</code></pre>
+</details>
+<h2 id="function-inv_internal"><a class="header" href="#function-inv_internal">Function <code>inv_internal</code> <a id="0x1_crypto_algebra_inv_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_inv_internal">inv_internal</a>&lt;F&gt;(handle: u64): (bool, u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_inv_internal">inv_internal</a>&lt;F&gt;(handle: u64): (bool, u64);
+</code></pre>
+</details>
+<h2 id="function-mul_internal"><a class="header" href="#function-mul_internal">Function <code>mul_internal</code> <a id="0x1_crypto_algebra_mul_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_mul_internal">mul_internal</a>&lt;F&gt;(handle_1: u64, handle_2: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_mul_internal">mul_internal</a>&lt;F&gt;(handle_1: u64, handle_2: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-multi_pairing_internal"><a class="header" href="#function-multi_pairing_internal">Function <code>multi_pairing_internal</code> <a id="0x1_crypto_algebra_multi_pairing_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_pairing_internal">multi_pairing_internal</a>&lt;G1, G2, Gt&gt;(g1_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, g2_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_pairing_internal">multi_pairing_internal</a>&lt;G1,G2,Gt&gt;(g1_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, g2_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): u64;
+</code></pre>
+</details>
+<h2 id="function-multi_scalar_mul_internal"><a class="header" href="#function-multi_scalar_mul_internal">Function <code>multi_scalar_mul_internal</code> <a id="0x1_crypto_algebra_multi_scalar_mul_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_scalar_mul_internal">multi_scalar_mul_internal</a>&lt;G, S&gt;(element_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, scalar_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_scalar_mul_internal">multi_scalar_mul_internal</a>&lt;G, S&gt;(element_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, scalar_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): u64;
+</code></pre>
+</details>
+<h2 id="function-neg_internal"><a class="header" href="#function-neg_internal">Function <code>neg_internal</code> <a id="0x1_crypto_algebra_neg_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_neg_internal">neg_internal</a>&lt;F&gt;(handle: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_neg_internal">neg_internal</a>&lt;F&gt;(handle: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-one_internal"><a class="header" href="#function-one_internal">Function <code>one_internal</code> <a id="0x1_crypto_algebra_one_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_one_internal">one_internal</a>&lt;S&gt;(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_one_internal">one_internal</a>&lt;S&gt;(): u64;
+</code></pre>
+</details>
+<h2 id="function-order_internal"><a class="header" href="#function-order_internal">Function <code>order_internal</code> <a id="0x1_crypto_algebra_order_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_order_internal">order_internal</a>&lt;G&gt;(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_order_internal">order_internal</a>&lt;G&gt;(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="function-pairing_internal"><a class="header" href="#function-pairing_internal">Function <code>pairing_internal</code> <a id="0x1_crypto_algebra_pairing_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_pairing_internal">pairing_internal</a>&lt;G1, G2, Gt&gt;(g1_handle: u64, g2_handle: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_pairing_internal">pairing_internal</a>&lt;G1,G2,Gt&gt;(g1_handle: u64, g2_handle: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-scalar_mul_internal"><a class="header" href="#function-scalar_mul_internal">Function <code>scalar_mul_internal</code> <a id="0x1_crypto_algebra_scalar_mul_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_scalar_mul_internal">scalar_mul_internal</a>&lt;G, S&gt;(element_handle: u64, scalar_handle: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_scalar_mul_internal">scalar_mul_internal</a>&lt;G, S&gt;(element_handle: u64, scalar_handle: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-serialize_internal"><a class="header" href="#function-serialize_internal">Function <code>serialize_internal</code> <a id="0x1_crypto_algebra_serialize_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_serialize_internal">serialize_internal</a>&lt;S, F&gt;(handle: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_serialize_internal">serialize_internal</a>&lt;S, F&gt;(handle: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="function-sqr_internal"><a class="header" href="#function-sqr_internal">Function <code>sqr_internal</code> <a id="0x1_crypto_algebra_sqr_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sqr_internal">sqr_internal</a>&lt;G&gt;(handle: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sqr_internal">sqr_internal</a>&lt;G&gt;(handle: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-sub_internal"><a class="header" href="#function-sub_internal">Function <code>sub_internal</code> <a id="0x1_crypto_algebra_sub_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sub_internal">sub_internal</a>&lt;G&gt;(handle_1: u64, handle_2: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sub_internal">sub_internal</a>&lt;G&gt;(handle_1: u64, handle_2: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-upcast_internal"><a class="header" href="#function-upcast_internal">Function <code>upcast_internal</code> <a id="0x1_crypto_algebra_upcast_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_upcast_internal">upcast_internal</a>&lt;S, L&gt;(handle: u64): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_upcast_internal">upcast_internal</a>&lt;S,L&gt;(handle: u64): u64;
+</code></pre>
+</details>
+<h2 id="function-zero_internal"><a class="header" href="#function-zero_internal">Function <code>zero_internal</code> <a id="0x1_crypto_algebra_zero_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_zero_internal">zero_internal</a>&lt;S&gt;(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_zero_internal">zero_internal</a>&lt;S&gt;(): u64;
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-handles_from_elements-1"><a class="header" href="#function-handles_from_elements-1">Function <code>handles_from_elements</code> <a id="@Specification_1_handles_from_elements"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_handles_from_elements">handles_from_elements</a>&lt;S&gt;(elements: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="crypto_algebra.html#0x1_crypto_algebra_Element">crypto_algebra::Element</a>&lt;S&gt;&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <b>forall</b> i in 0..len(elements): result[i] == elements[i].handle;
+</code></pre>
+<h3 id="function-add_internal-1"><a class="header" href="#function-add_internal-1">Function <code>add_internal</code> <a id="@Specification_1_add_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_add_internal">add_internal</a>&lt;S&gt;(handle_1: u64, handle_2: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-deserialize_internal-1"><a class="header" href="#function-deserialize_internal-1">Function <code>deserialize_internal</code> <a id="@Specification_1_deserialize_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_deserialize_internal">deserialize_internal</a>&lt;S, F&gt;(bytes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (bool, u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-div_internal-1"><a class="header" href="#function-div_internal-1">Function <code>div_internal</code> <a id="@Specification_1_div_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_div_internal">div_internal</a>&lt;F&gt;(handle_1: u64, handle_2: u64): (bool, u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-double_internal-1"><a class="header" href="#function-double_internal-1">Function <code>double_internal</code> <a id="@Specification_1_double_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_double_internal">double_internal</a>&lt;G&gt;(element_handle: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-downcast_internal-1"><a class="header" href="#function-downcast_internal-1">Function <code>downcast_internal</code> <a id="@Specification_1_downcast_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_downcast_internal">downcast_internal</a>&lt;L, S&gt;(handle: u64): (bool, u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-from_u64_internal-1"><a class="header" href="#function-from_u64_internal-1">Function <code>from_u64_internal</code> <a id="@Specification_1_from_u64_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_from_u64_internal">from_u64_internal</a>&lt;S&gt;(value: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-eq_internal-1"><a class="header" href="#function-eq_internal-1">Function <code>eq_internal</code> <a id="@Specification_1_eq_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_eq_internal">eq_internal</a>&lt;S&gt;(handle_1: u64, handle_2: u64): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-hash_to_internal-1"><a class="header" href="#function-hash_to_internal-1">Function <code>hash_to_internal</code> <a id="@Specification_1_hash_to_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_hash_to_internal">hash_to_internal</a>&lt;S, H&gt;(dst: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, bytes: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-inv_internal-1"><a class="header" href="#function-inv_internal-1">Function <code>inv_internal</code> <a id="@Specification_1_inv_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_inv_internal">inv_internal</a>&lt;F&gt;(handle: u64): (bool, u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-mul_internal-1"><a class="header" href="#function-mul_internal-1">Function <code>mul_internal</code> <a id="@Specification_1_mul_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_mul_internal">mul_internal</a>&lt;F&gt;(handle_1: u64, handle_2: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-multi_pairing_internal-1"><a class="header" href="#function-multi_pairing_internal-1">Function <code>multi_pairing_internal</code> <a id="@Specification_1_multi_pairing_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_pairing_internal">multi_pairing_internal</a>&lt;G1, G2, Gt&gt;(g1_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, g2_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-multi_scalar_mul_internal-1"><a class="header" href="#function-multi_scalar_mul_internal-1">Function <code>multi_scalar_mul_internal</code> <a id="@Specification_1_multi_scalar_mul_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_multi_scalar_mul_internal">multi_scalar_mul_internal</a>&lt;G, S&gt;(element_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, scalar_handles: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-neg_internal-1"><a class="header" href="#function-neg_internal-1">Function <code>neg_internal</code> <a id="@Specification_1_neg_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_neg_internal">neg_internal</a>&lt;F&gt;(handle: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-one_internal-1"><a class="header" href="#function-one_internal-1">Function <code>one_internal</code> <a id="@Specification_1_one_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_one_internal">one_internal</a>&lt;S&gt;(): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-order_internal-1"><a class="header" href="#function-order_internal-1">Function <code>order_internal</code> <a id="@Specification_1_order_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_order_internal">order_internal</a>&lt;G&gt;(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-pairing_internal-1"><a class="header" href="#function-pairing_internal-1">Function <code>pairing_internal</code> <a id="@Specification_1_pairing_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_pairing_internal">pairing_internal</a>&lt;G1, G2, Gt&gt;(g1_handle: u64, g2_handle: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-scalar_mul_internal-1"><a class="header" href="#function-scalar_mul_internal-1">Function <code>scalar_mul_internal</code> <a id="@Specification_1_scalar_mul_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_scalar_mul_internal">scalar_mul_internal</a>&lt;G, S&gt;(element_handle: u64, scalar_handle: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-serialize_internal-1"><a class="header" href="#function-serialize_internal-1">Function <code>serialize_internal</code> <a id="@Specification_1_serialize_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_serialize_internal">serialize_internal</a>&lt;S, F&gt;(handle: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-sqr_internal-1"><a class="header" href="#function-sqr_internal-1">Function <code>sqr_internal</code> <a id="@Specification_1_sqr_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sqr_internal">sqr_internal</a>&lt;G&gt;(handle: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-sub_internal-1"><a class="header" href="#function-sub_internal-1">Function <code>sub_internal</code> <a id="@Specification_1_sub_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_sub_internal">sub_internal</a>&lt;G&gt;(handle_1: u64, handle_2: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-upcast_internal-1"><a class="header" href="#function-upcast_internal-1">Function <code>upcast_internal</code> <a id="@Specification_1_upcast_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_upcast_internal">upcast_internal</a>&lt;S, L&gt;(handle: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-zero_internal-1"><a class="header" href="#function-zero_internal-1">Function <code>zero_internal</code> <a id="@Specification_1_zero_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="crypto_algebra.html#0x1_crypto_algebra_zero_internal">zero_internal</a>&lt;S&gt;(): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/copyable_any.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/debug.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/copyable_any.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/debug.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

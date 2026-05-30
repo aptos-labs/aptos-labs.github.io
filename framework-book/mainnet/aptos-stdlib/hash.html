@@ -1,0 +1,551 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>aptos_hash - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-stdlib/hash.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x1aptos_hash"><a class="header" href="#module-0x1aptos_hash">Module <code>0x1::aptos_hash</code> <a id="0x1_aptos_hash"></a></a></h1>
+<p>Cryptographic hashes:</p>
+<ul>
+<li>Keccak-256: see https://keccak.team/keccak.html</li>
+</ul>
+<p>In addition, SHA2-256 and SHA3-256 are available in <code>std::hash</code>. Note that SHA3-256 is a variant of Keccak: it is
+NOT the same as Keccak-256.</p>
+<p>Non-cryptograhic hashes:</p>
+<ul>
+<li>
+<p>SipHash: an add-rotate-xor (ARX) based family of pseudorandom functions created by Jean-Philippe Aumasson and Daniel J. Bernstein in 2012</p>
+</li>
+<li>
+<p><a href="#@Constants_0">Constants</a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_sip_hash">Function <code>sip_hash</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_sip_hash_from_value">Function <code>sip_hash_from_value</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_keccak256">Function <code>keccak256</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_sha2_512">Function <code>sha2_512</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_sha2_512_value">Function <code>sha2_512_value</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_sha3_512">Function <code>sha3_512</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_ripemd160">Function <code>ripemd160</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_blake2b_256">Function <code>blake2b_256</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_sha2_512_internal">Function <code>sha2_512_internal</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_sha3_512_internal">Function <code>sha3_512_internal</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_ripemd160_internal">Function <code>ripemd160_internal</code></a></p>
+</li>
+<li>
+<p><a href="#0x1_aptos_hash_blake2b_256_internal">Function <code>blake2b_256_internal</code></a></p>
+</li>
+<li>
+<p><a href="#@Specification_1">Specification</a></p>
+<ul>
+<li><a href="#@Specification_1_sip_hash">Function <code>sip_hash</code></a></li>
+<li><a href="#@Specification_1_sip_hash_from_value">Function <code>sip_hash_from_value</code></a></li>
+<li><a href="#@Specification_1_keccak256">Function <code>keccak256</code></a></li>
+<li><a href="#@Specification_1_sha2_512">Function <code>sha2_512</code></a></li>
+<li><a href="#@Specification_1_sha3_512">Function <code>sha3_512</code></a></li>
+<li><a href="#@Specification_1_ripemd160">Function <code>ripemd160</code></a></li>
+<li><a href="#@Specification_1_blake2b_256">Function <code>blake2b_256</code></a></li>
+<li><a href="#@Specification_1_sha2_512_internal">Function <code>sha2_512_internal</code></a></li>
+<li><a href="#@Specification_1_sha3_512_internal">Function <code>sha3_512_internal</code></a></li>
+<li><a href="#@Specification_1_ripemd160_internal">Function <code>ripemd160_internal</code></a></li>
+<li><a href="#@Specification_1_blake2b_256_internal">Function <code>blake2b_256_internal</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/bcs.html#0x1_bcs">0x1::bcs</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
+</code></pre>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_aptos_hash_E_NATIVE_FUN_NOT_AVAILABLE"></a></p>
+<p>A newly-added native function is not yet enabled.</p>
+<pre><code><b>const</b> <a href="hash.html#0x1_aptos_hash_E_NATIVE_FUN_NOT_AVAILABLE">E_NATIVE_FUN_NOT_AVAILABLE</a>: u64 = 1;
+</code></pre>
+<h2 id="function-sip_hash"><a class="header" href="#function-sip_hash">Function <code>sip_hash</code> <a id="0x1_aptos_hash_sip_hash"></a></a></h2>
+<p>Returns the (non-cryptographic) SipHash of <code>bytes</code>. See https://en.wikipedia.org/wiki/SipHash</p>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sip_hash">sip_hash</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sip_hash">sip_hash</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): u64;
+</code></pre>
+</details>
+<h2 id="function-sip_hash_from_value"><a class="header" href="#function-sip_hash_from_value">Function <code>sip_hash_from_value</code> <a id="0x1_aptos_hash_sip_hash_from_value"></a></a></h2>
+<p>Returns the (non-cryptographic) SipHash of the BCS serialization of <code>v</code>. See https://en.wikipedia.org/wiki/SipHash</p>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sip_hash_from_value">sip_hash_from_value</a>&lt;MoveValue&gt;(v: &MoveValue): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sip_hash_from_value">sip_hash_from_value</a>&lt;MoveValue&gt;(v: &MoveValue): u64 {
+    <b>let</b> bytes = <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(v);
+
+    <a href="hash.html#0x1_aptos_hash_sip_hash">sip_hash</a>(bytes)
+}
+</code></pre>
+</details>
+<h2 id="function-keccak256"><a class="header" href="#function-keccak256">Function <code>keccak256</code> <a id="0x1_aptos_hash_keccak256"></a></a></h2>
+<p>Returns the Keccak-256 hash of <code>bytes</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_keccak256">keccak256</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_keccak256">keccak256</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="function-sha2_512"><a class="header" href="#function-sha2_512">Function <code>sha2_512</code> <a id="0x1_aptos_hash_sha2_512"></a></a></h2>
+<p>Returns the SHA2-512 hash of <code>bytes</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha2_512">sha2_512</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha2_512">sha2_512</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <b>if</b>(!<a href="../move-stdlib/features.html#0x1_features_sha_512_and_ripemd_160_enabled">features::sha_512_and_ripemd_160_enabled</a>()) {
+        <b>abort</b>(std::error::invalid_state(<a href="hash.html#0x1_aptos_hash_E_NATIVE_FUN_NOT_AVAILABLE">E_NATIVE_FUN_NOT_AVAILABLE</a>))
+    };
+
+    <a href="hash.html#0x1_aptos_hash_sha2_512_internal">sha2_512_internal</a>(bytes)
+}
+</code></pre>
+</details>
+<h2 id="function-sha2_512_value"><a class="header" href="#function-sha2_512_value">Function <code>sha2_512_value</code> <a id="0x1_aptos_hash_sha2_512_value"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha2_512_value">sha2_512_value</a>&lt;T&gt;(val: &T): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha2_512_value">sha2_512_value</a>&lt;T&gt;(val: &T): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <b>let</b> bytes = <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(val);
+
+    <a href="hash.html#0x1_aptos_hash_sha2_512">sha2_512</a>(bytes)
+}
+</code></pre>
+</details>
+<h2 id="function-sha3_512"><a class="header" href="#function-sha3_512">Function <code>sha3_512</code> <a id="0x1_aptos_hash_sha3_512"></a></a></h2>
+<p>Returns the SHA3-512 hash of <code>bytes</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha3_512">sha3_512</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha3_512">sha3_512</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <b>if</b>(!<a href="../move-stdlib/features.html#0x1_features_sha_512_and_ripemd_160_enabled">features::sha_512_and_ripemd_160_enabled</a>()) {
+        <b>abort</b>(std::error::invalid_state(<a href="hash.html#0x1_aptos_hash_E_NATIVE_FUN_NOT_AVAILABLE">E_NATIVE_FUN_NOT_AVAILABLE</a>))
+    };
+
+    <a href="hash.html#0x1_aptos_hash_sha3_512_internal">sha3_512_internal</a>(bytes)
+}
+</code></pre>
+</details>
+<h2 id="function-ripemd160"><a class="header" href="#function-ripemd160">Function <code>ripemd160</code> <a id="0x1_aptos_hash_ripemd160"></a></a></h2>
+<p>Returns the RIPEMD-160 hash of <code>bytes</code>.</p>
+<p>WARNING: Only 80-bit security is provided by this function. This means an adversary who can compute roughly 2^80
+hashes will, with high probability, find a collision x_1 != x_2 such that RIPEMD-160(x_1) = RIPEMD-160(x_2).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_ripemd160">ripemd160</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_ripemd160">ripemd160</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <b>if</b>(!<a href="../move-stdlib/features.html#0x1_features_sha_512_and_ripemd_160_enabled">features::sha_512_and_ripemd_160_enabled</a>()) {
+        <b>abort</b>(std::error::invalid_state(<a href="hash.html#0x1_aptos_hash_E_NATIVE_FUN_NOT_AVAILABLE">E_NATIVE_FUN_NOT_AVAILABLE</a>))
+    };
+
+    <a href="hash.html#0x1_aptos_hash_ripemd160_internal">ripemd160_internal</a>(bytes)
+}
+</code></pre>
+</details>
+<h2 id="function-blake2b_256"><a class="header" href="#function-blake2b_256">Function <code>blake2b_256</code> <a id="0x1_aptos_hash_blake2b_256"></a></a></h2>
+<p>Returns the BLAKE2B-256 hash of <code>bytes</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_blake2b_256">blake2b_256</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_blake2b_256">blake2b_256</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
+    <b>if</b>(!<a href="../move-stdlib/features.html#0x1_features_blake2b_256_enabled">features::blake2b_256_enabled</a>()) {
+        <b>abort</b>(std::error::invalid_state(<a href="hash.html#0x1_aptos_hash_E_NATIVE_FUN_NOT_AVAILABLE">E_NATIVE_FUN_NOT_AVAILABLE</a>))
+    };
+
+    <a href="hash.html#0x1_aptos_hash_blake2b_256_internal">blake2b_256_internal</a>(bytes)
+}
+</code></pre>
+</details>
+<h2 id="function-sha2_512_internal"><a class="header" href="#function-sha2_512_internal">Function <code>sha2_512_internal</code> <a id="0x1_aptos_hash_sha2_512_internal"></a></a></h2>
+<p>Returns the SHA2-512 hash of <code>bytes</code>.</p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_sha2_512_internal">sha2_512_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha2_512_internal">sha2_512_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="function-sha3_512_internal"><a class="header" href="#function-sha3_512_internal">Function <code>sha3_512_internal</code> <a id="0x1_aptos_hash_sha3_512_internal"></a></a></h2>
+<p>Returns the SHA3-512 hash of <code>bytes</code>.</p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_sha3_512_internal">sha3_512_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha3_512_internal">sha3_512_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="function-ripemd160_internal"><a class="header" href="#function-ripemd160_internal">Function <code>ripemd160_internal</code> <a id="0x1_aptos_hash_ripemd160_internal"></a></a></h2>
+<p>Returns the RIPEMD-160 hash of <code>bytes</code>.</p>
+<p>WARNING: Only 80-bit security is provided by this function. This means an adversary who can compute roughly 2^80
+hashes will, with high probability, find a collision x_1 != x_2 such that RIPEMD-160(x_1) = RIPEMD-160(x_2).</p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_ripemd160_internal">ripemd160_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_ripemd160_internal">ripemd160_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="function-blake2b_256_internal"><a class="header" href="#function-blake2b_256_internal">Function <code>blake2b_256_internal</code> <a id="0x1_aptos_hash_blake2b_256_internal"></a></a></h2>
+<p>Returns the BLAKE2B-256 hash of <code>bytes</code>.</p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_blake2b_256_internal">blake2b_256_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_blake2b_256_internal">blake2b_256_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+</details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<p><code>spec_sip_hash</code> is not assumed to be injective.</p>
+<p><a id="0x1_aptos_hash_spec_sip_hash"></a></p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_spec_sip_hash">spec_sip_hash</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): u64;
+</code></pre>
+<p><code>spec_keccak256</code> is an injective function.</p>
+<p><a id="0x1_aptos_hash_spec_keccak256"></a></p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_spec_keccak256">spec_keccak256</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+<b>axiom</b> <b>forall</b> b1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, b2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;:
+    (<a href="hash.html#0x1_aptos_hash_spec_keccak256">spec_keccak256</a>(b1) == <a href="hash.html#0x1_aptos_hash_spec_keccak256">spec_keccak256</a>(b2) ==&gt; b1 == b2);
+</code></pre>
+<p><code>spec_sha2_512_internal</code> is an injective function.</p>
+<p><a id="0x1_aptos_hash_spec_sha2_512_internal"></a></p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_spec_sha2_512_internal">spec_sha2_512_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+<b>axiom</b> <b>forall</b> b1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, b2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;:
+    (<a href="hash.html#0x1_aptos_hash_spec_sha2_512_internal">spec_sha2_512_internal</a>(b1) == <a href="hash.html#0x1_aptos_hash_spec_sha2_512_internal">spec_sha2_512_internal</a>(b2) ==&gt; b1 == b2);
+</code></pre>
+<p><code>spec_sha3_512_internal</code> is an injective function.</p>
+<p><a id="0x1_aptos_hash_spec_sha3_512_internal"></a></p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_spec_sha3_512_internal">spec_sha3_512_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+<b>axiom</b> <b>forall</b> b1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, b2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;:
+    (<a href="hash.html#0x1_aptos_hash_spec_sha3_512_internal">spec_sha3_512_internal</a>(b1) == <a href="hash.html#0x1_aptos_hash_spec_sha3_512_internal">spec_sha3_512_internal</a>(b2) ==&gt; b1 == b2);
+</code></pre>
+<p><code>spec_ripemd160_internal</code> is an injective function.</p>
+<p><a id="0x1_aptos_hash_spec_ripemd160_internal"></a></p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_spec_ripemd160_internal">spec_ripemd160_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+<b>axiom</b> <b>forall</b> b1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, b2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;:
+    (<a href="hash.html#0x1_aptos_hash_spec_ripemd160_internal">spec_ripemd160_internal</a>(b1) == <a href="hash.html#0x1_aptos_hash_spec_ripemd160_internal">spec_ripemd160_internal</a>(b2) ==&gt; b1 == b2);
+</code></pre>
+<p><code>spec_blake2b_256_internal</code> is an injective function.</p>
+<p><a id="0x1_aptos_hash_spec_blake2b_256_internal"></a></p>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_spec_blake2b_256_internal">spec_blake2b_256_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+<b>axiom</b> <b>forall</b> b1: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, b2: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;:
+    (<a href="hash.html#0x1_aptos_hash_spec_blake2b_256_internal">spec_blake2b_256_internal</a>(b1) == <a href="hash.html#0x1_aptos_hash_spec_blake2b_256_internal">spec_blake2b_256_internal</a>(b2) ==&gt; b1 == b2);
+</code></pre>
+<h3 id="function-sip_hash-1"><a class="header" href="#function-sip_hash-1">Function <code>sip_hash</code> <a id="@Specification_1_sip_hash"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sip_hash">sip_hash</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="hash.html#0x1_aptos_hash_spec_sip_hash">spec_sip_hash</a>(bytes);
+</code></pre>
+<h3 id="function-sip_hash_from_value-1"><a class="header" href="#function-sip_hash_from_value-1">Function <code>sip_hash_from_value</code> <a id="@Specification_1_sip_hash_from_value"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sip_hash_from_value">sip_hash_from_value</a>&lt;MoveValue&gt;(v: &MoveValue): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>ensures</b> result == <a href="hash.html#0x1_aptos_hash_spec_sip_hash">spec_sip_hash</a>(<a href="../move-stdlib/bcs.html#0x1_bcs_serialize">bcs::serialize</a>(v));
+</code></pre>
+<h3 id="function-keccak256-1"><a class="header" href="#function-keccak256-1">Function <code>keccak256</code> <a id="@Specification_1_keccak256"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_keccak256">keccak256</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="hash.html#0x1_aptos_hash_spec_keccak256">spec_keccak256</a>(bytes);
+</code></pre>
+<h3 id="function-sha2_512-1"><a class="header" href="#function-sha2_512-1">Function <code>sha2_512</code> <a id="@Specification_1_sha2_512"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha2_512">sha2_512</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_SHA_512_AND_RIPEMD_160_NATIVES">features::SHA_512_AND_RIPEMD_160_NATIVES</a>);
+<b>ensures</b> result == <a href="hash.html#0x1_aptos_hash_spec_sha2_512_internal">spec_sha2_512_internal</a>(bytes);
+</code></pre>
+<h3 id="function-sha3_512-1"><a class="header" href="#function-sha3_512-1">Function <code>sha3_512</code> <a id="@Specification_1_sha3_512"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_sha3_512">sha3_512</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_SHA_512_AND_RIPEMD_160_NATIVES">features::SHA_512_AND_RIPEMD_160_NATIVES</a>);
+<b>ensures</b> result == <a href="hash.html#0x1_aptos_hash_spec_sha3_512_internal">spec_sha3_512_internal</a>(bytes);
+</code></pre>
+<h3 id="function-ripemd160-1"><a class="header" href="#function-ripemd160-1">Function <code>ripemd160</code> <a id="@Specification_1_ripemd160"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_ripemd160">ripemd160</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_SHA_512_AND_RIPEMD_160_NATIVES">features::SHA_512_AND_RIPEMD_160_NATIVES</a>);
+<b>ensures</b> result == <a href="hash.html#0x1_aptos_hash_spec_ripemd160_internal">spec_ripemd160_internal</a>(bytes);
+</code></pre>
+<h3 id="function-blake2b_256-1"><a class="header" href="#function-blake2b_256-1">Function <code>blake2b_256</code> <a id="@Specification_1_blake2b_256"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="hash.html#0x1_aptos_hash_blake2b_256">blake2b_256</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_BLAKE2B_256_NATIVE">features::BLAKE2B_256_NATIVE</a>);
+<b>ensures</b> result == <a href="hash.html#0x1_aptos_hash_spec_blake2b_256_internal">spec_blake2b_256_internal</a>(bytes);
+</code></pre>
+<h3 id="function-sha2_512_internal-1"><a class="header" href="#function-sha2_512_internal-1">Function <code>sha2_512_internal</code> <a id="@Specification_1_sha2_512_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_sha2_512_internal">sha2_512_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="hash.html#0x1_aptos_hash_spec_sha2_512_internal">spec_sha2_512_internal</a>(bytes);
+</code></pre>
+<h3 id="function-sha3_512_internal-1"><a class="header" href="#function-sha3_512_internal-1">Function <code>sha3_512_internal</code> <a id="@Specification_1_sha3_512_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_sha3_512_internal">sha3_512_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="hash.html#0x1_aptos_hash_spec_sha3_512_internal">spec_sha3_512_internal</a>(bytes);
+</code></pre>
+<h3 id="function-ripemd160_internal-1"><a class="header" href="#function-ripemd160_internal-1">Function <code>ripemd160_internal</code> <a id="@Specification_1_ripemd160_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_ripemd160_internal">ripemd160_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="hash.html#0x1_aptos_hash_spec_ripemd160_internal">spec_ripemd160_internal</a>(bytes);
+</code></pre>
+<h3 id="function-blake2b_256_internal-1"><a class="header" href="#function-blake2b_256_internal-1">Function <code>blake2b_256_internal</code> <a id="@Specification_1_blake2b_256_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="hash.html#0x1_aptos_hash_blake2b_256_internal">blake2b_256_internal</a>(bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="hash.html#0x1_aptos_hash_spec_blake2b_256_internal">spec_blake2b_256_internal</a>(bytes);
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-stdlib/any.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-stdlib/bcs_stream.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-stdlib/any.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-stdlib/bcs_stream.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>
