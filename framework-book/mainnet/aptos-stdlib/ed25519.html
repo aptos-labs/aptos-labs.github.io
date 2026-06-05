@@ -196,6 +196,12 @@
 <li><a href="#@Specification_1_new_unvalidated_public_key_from_bytes">Function <code>new_unvalidated_public_key_from_bytes</code></a></li>
 <li><a href="#@Specification_1_new_validated_public_key_from_bytes">Function <code>new_validated_public_key_from_bytes</code></a></li>
 <li><a href="#@Specification_1_new_signature_from_bytes">Function <code>new_signature_from_bytes</code></a></li>
+<li><a href="#@Specification_1_public_key_validate">Function <code>public_key_validate</code></a></li>
+<li><a href="#@Specification_1_signature_verify_strict">Function <code>signature_verify_strict</code></a></li>
+<li><a href="#@Specification_1_signature_verify_strict_t">Function <code>signature_verify_strict_t</code></a></li>
+<li><a href="#@Specification_1_new_signed_message">Function <code>new_signed_message</code></a></li>
+<li><a href="#@Specification_1_unvalidated_public_key_to_authentication_key">Function <code>unvalidated_public_key_to_authentication_key</code></a></li>
+<li><a href="#@Specification_1_validated_public_key_to_authentication_key">Function <code>validated_public_key_to_authentication_key</code></a></li>
 <li><a href="#@Specification_1_public_key_bytes_to_authentication_key">Function <code>public_key_bytes_to_authentication_key</code></a></li>
 <li><a href="#@Specification_1_public_key_validate_internal">Function <code>public_key_validate_internal</code></a></li>
 <li><a href="#@Specification_1_signature_verify_strict_internal">Function <code>signature_verify_strict_internal</code></a></li>
@@ -550,6 +556,50 @@ Returns <code><b>false</b></code> if either:</p>
     bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
     <b>aborts_if</b> len(bytes) != <a href="ed25519.html#0x1_ed25519_SIGNATURE_NUM_BYTES">SIGNATURE_NUM_BYTES</a>;
 }
+</code></pre>
+<h3 id="function-public_key_validate-1"><a class="header" href="#function-public_key_validate-1">Function <code>public_key_validate</code> <a id="@Specification_1_public_key_validate"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="ed25519.html#0x1_ed25519_public_key_validate">public_key_validate</a>(pk: &<a href="ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="ed25519.html#0x1_ed25519_ValidatedPublicKey">ed25519::ValidatedPublicKey</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>let</b> cond = <a href="ed25519.html#0x1_ed25519_spec_public_key_validate_internal">spec_public_key_validate_internal</a>(pk.bytes);
+<b>ensures</b> cond ==&gt; result == <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(<a href="ed25519.html#0x1_ed25519_ValidatedPublicKey">ValidatedPublicKey</a> { bytes: pk.bytes });
+<b>ensures</b> !cond ==&gt; result == <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>&lt;<a href="ed25519.html#0x1_ed25519_ValidatedPublicKey">ValidatedPublicKey</a>&gt;();
+</code></pre>
+<h3 id="function-signature_verify_strict-1"><a class="header" href="#function-signature_verify_strict-1">Function <code>signature_verify_strict</code> <a id="@Specification_1_signature_verify_strict"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="ed25519.html#0x1_ed25519_signature_verify_strict">signature_verify_strict</a>(signature: &<a href="ed25519.html#0x1_ed25519_Signature">ed25519::Signature</a>, public_key: &<a href="ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a>, message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="ed25519.html#0x1_ed25519_spec_signature_verify_strict_internal">spec_signature_verify_strict_internal</a>(signature.bytes, public_key.bytes, message);
+</code></pre>
+<h3 id="function-signature_verify_strict_t-1"><a class="header" href="#function-signature_verify_strict_t-1">Function <code>signature_verify_strict_t</code> <a id="@Specification_1_signature_verify_strict_t"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="ed25519.html#0x1_ed25519_signature_verify_strict_t">signature_verify_strict_t</a>&lt;T: drop&gt;(signature: &<a href="ed25519.html#0x1_ed25519_Signature">ed25519::Signature</a>, public_key: &<a href="ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a>, data: T): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;T&gt;();
+<b>ensures</b> result == <a href="ed25519.html#0x1_ed25519_spec_signature_verify_strict_t">spec_signature_verify_strict_t</a>(signature, public_key, data);
+</code></pre>
+<h3 id="function-new_signed_message-1"><a class="header" href="#function-new_signed_message-1">Function <code>new_signed_message</code> <a id="@Specification_1_new_signed_message"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="ed25519.html#0x1_ed25519_new_signed_message">new_signed_message</a>&lt;T: drop&gt;(data: T): <a href="ed25519.html#0x1_ed25519_SignedMessage">ed25519::SignedMessage</a>&lt;T&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;T&gt;();
+<b>ensures</b> result == <a href="ed25519.html#0x1_ed25519_SignedMessage">SignedMessage</a>&lt;T&gt; { <a href="type_info.html#0x1_type_info">type_info</a>: <a href="type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;T&gt;(), inner: data };
+</code></pre>
+<h3 id="function-unvalidated_public_key_to_authentication_key-1"><a class="header" href="#function-unvalidated_public_key_to_authentication_key-1">Function <code>unvalidated_public_key_to_authentication_key</code> <a id="@Specification_1_unvalidated_public_key_to_authentication_key"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="ed25519.html#0x1_ed25519_unvalidated_public_key_to_authentication_key">unvalidated_public_key_to_authentication_key</a>(pk: &<a href="ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">spec_public_key_bytes_to_authentication_key</a>(pk.bytes);
+</code></pre>
+<h3 id="function-validated_public_key_to_authentication_key-1"><a class="header" href="#function-validated_public_key_to_authentication_key-1">Function <code>validated_public_key_to_authentication_key</code> <a id="@Specification_1_validated_public_key_to_authentication_key"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="ed25519.html#0x1_ed25519_validated_public_key_to_authentication_key">validated_public_key_to_authentication_key</a>(pk: &<a href="ed25519.html#0x1_ed25519_ValidatedPublicKey">ed25519::ValidatedPublicKey</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">spec_public_key_bytes_to_authentication_key</a>(pk.bytes);
 </code></pre>
 <h3 id="function-public_key_bytes_to_authentication_key-1"><a class="header" href="#function-public_key_bytes_to_authentication_key-1">Function <code>public_key_bytes_to_authentication_key</code> <a id="@Specification_1_public_key_bytes_to_authentication_key"></a></a></h3>
 <pre><code><b>fun</b> <a href="ed25519.html#0x1_ed25519_public_key_bytes_to_authentication_key">public_key_bytes_to_authentication_key</a>(pk_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;

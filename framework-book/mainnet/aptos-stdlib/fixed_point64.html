@@ -619,7 +619,6 @@ values directly.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="fixed_point64.html#0x1_fixed_point64_create_from_rational">create_from_rational</a>(numerator: u128, denominator: u128): <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify_duration_estimate = 1000;
 <b>include</b> <a href="fixed_point64.html#0x1_fixed_point64_CreateFromRationalAbortsIf">CreateFromRationalAbortsIf</a>;
 <b>ensures</b> result == <a href="fixed_point64.html#0x1_fixed_point64_spec_create_from_rational">spec_create_from_rational</a>(numerator, denominator);
 </code></pre>
@@ -637,7 +636,8 @@ values directly.</p>
 </code></pre>
 <p><a id="0x1_fixed_point64_spec_create_from_rational"></a></p>
 <pre><code><b>fun</b> <a href="fixed_point64.html#0x1_fixed_point64_spec_create_from_rational">spec_create_from_rational</a>(numerator: num, denominator: num): <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">FixedPoint64</a> {
-   <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">FixedPoint64</a>{value: (numerator &lt;&lt; 128) / (denominator &lt;&lt; 64)}
+   // Directly mirrors the body: (numerator <b>as</b> u256) &lt;&lt; 64 / (denominator <b>as</b> u256).
+   <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">FixedPoint64</a>{value: (numerator &lt;&lt; 64) / denominator}
 }
 </code></pre>
 <h3 id="function-create_from_raw_value-1"><a class="header" href="#function-create_from_raw_value-1">Function <code>create_from_raw_value</code> <a id="@Specification_1_create_from_raw_value"></a></a></h3>
@@ -783,31 +783,20 @@ values directly.</p>
 </code></pre>
 <p><a id="0x1_fixed_point64_spec_floor"></a></p>
 <pre><code><b>fun</b> <a href="fixed_point64.html#0x1_fixed_point64_spec_floor">spec_floor</a>(self: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">FixedPoint64</a>): u128 {
-   <b>let</b> fractional = self.value % (1 &lt;&lt; 64);
-   <b>if</b> (fractional == 0) {
-       self.value &gt;&gt; 64
-   } <b>else</b> {
-       (self.value - fractional) &gt;&gt; 64
-   }
+   self.value &gt;&gt; 64
 }
 </code></pre>
 <h3 id="function-ceil-1"><a class="header" href="#function-ceil-1">Function <code>ceil</code> <a id="@Specification_1_ceil"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fixed_point64.html#0x1_fixed_point64_ceil">ceil</a>(self: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>): u128
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 1000;
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == <a href="fixed_point64.html#0x1_fixed_point64_spec_ceil">spec_ceil</a>(self);
 </code></pre>
 <p><a id="0x1_fixed_point64_spec_ceil"></a></p>
 <pre><code><b>fun</b> <a href="fixed_point64.html#0x1_fixed_point64_spec_ceil">spec_ceil</a>(self: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">FixedPoint64</a>): u128 {
-   <b>let</b> fractional = self.value % (1 &lt;&lt; 64);
-   <b>let</b> one = 1 &lt;&lt; 64;
-   <b>if</b> (fractional == 0) {
-       self.value &gt;&gt; 64
-   } <b>else</b> {
-       (self.value - fractional + one) &gt;&gt; 64
-   }
+   <b>if</b> (self.value % (1 &lt;&lt; 64) == 0) { self.value &gt;&gt; 64 }
+   <b>else</b> { (self.value &gt;&gt; 64) + 1 }
 }
 </code></pre>
 <h3 id="function-round-1"><a class="header" href="#function-round-1">Function <code>round</code> <a id="@Specification_1_round"></a></a></h3>
@@ -819,14 +808,8 @@ values directly.</p>
 </code></pre>
 <p><a id="0x1_fixed_point64_spec_round"></a></p>
 <pre><code><b>fun</b> <a href="fixed_point64.html#0x1_fixed_point64_spec_round">spec_round</a>(self: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">FixedPoint64</a>): u128 {
-   <b>let</b> fractional = self.value % (1 &lt;&lt; 64);
-   <b>let</b> boundary = (1 &lt;&lt; 64) / 2;
-   <b>let</b> one = 1 &lt;&lt; 64;
-   <b>if</b> (fractional &lt; boundary) {
-       (self.value - fractional) &gt;&gt; 64
-   } <b>else</b> {
-       (self.value - fractional + one) &gt;&gt; 64
-   }
+   <b>if</b> (self.value % (1 &lt;&lt; 64) &lt; (1 &lt;&lt; 64) / 2) { self.value &gt;&gt; 64 }
+   <b>else</b> { (self.value &gt;&gt; 64) + 1 }
 }
 </code></pre>
 

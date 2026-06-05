@@ -166,6 +166,7 @@
                         <h1 id="module-0x1big_vector"><a class="header" href="#module-0x1big_vector">Module <code>0x1::big_vector</code> <a id="0x1_big_vector"></a></a></h1>
 <ul>
 <li><a href="#0x1_big_vector_BigVector">Struct <code>BigVector</code></a></li>
+<li><a href="#0x1_big_vector_Ghost$initial_end_index">Resource <code>Ghost$initial_end_index</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
 <li><a href="#0x1_big_vector_empty">Function <code>empty</code></a></li>
 <li><a href="#0x1_big_vector_singleton">Function <code>singleton</code></a></li>
@@ -199,8 +200,8 @@
 <li><a href="#@Specification_1_remove">Function <code>remove</code></a></li>
 <li><a href="#@Specification_1_swap_remove">Function <code>swap_remove</code></a></li>
 <li><a href="#@Specification_1_swap">Function <code>swap</code></a></li>
-<li><a href="#@Specification_1_reverse">Function <code>reverse</code></a></li>
 <li><a href="#@Specification_1_index_of">Function <code>index_of</code></a></li>
+<li><a href="#@Specification_1_contains">Function <code>contains</code></a></li>
 </ul>
 </li>
 </ul>
@@ -228,6 +229,19 @@ Each bucket has a capacity of <code>bucket_size</code> elements.</p>
 </dd>
 <dt>
 <code>bucket_size: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-ghostinitial_end_index"><a class="header" href="#resource-ghostinitial_end_index">Resource <code>Ghost$initial_end_index</code> <a id="0x1_big_vector_Ghost$initial_end_index"></a></a></h2>
+<pre><code><b>struct</b> Ghost$<a href="big_vector.html#0x1_big_vector_initial_end_index">initial_end_index</a> <b>has</b> <b>copy</b>, drop, store, key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>v: u64</code>
 </dt>
 <dd>
 </dd>
@@ -353,10 +367,20 @@ Disclaimer: This function is costly. Use it at your own discretion.</p>
     <b>while</b> (i &lt; half_other_len) {
         self.<a href="big_vector.html#0x1_big_vector_push_back">push_back</a>(other.<a href="big_vector.html#0x1_big_vector_swap_remove">swap_remove</a>(i));
         i += 1;
+    }
+    <b>spec</b> {
+        <b>invariant</b> i &lt;= half_other_len;
+        <b>invariant</b> other.<a href="big_vector.html#0x1_big_vector_length">length</a>() == other_len - i;
+        <b>invariant</b> self.<a href="big_vector.html#0x1_big_vector_length">length</a>() == <a href="big_vector.html#0x1_big_vector_length">length</a>(<b>old</b>(self)) + i;
     };
     <b>while</b> (i &lt; other_len) {
         self.<a href="big_vector.html#0x1_big_vector_push_back">push_back</a>(other.<a href="big_vector.html#0x1_big_vector_pop_back">pop_back</a>());
         i += 1;
+    }
+    <b>spec</b> {
+        <b>invariant</b> half_other_len &lt;= i && i &lt;= other_len;
+        <b>invariant</b> other.<a href="big_vector.html#0x1_big_vector_length">length</a>() == other_len - i;
+        <b>invariant</b> self.<a href="big_vector.html#0x1_big_vector_length">length</a>() == <a href="big_vector.html#0x1_big_vector_length">length</a>(<b>old</b>(self)) + i;
     };
     other.<a href="big_vector.html#0x1_big_vector_destroy_empty">destroy_empty</a>();
 }
@@ -421,13 +445,10 @@ Disclaimer: This function is costly. Use it at your own discretion.</p>
     <b>let</b> res = cur_bucket.<a href="big_vector.html#0x1_big_vector_remove">remove</a>(i % self.bucket_size);
     self.end_index -= 1;
     <b>move</b> cur_bucket;
-    <b>while</b> ({
-        <b>spec</b> {
-            <b>invariant</b> cur_bucket_index &lt;= num_buckets;
-            <b>invariant</b> <a href="table_with_length.html#0x1_table_with_length_spec_len">table_with_length::spec_len</a>(self.buckets) == num_buckets;
-        };
-        (cur_bucket_index &lt; num_buckets)
-    }) {
+    <b>spec</b> {
+        <b>update</b> <a href="big_vector.html#0x1_big_vector_initial_end_index">initial_end_index</a> = self.end_index;
+    };
+    <b>while</b> (cur_bucket_index &lt; num_buckets) {
         // remove one element from the start of current <a href="../move-stdlib/vector.html#0x1_vector">vector</a>
         <b>let</b> cur_bucket = self.buckets.<a href="big_vector.html#0x1_big_vector_borrow_mut">borrow_mut</a>(cur_bucket_index);
         <b>let</b> t = cur_bucket.<a href="big_vector.html#0x1_big_vector_remove">remove</a>(0);
@@ -436,6 +457,14 @@ Disclaimer: This function is costly. Use it at your own discretion.</p>
         <b>let</b> prev_bucket = self.buckets.<a href="big_vector.html#0x1_big_vector_borrow_mut">borrow_mut</a>(cur_bucket_index - 1);
         prev_bucket.<a href="big_vector.html#0x1_big_vector_push_back">push_back</a>(t);
         cur_bucket_index += 1;
+    }
+    <b>spec</b> {
+        <b>invariant</b> 1 &lt;= cur_bucket_index && cur_bucket_index &lt;= num_buckets;
+        <b>invariant</b> self.end_index == <b>old</b>(self).end_index - 1;
+        <b>invariant</b> self.bucket_size == <b>old</b>(self).bucket_size;
+        <b>invariant</b> <a href="table_with_length.html#0x1_table_with_length_spec_len">table_with_length::spec_len</a>(self.buckets) == num_buckets;
+        <b>invariant</b> <b>forall</b> j in 0..<a href="table_with_length.html#0x1_table_with_length_spec_len">table_with_length::spec_len</a>(self.buckets):
+            <a href="table_with_length.html#0x1_table_with_length_spec_contains">table_with_length::spec_contains</a>(self.buckets, j);
     };
     <b>spec</b> {
         <b>assert</b> cur_bucket_index == num_buckets;
@@ -573,6 +602,13 @@ Disclaimer: This function is costly. Use it at your own discretion.</p>
             <b>return</b> (<b>true</b>, bucket_index * self.bucket_size + i)
         };
         bucket_index += 1;
+    }
+    <b>spec</b> {
+        <b>invariant</b> bucket_index &lt;= num_buckets;
+        // All buckets checked so far contain no element equal <b>to</b> val.
+        <b>invariant</b> <b>forall</b> j in 0..bucket_index:
+            (<b>forall</b> k in 0..len(<a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(self.buckets, j)):
+                <a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(self.buckets, j)[k] != val);
     };
     (<b>false</b>, 0)
 }
@@ -633,6 +669,9 @@ Disclaimer: This function may be costly as the big vector may be huge in size. U
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<p><a id="0x1_big_vector_initial_end_index"></a></p>
+<pre><code><b>global</b> <a href="big_vector.html#0x1_big_vector_initial_end_index">initial_end_index</a>: u64;
+</code></pre>
 <h3 id="struct-bigvector-1"><a class="header" href="#struct-bigvector-1">Struct <code>BigVector</code> <a id="@Specification_1_BigVector"></a></a></h3>
 <pre><code><b>struct</b> <a href="big_vector.html#0x1_big_vector_BigVector">BigVector</a>&lt;T&gt; <b>has</b> store
 </code></pre>
@@ -662,14 +701,11 @@ Disclaimer: This function may be costly as the big vector may be huge in size. U
 <b>invariant</b> <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) == 0
     || len(<a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(buckets, <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) -1 )) &lt;= bucket_size;
 <b>invariant</b> <b>forall</b> i in 0..<a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets): <a href="big_vector.html#0x1_big_vector_spec_table_contains">spec_table_contains</a>(buckets, i);
-<b>invariant</b> <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) == (end_index + bucket_size - 1) / bucket_size;
+<b>invariant</b> <b>forall</b> i: u64 {<a href="big_vector.html#0x1_big_vector_spec_table_contains">spec_table_contains</a>(buckets, i)}: <a href="big_vector.html#0x1_big_vector_spec_table_contains">spec_table_contains</a>(buckets, i) ==&gt; i &lt; <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets);
 <b>invariant</b> (<a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) == 0 && end_index == 0)
     || (<a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) != 0 && ((<a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) - 1) * bucket_size) + (len(<a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(buckets, <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) - 1))) == end_index);
-<b>invariant</b> <b>forall</b> i: u64 <b>where</b> i &gt;= <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets):  {
+<b>invariant</b> <b>forall</b> i: u64 {<a href="big_vector.html#0x1_big_vector_spec_table_contains">spec_table_contains</a>(buckets, i)} <b>where</b> i &gt;= <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets):  {
     !<a href="big_vector.html#0x1_big_vector_spec_table_contains">spec_table_contains</a>(buckets, i)
-};
-<b>invariant</b> <b>forall</b> i: u64 <b>where</b> i &lt; <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets):  {
-    <a href="big_vector.html#0x1_big_vector_spec_table_contains">spec_table_contains</a>(buckets, i)
 };
 <b>invariant</b> <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) == 0
     || (len(<a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(buckets, <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(buckets) - 1)) &gt; 0);
@@ -708,12 +744,13 @@ Disclaimer: This function may be costly as the big vector may be huge in size. U
 <h3 id="function-append-1"><a class="header" href="#function-append-1">Function <code>append</code> <a id="@Specification_1_append"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_append">append</a>&lt;T: store&gt;(self: &<b>mut</b> <a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;, other: <a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify=<b>false</b>;
+<pre><code><b>ensures</b> self.<a href="big_vector.html#0x1_big_vector_length">length</a>() == <b>old</b>(self.<a href="big_vector.html#0x1_big_vector_length">length</a>()) + other.<a href="big_vector.html#0x1_big_vector_length">length</a>();
 </code></pre>
 <h3 id="function-push_back-1"><a class="header" href="#function-push_back-1">Function <code>push_back</code> <a id="@Specification_1_push_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_push_back">push_back</a>&lt;T: store&gt;(self: &<b>mut</b> <a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;, val: T)
 </code></pre>
-<pre><code><b>let</b> num_buckets = <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(self.buckets);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> num_buckets = <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(self.buckets);
 <b>include</b> <a href="big_vector.html#0x1_big_vector_PushbackAbortsIf">PushbackAbortsIf</a>&lt;T&gt;;
 <b>ensures</b> self.<a href="big_vector.html#0x1_big_vector_length">length</a>() == <b>old</b>(self).<a href="big_vector.html#0x1_big_vector_length">length</a>() + 1;
 <b>ensures</b> self.end_index == <b>old</b>(self.end_index) + 1;
@@ -732,20 +769,30 @@ Disclaimer: This function may be costly as the big vector may be huge in size. U
 <h3 id="function-pop_back-1"><a class="header" href="#function-pop_back-1">Function <code>pop_back</code> <a id="@Specification_1_pop_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_pop_back">pop_back</a>&lt;T&gt;(self: &<b>mut</b> <a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;): T
 </code></pre>
-<pre><code><b>aborts_if</b> self.<a href="big_vector.html#0x1_big_vector_is_empty">is_empty</a>();
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> self.<a href="big_vector.html#0x1_big_vector_is_empty">is_empty</a>();
 <b>ensures</b> self.<a href="big_vector.html#0x1_big_vector_length">length</a>() == <b>old</b>(self).<a href="big_vector.html#0x1_big_vector_length">length</a>() - 1;
 <b>ensures</b> result == <b>old</b>(<a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(self, self.end_index-1));
 <b>ensures</b> <b>forall</b> i in 0..self.end_index: <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(self, i) == <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(<b>old</b>(self), i);
+<b>ensures</b> <b>forall</b> b in 0..<a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(self.buckets):
+    <b>forall</b> p in 0..len(<a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(self.buckets, b)):
+        <a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(self.buckets, b)[p] ==
+        <a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(<b>old</b>(self).buckets, b)[p];
+<b>ensures</b> self.bucket_size == <b>old</b>(self).bucket_size;
 </code></pre>
 <h3 id="function-remove-1"><a class="header" href="#function-remove-1">Function <code>remove</code> <a id="@Specification_1_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_remove">remove</a>&lt;T&gt;(self: &<b>mut</b> <a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;, i: u64): T
 </code></pre>
-<pre><code><b>pragma</b> verify=<b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> i &gt;= self.<a href="big_vector.html#0x1_big_vector_length">length</a>();
+<b>ensures</b> self.<a href="big_vector.html#0x1_big_vector_length">length</a>() == <b>old</b>(self.<a href="big_vector.html#0x1_big_vector_length">length</a>()) - 1;
+<b>ensures</b> self.bucket_size == <b>old</b>(self.bucket_size);
+<b>ensures</b> result == <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(<b>old</b>(self), i);
 </code></pre>
 <h3 id="function-swap_remove-1"><a class="header" href="#function-swap_remove-1">Function <code>swap_remove</code> <a id="@Specification_1_swap_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_swap_remove">swap_remove</a>&lt;T&gt;(self: &<b>mut</b> <a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;, i: u64): T
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> i &gt;= self.<a href="big_vector.html#0x1_big_vector_length">length</a>();
 <b>ensures</b> self.<a href="big_vector.html#0x1_big_vector_length">length</a>() == <b>old</b>(self).<a href="big_vector.html#0x1_big_vector_length">length</a>() - 1;
 <b>ensures</b> result == <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(<b>old</b>(self), i);
@@ -753,7 +800,7 @@ Disclaimer: This function may be costly as the big vector may be huge in size. U
 <h3 id="function-swap-1"><a class="header" href="#function-swap-1">Function <code>swap</code> <a id="@Specification_1_swap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_swap">swap</a>&lt;T&gt;(self: &<b>mut</b> <a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;, i: u64, j: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 1000;
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> i &gt;= self.<a href="big_vector.html#0x1_big_vector_length">length</a>() || j &gt;= self.<a href="big_vector.html#0x1_big_vector_length">length</a>();
 <b>ensures</b> self.<a href="big_vector.html#0x1_big_vector_length">length</a>() == <b>old</b>(self).<a href="big_vector.html#0x1_big_vector_length">length</a>();
 <b>ensures</b> <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(self, i) == <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(<b>old</b>(self), j);
@@ -762,15 +809,21 @@ Disclaimer: This function may be costly as the big vector may be huge in size. U
     <b>where</b> idx != i && idx != j:
     <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(self, idx) == <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(<b>old</b>(self), idx);
 </code></pre>
-<h3 id="function-reverse-1"><a class="header" href="#function-reverse-1">Function <code>reverse</code> <a id="@Specification_1_reverse"></a></a></h3>
-<pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_reverse">reverse</a>&lt;T&gt;(self: &<b>mut</b> <a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;)
-</code></pre>
-<pre><code><b>pragma</b> verify=<b>false</b>;
-</code></pre>
 <h3 id="function-index_of-1"><a class="header" href="#function-index_of-1">Function <code>index_of</code> <a id="@Specification_1_index_of"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_index_of">index_of</a>&lt;T&gt;(self: &<a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;, val: &T): (bool, u64)
 </code></pre>
-<pre><code><b>pragma</b> verify=<b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result_1 ==&gt; result_2 &lt; self.<a href="big_vector.html#0x1_big_vector_length">length</a>();
+<b>ensures</b> result_1 ==&gt; <a href="big_vector.html#0x1_big_vector_spec_at">spec_at</a>(self, result_2) == val;
+<b>ensures</b> !result_1 ==&gt; (<b>forall</b> j in 0..<a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>(self.buckets):
+    <b>forall</b> k in 0..len(<a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(self.buckets, j)):
+        <a href="table_with_length.html#0x1_table_with_length_spec_get">table_with_length::spec_get</a>(self.buckets, j)[k] != val);
+</code></pre>
+<h3 id="function-contains-1"><a class="header" href="#function-contains-1">Function <code>contains</code> <a id="@Specification_1_contains"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="big_vector.html#0x1_big_vector_contains">contains</a>&lt;T&gt;(self: &<a href="big_vector.html#0x1_big_vector_BigVector">big_vector::BigVector</a>&lt;T&gt;, val: &T): bool
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
 </code></pre>
 <p><a id="0x1_big_vector_spec_table_len"></a></p>
 <pre><code><b>fun</b> <a href="big_vector.html#0x1_big_vector_spec_table_len">spec_table_len</a>&lt;K, V&gt;(t: TableWithLength&lt;K, V&gt;): u64 {

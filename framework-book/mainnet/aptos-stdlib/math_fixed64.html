@@ -175,6 +175,12 @@
 <li><a href="#0x1_math_fixed64_mul_div">Function <code>mul_div</code></a></li>
 <li><a href="#0x1_math_fixed64_exp_raw">Function <code>exp_raw</code></a></li>
 <li><a href="#0x1_math_fixed64_pow_raw">Function <code>pow_raw</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_sqrt">Function <code>sqrt</code></a></li>
+<li><a href="#@Specification_1_mul_div">Function <code>mul_div</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="fixed_point64.html#0x1_fixed_point64">0x1::fixed_point64</a>;
@@ -318,6 +324,24 @@ is positive for all values of x.</p>
 }
 </code></pre>
 </details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-sqrt-1"><a class="header" href="#function-sqrt-1">Function <code>sqrt</code> <a id="@Specification_1_sqrt"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math_fixed64.html#0x1_math_fixed64_sqrt">sqrt</a>(x: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>): <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
+</code></pre>
+<p><code>sqrt</code> aborts when the input is zero (math128::sqrt(0)==0 causes division by zero in the Newton step).
+No loop in the body (single Newton refinement step), so callers can inline without havocing.</p>
+<pre><code><b>aborts_if</b> x.get_raw_value() == 0;
+</code></pre>
+<h3 id="function-mul_div-1"><a class="header" href="#function-mul_div-1">Function <code>mul_div</code> <a id="@Specification_1_mul_div"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math_fixed64.html#0x1_math_fixed64_mul_div">mul_div</a>(x: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, y: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, z: <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>): <a href="fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
+</code></pre>
+<p><code>mul_div</code> aborts when z is zero or when x * y / z overflows u128.
+The result equals the exact arithmetic quotient.</p>
+<pre><code><b>aborts_if</b> z.get_raw_value() == 0;
+<b>aborts_if</b> (x.get_raw_value() <b>as</b> u256) * (y.get_raw_value() <b>as</b> u256) / (z.get_raw_value() <b>as</b> u256) &gt; MAX_U128;
+<b>ensures</b> (result.get_raw_value() <b>as</b> u256) ==
+        (x.get_raw_value() <b>as</b> u256) * (y.get_raw_value() <b>as</b> u256) / (z.get_raw_value() <b>as</b> u256);
+</code></pre>
 
                     </main>
 

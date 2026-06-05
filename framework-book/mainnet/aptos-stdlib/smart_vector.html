@@ -209,11 +209,13 @@
 <li><a href="#@Specification_1">Specification</a>
 <ul>
 <li><a href="#@Specification_1_SmartVector">Struct <code>SmartVector</code></a></li>
+<li><a href="#@Specification_1_new">Function <code>new</code></a></li>
 <li><a href="#@Specification_1_empty">Function <code>empty</code></a></li>
 <li><a href="#@Specification_1_empty_with_config">Function <code>empty_with_config</code></a></li>
 <li><a href="#@Specification_1_singleton">Function <code>singleton</code></a></li>
 <li><a href="#@Specification_1_destroy_empty">Function <code>destroy_empty</code></a></li>
 <li><a href="#@Specification_1_borrow">Function <code>borrow</code></a></li>
+<li><a href="#@Specification_1_borrow_mut">Function <code>borrow_mut</code></a></li>
 <li><a href="#@Specification_1_append">Function <code>append</code></a></li>
 <li><a href="#@Specification_1_push_back">Function <code>push_back</code></a></li>
 <li><a href="#@Specification_1_pop_back">Function <code>pop_back</code></a></li>
@@ -221,6 +223,7 @@
 <li><a href="#@Specification_1_swap_remove">Function <code>swap_remove</code></a></li>
 <li><a href="#@Specification_1_swap">Function <code>swap</code></a></li>
 <li><a href="#@Specification_1_length">Function <code>length</code></a></li>
+<li><a href="#@Specification_1_is_empty">Function <code>is_empty</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1058,21 +1061,29 @@ values without modifying the original vectors.</p>
 <b>invariant</b> (inline_capacity.is_none() && bucket_size.is_none())
     || (inline_capacity.is_some() && bucket_size.is_some());
 </code></pre>
+<h3 id="function-new-1"><a class="header" href="#function-new-1">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_new">new</a>&lt;T: store&gt;(): <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(result) == 0;
+</code></pre>
 <h3 id="function-empty-1"><a class="header" href="#function-empty-1">Function <code>empty</code> <a id="@Specification_1_empty"></a></a></h3>
 <pre><code>#[deprecated]
 <b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_empty">empty</a>&lt;T: store&gt;(): <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;
 </code></pre>
 <pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(result) == 0;
 </code></pre>
 <h3 id="function-empty_with_config-1"><a class="header" href="#function-empty_with_config-1">Function <code>empty_with_config</code> <a id="@Specification_1_empty_with_config"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_empty_with_config">empty_with_config</a>&lt;T: store&gt;(inline_capacity: u64, bucket_size: u64): <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;
 </code></pre>
 <pre><code><b>aborts_if</b> bucket_size == 0;
+<b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(result) == 0;
 </code></pre>
 <h3 id="function-singleton-1"><a class="header" href="#function-singleton-1">Function <code>singleton</code> <a id="@Specification_1_singleton"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_singleton">singleton</a>&lt;T: store&gt;(element: T): <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(result) == 1;
 </code></pre>
 <p><a id="0x1_smart_vector_spec_len"></a></p>
 <pre><code><b>fun</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>&lt;T&gt;(self: &<a href="smart_vector.html#0x1_smart_vector_SmartVector">SmartVector</a>&lt;T&gt;): u64 {
@@ -1086,6 +1097,15 @@ values without modifying the original vectors.</p>
 <p><a id="0x1_smart_vector_spec_is_empty"></a></p>
 <pre><code><b>fun</b> <a href="smart_vector.html#0x1_smart_vector_spec_is_empty">spec_is_empty</a>&lt;T&gt;(self: &<a href="smart_vector.html#0x1_smart_vector_SmartVector">SmartVector</a>&lt;T&gt;): bool {
    <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == 0
+}
+</code></pre>
+<p><a id="0x1_smart_vector_spec_get"></a></p>
+<pre><code><b>fun</b> <a href="smart_vector.html#0x1_smart_vector_spec_get">spec_get</a>&lt;T&gt;(self: &<a href="smart_vector.html#0x1_smart_vector_SmartVector">SmartVector</a>&lt;T&gt;, i: u64): T {
+   <b>if</b> (i &lt; len(self.inline_vec)) {
+       self.inline_vec[i]
+   } <b>else</b> {
+       <a href="big_vector.html#0x1_big_vector_spec_at">big_vector::spec_at</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec), i - len(self.inline_vec))
+   }
 }
 </code></pre>
 <h3 id="function-destroy_empty-1"><a class="header" href="#function-destroy_empty-1">Function <code>destroy_empty</code> <a id="@Specification_1_destroy_empty"></a></a></h3>
@@ -1102,6 +1122,17 @@ values without modifying the original vectors.</p>
 <b>aborts_if</b> self.big_vec.is_some() && (
     (len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>&lt;T&gt;()) &gt; MAX_U64
 );
+<b>ensures</b> result == <a href="smart_vector.html#0x1_smart_vector_spec_get">spec_get</a>(self, i);
+</code></pre>
+<h3 id="function-borrow_mut-1"><a class="header" href="#function-borrow_mut-1">Function <code>borrow_mut</code> <a id="@Specification_1_borrow_mut"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_borrow_mut">borrow_mut</a>&lt;T&gt;(self: &<b>mut</b> <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;, i: u64): &<b>mut</b> T
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> i &gt;= <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self);
+<b>aborts_if</b> self.big_vec.is_some() && (
+    (len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>&lt;T&gt;()) &gt; MAX_U64
+);
+<b>ensures</b> result == <a href="smart_vector.html#0x1_smart_vector_spec_get">spec_get</a>(self, i);
 </code></pre>
 <h3 id="function-append-1"><a class="header" href="#function-append-1">Function <code>append</code> <a id="@Specification_1_append"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_append">append</a>&lt;T: store&gt;(self: &<b>mut</b> <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;, other: <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;)
@@ -1111,13 +1142,45 @@ values without modifying the original vectors.</p>
 <h3 id="function-push_back-1"><a class="header" href="#function-push_back-1">Function <code>push_back</code> <a id="@Specification_1_push_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_push_back">push_back</a>&lt;T: store&gt;(self: &<b>mut</b> <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;, val: T)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> self.big_vec.is_some()
+    && len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>&lt;T&gt;() &gt; MAX_U64;
+<b>aborts_if</b> self.inline_capacity.is_none()
+    && <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == len(self.inline_vec)
+    && len(self.inline_vec) == MAX_U64;
+<b>aborts_if</b> self.inline_capacity.is_none()
+    && <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == len(self.inline_vec)
+    && len(self.inline_vec) &lt; MAX_U64
+    && <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(val) * (len(self.inline_vec) + 1) &gt; MAX_U64;
+<b>aborts_if</b> self.inline_capacity.is_none()
+    && <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == len(self.inline_vec)
+    && len(self.inline_vec) &lt; MAX_U64
+    && <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(val) * (len(self.inline_vec) + 1) &lt;= MAX_U64
+    && <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(val) * (len(self.inline_vec) + 1) &gt;= 150
+    && <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(self.inline_vec) + <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(val) &gt; MAX_U64;
+<b>aborts_if</b> self.inline_capacity.is_some()
+    && <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == len(self.inline_vec)
+    && len(self.inline_vec) &gt;= <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.inline_capacity)
+    && self.big_vec.is_some();
+<b>aborts_if</b> self.inline_capacity.is_none()
+    && <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == len(self.inline_vec)
+    && len(self.inline_vec) &lt; MAX_U64
+    && <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(val) * (len(self.inline_vec) + 1) &lt;= MAX_U64
+    && <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(val) * (len(self.inline_vec) + 1) &gt;= 150
+    && <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(self.inline_vec) + <a href="type_info.html#0x1_type_info_spec_size_of_val">type_info::spec_size_of_val</a>(val) &lt;= MAX_U64
+    && self.big_vec.is_some();
+<b>aborts_if</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) &gt; len(self.inline_vec)
+    && <a href="table_with_length.html#0x1_table_with_length_spec_len">table_with_length::spec_len</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).buckets)
+       * <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).bucket_size &gt; MAX_U64;
+<b>aborts_if</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) &gt; len(self.inline_vec)
+    && <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).end_index + 1 &gt; MAX_U64;
+<b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == <b>old</b>(<a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self)) + 1;
 </code></pre>
 <h3 id="function-pop_back-1"><a class="header" href="#function-pop_back-1">Function <code>pop_back</code> <a id="@Specification_1_pop_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_pop_back">pop_back</a>&lt;T&gt;(self: &<b>mut</b> <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;): T
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>aborts_if</b>  self.big_vec.is_some()
+<pre><code><b>aborts_if</b>  self.big_vec.is_some()
     &&
     (<a href="table_with_length.html#0x1_table_with_length_spec_len">table_with_length::spec_len</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).buckets) == 0);
 <b>aborts_if</b> <a href="smart_vector.html#0x1_smart_vector_spec_is_empty">spec_is_empty</a>(self);
@@ -1125,31 +1188,51 @@ values without modifying the original vectors.</p>
     (len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>&lt;T&gt;()) &gt; MAX_U64
 );
 <b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == <b>old</b>(<a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self)) - 1;
+<b>ensures</b> result == <b>old</b>(<a href="smart_vector.html#0x1_smart_vector_spec_get">spec_get</a>(self, <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) - 1));
 </code></pre>
 <h3 id="function-remove-1"><a class="header" href="#function-remove-1">Function <code>remove</code> <a id="@Specification_1_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_remove">remove</a>&lt;T&gt;(self: &<b>mut</b> <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;, i: u64): T
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-</code></pre>
-<h3 id="function-swap_remove-1"><a class="header" href="#function-swap_remove-1">Function <code>swap_remove</code> <a id="@Specification_1_swap_remove"></a></a></h3>
-<pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_swap_remove">swap_remove</a>&lt;T&gt;(self: &<b>mut</b> <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;, i: u64): T
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> i &gt;= <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self);
 <b>aborts_if</b> self.big_vec.is_some() && (
     (len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>&lt;T&gt;()) &gt; MAX_U64
 );
 <b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == <b>old</b>(<a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self)) - 1;
+<b>ensures</b> result == <b>old</b>(<a href="smart_vector.html#0x1_smart_vector_spec_get">spec_get</a>(self, i));
+</code></pre>
+<h3 id="function-swap_remove-1"><a class="header" href="#function-swap_remove-1">Function <code>swap_remove</code> <a id="@Specification_1_swap_remove"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_swap_remove">swap_remove</a>&lt;T&gt;(self: &<b>mut</b> <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;, i: u64): T
+</code></pre>
+<pre><code><b>aborts_if</b> i &gt;= <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self);
+<b>aborts_if</b> self.big_vec.is_some() && (
+    (len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>&lt;T&gt;()) &gt; MAX_U64
+);
+<b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == <b>old</b>(<a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self)) - 1;
+<b>ensures</b> result == <b>old</b>(<a href="smart_vector.html#0x1_smart_vector_spec_get">spec_get</a>(self, i));
 </code></pre>
 <h3 id="function-swap-1"><a class="header" href="#function-swap-1">Function <code>swap</code> <a id="@Specification_1_swap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_swap">swap</a>&lt;T: store&gt;(self: &<b>mut</b> <a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;, i: u64, j: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> i &gt;= <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) || j &gt;= <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self);
+<b>aborts_if</b> self.big_vec.is_some() && (
+    (len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>&lt;T&gt;()) &gt; MAX_U64
+);
+<b>ensures</b> <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self) == <b>old</b>(<a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self));
 </code></pre>
 <h3 id="function-length-1"><a class="header" href="#function-length-1">Function <code>length</code> <a id="@Specification_1_length"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_length">length</a>&lt;T&gt;(self: &<a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;): u64
 </code></pre>
 <pre><code><b>aborts_if</b> self.big_vec.is_some() && len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>() &gt; MAX_U64;
+<b>ensures</b> result == <a href="smart_vector.html#0x1_smart_vector_spec_len">spec_len</a>(self);
+</code></pre>
+<h3 id="function-is_empty-1"><a class="header" href="#function-is_empty-1">Function <code>is_empty</code> <a id="@Specification_1_is_empty"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="smart_vector.html#0x1_smart_vector_is_empty">is_empty</a>&lt;T&gt;(self: &<a href="smart_vector.html#0x1_smart_vector_SmartVector">smart_vector::SmartVector</a>&lt;T&gt;): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> self.big_vec.is_some() && len(self.inline_vec) + <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(self.big_vec).<a href="smart_vector.html#0x1_smart_vector_length">length</a>() &gt; MAX_U64;
+<b>ensures</b> result == <a href="smart_vector.html#0x1_smart_vector_spec_is_empty">spec_is_empty</a>(self);
 </code></pre>
 
                     </main>

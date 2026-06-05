@@ -221,7 +221,6 @@ has been deprecated in favor of <code>big_ordered_map.<b>move</b></code>.</p>
 <li><a href="#@Specification_1_keys_paginated">Function <code>keys_paginated</code></a></li>
 <li><a href="#@Specification_1_split_one_bucket">Function <code>split_one_bucket</code></a></li>
 <li><a href="#@Specification_1_bucket_index">Function <code>bucket_index</code></a></li>
-<li><a href="#@Specification_1_borrow_with_default">Function <code>borrow_with_default</code></a></li>
 <li><a href="#@Specification_1_load_factor">Function <code>load_factor</code></a></li>
 <li><a href="#@Specification_1_update_split_load_threshold">Function <code>update_split_load_threshold</code></a></li>
 <li><a href="#@Specification_1_update_target_bucket_size">Function <code>update_target_bucket_size</code></a></li>
@@ -1053,11 +1052,6 @@ map_spec_has_key = spec_contains;
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
-<h3 id="function-borrow_with_default-1"><a class="header" href="#function-borrow_with_default-1">Function <code>borrow_with_default</code> <a id="@Specification_1_borrow_with_default"></a></a></h3>
-<pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_with_default">borrow_with_default</a>&lt;K: <b>copy</b>, drop, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;, key: K, default: &V): &V
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-</code></pre>
 <h3 id="function-load_factor-1"><a class="header" href="#function-load_factor-1">Function <code>load_factor</code> <a id="@Specification_1_load_factor"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_load_factor">load_factor</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): u64
 </code></pre>
@@ -1076,12 +1070,16 @@ map_spec_has_key = spec_contains;
 <h3 id="function-borrow_kv-1"><a class="header" href="#function-borrow_kv-1">Function <code>borrow_kv</code> <a id="@Specification_1_borrow_kv"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_kv">borrow_kv</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;): (&K, &V)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result_1 == self.key;
+<b>ensures</b> result_2 == self.value;
 </code></pre>
 <h3 id="function-borrow_kv_mut-1"><a class="header" href="#function-borrow_kv_mut-1">Function <code>borrow_kv_mut</code> <a id="@Specification_1_borrow_kv_mut"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_borrow_kv_mut">borrow_kv_mut</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="smart_table.html#0x1_smart_table_Entry">smart_table::Entry</a>&lt;K, V&gt;): (&<b>mut</b> K, &<b>mut</b> V)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result_1 == <b>old</b>(self.key);
+<b>ensures</b> result_2 == <b>old</b>(self.value);
 </code></pre>
 <h3 id="function-num_buckets-1"><a class="header" href="#function-num_buckets-1">Function <code>num_buckets</code> <a id="@Specification_1_num_buckets"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>&lt;K, V&gt;(self: &<a href="smart_table.html#0x1_smart_table_SmartTable">smart_table::SmartTable</a>&lt;K, V&gt;): u64

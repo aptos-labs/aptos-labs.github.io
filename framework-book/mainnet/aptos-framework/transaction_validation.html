@@ -168,6 +168,8 @@
 <li><a href="#0x1_transaction_validation_ReplayProtector">Enum <code>ReplayProtector</code></a></li>
 <li><a href="#0x1_transaction_validation_TransactionValidation">Resource <code>TransactionValidation</code></a></li>
 <li><a href="#0x1_transaction_validation_GasPermission">Struct <code>GasPermission</code></a></li>
+<li><a href="#0x1_transaction_validation_PrologueArgs">Enum <code>PrologueArgs</code></a></li>
+<li><a href="#0x1_transaction_validation_EpilogueArgs">Enum <code>EpilogueArgs</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
 <li><a href="#0x1_transaction_validation_grant_gas_permission">Function <code>grant_gas_permission</code></a></li>
 <li><a href="#0x1_transaction_validation_revoke_gas_permission">Function <code>revoke_gas_permission</code></a></li>
@@ -195,6 +197,8 @@
 <li><a href="#0x1_transaction_validation_unified_prologue_v2">Function <code>unified_prologue_v2</code></a></li>
 <li><a href="#0x1_transaction_validation_unified_prologue_fee_payer_v2">Function <code>unified_prologue_fee_payer_v2</code></a></li>
 <li><a href="#0x1_transaction_validation_unified_epilogue_v2">Function <code>unified_epilogue_v2</code></a></li>
+<li><a href="#0x1_transaction_validation_versioned_prologue">Function <code>versioned_prologue</code></a></li>
+<li><a href="#0x1_transaction_validation_versioned_epilogue">Function <code>versioned_epilogue</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
 <li><a href="#high-level-req">High-level Requirements</a></li>
@@ -222,12 +226,15 @@
 <li><a href="#@Specification_1_unified_prologue_v2">Function <code>unified_prologue_v2</code></a></li>
 <li><a href="#@Specification_1_unified_prologue_fee_payer_v2">Function <code>unified_prologue_fee_payer_v2</code></a></li>
 <li><a href="#@Specification_1_unified_epilogue_v2">Function <code>unified_epilogue_v2</code></a></li>
+<li><a href="#@Specification_1_versioned_prologue">Function <code>versioned_prologue</code></a></li>
+<li><a href="#@Specification_1_versioned_epilogue">Function <code>versioned_epilogue</code></a></li>
 </ul>
 </li>
 </ul>
 <pre><code><b>use</b> <a href="account.html#0x1_account">0x1::account</a>;
 <b>use</b> <a href="account_abstraction.html#0x1_account_abstraction">0x1::account_abstraction</a>;
 <b>use</b> <a href="aptos_account.html#0x1_aptos_account">0x1::aptos_account</a>;
+<b>use</b> <a href="../move-stdlib/bcs.html#0x1_bcs">0x1::bcs</a>;
 <b>use</b> <a href="chain_id.html#0x1_chain_id">0x1::chain_id</a>;
 <b>use</b> <a href="create_signer.html#0x1_create_signer">0x1::create_signer</a>;
 <b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
@@ -239,6 +246,7 @@
 <b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
 <b>use</b> <a href="timestamp.html#0x1_timestamp">0x1::timestamp</a>;
 <b>use</b> <a href="transaction_fee.html#0x1_transaction_fee">0x1::transaction_fee</a>;
+<b>use</b> <a href="transaction_limits.html#0x1_transaction_limits">0x1::transaction_limits</a>;
 <b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
 </code></pre>
 <h2 id="enum-replayprotector"><a class="header" href="#enum-replayprotector">Enum <code>ReplayProtector</code> <a id="0x1_transaction_validation_ReplayProtector"></a></a></h2>
@@ -325,6 +333,137 @@ correct chain-specific prologue and epilogue functions</p>
 <dd>
 </dd>
 </dl>
+</details>
+<h2 id="enum-prologueargs"><a class="header" href="#enum-prologueargs">Enum <code>PrologueArgs</code> <a id="0x1_transaction_validation_PrologueArgs"></a></a></h2>
+<p>Versioned enum-based prologue and epilogue
+Arguments for <code>versioned_prologue</code>. A new field becomes a new enum variant.</p>
+<ul>
+<li>Old variants are kept for compatibility; their on-chain layout must remain stable.</li>
+<li>Only the most recent variant needs real handling here — old variants were executed
+against the framework version that shipped them and are not reached from this code.</li>
+</ul>
+<pre><code>enum <a href="transaction_validation.html#0x1_transaction_validation_PrologueArgs">PrologueArgs</a>
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>needs_fee_payer_auth_check: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>txn_sender_public_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>fee_payer_public_key_hash: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">transaction_validation::ReplayProtector</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>secondary_signer_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>secondary_signer_public_key_hashes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>txn_gas_price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>txn_max_gas_units: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>txn_expiration_time: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="chain_id.html#0x1_chain_id">chain_id</a>: u8</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_simulation: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>txn_limits_request: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_UserTxnLimitsRequest">transaction_limits::UserTxnLimitsRequest</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-epilogueargs"><a class="header" href="#enum-epilogueargs">Enum <code>EpilogueArgs</code> <a id="0x1_transaction_validation_EpilogueArgs"></a></a></h2>
+<p>Arguments for <code>versioned_epilogue</code>. A new field becomes a new enum variant.</p>
+<ul>
+<li>Old variants are kept for compatibility; their on-chain layout must remain stable.</li>
+<li>Only the most recent variant needs real handling here — old variants were executed
+against the framework version that shipped them and are not reached from this code.</li>
+</ul>
+<pre><code>enum <a href="transaction_validation.html#0x1_transaction_validation_EpilogueArgs">EpilogueArgs</a>
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>fee_statement: <a href="transaction_fee.html#0x1_transaction_fee_FeeStatement">transaction_fee::FeeStatement</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>txn_gas_price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>txn_max_gas_units: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>gas_units_remaining: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_simulation: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_orderless_txn: bool</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
 </details>
 <h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_transaction_validation_MAX_U64"></a></p>
@@ -453,7 +592,7 @@ important to the semantics of the system.</p>
 </code></pre>
 </details>
 <h2 id="function-prologue_common"><a class="header" href="#function-prologue_common">Function <code>prologue_common</code> <a id="0x1_transaction_validation_prologue_common"></a></a></h2>
-<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_prologue_common">prologue_common</a>(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, gas_payer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">transaction_validation::ReplayProtector</a>, txn_authentication_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, txn_gas_price: u64, txn_max_gas_units: u64, txn_expiration_time: u64, <a href="chain_id.html#0x1_chain_id">chain_id</a>: u8, is_simulation: bool)
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_prologue_common">prologue_common</a>(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, gas_payer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">transaction_validation::ReplayProtector</a>, txn_authentication_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, txn_gas_price: u64, txn_max_gas_units: u64, txn_expiration_time: u64, <a href="chain_id.html#0x1_chain_id">chain_id</a>: u8, is_simulation: bool, txn_limits_request: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_UserTxnLimitsRequest">transaction_limits::UserTxnLimitsRequest</a>&gt;)
 </code></pre>
 <details>
 <summary>Implementation</summary>
@@ -467,6 +606,7 @@ important to the semantics of the system.</p>
     txn_expiration_time: u64,
     <a href="chain_id.html#0x1_chain_id">chain_id</a>: u8,
     is_simulation: bool,
+    txn_limits_request: Option&lt;UserTxnLimitsRequest&gt;,
 ) {
     <b>let</b> sender_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(sender);
     <b>let</b> gas_payer_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(gas_payer);
@@ -482,16 +622,21 @@ important to the semantics of the system.</p>
     // Check <b>if</b> the authentication key is valid
     <b>if</b> (!<a href="transaction_validation.html#0x1_transaction_validation_skip_auth_key_check">skip_auth_key_check</a>(is_simulation, &txn_authentication_key)) {
         <b>if</b> (txn_authentication_key.is_some()) {
-            <b>if</b> (
-                sender_address == gas_payer_address ||
-                <a href="account.html#0x1_account_exists_at">account::exists_at</a>(sender_address) ||
-                !<a href="../move-stdlib/features.html#0x1_features_sponsored_automatic_account_creation_enabled">features::sponsored_automatic_account_creation_enabled</a>()
+            <b>let</b> authentication_key = <b>if</b> (
+                sender_address != gas_payer_address &&
+                    !<a href="account.html#0x1_account_exists_at">account::exists_at</a>(sender_address) &&
+                    <a href="../move-stdlib/features.html#0x1_features_sponsored_automatic_account_creation_enabled">features::sponsored_automatic_account_creation_enabled</a>()
             ) {
-                <b>assert</b>!(
-                    txn_authentication_key == <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="account.html#0x1_account_get_authentication_key">account::get_authentication_key</a>(sender_address)),
-                    <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="transaction_validation.html#0x1_transaction_validation_PROLOGUE_EINVALID_ACCOUNT_AUTH_KEY">PROLOGUE_EINVALID_ACCOUNT_AUTH_KEY</a>),
-                );
+                // This is a sponsored transaction <b>with</b> <a href="account.html#0x1_account">account</a> that does
+                // not exist and there is no default <a href="account.html#0x1_account">account</a> resource.
+                <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(&sender_address)
+            } <b>else</b> {
+                <a href="account.html#0x1_account_get_authentication_key">account::get_authentication_key</a>(sender_address)
             };
+            <b>assert</b>!(
+                txn_authentication_key.destroy_some() == authentication_key,
+                <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="transaction_validation.html#0x1_transaction_validation_PROLOGUE_EINVALID_ACCOUNT_AUTH_KEY">PROLOGUE_EINVALID_ACCOUNT_AUTH_KEY</a>),
+            );
         } <b>else</b> {
             <b>assert</b>!(
                 <a href="transaction_validation.html#0x1_transaction_validation_allow_missing_txn_authentication_key">allow_missing_txn_authentication_key</a>(sender_address),
@@ -516,6 +661,13 @@ important to the semantics of the system.</p>
                 txn_expiration_time,
             );
         }
+    };
+
+    <b>if</b> (txn_limits_request.is_some()) {
+        <a href="transaction_limits.html#0x1_transaction_limits_validate_high_txn_limits">transaction_limits::validate_high_txn_limits</a>(
+            gas_payer_address,
+            txn_limits_request.destroy_some(),
+        );
     };
 
     // Check <b>if</b> the gas payer <b>has</b> enough balance <b>to</b> pay for the transaction
@@ -628,6 +780,7 @@ important to the semantics of the system.</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         <b>false</b>,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
     )
 }
 </code></pre>
@@ -658,6 +811,7 @@ important to the semantics of the system.</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         is_simulation,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
     )
 }
 </code></pre>
@@ -690,6 +844,7 @@ important to the semantics of the system.</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         <b>false</b>,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
     );
     <a href="transaction_validation.html#0x1_transaction_validation_multi_agent_common_prologue">multi_agent_common_prologue</a>(
         secondary_signer_addresses,
@@ -726,6 +881,7 @@ important to the semantics of the system.</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         is_simulation,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
     );
     <a href="transaction_validation.html#0x1_transaction_validation_multi_agent_common_prologue">multi_agent_common_prologue</a>(
         secondary_signer_addresses,
@@ -831,6 +987,7 @@ important to the semantics of the system.</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         <b>false</b>,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
     );
     <a href="transaction_validation.html#0x1_transaction_validation_multi_agent_common_prologue">multi_agent_common_prologue</a>(
         secondary_signer_addresses,
@@ -873,6 +1030,7 @@ important to the semantics of the system.</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         is_simulation,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
     );
     <a href="transaction_validation.html#0x1_transaction_validation_multi_agent_common_prologue">multi_agent_common_prologue</a>(
         secondary_signer_addresses,
@@ -1065,7 +1223,6 @@ Called by the Adapter</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         is_simulation,
-
     )
 }
 </code></pre>
@@ -1164,6 +1321,7 @@ Called by the Adapter</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         is_simulation,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
     );
     <a href="transaction_validation.html#0x1_transaction_validation_multi_agent_common_prologue">multi_agent_common_prologue</a>(secondary_signer_addresses, secondary_signer_public_key_hashes, is_simulation);
 }
@@ -1199,6 +1357,7 @@ Called by the Adapter</p>
         txn_expiration_time,
         <a href="chain_id.html#0x1_chain_id">chain_id</a>,
         is_simulation,
+        <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
     );
     <a href="transaction_validation.html#0x1_transaction_validation_multi_agent_common_prologue">multi_agent_common_prologue</a>(secondary_signer_addresses, secondary_signer_public_key_hashes, is_simulation);
     <b>if</b> (!<a href="transaction_validation.html#0x1_transaction_validation_skip_auth_key_check">skip_auth_key_check</a>(is_simulation, &fee_payer_public_key_hash)) {
@@ -1281,6 +1440,98 @@ Called by the Adapter</p>
 }
 </code></pre>
 </details>
+<h2 id="function-versioned_prologue"><a class="header" href="#function-versioned_prologue">Function <code>versioned_prologue</code> <a id="0x1_transaction_validation_versioned_prologue"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_versioned_prologue">versioned_prologue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_PrologueArgs">transaction_validation::PrologueArgs</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_versioned_prologue">versioned_prologue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_PrologueArgs">PrologueArgs</a>) {
+    match (args) {
+        V1 {
+            needs_fee_payer_auth_check,
+            txn_sender_public_key,
+            fee_payer_public_key_hash,
+            replay_protector,
+            secondary_signer_addresses,
+            secondary_signer_public_key_hashes,
+            txn_gas_price,
+            txn_max_gas_units,
+            txn_expiration_time,
+            <a href="chain_id.html#0x1_chain_id">chain_id</a>,
+            is_simulation,
+            txn_limits_request,
+        } =&gt; {
+            <a href="transaction_validation.html#0x1_transaction_validation_prologue_common">prologue_common</a>(
+                &sender,
+                &fee_payer,
+                replay_protector,
+                txn_sender_public_key,
+                txn_gas_price,
+                txn_max_gas_units,
+                txn_expiration_time,
+                <a href="chain_id.html#0x1_chain_id">chain_id</a>,
+                is_simulation,
+                txn_limits_request,
+            );
+            <a href="transaction_validation.html#0x1_transaction_validation_multi_agent_common_prologue">multi_agent_common_prologue</a>(
+                secondary_signer_addresses,
+                secondary_signer_public_key_hashes,
+                is_simulation,
+            );
+
+            <b>if</b> (needs_fee_payer_auth_check) {
+                <b>let</b> fee_payer_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(&fee_payer);
+                <b>if</b> (!<a href="transaction_validation.html#0x1_transaction_validation_skip_auth_key_check">skip_auth_key_check</a>(is_simulation, &fee_payer_public_key_hash)) {
+                    <b>if</b> (fee_payer_public_key_hash.is_some()) {
+                        <b>let</b> fee_payer_public_key_hash = fee_payer_public_key_hash.destroy_some();
+                        <b>assert</b>!(
+                            fee_payer_public_key_hash == <a href="account.html#0x1_account_get_authentication_key">account::get_authentication_key</a>(fee_payer_address),
+                            <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="transaction_validation.html#0x1_transaction_validation_PROLOGUE_EINVALID_ACCOUNT_AUTH_KEY">PROLOGUE_EINVALID_ACCOUNT_AUTH_KEY</a>),
+                        );
+                    } <b>else</b> {
+                        <b>assert</b>!(
+                            <a href="transaction_validation.html#0x1_transaction_validation_allow_missing_txn_authentication_key">allow_missing_txn_authentication_key</a>(fee_payer_address),
+                            <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="transaction_validation.html#0x1_transaction_validation_PROLOGUE_EINVALID_ACCOUNT_AUTH_KEY">PROLOGUE_EINVALID_ACCOUNT_AUTH_KEY</a>),
+                        );
+                    };
+                };
+            };
+        },
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-versioned_epilogue"><a class="header" href="#function-versioned_epilogue">Function <code>versioned_epilogue</code> <a id="0x1_transaction_validation_versioned_epilogue"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_versioned_epilogue">versioned_epilogue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_EpilogueArgs">transaction_validation::EpilogueArgs</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_versioned_epilogue">versioned_epilogue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_EpilogueArgs">EpilogueArgs</a>) {
+    match (args) {
+        V1 {
+            fee_statement,
+            txn_gas_price,
+            txn_max_gas_units,
+            gas_units_remaining,
+            is_simulation,
+            is_orderless_txn,
+        } =&gt; {
+            <a href="transaction_validation.html#0x1_transaction_validation_unified_epilogue_v2">unified_epilogue_v2</a>(
+                sender,
+                fee_payer,
+                fee_statement.storage_fee_refund_octas(),
+                txn_gas_price,
+                txn_max_gas_units,
+                gas_units_remaining,
+                is_simulation,
+                is_orderless_txn,
+            );
+            <a href="transaction_fee.html#0x1_transaction_fee_emit_fee_statement">transaction_fee::emit_fee_statement</a>(fee_statement);
+        },
+    }
+}
+</code></pre>
+</details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements"><a class="header" href="#high-level-requirements">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
@@ -1354,7 +1605,7 @@ Give some constraints that may abort according to the conditions.</p>
 }
 </code></pre>
 <h3 id="function-prologue_common-1"><a class="header" href="#function-prologue_common-1">Function <code>prologue_common</code> <a id="@Specification_1_prologue_common"></a></a></h3>
-<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_prologue_common">prologue_common</a>(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, gas_payer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">transaction_validation::ReplayProtector</a>, txn_authentication_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, txn_gas_price: u64, txn_max_gas_units: u64, txn_expiration_time: u64, <a href="chain_id.html#0x1_chain_id">chain_id</a>: u8, is_simulation: bool)
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_prologue_common">prologue_common</a>(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, gas_payer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">transaction_validation::ReplayProtector</a>, txn_authentication_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, txn_gas_price: u64, txn_max_gas_units: u64, txn_expiration_time: u64, <a href="chain_id.html#0x1_chain_id">chain_id</a>: u8, is_simulation: bool, txn_limits_request: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_UserTxnLimitsRequest">transaction_limits::UserTxnLimitsRequest</a>&gt;)
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 <b>include</b> <a href="transaction_validation.html#0x1_transaction_validation_PrologueCommonAbortsIf">PrologueCommonAbortsIf</a>;
@@ -1513,6 +1764,16 @@ Skip transaction_fee::burn_fee verification.</p>
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
+<h3 id="function-versioned_prologue-1"><a class="header" href="#function-versioned_prologue-1">Function <code>versioned_prologue</code> <a id="@Specification_1_versioned_prologue"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_versioned_prologue">versioned_prologue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_PrologueArgs">transaction_validation::PrologueArgs</a>)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-versioned_epilogue-1"><a class="header" href="#function-versioned_epilogue-1">Function <code>versioned_epilogue</code> <a id="@Specification_1_versioned_epilogue"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_versioned_epilogue">versioned_epilogue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_EpilogueArgs">transaction_validation::EpilogueArgs</a>)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
 <p><a id="0x1_transaction_validation_EpilogueGasPayerAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="transaction_validation.html#0x1_transaction_validation_EpilogueGasPayerAbortsIf">EpilogueGasPayerAbortsIf</a> {
     <a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
@@ -1562,7 +1823,7 @@ Skip transaction_fee::burn_fee verification.</p>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../aptos-framework/transaction_fee.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../aptos-framework/transaction_limits.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -1576,7 +1837,7 @@ Skip transaction_fee::burn_fee verification.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../aptos-framework/transaction_fee.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../aptos-framework/transaction_limits.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

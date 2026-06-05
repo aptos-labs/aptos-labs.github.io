@@ -175,6 +175,12 @@
 <li><a href="#0x1_math_fixed_mul_div">Function <code>mul_div</code></a></li>
 <li><a href="#0x1_math_fixed_exp_raw">Function <code>exp_raw</code></a></li>
 <li><a href="#0x1_math_fixed_pow_raw">Function <code>pow_raw</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_sqrt">Function <code>sqrt</code></a></li>
+<li><a href="#@Specification_1_mul_div">Function <code>mul_div</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32">0x1::fixed_point32</a>;
@@ -317,6 +323,24 @@ is positive for all values of x.</p>
 }
 </code></pre>
 </details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-sqrt-1"><a class="header" href="#function-sqrt-1">Function <code>sqrt</code> <a id="@Specification_1_sqrt"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math_fixed.html#0x1_math_fixed_sqrt">sqrt</a>(x: <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32_FixedPoint32">fixed_point32::FixedPoint32</a>): <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32_FixedPoint32">fixed_point32::FixedPoint32</a>
+</code></pre>
+<p><code>sqrt</code> never aborts: math128::sqrt(0)==0 so the Newton step is skipped; for y&gt;0 result fits in u64.
+No loop in the body, so callers can inline without havocing.</p>
+<pre><code><b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-mul_div-1"><a class="header" href="#function-mul_div-1">Function <code>mul_div</code> <a id="@Specification_1_mul_div"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="math_fixed.html#0x1_math_fixed_mul_div">mul_div</a>(x: <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32_FixedPoint32">fixed_point32::FixedPoint32</a>, y: <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32_FixedPoint32">fixed_point32::FixedPoint32</a>, z: <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32_FixedPoint32">fixed_point32::FixedPoint32</a>): <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32_FixedPoint32">fixed_point32::FixedPoint32</a>
+</code></pre>
+<p><code>mul_div</code> aborts when z is zero or when x * y / z overflows u64.
+The result equals the exact arithmetic quotient.</p>
+<pre><code><b>aborts_if</b> z.get_raw_value() == 0;
+<b>aborts_if</b> (x.get_raw_value() <b>as</b> u128) * (y.get_raw_value() <b>as</b> u128) / (z.get_raw_value() <b>as</b> u128) &gt; MAX_U64;
+<b>ensures</b> (result.get_raw_value() <b>as</b> u128) ==
+        (x.get_raw_value() <b>as</b> u128) * (y.get_raw_value() <b>as</b> u128) / (z.get_raw_value() <b>as</b> u128);
+</code></pre>
 
                     </main>
 

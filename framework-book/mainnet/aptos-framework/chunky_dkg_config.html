@@ -169,17 +169,21 @@
 <li><a href="#0x1_chunky_dkg_config_ChunkyDKGConfig">Resource <code>ChunkyDKGConfig</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_ConfigOff">Struct <code>ConfigOff</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_ConfigV1">Struct <code>ConfigV1</code></a></li>
+<li><a href="#0x1_chunky_dkg_config_ConfigShadowV1">Struct <code>ConfigShadowV1</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_initialize">Function <code>initialize</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_on_new_epoch">Function <code>on_new_epoch</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_enabled">Function <code>enabled</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_new_off">Function <code>new_off</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_new_v1">Function <code>new_v1</code></a></li>
+<li><a href="#0x1_chunky_dkg_config_new_shadow_v1">Function <code>new_shadow_v1</code></a></li>
+<li><a href="#0x1_chunky_dkg_config_grace_period_secs">Function <code>grace_period_secs</code></a></li>
 <li><a href="#0x1_chunky_dkg_config_current">Function <code>current</code></a></li>
 </ul>
 <pre><code><b>use</b> <a href="config_buffer.html#0x1_config_buffer">0x1::config_buffer</a>;
 <b>use</b> <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any">0x1::copyable_any</a>;
 <b>use</b> <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64">0x1::fixed_point64</a>;
+<b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
 <b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
 </code></pre>
@@ -198,6 +202,7 @@
  Currently the variant type is one of the following.
  - <code><a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ConfigOff">ConfigOff</a></code>
  - <code><a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ConfigV1">ConfigV1</a></code>
+ - <code><a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ConfigShadowV1">ConfigShadowV1</a></code>
 </dd>
 </dl>
 </details>
@@ -233,6 +238,31 @@
 </dt>
 <dd>
  Any validator subset should be able to reconstruct randomness if <code>subset_power / total_power &gt; reconstruction_threshold</code>.
+</dd>
+</dl>
+</details>
+<h2 id="struct-configshadowv1"><a class="header" href="#struct-configshadowv1">Struct <code>ConfigShadowV1</code> <a id="0x1_chunky_dkg_config_ConfigShadowV1"></a></a></h2>
+<p>A chunky DKG config variant for shadow mode: chunky DKG runs alongside regular DKG,
+but epoch change is forced after <code>grace_period_secs</code> if chunky DKG hasn't completed.</p>
+<pre><code><b>struct</b> <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ConfigShadowV1">ConfigShadowV1</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>secrecy_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>reconstruction_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>grace_period_secs: u64</code>
+</dt>
+<dd>
 </dd>
 </dl>
 </details>
@@ -330,6 +360,44 @@ The feature works if and only if <code><a href="consensus_config.html#0x1_consen
 }
 </code></pre>
 </details>
+<h2 id="function-new_shadow_v1"><a class="header" href="#function-new_shadow_v1">Function <code>new_shadow_v1</code> <a id="0x1_chunky_dkg_config_new_shadow_v1"></a></a></h2>
+<p>Create a <code><a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ConfigShadowV1">ConfigShadowV1</a></code> variant for shadow mode.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_new_shadow_v1">new_shadow_v1</a>(secrecy_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, reconstruction_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, grace_period_secs: u64): <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ChunkyDKGConfig">chunky_dkg_config::ChunkyDKGConfig</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_new_shadow_v1">new_shadow_v1</a>(
+    secrecy_threshold: FixedPoint64,
+    reconstruction_threshold: FixedPoint64,
+    grace_period_secs: u64
+): <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ChunkyDKGConfig">ChunkyDKGConfig</a> {
+    <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ChunkyDKGConfig">ChunkyDKGConfig</a> {
+        variant: <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_pack">copyable_any::pack</a>(
+            <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ConfigShadowV1">ConfigShadowV1</a> { secrecy_threshold, reconstruction_threshold, grace_period_secs }
+        )
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-grace_period_secs"><a class="header" href="#function-grace_period_secs">Function <code>grace_period_secs</code> <a id="0x1_chunky_dkg_config_grace_period_secs"></a></a></h2>
+<p>Return the grace period in seconds if configured (i.e. shadow mode), or none otherwise.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_grace_period_secs">grace_period_secs</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_grace_period_secs">grace_period_secs</a>(): Option&lt;u64&gt; <b>acquires</b> <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ChunkyDKGConfig">ChunkyDKGConfig</a> {
+    <b>if</b> (<b>exists</b>&lt;<a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ChunkyDKGConfig">ChunkyDKGConfig</a>&gt;(@aptos_framework)) {
+        <b>let</b> config = <b>borrow_global</b>&lt;<a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ChunkyDKGConfig">ChunkyDKGConfig</a>&gt;(@aptos_framework);
+        <b>let</b> variant_type_name = *config.variant.type_name().bytes();
+        <b>if</b> (variant_type_name == b"<a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ConfigShadowV1">0x1::chunky_dkg_config::ConfigShadowV1</a>") {
+            <b>let</b> shadow_v1 = <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_unpack">copyable_any::unpack</a>&lt;<a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ConfigShadowV1">ConfigShadowV1</a>&gt;(config.variant);
+            <b>return</b> std::option::some(shadow_v1.grace_period_secs)
+        }
+    };
+    <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()
+}
+</code></pre>
+</details>
 <h2 id="function-current"><a class="header" href="#function-current">Function <code>current</code> <a id="0x1_chunky_dkg_config_current"></a></a></h2>
 <p>Get the currently effective chunky DKG configuration object.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_current">current</a>(): <a href="chunky_dkg_config.html#0x1_chunky_dkg_config_ChunkyDKGConfig">chunky_dkg_config::ChunkyDKGConfig</a>
@@ -354,7 +422,7 @@ The feature works if and only if <code><a href="consensus_config.html#0x1_consen
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../aptos-framework/code.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../aptos-framework/chunky_dkg_config_seqnum.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -368,7 +436,7 @@ The feature works if and only if <code><a href="consensus_config.html#0x1_consen
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../aptos-framework/code.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../aptos-framework/chunky_dkg_config_seqnum.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
