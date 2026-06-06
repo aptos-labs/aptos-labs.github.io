@@ -2710,7 +2710,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
     self), key)));
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) + 1 == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self);
-<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, <b>old</b>(self), key);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, key);
 </code></pre>
 <h3 id="function-remove-1"><a class="header" href="#function-remove-1">Function <code>remove</code> <a id="@Specification_1_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_remove">remove</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K): V
@@ -2721,16 +2721,16 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), key) == result;
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) + 1;
-<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, <b>old</b>(self), key);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, key);
 </code></pre>
 <p><a id="0x1_big_ordered_map_spec_unchanged_except_at"></a></p>
 <pre><code><b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>&lt;K: drop + <b>copy</b> + store, V: store&gt;(
-   new_map: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, old_map: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, key: &K
+   self: &<b>mut</b> <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, key: &K
 ): bool {
    (<b>forall</b> k: K <b>where</b> k != key:
-       <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(new_map, k) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(old_map, k))
-   && (<b>forall</b> k: K <b>where</b> k != key && <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(old_map, k):
-       <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(new_map, k) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(old_map, k))
+       <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k))
+   && (<b>forall</b> k: K <b>where</b> k != key && <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k):
+       <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(self, k) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k))
 }
 </code></pre>
 <h3 id="function-remove_or_none-1"><a class="header" href="#function-remove_or_none-1">Function <code>remove_or_none</code> <a id="@Specification_1_remove_or_none"></a></a></h3>
@@ -2749,7 +2749,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
     <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result)
     && <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self))
 );
-<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, <b>old</b>(self), key);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, key);
 </code></pre>
 <h3 id="function-add_all-1"><a class="header" href="#function-add_all-1">Function <code>add_all</code> <a id="@Specification_1_add_all"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_add_all">add_all</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
@@ -2766,7 +2766,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <b>ensures</b> result_2 == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), result_1);
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) - 1;
-<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, <b>old</b>(self), result_1);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, result_1);
 <b>ensures</b> <b>forall</b> k: K <b>where</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) && k != result_1:
     std::cmp::compare(result_1, k) == std::cmp::Ordering::Less;
 </code></pre>
@@ -2779,7 +2779,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <b>ensures</b> result_2 == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), result_1);
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) - 1;
-<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, <b>old</b>(self), result_1);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, result_1);
 <b>ensures</b> <b>forall</b> k: K <b>where</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) && k != result_1:
     std::cmp::compare(result_1, k) == std::cmp::Ordering::Greater;
 </code></pre>
@@ -2989,7 +2989,7 @@ std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
 <b>aborts_if</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, self.key);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(map) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(map));
-<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(map, <b>old</b>(map), self.key);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(map, self.key);
 </code></pre>
 <h3 id="function-iter_remove-1"><a class="header" href="#function-iter_remove-1">Function <code>iter_remove</code> <a id="@Specification_1_iter_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_remove">iter_remove</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: <a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtrWithPath">big_ordered_map::IteratorPtrWithPath</a>&lt;K&gt;, map: &<b>mut</b> <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): V
@@ -3000,7 +3000,7 @@ std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
 <b>ensures</b> result == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(map), self.iterator.key);
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, self.iterator.key);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(map) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(map)) - 1;
-<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(map, <b>old</b>(map), self.iterator.key);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(map, self.iterator.key);
 </code></pre>
 <h3 id="function-iter_next-1"><a class="header" href="#function-iter_next-1">Function <code>iter_next</code> <a id="@Specification_1_iter_next"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_next">iter_next</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: <a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;, map: &<a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): <a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;
