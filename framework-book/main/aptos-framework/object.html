@@ -1637,8 +1637,7 @@ to determine the identity of the starting point of ownership.</p>
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
 <h3 id="function-address_to_object-1"><a class="header" href="#function-address_to_object-1">Function <code>address_to_object</code> <a id="@Specification_1_address_to_object"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_address_to_object">address_to_object</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <b>address</b>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;
@@ -1651,7 +1650,6 @@ to determine the identity of the starting point of ownership.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_object_address">create_object_address</a>(source: &<b>address</b>, seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <b>address</b>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> aborts_if_is_strict = <b>false</b>;
 <b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="object.html#0x1_object_spec_create_object_address">spec_create_object_address</a>(source, seed);
 </code></pre>
@@ -1662,13 +1660,13 @@ to determine the identity of the starting point of ownership.</p>
 <pre><code><b>fun</b> <a href="object.html#0x1_object_create_user_derived_object_address_impl">create_user_derived_object_address_impl</a>(source: <b>address</b>, derive_from: <b>address</b>): <b>address</b>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="object.html#0x1_object_spec_create_user_derived_object_address_impl">spec_create_user_derived_object_address_impl</a>(source, derive_from);
 </code></pre>
 <h3 id="function-create_user_derived_object_address-1"><a class="header" href="#function-create_user_derived_object_address-1">Function <code>create_user_derived_object_address</code> <a id="@Specification_1_create_user_derived_object_address"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_user_derived_object_address">create_user_derived_object_address</a>(source: <b>address</b>, derive_from: <b>address</b>): <b>address</b>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> aborts_if_is_strict = <b>false</b>;
 <b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="object.html#0x1_object_spec_create_user_derived_object_address">spec_create_user_derived_object_address</a>(source, derive_from);
 </code></pre>
@@ -1676,7 +1674,6 @@ to determine the identity of the starting point of ownership.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_guid_object_address">create_guid_object_address</a>(source: <b>address</b>, creation_num: u64): <b>address</b>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> aborts_if_is_strict = <b>false</b>;
 <b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="object.html#0x1_object_spec_create_guid_object_address">spec_create_guid_object_address</a>(source, creation_num);
 </code></pre>
@@ -1684,7 +1681,8 @@ to determine the identity of the starting point of ownership.</p>
 <pre><code><b>fun</b> <a href="object.html#0x1_object_exists_at">exists_at</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <b>address</b>): bool
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>ensures</b> [abstract] result == <a href="object.html#0x1_object_spec_exists_at">spec_exists_at</a>&lt;T&gt;(<a href="object.html#0x1_object">object</a>);
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="object.html#0x1_object_spec_exists_at">spec_exists_at</a>&lt;T&gt;(<a href="object.html#0x1_object">object</a>);
 </code></pre>
 <h3 id="function-object_address-1"><a class="header" href="#function-object_address-1">Function <code>object_address</code> <a id="@Specification_1_object_address"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_object_address">object_address</a>&lt;T: key&gt;(self: &<a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <b>address</b>
@@ -1799,12 +1797,20 @@ to determine the identity of the starting point of ownership.</p>
 <pre><code>#[deprecated]
 <b>public</b> <b>fun</b> <a href="object.html#0x1_object_create_object_from_account">create_object_from_account</a>(creator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator));
-<b>let</b> object_data = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator));
-<b>aborts_if</b> object_data.guid_creation_num + 1 &gt; MAX_U64;
-<b>aborts_if</b> object_data.guid_creation_num + 1 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">account::MAX_GUID_CREATION_NUM</a>;
-<b>let</b> creation_num = object_data.guid_creation_num;
-<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(creator);
+<b>let</b> account_exists_pre = <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr);
+<b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>aborts_if</b> !account_exists_pre && !feature_on;
+<b>aborts_if</b> !account_exists_pre && feature_on
+    && (addr == @vm_reserved || addr == @aptos_framework || addr == @aptos_token);
+<b>aborts_if</b> !account_exists_pre && feature_on
+    && len(<a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(addr)) != 32;
+<b>let</b> creation_num = <b>if</b> (account_exists_pre) {
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr).guid_creation_num
+} <b>else</b> {
+    2
+};
+<b>aborts_if</b> creation_num + 1 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">account::MAX_GUID_CREATION_NUM</a>;
 <b>let</b> <a href="guid.html#0x1_guid">guid</a> = <a href="guid.html#0x1_guid_GUID">guid::GUID</a> {
     id: <a href="guid.html#0x1_guid_ID">guid::ID</a> {
         creation_num,
@@ -1817,9 +1823,8 @@ to determine the identity of the starting point of ownership.</p>
 <b>let</b> obj_addr = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<b>address</b>&gt;(hash_bytes);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(obj_addr);
 <b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(hash_bytes);
-<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr).guid_creation_num == <b>old</b>(
-    <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr)
-).guid_creation_num + 1;
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr).guid_creation_num == creation_num + 1;
 <b>ensures</b> <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(obj_addr);
 <b>ensures</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(obj_addr) == <a href="object.html#0x1_object_ObjectCore">ObjectCore</a> {
     guid_creation_num: <a href="object.html#0x1_object_INIT_GUID_CREATION_NUM">INIT_GUID_CREATION_NUM</a> + 1,

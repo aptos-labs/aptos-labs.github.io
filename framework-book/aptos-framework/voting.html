@@ -1415,7 +1415,8 @@ there are more yes votes than no. If either of these conditions is not met, this
 <h3 id="function-register-1"><a class="header" href="#function-register-1">Function <code>register</code> <a id="@Specification_1_register"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_register">register</a>&lt;ProposalType: store&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfPermissionedSigner">AbortsIfPermissionedSigner</a> { s: <a href="account.html#0x1_account">account</a> };
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr);
 <b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;ProposalType&gt;();
 <b>ensures</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr);

@@ -1175,7 +1175,8 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 <pre><code><b>public</b> <b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_create_permissioned_handle">create_permissioned_handle</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="permissioned_signer.html#0x1_permissioned_signer_PermissionedHandle">permissioned_signer::PermissionedHandle</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>aborts_if</b> [abstract] <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(master);
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(master);
 <b>let</b> permissions_storage_addr = <a href="transaction_context.html#0x1_transaction_context_spec_generate_unique_address">transaction_context::spec_generate_unique_address</a>();
 <b>modifies</b> <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(permissions_storage_addr);
 <b>let</b> master_account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(master);
@@ -1191,8 +1192,8 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 <pre><code><b>public</b> <b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_is_permissioned_signer">is_permissioned_signer</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): bool
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>aborts_if</b> [abstract] <b>false</b>;
-<b>ensures</b> [abstract] result == <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s);
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s);
 </code></pre>
 <p><a id="0x1_permissioned_signer_spec_permission_address"></a></p>
 <pre><code><b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <b>address</b>;
@@ -1204,7 +1205,8 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_create_storable_permissioned_handle">create_storable_permissioned_handle</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, expiration_time: u64): <a href="permissioned_signer.html#0x1_permissioned_signer_StorablePermissionedHandle">permissioned_signer::StorablePermissionedHandle</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>aborts_if</b> [abstract] <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(master);
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(master);
 <b>let</b> permissions_storage_addr = <a href="transaction_context.html#0x1_transaction_context_spec_generate_unique_address">transaction_context::spec_generate_unique_address</a>();
 <b>modifies</b> <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(permissions_storage_addr);
 <b>let</b> master_account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(master);
@@ -1242,6 +1244,26 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>modifies</b> <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s));
+<b>aborts_if</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+    && !<b>exists</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s));
+<b>let</b> addr = <a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s);
+<b>let</b> pre_perms = <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(addr).perms;
+<b>let</b> key = aptos_std::copyable_any::Any {
+    type_name: <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;PermKey&gt;(),
+    data: <a href="../move-stdlib/bcs.html#0x1_bcs_serialize">bcs::serialize</a>(perm)
+};
+<b>let</b> pre_has = <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">big_ordered_map::spec_contains_key</a>(pre_perms, key);
+<b>let</b> pre_stored = <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">big_ordered_map::spec_get</a>(pre_perms, key);
+<b>ensures</b> [concrete] !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) ==&gt; result == <b>true</b>;
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) && !pre_has) ==&gt; result == <b>false</b>;
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+        && pre_has
+        && (pre_stored is StoredPermission::Unlimited))
+    ==&gt; result == <b>true</b>;
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+        && pre_has
+        && !(pre_stored is StoredPermission::Unlimited))
+    ==&gt; (result == (pre_stored.0 &gt;= 1));
 <b>ensures</b> [abstract] result == <a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">spec_check_permission_exists</a>(s, perm);
 </code></pre>
 <p><a id="0x1_permissioned_signer_spec_check_permission_exists"></a></p>
@@ -1262,8 +1284,27 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_consume">check_permission_consume</a>&lt;PermKey: <b>copy</b>, drop, store&gt;(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, threshold: u256, perm: PermKey): bool
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>let</b> permissioned_signer_addr = <a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s);
 <b>modifies</b> <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s));
+<b>aborts_if</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+    && !<b>exists</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s));
+<b>let</b> addr = <a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s);
+<b>let</b> pre_perms = <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(addr).perms;
+<b>let</b> key = aptos_std::copyable_any::Any {
+    type_name: <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;PermKey&gt;(),
+    data: <a href="../move-stdlib/bcs.html#0x1_bcs_serialize">bcs::serialize</a>(perm)
+};
+<b>let</b> pre_has = <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">big_ordered_map::spec_contains_key</a>(pre_perms, key);
+<b>let</b> pre_stored = <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">big_ordered_map::spec_get</a>(pre_perms, key);
+<b>ensures</b> [concrete] !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) ==&gt; result == <b>true</b>;
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) && !pre_has) ==&gt; result == <b>false</b>;
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+        && pre_has
+        && (pre_stored is StoredPermission::Unlimited))
+    ==&gt; result == <b>true</b>;
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+        && pre_has
+        && !(pre_stored is StoredPermission::Unlimited))
+    ==&gt; (result == (pre_stored.0 &gt;= threshold));
 <b>ensures</b> [abstract] result == <a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_consume">spec_check_permission_consume</a>(s, threshold, perm);
 </code></pre>
 <p><a id="0x1_permissioned_signer_spec_check_permission_consume"></a></p>
@@ -1273,8 +1314,29 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_capacity">capacity</a>&lt;PermKey: <b>copy</b>, drop, store&gt;(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, perm: PermKey): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u256&gt;
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>let</b> permissioned_signer_addr = <a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s);
 <b>modifies</b> <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s));
+<b>aborts_if</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+    && !<b>exists</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s));
+<b>let</b> addr = <a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">spec_permission_address</a>(s);
+<b>let</b> pre_perms = <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(addr).perms;
+<b>let</b> key = aptos_std::copyable_any::Any {
+    type_name: <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;PermKey&gt;(),
+    data: <a href="../move-stdlib/bcs.html#0x1_bcs_serialize">bcs::serialize</a>(perm)
+};
+<b>let</b> pre_has = <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">big_ordered_map::spec_contains_key</a>(pre_perms, key);
+<b>let</b> pre_stored = <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">big_ordered_map::spec_get</a>(pre_perms, key);
+<b>ensures</b> [concrete] !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) ==&gt;
+    result == std::option::spec_some(MAX_U256);
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) && !pre_has) ==&gt;
+    result == std::option::spec_none&lt;u256&gt;();
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+        && pre_has
+        && (pre_stored is StoredPermission::Unlimited))
+    ==&gt; result == std::option::spec_some(MAX_U256);
+<b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
+        && pre_has
+        && !(pre_stored is StoredPermission::Unlimited))
+    ==&gt; result == std::option::spec_some(pre_stored.0);
 <b>ensures</b> [abstract] result == <a href="permissioned_signer.html#0x1_permissioned_signer_spec_capacity">spec_capacity</a>(s, perm);
 </code></pre>
 <p><a id="0x1_permissioned_signer_spec_capacity"></a></p>
@@ -1284,6 +1346,7 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 <pre><code><b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_is_permissioned_signer_impl">is_permissioned_signer_impl</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): bool
 </code></pre>
 <pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer_impl">spec_is_permissioned_signer_impl</a>(s);
 </code></pre>
 <p><a id="0x1_permissioned_signer_spec_is_permissioned_signer"></a></p>

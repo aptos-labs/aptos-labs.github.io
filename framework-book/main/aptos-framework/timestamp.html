@@ -181,7 +181,10 @@ It interacts with the other modules in the following ways:</p>
 <ul>
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_set_time_has_started">Function <code>set_time_has_started</code></a></li>
 <li><a href="#@Specification_1_update_global_time">Function <code>update_global_time</code></a></li>
+<li><a href="#@Specification_1_now_microseconds">Function <code>now_microseconds</code></a></li>
+<li><a href="#@Specification_1_now_seconds">Function <code>now_seconds</code></a></li>
 </ul>
 </li>
 </ul>
@@ -318,12 +321,25 @@ It interacts with the other modules in the following ways:</p>
 <pre><code>// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a> and <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
 <b>invariant</b> [suspendable] <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt; <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 </code></pre>
+<h3 id="function-set_time_has_started-1"><a class="header" href="#function-set_time_has_started-1">Function <code>set_time_has_started</code> <a id="@Specification_1_set_time_has_started"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="timestamp.html#0x1_timestamp_set_time_has_started">set_time_has_started</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>aborts_if</b> std::signer::address_of(aptos_framework) != @aptos_framework;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>ensures</b> <a href="timestamp.html#0x1_timestamp_spec_now_microseconds">spec_now_microseconds</a>() == 0;
+</code></pre>
 <h3 id="function-update_global_time-1"><a class="header" href="#function-update_global_time-1">Function <code>update_global_time</code> <a id="@Specification_1_update_global_time"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="timestamp.html#0x1_timestamp_update_global_time">update_global_time</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, proposer: <b>address</b>, <a href="timestamp.html#0x1_timestamp">timestamp</a>: u64)
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<pre><code><b>pragma</b> opaque;
+<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>modifies</b> <b>global</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 <b>include</b> <a href="timestamp.html#0x1_timestamp_UpdateGlobalTimeAbortsIf">UpdateGlobalTimeAbortsIf</a>;
 <b>ensures</b> (proposer != @vm_reserved) ==&gt; (<a href="timestamp.html#0x1_timestamp_spec_now_microseconds">spec_now_microseconds</a>() == <a href="timestamp.html#0x1_timestamp">timestamp</a>);
+<b>ensures</b> (proposer == @vm_reserved) ==&gt; (<a href="timestamp.html#0x1_timestamp_spec_now_microseconds">spec_now_microseconds</a>() == <b>old</b>(<a href="timestamp.html#0x1_timestamp_spec_now_microseconds">spec_now_microseconds</a>()));
 </code></pre>
 <p><a id="0x1_timestamp_UpdateGlobalTimeAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="timestamp.html#0x1_timestamp_UpdateGlobalTimeAbortsIf">UpdateGlobalTimeAbortsIf</a> {
@@ -336,6 +352,22 @@ It interacts with the other modules in the following ways:</p>
     <b>aborts_if</b> (proposer == @vm_reserved) && (<a href="timestamp.html#0x1_timestamp_spec_now_microseconds">spec_now_microseconds</a>() != <a href="timestamp.html#0x1_timestamp">timestamp</a>);
     <b>aborts_if</b> (proposer != @vm_reserved) && (<a href="timestamp.html#0x1_timestamp_spec_now_microseconds">spec_now_microseconds</a>() &gt;= <a href="timestamp.html#0x1_timestamp">timestamp</a>);
 }
+</code></pre>
+<h3 id="function-now_microseconds-1"><a class="header" href="#function-now_microseconds-1">Function <code>now_microseconds</code> <a id="@Specification_1_now_microseconds"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="timestamp.html#0x1_timestamp_now_microseconds">now_microseconds</a>(): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>ensures</b> result == <a href="timestamp.html#0x1_timestamp_spec_now_microseconds">spec_now_microseconds</a>();
+</code></pre>
+<h3 id="function-now_seconds-1"><a class="header" href="#function-now_seconds-1">Function <code>now_seconds</code> <a id="@Specification_1_now_seconds"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="timestamp.html#0x1_timestamp_now_seconds">now_seconds</a>(): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>ensures</b> result == <a href="timestamp.html#0x1_timestamp_spec_now_seconds">spec_now_seconds</a>();
 </code></pre>
 <p><a id="0x1_timestamp_spec_now_microseconds"></a></p>
 <pre><code><b>fun</b> <a href="timestamp.html#0x1_timestamp_spec_now_microseconds">spec_now_microseconds</a>(): u64 {

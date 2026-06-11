@@ -180,8 +180,12 @@ reconfiguration is finalized unconditionally (regardless of DKG state) once
 <li><a href="#0x1_epoch_timeout_config_force_end_grace_period_secs">Function <code>force_end_grace_period_secs</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_1_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#@Specification_1_new_disabled">Function <code>new_disabled</code></a></li>
 <li><a href="#@Specification_1_new_with_grace_period">Function <code>new_with_grace_period</code></a></li>
+<li><a href="#@Specification_1_force_end_grace_period_secs">Function <code>force_end_grace_period_secs</code></a></li>
 </ul>
 </li>
 </ul>
@@ -303,17 +307,50 @@ the watchdog force-finalizes the reconfig. Aborts on <code>grace_period_secs
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_InitializeResource">config_buffer::InitializeResource</a>&lt;<a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a>&gt; {
+    config: <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a> { force_end_grace_period_secs: std::option::spec_none() }
+};
+</code></pre>
+<h3 id="function-set_for_next_epoch-1"><a class="header" href="#function-set_for_next_epoch-1">Function <code>set_for_next_epoch</code> <a id="@Specification_1_set_for_next_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_set_for_next_epoch">set_for_next_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_config: <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">epoch_timeout_config::EpochTimeoutConfig</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpoch">config_buffer::SetForNextEpoch</a>&lt;<a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a>&gt;;
+</code></pre>
 <h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>requires</b> @aptos_framework == std::signer::address_of(framework);
-<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochRequirement">config_buffer::OnNewEpochRequirement</a>&lt;<a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a>&gt;;
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a>&gt;;
+</code></pre>
+<h3 id="function-new_disabled-1"><a class="header" href="#function-new_disabled-1">Function <code>new_disabled</code> <a id="@Specification_1_new_disabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_new_disabled">new_disabled</a>(): <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">epoch_timeout_config::EpochTimeoutConfig</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a> { force_end_grace_period_secs: std::option::spec_none() };
 </code></pre>
 <h3 id="function-new_with_grace_period-1"><a class="header" href="#function-new_with_grace_period-1">Function <code>new_with_grace_period</code> <a id="@Specification_1_new_with_grace_period"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_new_with_grace_period">new_with_grace_period</a>(grace_period_secs: u64): <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">epoch_timeout_config::EpochTimeoutConfig</a>
 </code></pre>
-<pre><code><b>aborts_if</b> grace_period_secs == 0;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> grace_period_secs == 0;
+<b>ensures</b> result == <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a> {
+    force_end_grace_period_secs: std::option::spec_some(grace_period_secs)
+};
+</code></pre>
+<h3 id="function-force_end_grace_period_secs-1"><a class="header" href="#function-force_end_grace_period_secs-1">Function <code>force_end_grace_period_secs</code> <a id="@Specification_1_force_end_grace_period_secs"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="epoch_timeout_config.html#0x1_epoch_timeout_config_force_end_grace_period_secs">force_end_grace_period_secs</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <b>exists</b>&lt;<a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a>&gt;(@aptos_framework) ==&gt;
+    result == <b>global</b>&lt;<a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a>&gt;(@aptos_framework).force_end_grace_period_secs;
+<b>ensures</b> !<b>exists</b>&lt;<a href="epoch_timeout_config.html#0x1_epoch_timeout_config_EpochTimeoutConfig">EpochTimeoutConfig</a>&gt;(@aptos_framework) ==&gt;
+    result == std::option::spec_none&lt;u64&gt;();
 </code></pre>
 
                     </main>

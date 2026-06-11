@@ -213,6 +213,7 @@
 <li><a href="#@Specification_1_get_script_hash">Function <code>get_script_hash</code></a></li>
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_generate_auid">Function <code>generate_auid</code></a></li>
 <li><a href="#@Specification_1_auid_address">Function <code>auid_address</code></a></li>
 <li><a href="#@Specification_1_sender_internal">Function <code>sender_internal</code></a></li>
 <li><a href="#@Specification_1_secondary_signers_internal">Function <code>secondary_signers_internal</code></a></li>
@@ -802,11 +803,20 @@ the monotonically increasing behavior.</p>
 <p><a id="0x1_transaction_context_spec_get_script_hash"></a></p>
 <pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_spec_get_script_hash">spec_get_script_hash</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
 </code></pre>
+<h3 id="function-generate_auid-1"><a class="header" href="#function-generate_auid-1">Function <code>generate_auid</code> <a id="@Specification_1_generate_auid"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_generate_auid">generate_auid</a>(): <a href="transaction_context.html#0x1_transaction_context_AUID">transaction_context::AUID</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result.unique_address == <a href="transaction_context.html#0x1_transaction_context_spec_generate_unique_address">spec_generate_unique_address</a>();
+</code></pre>
 <h3 id="function-auid_address-1"><a class="header" href="#function-auid_address-1">Function <code>auid_address</code> <a id="@Specification_1_auid_address"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_auid_address">auid_address</a>(auid: &<a href="transaction_context.html#0x1_transaction_context_AUID">transaction_context::AUID</a>): <b>address</b>
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == auid.unique_address;
 </code></pre>
 <h3 id="function-sender_internal-1"><a class="header" href="#function-sender_internal-1">Function <code>sender_internal</code> <a id="@Specification_1_sender_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_sender_internal">sender_internal</a>(): <b>address</b>

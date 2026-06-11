@@ -171,7 +171,14 @@
 <li><a href="#0x1_randomness_api_v0_config_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
 <li><a href="#0x1_randomness_api_v0_config_set_allow_max_gas_flag_for_next_epoch">Function <code>set_allow_max_gas_flag_for_next_epoch</code></a></li>
 <li><a href="#0x1_randomness_api_v0_config_on_new_epoch">Function <code>on_new_epoch</code></a></li>
-<li><a href="#@Specification_0">Specification</a></li>
+<li><a href="#@Specification_0">Specification</a>
+<ul>
+<li><a href="#@Specification_0_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_0_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
+<li><a href="#@Specification_0_set_allow_max_gas_flag_for_next_epoch">Function <code>set_allow_max_gas_flag_for_next_epoch</code></a></li>
+<li><a href="#@Specification_0_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="chain_status.html#0x1_chain_status">0x1::chain_status</a>;
 <b>use</b> <a href="config_buffer.html#0x1_config_buffer">0x1::config_buffer</a>;
@@ -271,7 +278,41 @@
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_0"></a></a></h2>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_0_initialize"></a></a></h3>
+<pre><code><b>fun</b> <a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, required_amount: <a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_RequiredGasDeposit">randomness_api_v0_config::RequiredGasDeposit</a>, allow_custom_max_gas_flag: <a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_AllowCustomMaxGasFlag">randomness_api_v0_config::AllowCustomMaxGasFlag</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_RequiredGasDeposit">RequiredGasDeposit</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_AllowCustomMaxGasFlag">AllowCustomMaxGasFlag</a>&gt;(@aptos_framework);
+<b>aborts_if</b> aborts_of&lt;<a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>&gt;(framework);
+<b>aborts_if</b> aborts_of&lt;<a href="chain_status.html#0x1_chain_status_assert_genesis">chain_status::assert_genesis</a>&gt;();
+<b>aborts_if</b> <b>exists</b>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_RequiredGasDeposit">RequiredGasDeposit</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_AllowCustomMaxGasFlag">AllowCustomMaxGasFlag</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>global</b>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_RequiredGasDeposit">RequiredGasDeposit</a>&gt;(@aptos_framework) == required_amount;
+<b>ensures</b> <b>global</b>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_AllowCustomMaxGasFlag">AllowCustomMaxGasFlag</a>&gt;(@aptos_framework) == allow_custom_max_gas_flag;
+</code></pre>
+<h3 id="function-set_for_next_epoch-1"><a class="header" href="#function-set_for_next_epoch-1">Function <code>set_for_next_epoch</code> <a id="@Specification_0_set_for_next_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_set_for_next_epoch">set_for_next_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, gas_amount: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpoch">config_buffer::SetForNextEpoch</a>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_RequiredGasDeposit">RequiredGasDeposit</a>&gt; {
+    new_config: <a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_RequiredGasDeposit">RequiredGasDeposit</a> { gas_amount }
+};
+</code></pre>
+<h3 id="function-set_allow_max_gas_flag_for_next_epoch-1"><a class="header" href="#function-set_allow_max_gas_flag_for_next_epoch-1">Function <code>set_allow_max_gas_flag_for_next_epoch</code> <a id="@Specification_0_set_allow_max_gas_flag_for_next_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_set_allow_max_gas_flag_for_next_epoch">set_allow_max_gas_flag_for_next_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, value: bool)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpoch">config_buffer::SetForNextEpoch</a>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_AllowCustomMaxGasFlag">AllowCustomMaxGasFlag</a>&gt; {
+    new_config: <a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_AllowCustomMaxGasFlag">AllowCustomMaxGasFlag</a> { value }
+};
+</code></pre>
+<h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_0_on_new_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_RequiredGasDeposit">RequiredGasDeposit</a>&gt;;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="randomness_api_v0_config.html#0x1_randomness_api_v0_config_AllowCustomMaxGasFlag">AllowCustomMaxGasFlag</a>&gt;;
 </code></pre>
 
                     </main>
