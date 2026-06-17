@@ -1,0 +1,464 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>trading_native_capability - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-experimental/trading_native_capability.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x7trading_native_capability"><a class="header" href="#module-0x7trading_native_capability">Module <code>0x7::trading_native_capability</code> <a id="0x7_trading_native_capability"></a></a></h1>
+<p>Authorization layer for native-trading stores: the
+<code><a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a></code> token that gates writes and the
+<code><a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a></code> (at <code>@aptos_experimental</code>) that decides who can mint one.
+Governance <code>register</code>s / <code>deny</code>s exchanges; an exchange mints a cap
+per tx via <code>get_capability</code>.</p>
+<ul>
+<li><a href="#0x7_trading_native_capability_Empty">Struct <code>Empty</code></a></li>
+<li><a href="#0x7_trading_native_capability_TradingNativeCapability">Struct <code>TradingNativeCapability</code></a></li>
+<li><a href="#0x7_trading_native_capability_ExchangeRegistry">Enum Resource <code>ExchangeRegistry</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
+<li><a href="#0x7_trading_native_capability_init_module">Function <code>init_module</code></a></li>
+<li><a href="#0x7_trading_native_capability_is_denied">Function <code>is_denied</code></a></li>
+<li><a href="#0x7_trading_native_capability_register">Function <code>register</code></a></li>
+<li><a href="#0x7_trading_native_capability_assert_active">Function <code>assert_active</code></a></li>
+<li><a href="#0x7_trading_native_capability_get_capability">Function <code>get_capability</code></a></li>
+<li><a href="#0x7_trading_native_capability_assert_valid">Function <code>assert_valid</code></a></li>
+<li><a href="#0x7_trading_native_capability_deny">Function <code>deny</code></a></li>
+<li><a href="#0x7_trading_native_capability_reenable">Function <code>reenable</code></a></li>
+<li><a href="#0x7_trading_native_capability_exchange">Function <code>exchange</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map">0x1::big_ordered_map</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="../aptos-framework/system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
+</code></pre>
+<h2 id="struct-empty"><a class="header" href="#struct-empty">Struct <code>Empty</code> <a id="0x7_trading_native_capability_Empty"></a></a></h2>
+<p>Zero-sized value type for the <code>BigOrderedMap</code> sets (satisfies the
+map's constant-serialized-size requirement).</p>
+<pre><code><b>struct</b> <a href="trading_native_capability.html#0x7_trading_native_capability_Empty">Empty</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>dummy_field: bool</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-tradingnativecapability"><a class="header" href="#struct-tradingnativecapability">Struct <code>TradingNativeCapability</code> <a id="0x7_trading_native_capability_TradingNativeCapability"></a></a></h2>
+<p><code>store</code> so the exchange can hold it across transactions; not
+<code><b>copy</b></code>, so it can't be duplicated. Validity (registered, not
+denied, flag enabled) is re-checked on every write via
+<code>assert_valid</code>, so a stored cap stops working as soon as
+governance denies the exchange.</p>
+<pre><code><b>struct</b> <a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>exchange: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="enum-resource-exchangeregistry"><a class="header" href="#enum-resource-exchangeregistry">Enum Resource <code>ExchangeRegistry</code> <a id="0x7_trading_native_capability_ExchangeRegistry"></a></a></h2>
+<p>Registered exchanges and the governance deny-list, at
+<code>@aptos_experimental</code>. <code>BigOrderedMap</code> keeps each entry in its own slot
+so writes to distinct addresses don't contend under block-STM.</p>
+<pre><code>enum <a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>registered: <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;<b>address</b>, <a href="trading_native_capability.html#0x7_trading_native_capability_Empty">trading_native_capability::Empty</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>denied: <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;<b>address</b>, <a href="trading_native_capability.html#0x7_trading_native_capability_Empty">trading_native_capability::Empty</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x7_trading_native_capability_EEXCHANGE_DENIED"></a></p>
+<p>This exchange address has been disabled by governance.</p>
+<pre><code><b>const</b> <a href="trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_DENIED">EEXCHANGE_DENIED</a>: u64 = 3;
+</code></pre>
+<p><a id="0x7_trading_native_capability_EEXCHANGE_NOT_REGISTERED"></a></p>
+<p>Exchange has not been registered yet.</p>
+<pre><code><b>const</b> <a href="trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_NOT_REGISTERED">EEXCHANGE_NOT_REGISTERED</a>: u64 = 2;
+</code></pre>
+<p><a id="0x7_trading_native_capability_EFEATURE_DISABLED"></a></p>
+<p>Feature <code>TRADING_NATIVE</code> is not enabled on this chain.</p>
+<pre><code><b>const</b> <a href="trading_native_capability.html#0x7_trading_native_capability_EFEATURE_DISABLED">EFEATURE_DISABLED</a>: u64 = 1;
+</code></pre>
+<p><a id="0x7_trading_native_capability_ENOT_DEPLOYER"></a></p>
+<p><code>init_module</code> was invoked with a signer other than <code>@aptos_experimental</code>.</p>
+<pre><code><b>const</b> <a href="trading_native_capability.html#0x7_trading_native_capability_ENOT_DEPLOYER">ENOT_DEPLOYER</a>: u64 = 4;
+</code></pre>
+<h2 id="function-init_module"><a class="header" href="#function-init_module">Function <code>init_module</code> <a id="0x7_trading_native_capability_init_module"></a></a></h2>
+<p>Initialize the <code><a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a></code> at <code>@aptos_experimental</code>. Invoked by
+vm-genesis (and on republish by the VM).</p>
+<pre><code><b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_init_module">init_module</a>(deployer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_init_module">init_module</a>(deployer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>assert</b>!(
+        <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(deployer) == @aptos_experimental,
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="trading_native_capability.html#0x7_trading_native_capability_ENOT_DEPLOYER">ENOT_DEPLOYER</a>),
+    );
+    <b>if</b> (!<b>exists</b>&lt;<a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental)) {
+        <b>move_to</b>(deployer, ExchangeRegistry::V1 {
+            registered: <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_new">big_ordered_map::new</a>(),
+            denied: <a href="../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_new">big_ordered_map::new</a>(),
+        });
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-is_denied"><a class="header" href="#function-is_denied">Function <code>is_denied</code> <a id="0x7_trading_native_capability_is_denied"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_is_denied">is_denied</a>(exchange: <b>address</b>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_is_denied">is_denied</a>(exchange: <b>address</b>): bool <b>acquires</b> <a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <b>let</b> registry = <b>borrow_global</b>&lt;<a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    registry.denied.contains(&exchange)
+}
+</code></pre>
+</details>
+<h2 id="function-register"><a class="header" href="#function-register">Function <code>register</code> <a id="0x7_trading_native_capability_register"></a></a></h2>
+<p>Governance-only: enroll an <code>exchange</code>. Idempotent.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_register">register</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_register">register</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>) <b>acquires</b> <a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <a href="../aptos-framework/system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
+    <b>assert</b>!(
+        <a href="../move-stdlib/features.html#0x1_features_is_trading_native_enabled">features::is_trading_native_enabled</a>(),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="trading_native_capability.html#0x7_trading_native_capability_EFEATURE_DISABLED">EFEATURE_DISABLED</a>),
+    );
+    <b>let</b> registry = <b>borrow_global_mut</b>&lt;<a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    <b>if</b> (!registry.registered.contains(&exchange)) {
+        registry.registered.add(exchange, <a href="trading_native_capability.html#0x7_trading_native_capability_Empty">Empty</a> {});
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-assert_active"><a class="header" href="#function-assert_active">Function <code>assert_active</code> <a id="0x7_trading_native_capability_assert_active"></a></a></h2>
+<p>Abort unless <code>addr</code> is currently allowed to write: <code>TRADING_NATIVE</code>
+enabled, registered, and not denied.</p>
+<pre><code><b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_assert_active">assert_active</a>(addr: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_assert_active">assert_active</a>(addr: <b>address</b>) <b>acquires</b> <a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <b>assert</b>!(
+        <a href="../move-stdlib/features.html#0x1_features_is_trading_native_enabled">features::is_trading_native_enabled</a>(),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="trading_native_capability.html#0x7_trading_native_capability_EFEATURE_DISABLED">EFEATURE_DISABLED</a>),
+    );
+    <b>let</b> registry = <b>borrow_global</b>&lt;<a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    <b>assert</b>!(
+        registry.registered.contains(&addr),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_NOT_REGISTERED">EEXCHANGE_NOT_REGISTERED</a>),
+    );
+    <b>assert</b>!(
+        !registry.denied.contains(&addr),
+        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_DENIED">EEXCHANGE_DENIED</a>),
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-get_capability"><a class="header" href="#function-get_capability">Function <code>get_capability</code> <a id="0x7_trading_native_capability_get_capability"></a></a></h2>
+<p>Mint a cap for a registered, non-denied exchange. The caller may
+store it; every write re-checks validity via <code>assert_valid</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_get_capability">get_capability</a>(exchange: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_get_capability">get_capability</a>(exchange: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a>
+<b>acquires</b> <a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(exchange);
+    <a href="trading_native_capability.html#0x7_trading_native_capability_assert_active">assert_active</a>(addr);
+    <a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a> { exchange: addr }
+}
+</code></pre>
+</details>
+<h2 id="function-assert_valid"><a class="header" href="#function-assert_valid">Function <code>assert_valid</code> <a id="0x7_trading_native_capability_assert_valid"></a></a></h2>
+<p>Abort unless <code>cap</code>'s exchange is still allowed to write. Called on
+every native-position write so a stored cap is invalidated the
+moment governance denies the exchange (or the flag is turned off).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_assert_valid">assert_valid</a>(cap: &<a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_assert_valid">assert_valid</a>(cap: &<a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a>) <b>acquires</b> <a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <a href="trading_native_capability.html#0x7_trading_native_capability_assert_active">assert_active</a>(cap.exchange);
+}
+</code></pre>
+</details>
+<h2 id="function-deny"><a class="header" href="#function-deny">Function <code>deny</code> <a id="0x7_trading_native_capability_deny"></a></a></h2>
+<p>Governance-only: lock an <code>exchange</code> out (persisted state
+untouched). Deliberately does not check <code>TRADING_NATIVE</code> —
+governance must be able to lock out even with the flag off.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_deny">deny</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_deny">deny</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>) <b>acquires</b> <a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <a href="../aptos-framework/system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
+    <b>let</b> registry = <b>borrow_global_mut</b>&lt;<a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    <b>if</b> (!registry.denied.contains(&exchange)) {
+        registry.denied.add(exchange, <a href="trading_native_capability.html#0x7_trading_native_capability_Empty">Empty</a> {});
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-reenable"><a class="header" href="#function-reenable">Function <code>reenable</code> <a id="0x7_trading_native_capability_reenable"></a></a></h2>
+<p>Governance-only: clear a <code>deny</code>. Like <code>deny</code>, does not check
+<code>TRADING_NATIVE</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_reenable">reenable</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_reenable">reenable</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>) <b>acquires</b> <a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <a href="../aptos-framework/system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
+    <b>let</b> registry = <b>borrow_global_mut</b>&lt;<a href="trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    <b>if</b> (registry.denied.contains(&exchange)) {
+        registry.denied.remove(&exchange);
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-exchange"><a class="header" href="#function-exchange">Function <code>exchange</code> <a id="0x7_trading_native_capability_exchange"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_exchange">exchange</a>(cap: &<a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="trading_native_capability.html#0x7_trading_native_capability_exchange">exchange</a>(cap: &<a href="trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a>): <b>address</b> {
+    cap.exchange
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-experimental/test_function_values.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-experimental/test_function_values.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

@@ -1328,6 +1328,14 @@ return true.</p>
 <li><a href="move-stdlib/features.html#0x1_features_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_get_multisig_timelock_feature">Function <code>get_multisig_timelock_feature</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_is_multisig_timelock_enabled">Function <code>is_multisig_timelock_enabled</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_get_trading_native_feature">Function <code>get_trading_native_feature</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_is_trading_native_enabled">Function <code>is_trading_native_enabled</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_get_native_position_feature">Function <code>get_native_position_feature</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_is_native_position_enabled">Function <code>is_native_position_enabled</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_get_native_orderbook_feature">Function <code>get_native_orderbook_feature</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_is_native_orderbook_enabled">Function <code>is_native_orderbook_enabled</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_get_native_collateral_feature">Function <code>get_native_collateral_feature</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_is_native_collateral_enabled">Function <code>is_native_collateral_enabled</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -1627,8 +1635,20 @@ This is needed because of the introduction of a new native function.
 Lifetime: transient</p>
 <pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_MULTI_ED25519_PK_VALIDATE_V2_NATIVES">MULTI_ED25519_PK_VALIDATE_V2_NATIVES</a>: u64 = 7;
 </code></pre>
+<p><a id="0x1_features_NATIVE_COLLATERAL"></a></p>
+<p>Gates native-collateral writes.</p>
+<pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>: u64 = 121;
+</code></pre>
 <p><a id="0x1_features_NATIVE_MEMORY_OPERATIONS"></a></p>
 <pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_NATIVE_MEMORY_OPERATIONS">NATIVE_MEMORY_OPERATIONS</a>: u64 = 80;
+</code></pre>
+<p><a id="0x1_features_NATIVE_ORDERBOOK"></a></p>
+<p>Gates native-orderbook writes.</p>
+<pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>: u64 = 120;
+</code></pre>
+<p><a id="0x1_features_NATIVE_POSITION"></a></p>
+<p>Gates native-position writes.</p>
+<pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>: u64 = 119;
 </code></pre>
 <p><a id="0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE"></a></p>
 <p>Whether new accounts default to the Fungible Asset store.
@@ -1701,6 +1721,11 @@ Lifetime: transient</p>
 <p>Whether struct constructors are enabled</p>
 <p>Lifetime: transient</p>
 <pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_STRUCT_CONSTRUCTORS">STRUCT_CONSTRUCTORS</a>: u64 = 15;
+</code></pre>
+<p><a id="0x1_features_TRADING_NATIVE"></a></p>
+<p>Umbrella auth flag for the native-trading subsystem; the per-store
+flags below gate the actual writes. Both must be on to write.</p>
+<pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>: u64 = 118;
 </code></pre>
 <p><a id="0x1_features_TRANSACTION_CONTEXT_EXTENSION"></a></p>
 <p>Whether the transaction context extension is enabled. This feature allows the module
@@ -3124,6 +3149,86 @@ Lifetime: transient</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_multisig_timelock_enabled">is_multisig_timelock_enabled</a>(): bool {
     <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_trading_native_feature"><a class="header" href="#function-get_trading_native_feature">Function <code>get_trading_native_feature</code> <a id="0x1_features_get_trading_native_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_trading_native_feature">get_trading_native_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_trading_native_feature">get_trading_native_feature</a>(): u64 {
+    <a href="move-stdlib/features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_trading_native_enabled"><a class="header" href="#function-is_trading_native_enabled">Function <code>is_trading_native_enabled</code> <a id="0x1_features_is_trading_native_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_trading_native_enabled">is_trading_native_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_trading_native_enabled">is_trading_native_enabled</a>(): bool {
+    <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_position_feature"><a class="header" href="#function-get_native_position_feature">Function <code>get_native_position_feature</code> <a id="0x1_features_get_native_position_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_native_position_feature">get_native_position_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_native_position_feature">get_native_position_feature</a>(): u64 {
+    <a href="move-stdlib/features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_position_enabled"><a class="header" href="#function-is_native_position_enabled">Function <code>is_native_position_enabled</code> <a id="0x1_features_is_native_position_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_native_position_enabled">is_native_position_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_native_position_enabled">is_native_position_enabled</a>(): bool {
+    <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_orderbook_feature"><a class="header" href="#function-get_native_orderbook_feature">Function <code>get_native_orderbook_feature</code> <a id="0x1_features_get_native_orderbook_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_native_orderbook_feature">get_native_orderbook_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_native_orderbook_feature">get_native_orderbook_feature</a>(): u64 {
+    <a href="move-stdlib/features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_orderbook_enabled"><a class="header" href="#function-is_native_orderbook_enabled">Function <code>is_native_orderbook_enabled</code> <a id="0x1_features_is_native_orderbook_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_native_orderbook_enabled">is_native_orderbook_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_native_orderbook_enabled">is_native_orderbook_enabled</a>(): bool {
+    <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_collateral_feature"><a class="header" href="#function-get_native_collateral_feature">Function <code>get_native_collateral_feature</code> <a id="0x1_features_get_native_collateral_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_native_collateral_feature">get_native_collateral_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_native_collateral_feature">get_native_collateral_feature</a>(): u64 {
+    <a href="move-stdlib/features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_collateral_enabled"><a class="header" href="#function-is_native_collateral_enabled">Function <code>is_native_collateral_enabled</code> <a id="0x1_features_is_native_collateral_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_native_collateral_enabled">is_native_collateral_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_native_collateral_enabled">is_native_collateral_enabled</a>(): bool {
+    <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>)
 }
 </code></pre>
 </details>
@@ -98151,6 +98256,8 @@ particular match operation.</p>
 <li><a href="aptos-experimental/market_bulk_order.html#0x7_market_bulk_order"><code>0x7::market_bulk_order</code></a></li>
 <li><a href="aptos-experimental/market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info"><code>0x7::market_clearinghouse_order_info</code></a></li>
 <li><a href="aptos-experimental/market_types.html#0x7_market_types"><code>0x7::market_types</code></a></li>
+<li><a href="aptos-experimental/native_position.html#0x7_native_position"><code>0x7::native_position</code></a></li>
+<li><a href="aptos-experimental/native_position_types.html#0x7_native_position_types"><code>0x7::native_position_types</code></a></li>
 <li><a href="aptos-experimental/order_book.html#0x7_order_book"><code>0x7::order_book</code></a></li>
 <li><a href="aptos-experimental/order_book_utils.html#0x7_order_book_utils"><code>0x7::order_book_utils</code></a></li>
 <li><a href="aptos-experimental/order_id_generation.html#0x7_order_id_generation"><code>0x7::order_id_generation</code></a></li>
@@ -98162,6 +98269,7 @@ particular match operation.</p>
 <li><a href="aptos-experimental/single_order_book.html#0x7_single_order_book"><code>0x7::single_order_book</code></a></li>
 <li><a href="aptos-experimental/test_derivable_account_abstraction_ed25519_hex.html#0x7_test_derivable_account_abstraction_ed25519_hex"><code>0x7::test_derivable_account_abstraction_ed25519_hex</code></a></li>
 <li><a href="aptos-experimental/test_function_values.html#0x7_test_function_values"><code>0x7::test_function_values</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability"><code>0x7::trading_native_capability</code></a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7benchmark_utils"><a class="header" href="#module-0x7benchmark_utils">Module <code>0x7::benchmark_utils</code> <a id="0x7_benchmark_utils"></a></a></h1>
 <ul>
@@ -103098,6 +103206,253 @@ call the <code>place_order_with_order_id</code> API to place the order with the 
 }
 </code></pre>
 </details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7native_position"><a class="header" href="#module-0x7native_position">Module <code>0x7::native_position</code> <a id="0x7_native_position"></a></a></h1>
+<p>Native perp position storage, keyed by <code>(exchange, market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>)</code>.
+Write API is <code>set_position</code> / <code>delete_position</code>, gated by a
+<code>TradingNativeCapability</code> (re-checked via <code>assert_valid</code> on every
+call). Native state is read only on the validator side (Rust), never
+from Move.</p>
+<ul>
+<li><a href="aptos-experimental/native_position.html#0x7_native_position_set_position">Function <code>set_position</code></a></li>
+<li><a href="aptos-experimental/native_position.html#0x7_native_position_delete_position">Function <code>delete_position</code></a></li>
+<li><a href="aptos-experimental/native_position.html#0x7_native_position_native_set_position">Function <code>native_set_position</code></a></li>
+<li><a href="aptos-experimental/native_position.html#0x7_native_position_native_delete_position">Function <code>native_delete_position</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types">0x7::native_position_types</a>;
+<b>use</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability">0x7::trading_native_capability</a>;
+</code></pre>
+<h2 id="function-set_position"><a class="header" href="#function-set_position">Function <code>set_position</code> <a id="0x7_native_position_set_position"></a></a></h2>
+<p>Set the position at <code>(exchange, market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>)</code>. <code>exchange</code> is
+derived from the cap; every call re-checks the cap via
+<code>assert_valid</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position.html#0x7_native_position_set_position">set_position</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>, market: <b>address</b>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, position: <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_Position">native_position_types::Position</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position.html#0x7_native_position_set_position">set_position</a>(
+    cap: &TradingNativeCapability,
+    market: <b>address</b>,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    position: Position,
+) {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">trading_native_capability::assert_valid</a>(cap);
+    <a href="aptos-experimental/native_position.html#0x7_native_position_native_set_position">native_set_position</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">trading_native_capability::exchange</a>(cap), market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>, position);
+}
+</code></pre>
+</details>
+<h2 id="function-delete_position"><a class="header" href="#function-delete_position">Function <code>delete_position</code> <a id="0x7_native_position_delete_position"></a></a></h2>
+<p>Delete the position at <code>(exchange, market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position.html#0x7_native_position_delete_position">delete_position</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>, market: <b>address</b>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position.html#0x7_native_position_delete_position">delete_position</a>(
+    cap: &TradingNativeCapability,
+    market: <b>address</b>,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+) {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">trading_native_capability::assert_valid</a>(cap);
+    <a href="aptos-experimental/native_position.html#0x7_native_position_native_delete_position">native_delete_position</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">trading_native_capability::exchange</a>(cap), market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>);
+}
+</code></pre>
+</details>
+<h2 id="function-native_set_position"><a class="header" href="#function-native_set_position">Function <code>native_set_position</code> <a id="0x7_native_position_native_set_position"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-experimental/native_position.html#0x7_native_position_native_set_position">native_set_position</a>(exchange: <b>address</b>, market: <b>address</b>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, position: <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_Position">native_position_types::Position</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-experimental/native_position.html#0x7_native_position_native_set_position">native_set_position</a>(
+    exchange: <b>address</b>,
+    market: <b>address</b>,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    position: Position,
+);
+</code></pre>
+</details>
+<h2 id="function-native_delete_position"><a class="header" href="#function-native_delete_position">Function <code>native_delete_position</code> <a id="0x7_native_position_native_delete_position"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-experimental/native_position.html#0x7_native_position_native_delete_position">native_delete_position</a>(exchange: <b>address</b>, market: <b>address</b>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-experimental/native_position.html#0x7_native_position_native_delete_position">native_delete_position</a>(
+    exchange: <b>address</b>,
+    market: <b>address</b>,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+);
+</code></pre>
+</details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7native_position_types"><a class="header" href="#module-0x7native_position_types">Module <code>0x7::native_position_types</code> <a id="0x7_native_position_types"></a></a></h1>
+<p>Types crossing the <code><a href="aptos-experimental/native_position.html#0x7_native_position">native_position</a></code> Move ↔ native boundary. Field
+order/widths here pin the BCS encoding the Rust <code>NativePosition</code>
+must match.</p>
+<ul>
+<li><a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">Struct <code>AccumulativeIndex</code></a></li>
+<li><a href="aptos-experimental/native_position_types.html#0x7_native_position_types_Position">Enum <code>Position</code></a></li>
+<li><a href="aptos-experimental/native_position_types.html#0x7_native_position_types_new_accumulative_index">Function <code>new_accumulative_index</code></a></li>
+<li><a href="aptos-experimental/native_position_types.html#0x7_native_position_types_accumulative_index_value">Function <code>accumulative_index_value</code></a></li>
+<li><a href="aptos-experimental/native_position_types.html#0x7_native_position_types_new_perp_v1">Function <code>new_perp_v1</code></a></li>
+<li><a href="aptos-experimental/native_position_types.html#0x7_native_position_types_unpack_perp_v1">Function <code>unpack_perp_v1</code></a></li>
+</ul>
+<pre><code></code></pre>
+<h2 id="struct-accumulativeindex"><a class="header" href="#struct-accumulativeindex">Struct <code>AccumulativeIndex</code> <a id="0x7_native_position_types_AccumulativeIndex"></a></a></h2>
+<p>Signed accumulative index (funding, premium, ...). Wrapping a raw
+<code>i128</code> avoids passing the wrong value where an index is expected.</p>
+<pre><code><b>struct</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">AccumulativeIndex</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>index: i128</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="enum-position"><a class="header" href="#enum-position">Enum <code>Position</code> <a id="0x7_native_position_types_Position"></a></a></h2>
+<p>All numeric fields are at producer-defined precision; the chain
+is precision-agnostic.</p>
+<pre><code>enum <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_Position">Position</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>PerpV1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_long: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>entry_px_times_size_sum: u128</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>avg_acquire_entry_px: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>user_leverage: u8</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_isolated: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>funding_index_at_last_update: <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">native_position_types::AccumulativeIndex</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>unrealized_funding_amount_before_last_update: i64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code><a href="aptos-experimental/../aptos-framework/timestamp.html#0x1_timestamp">timestamp</a>: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="function-new_accumulative_index"><a class="header" href="#function-new_accumulative_index">Function <code>new_accumulative_index</code> <a id="0x7_native_position_types_new_accumulative_index"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_new_accumulative_index">new_accumulative_index</a>(index: i128): <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">native_position_types::AccumulativeIndex</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_new_accumulative_index">new_accumulative_index</a>(index: i128): <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">AccumulativeIndex</a> {
+    <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">AccumulativeIndex</a> { index }
+}
+</code></pre>
+</details>
+<h2 id="function-accumulative_index_value"><a class="header" href="#function-accumulative_index_value">Function <code>accumulative_index_value</code> <a id="0x7_native_position_types_accumulative_index_value"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_accumulative_index_value">accumulative_index_value</a>(idx: &<a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">native_position_types::AccumulativeIndex</a>): i128
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_accumulative_index_value">accumulative_index_value</a>(idx: &<a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">AccumulativeIndex</a>): i128 {
+    idx.index
+}
+</code></pre>
+</details>
+<h2 id="function-new_perp_v1"><a class="header" href="#function-new_perp_v1">Function <code>new_perp_v1</code> <a id="0x7_native_position_types_new_perp_v1"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_new_perp_v1">new_perp_v1</a>(size: u64, is_long: bool, entry_px_times_size_sum: u128, avg_acquire_entry_px: u64, user_leverage: u8, is_isolated: bool, funding_index_at_last_update: <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">native_position_types::AccumulativeIndex</a>, unrealized_funding_amount_before_last_update: i64, <a href="aptos-experimental/../aptos-framework/timestamp.html#0x1_timestamp">timestamp</a>: u64): <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_Position">native_position_types::Position</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_new_perp_v1">new_perp_v1</a>(
+    size: u64,
+    is_long: bool,
+    entry_px_times_size_sum: u128,
+    avg_acquire_entry_px: u64,
+    user_leverage: u8,
+    is_isolated: bool,
+    funding_index_at_last_update: <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">AccumulativeIndex</a>,
+    unrealized_funding_amount_before_last_update: i64,
+    <a href="aptos-experimental/../aptos-framework/timestamp.html#0x1_timestamp">timestamp</a>: u64,
+): <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_Position">Position</a> {
+    Position::PerpV1 {
+        size,
+        is_long,
+        entry_px_times_size_sum,
+        avg_acquire_entry_px,
+        user_leverage,
+        is_isolated,
+        funding_index_at_last_update,
+        unrealized_funding_amount_before_last_update,
+        <a href="aptos-experimental/../aptos-framework/timestamp.html#0x1_timestamp">timestamp</a>,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-unpack_perp_v1"><a class="header" href="#function-unpack_perp_v1">Function <code>unpack_perp_v1</code> <a id="0x7_native_position_types_unpack_perp_v1"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_unpack_perp_v1">unpack_perp_v1</a>(pos: <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_Position">native_position_types::Position</a>): (u64, bool, u128, u64, u8, bool, <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">native_position_types::AccumulativeIndex</a>, i64, u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_unpack_perp_v1">unpack_perp_v1</a>(
+    pos: <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_Position">Position</a>,
+): (u64, bool, u128, u64, u8, bool, <a href="aptos-experimental/native_position_types.html#0x7_native_position_types_AccumulativeIndex">AccumulativeIndex</a>, i64, u64) {
+    <b>let</b> Position::PerpV1 {
+        size,
+        is_long,
+        entry_px_times_size_sum,
+        avg_acquire_entry_px,
+        user_leverage,
+        is_isolated,
+        funding_index_at_last_update,
+        unrealized_funding_amount_before_last_update,
+        <a href="aptos-experimental/../aptos-framework/timestamp.html#0x1_timestamp">timestamp</a>,
+    } = pos;
+    (
+        size,
+        is_long,
+        entry_px_times_size_sum,
+        avg_acquire_entry_px,
+        user_leverage,
+        is_isolated,
+        funding_index_at_last_update,
+        unrealized_funding_amount_before_last_update,
+        <a href="aptos-experimental/../aptos-framework/timestamp.html#0x1_timestamp">timestamp</a>,
+    )
+}
+</code></pre>
+</details>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7order_book"><a class="header" href="#module-0x7order_book">Module <code>0x7::order_book</code> <a id="0x7_order_book"></a></a></h1>
 <ul>
 <li><a href="aptos-experimental/order_book.html#0x7_order_book_OrderBook">Enum <code>OrderBook</code></a></li>
@@ -107189,6 +107544,256 @@ account_identity is raw public_key.</p>
 <summary>Implementation</summary>
 <pre><code><b>fun</b> <a href="aptos-experimental/test_function_values.html#0x7_test_function_values_transfer_and_create_account">transfer_and_create_account</a>(some_f: |u64|u64): u64 {
     some_f(3)
+}
+</code></pre>
+</details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7trading_native_capability"><a class="header" href="#module-0x7trading_native_capability">Module <code>0x7::trading_native_capability</code> <a id="0x7_trading_native_capability"></a></a></h1>
+<p>Authorization layer for native-trading stores: the
+<code><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a></code> token that gates writes and the
+<code><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a></code> (at <code>@aptos_experimental</code>) that decides who can mint one.
+Governance <code>register</code>s / <code>deny</code>s exchanges; an exchange mints a cap
+per tx via <code>get_capability</code>.</p>
+<ul>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_Empty">Struct <code>Empty</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">Struct <code>TradingNativeCapability</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">Enum Resource <code>ExchangeRegistry</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#@Constants_0">Constants</a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_init_module">Function <code>init_module</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_is_denied">Function <code>is_denied</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_register">Function <code>register</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_active">Function <code>assert_active</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_get_capability">Function <code>get_capability</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">Function <code>assert_valid</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_deny">Function <code>deny</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_reenable">Function <code>reenable</code></a></li>
+<li><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">Function <code>exchange</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="aptos-experimental/../aptos-framework/big_ordered_map.html#0x1_big_ordered_map">0x1::big_ordered_map</a>;
+<b>use</b> <a href="aptos-experimental/../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="aptos-experimental/../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="aptos-experimental/../aptos-framework/system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
+</code></pre>
+<h2 id="struct-empty"><a class="header" href="#struct-empty">Struct <code>Empty</code> <a id="0x7_trading_native_capability_Empty"></a></a></h2>
+<p>Zero-sized value type for the <code>BigOrderedMap</code> sets (satisfies the
+map's constant-serialized-size requirement).</p>
+<pre><code><b>struct</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_Empty">Empty</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>dummy_field: bool</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-tradingnativecapability"><a class="header" href="#struct-tradingnativecapability">Struct <code>TradingNativeCapability</code> <a id="0x7_trading_native_capability_TradingNativeCapability"></a></a></h2>
+<p><code>store</code> so the exchange can hold it across transactions; not
+<code><b>copy</b></code>, so it can't be duplicated. Validity (registered, not
+denied, flag enabled) is re-checked on every write via
+<code>assert_valid</code>, so a stored cap stops working as soon as
+governance denies the exchange.</p>
+<pre><code><b>struct</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>exchange: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="enum-resource-exchangeregistry"><a class="header" href="#enum-resource-exchangeregistry">Enum Resource <code>ExchangeRegistry</code> <a id="0x7_trading_native_capability_ExchangeRegistry"></a></a></h2>
+<p>Registered exchanges and the governance deny-list, at
+<code>@aptos_experimental</code>. <code>BigOrderedMap</code> keeps each entry in its own slot
+so writes to distinct addresses don't contend under block-STM.</p>
+<pre><code>enum <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>registered: <a href="aptos-experimental/../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;<b>address</b>, <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_Empty">trading_native_capability::Empty</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>denied: <a href="aptos-experimental/../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;<b>address</b>, <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_Empty">trading_native_capability::Empty</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="constants-150"><a class="header" href="#constants-150">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x7_trading_native_capability_EEXCHANGE_DENIED"></a></p>
+<p>This exchange address has been disabled by governance.</p>
+<pre><code><b>const</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_DENIED">EEXCHANGE_DENIED</a>: u64 = 3;
+</code></pre>
+<p><a id="0x7_trading_native_capability_EEXCHANGE_NOT_REGISTERED"></a></p>
+<p>Exchange has not been registered yet.</p>
+<pre><code><b>const</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_NOT_REGISTERED">EEXCHANGE_NOT_REGISTERED</a>: u64 = 2;
+</code></pre>
+<p><a id="0x7_trading_native_capability_EFEATURE_DISABLED"></a></p>
+<p>Feature <code>TRADING_NATIVE</code> is not enabled on this chain.</p>
+<pre><code><b>const</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EFEATURE_DISABLED">EFEATURE_DISABLED</a>: u64 = 1;
+</code></pre>
+<p><a id="0x7_trading_native_capability_ENOT_DEPLOYER"></a></p>
+<p><code>init_module</code> was invoked with a signer other than <code>@aptos_experimental</code>.</p>
+<pre><code><b>const</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ENOT_DEPLOYER">ENOT_DEPLOYER</a>: u64 = 4;
+</code></pre>
+<h2 id="function-init_module-1"><a class="header" href="#function-init_module-1">Function <code>init_module</code> <a id="0x7_trading_native_capability_init_module"></a></a></h2>
+<p>Initialize the <code><a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a></code> at <code>@aptos_experimental</code>. Invoked by
+vm-genesis (and on republish by the VM).</p>
+<pre><code><b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_init_module">init_module</a>(deployer: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_init_module">init_module</a>(deployer: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>assert</b>!(
+        <a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(deployer) == @aptos_experimental,
+        <a href="aptos-experimental/../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ENOT_DEPLOYER">ENOT_DEPLOYER</a>),
+    );
+    <b>if</b> (!<b>exists</b>&lt;<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental)) {
+        <b>move_to</b>(deployer, ExchangeRegistry::V1 {
+            registered: <a href="aptos-experimental/../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_new">big_ordered_map::new</a>(),
+            denied: <a href="aptos-experimental/../aptos-framework/big_ordered_map.html#0x1_big_ordered_map_new">big_ordered_map::new</a>(),
+        });
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-is_denied"><a class="header" href="#function-is_denied">Function <code>is_denied</code> <a id="0x7_trading_native_capability_is_denied"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_is_denied">is_denied</a>(exchange: <b>address</b>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_is_denied">is_denied</a>(exchange: <b>address</b>): bool <b>acquires</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <b>let</b> registry = <b>borrow_global</b>&lt;<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    registry.denied.contains(&exchange)
+}
+</code></pre>
+</details>
+<h2 id="function-register-7"><a class="header" href="#function-register-7">Function <code>register</code> <a id="0x7_trading_native_capability_register"></a></a></h2>
+<p>Governance-only: enroll an <code>exchange</code>. Idempotent.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_register">register</a>(framework: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_register">register</a>(framework: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>) <b>acquires</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <a href="aptos-experimental/../aptos-framework/system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
+    <b>assert</b>!(
+        <a href="aptos-experimental/../move-stdlib/features.html#0x1_features_is_trading_native_enabled">features::is_trading_native_enabled</a>(),
+        <a href="aptos-experimental/../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EFEATURE_DISABLED">EFEATURE_DISABLED</a>),
+    );
+    <b>let</b> registry = <b>borrow_global_mut</b>&lt;<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    <b>if</b> (!registry.registered.contains(&exchange)) {
+        registry.registered.add(exchange, <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_Empty">Empty</a> {});
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-assert_active"><a class="header" href="#function-assert_active">Function <code>assert_active</code> <a id="0x7_trading_native_capability_assert_active"></a></a></h2>
+<p>Abort unless <code>addr</code> is currently allowed to write: <code>TRADING_NATIVE</code>
+enabled, registered, and not denied.</p>
+<pre><code><b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_active">assert_active</a>(addr: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_active">assert_active</a>(addr: <b>address</b>) <b>acquires</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <b>assert</b>!(
+        <a href="aptos-experimental/../move-stdlib/features.html#0x1_features_is_trading_native_enabled">features::is_trading_native_enabled</a>(),
+        <a href="aptos-experimental/../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EFEATURE_DISABLED">EFEATURE_DISABLED</a>),
+    );
+    <b>let</b> registry = <b>borrow_global</b>&lt;<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    <b>assert</b>!(
+        registry.registered.contains(&addr),
+        <a href="aptos-experimental/../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_NOT_REGISTERED">EEXCHANGE_NOT_REGISTERED</a>),
+    );
+    <b>assert</b>!(
+        !registry.denied.contains(&addr),
+        <a href="aptos-experimental/../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_DENIED">EEXCHANGE_DENIED</a>),
+    );
+}
+</code></pre>
+</details>
+<h2 id="function-get_capability"><a class="header" href="#function-get_capability">Function <code>get_capability</code> <a id="0x7_trading_native_capability_get_capability"></a></a></h2>
+<p>Mint a cap for a registered, non-denied exchange. The caller may
+store it; every write re-checks validity via <code>assert_valid</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_get_capability">get_capability</a>(exchange: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_get_capability">get_capability</a>(exchange: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a>
+<b>acquires</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <b>let</b> addr = <a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(exchange);
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_active">assert_active</a>(addr);
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a> { exchange: addr }
+}
+</code></pre>
+</details>
+<h2 id="function-assert_valid"><a class="header" href="#function-assert_valid">Function <code>assert_valid</code> <a id="0x7_trading_native_capability_assert_valid"></a></a></h2>
+<p>Abort unless <code>cap</code>'s exchange is still allowed to write. Called on
+every native-position write so a stored cap is invalidated the
+moment governance denies the exchange (or the flag is turned off).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">assert_valid</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">assert_valid</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a>) <b>acquires</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_active">assert_active</a>(cap.exchange);
+}
+</code></pre>
+</details>
+<h2 id="function-deny"><a class="header" href="#function-deny">Function <code>deny</code> <a id="0x7_trading_native_capability_deny"></a></a></h2>
+<p>Governance-only: lock an <code>exchange</code> out (persisted state
+untouched). Deliberately does not check <code>TRADING_NATIVE</code> —
+governance must be able to lock out even with the flag off.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_deny">deny</a>(framework: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_deny">deny</a>(framework: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>) <b>acquires</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <a href="aptos-experimental/../aptos-framework/system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
+    <b>let</b> registry = <b>borrow_global_mut</b>&lt;<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    <b>if</b> (!registry.denied.contains(&exchange)) {
+        registry.denied.add(exchange, <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_Empty">Empty</a> {});
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-reenable"><a class="header" href="#function-reenable">Function <code>reenable</code> <a id="0x7_trading_native_capability_reenable"></a></a></h2>
+<p>Governance-only: clear a <code>deny</code>. Like <code>deny</code>, does not check
+<code>TRADING_NATIVE</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_reenable">reenable</a>(framework: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_reenable">reenable</a>(framework: &<a href="aptos-experimental/../move-stdlib/signer.html#0x1_signer">signer</a>, exchange: <b>address</b>) <b>acquires</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a> {
+    <a href="aptos-experimental/../aptos-framework/system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
+    <b>let</b> registry = <b>borrow_global_mut</b>&lt;<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_ExchangeRegistry">ExchangeRegistry</a>&gt;(@aptos_experimental);
+    <b>if</b> (registry.denied.contains(&exchange)) {
+        registry.denied.remove(&exchange);
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-exchange"><a class="header" href="#function-exchange">Function <code>exchange</code> <a id="0x7_trading_native_capability_exchange"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">exchange</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>): <b>address</b>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">exchange</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">TradingNativeCapability</a>): <b>address</b> {
+    cap.exchange
 }
 </code></pre>
 </details>
