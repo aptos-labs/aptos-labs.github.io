@@ -210,6 +210,9 @@ fungible asset to it. This emits an deposit event.</li>
 <ul>
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_0_primary_store_address">Function <code>primary_store_address</code></a></li>
+<li><a href="#@Specification_0_primary_store">Function <code>primary_store</code></a></li>
+<li><a href="#@Specification_0_primary_store_exists">Function <code>primary_store_exists</code></a></li>
 </ul>
 </li>
 </ul>
@@ -756,7 +759,7 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
 <p><a id="0x1_primary_fungible_store_spec_primary_store_exists"></a></p>
 <pre><code><b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_exists">spec_primary_store_exists</a>&lt;T: key&gt;(<a href="account.html#0x1_account">account</a>: <b>address</b>, metadata: Object&lt;T&gt;): bool {
@@ -768,6 +771,32 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
    <b>let</b> metadata_addr = <a href="object.html#0x1_object_object_address">object::object_address</a>(metadata);
    <a href="object.html#0x1_object_spec_create_user_derived_object_address">object::spec_create_user_derived_object_address</a>(owner, metadata_addr)
 }
+</code></pre>
+<h3 id="function-primary_store_address-1"><a class="header" href="#function-primary_store_address-1">Function <code>primary_store_address</code> <a id="@Specification_0_primary_store_address"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store_address">primary_store_address</a>&lt;T: key&gt;(owner: <b>address</b>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <b>address</b>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, metadata);
+</code></pre>
+<h3 id="function-primary_store-1"><a class="header" href="#function-primary_store-1">Function <code>primary_store</code> <a id="@Specification_0_primary_store"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store">primary_store</a>&lt;T: key&gt;(owner: <b>address</b>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, metadata);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+<b>aborts_if</b> !<a href="object.html#0x1_object_spec_exists_at">object::spec_exists_at</a>&lt;FungibleStore&gt;(store_addr);
+<b>ensures</b> <a href="object.html#0x1_object_object_address">object::object_address</a>(result) == store_addr;
+</code></pre>
+<h3 id="function-primary_store_exists-1"><a class="header" href="#function-primary_store_exists-1">Function <code>primary_store_exists</code> <a id="@Specification_0_primary_store_exists"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store_exists">primary_store_exists</a>&lt;T: key&gt;(<a href="account.html#0x1_account">account</a>: <b>address</b>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_exists">spec_primary_store_exists</a>(<a href="account.html#0x1_account">account</a>, metadata);
 </code></pre>
 
                     </main>

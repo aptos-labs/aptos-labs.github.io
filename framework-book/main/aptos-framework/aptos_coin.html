@@ -278,7 +278,7 @@ modified from https://github.com/move-language/move/tree/main/language/documenta
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_coin.html#0x1_aptos_coin_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): (BurnCapability&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">AptosCoin</a>&gt;, MintCapability&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">AptosCoin</a>&gt;) {
     <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
 
-    <b>let</b> (burn_cap, freeze_cap, mint_cap) = <a href="coin.html#0x1_coin_initialize_with_parallelizable_supply">coin::initialize_with_parallelizable_supply</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">AptosCoin</a>&gt;(
+    <b>let</b> (burn_cap, freeze_cap, mint_cap) = <a href="coin.html#0x1_coin_initialize">coin::initialize</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">AptosCoin</a>&gt;(
         aptos_framework,
         <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(b"Aptos Coin"),
         <a href="../move-stdlib/string.html#0x1_string_utf8">string::utf8</a>(b"APT"),
@@ -472,7 +472,6 @@ Claim the delegated mint capability and destroy the delegated token.</p>
 <b>aborts_if</b> !<a href="../move-stdlib/string.html#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"APT");
 <b>aborts_if</b> <b>exists</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_MintCapStore">MintCapStore</a>&gt;(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">AptosCoin</a>&gt;&gt;(addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="aggregator_factory.html#0x1_aggregator_factory_AggregatorFactory">aggregator_factory::AggregatorFactory</a>&gt;(addr);
 // This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
 <b>ensures</b> <b>exists</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_MintCapStore">MintCapStore</a>&gt;(addr);
 // This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:

@@ -397,9 +397,9 @@ This would create the recipient account first and register it to receive the Coi
         <a href="aptos_account.html#0x1_aptos_account_create_account">create_account</a>(<b>to</b>);
         <b>spec</b> {
             // TODO(fa_migration)
-            // <b>assert</b> <a href="coin.html#0x1_coin_spec_is_account_registered">coin::spec_is_account_registered</a>&lt;AptosCoin&gt;(<b>to</b>);
+            // <b>assert</b> coin::spec_is_account_registered&lt;AptosCoin&gt;(<b>to</b>);
             // <b>assume</b> aptos_std::type_info::type_of&lt;CoinType&gt;() == aptos_std::type_info::type_of&lt;AptosCoin&gt;() ==&gt;
-            //     <a href="coin.html#0x1_coin_spec_is_account_registered">coin::spec_is_account_registered</a>&lt;CoinType&gt;(<b>to</b>);
+            //     coin::spec_is_account_registered&lt;CoinType&gt;(<b>to</b>);
         };
     };
     <b>if</b> (!<a href="coin.html#0x1_coin_is_account_registered">coin::is_account_registered</a>&lt;CoinType&gt;(<b>to</b>)) {
@@ -866,12 +866,19 @@ Limit the address of auth_key is not @vm_reserved / @aptos_framework / @aptos_to
 </code></pre>
 <p>Check if the address existed.
 Check if the AptosCoin under the address existed.</p>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">account::spec_exists_at</a>(addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-set_allow_direct_coin_transfers-1"><a class="header" href="#function-set_allow_direct_coin_transfers-1">Function <code>set_allow_direct_coin_transfers</code> <a id="@Specification_1_set_allow_direct_coin_transfers"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_set_allow_direct_coin_transfers">set_allow_direct_coin_transfers</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, allow: bool)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>include</b> !<b>exists</b>&lt;<a href="aptos_account.html#0x1_aptos_account_DirectTransferConfig">DirectTransferConfig</a>&gt;(addr) ==&gt;
+    <a href="account.html#0x1_account_NewEventHandleAbortsIf">account::NewEventHandleAbortsIf</a> { <a href="account.html#0x1_account">account</a> };
+<b>modifies</b> <b>global</b>&lt;<a href="aptos_account.html#0x1_aptos_account_DirectTransferConfig">DirectTransferConfig</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="aptos_account.html#0x1_aptos_account_DirectTransferConfig">DirectTransferConfig</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="aptos_account.html#0x1_aptos_account_DirectTransferConfig">DirectTransferConfig</a>&gt;(addr).allow_arbitrary_coin_transfers == allow;
 </code></pre>
 <h3 id="function-can_receive_direct_coin_transfers-1"><a class="header" href="#function-can_receive_direct_coin_transfers-1">Function <code>can_receive_direct_coin_transfers</code> <a id="@Specification_1_can_receive_direct_coin_transfers"></a></a></h3>
 <pre><code>#[view]

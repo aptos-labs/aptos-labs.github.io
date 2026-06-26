@@ -2431,8 +2431,9 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 </code></pre>
 <p>Get address by reflection.</p>
 <pre><code><b>pragma</b> opaque;
-<b>aborts_if</b> [abstract] <b>false</b>;
-<b>ensures</b> [abstract] result == <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
+<b>ensures</b> result == <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
 </code></pre>
 <h3 id="function-balance-1"><a class="header" href="#function-balance-1">Function <code>balance</code> <a id="@Specification_1_balance"></a></a></h3>
 <pre><code>#[view]
@@ -2446,15 +2447,21 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_is_coin_initialized">is_coin_initialized</a>&lt;CoinType&gt;(): bool
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-7.1" href="#high-level-req">high-level requirement 7</a>:
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+// This enforces <a id="high-level-req-7.1" href="#high-level-req">high-level requirement 7</a>:
+<b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
+<b>ensures</b> result == <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address);
 </code></pre>
 <h3 id="function-is_account_registered-1"><a class="header" href="#function-is_account_registered-1">Function <code>is_account_registered</code> <a id="@Specification_1_is_account_registered"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_is_account_registered">is_account_registered</a>&lt;CoinType&gt;(_account_addr: <b>address</b>): bool
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address);
+<b>ensures</b> result == <b>true</b>;
 </code></pre>
 <p><a id="0x1_coin_get_coin_supply_opt"></a></p>
 <pre><code><b>fun</b> <a href="coin.html#0x1_coin_get_coin_supply_opt">get_coin_supply_opt</a>&lt;CoinType&gt;(): Option&lt;OptionalAggregator&gt; {
@@ -2476,14 +2483,6 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
        <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>()
    }
 }
-</code></pre>
-<p><a id="0x1_coin_spec_is_account_registered"></a></p>
-<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_is_account_registered">spec_is_account_registered</a>&lt;CoinType&gt;(account_addr: <b>address</b>): bool;
-</code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>aborts_if</b> <b>false</b>;
-<b>ensures</b> [abstract] result
-    == <a href="coin.html#0x1_coin_spec_is_account_registered">spec_is_account_registered</a>&lt;CoinType&gt;(_account_addr);
 </code></pre>
 <p><a id="0x1_coin_CoinSubAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="coin.html#0x1_coin_CoinSubAbortsIf">CoinSubAbortsIf</a>&lt;CoinType&gt; {

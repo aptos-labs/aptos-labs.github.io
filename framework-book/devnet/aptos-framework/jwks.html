@@ -224,10 +224,13 @@ have a simple layout which is easily accessible in Rust.</p>
 <li><a href="#@Specification_1_update_federated_jwk_set">Function <code>update_federated_jwk_set</code></a></li>
 <li><a href="#@Specification_1_get_patched_jwk">Function <code>get_patched_jwk</code></a></li>
 <li><a href="#@Specification_1_try_get_patched_jwk">Function <code>try_get_patched_jwk</code></a></li>
+<li><a href="#@Specification_1_upsert_oidc_provider">Function <code>upsert_oidc_provider</code></a></li>
 <li><a href="#@Specification_1_upsert_oidc_provider_for_next_epoch">Function <code>upsert_oidc_provider_for_next_epoch</code></a></li>
+<li><a href="#@Specification_1_remove_oidc_provider">Function <code>remove_oidc_provider</code></a></li>
 <li><a href="#@Specification_1_remove_oidc_provider_for_next_epoch">Function <code>remove_oidc_provider_for_next_epoch</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
 <li><a href="#@Specification_1_set_patches">Function <code>set_patches</code></a></li>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_initialize_with_defaults">Function <code>initialize_with_defaults</code></a></li>
 <li><a href="#@Specification_1_upsert_into_observed_jwks">Function <code>upsert_into_observed_jwks</code></a></li>
 <li><a href="#@Specification_1_remove_issuer_from_observed_jwks">Function <code>remove_issuer_from_observed_jwks</code></a></li>
@@ -621,7 +624,7 @@ This is what applications should consume.</p>
 <p><a id="0x1_jwks_MAX_FEDERATED_JWKS_SIZE_BYTES"></a></p>
 <p>We limit the size of a <code><a href="jwks.html#0x1_jwks_PatchedJWKs">PatchedJWKs</a></code> resource installed by a dapp owner for federated keyless accounts.
 Note: If too large, validators waste work reading it for invalid TXN signatures.</p>
-<pre><code><b>const</b> <a href="jwks.html#0x1_jwks_MAX_FEDERATED_JWKS_SIZE_BYTES">MAX_FEDERATED_JWKS_SIZE_BYTES</a>: u64 = 2048;
+<pre><code><b>const</b> <a href="jwks.html#0x1_jwks_MAX_FEDERATED_JWKS_SIZE_BYTES">MAX_FEDERATED_JWKS_SIZE_BYTES</a>: u64 = 4096;
 </code></pre>
 <h2 id="function-patch_federated_jwks"><a class="header" href="#function-patch_federated_jwks">Function <code>patch_federated_jwks</code> <a id="0x1_jwks_patch_federated_jwks"></a></a></h2>
 <p>Called by a federated keyless dapp owner to install the JWKs for the federated OIDC provider (e.g., Auth0, AWS
@@ -1352,15 +1355,42 @@ Maintains the sorted-by-issuer invariant in <code><a href="jwks.html#0x1_jwks_Al
 </code></pre>
 <pre><code><b>pragma</b> verify_duration_estimate = 80;
 </code></pre>
+<h3 id="function-upsert_oidc_provider-1"><a class="header" href="#function-upsert_oidc_provider-1">Function <code>upsert_oidc_provider</code> <a id="@Specification_1_upsert_oidc_provider"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_upsert_oidc_provider">upsert_oidc_provider</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, config_url: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> std::signer::address_of(fx) != @aptos_framework;
+<b>aborts_if</b> !<a href="chain_status.html#0x1_chain_status_is_genesis">chain_status::is_genesis</a>();
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework);
+</code></pre>
 <h3 id="function-upsert_oidc_provider_for_next_epoch-1"><a class="header" href="#function-upsert_oidc_provider_for_next_epoch-1">Function <code>upsert_oidc_provider_for_next_epoch</code> <a id="@Specification_1_upsert_oidc_provider_for_next_epoch"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_upsert_oidc_provider_for_next_epoch">upsert_oidc_provider_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, config_url: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> std::signer::address_of(fx) != @aptos_framework;
+<b>modifies</b> <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework);
+</code></pre>
+<h3 id="function-remove_oidc_provider-1"><a class="header" href="#function-remove_oidc_provider-1">Function <code>remove_oidc_provider</code> <a id="@Specification_1_remove_oidc_provider"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_remove_oidc_provider">remove_oidc_provider</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> std::signer::address_of(fx) != @aptos_framework;
+<b>aborts_if</b> !<a href="chain_status.html#0x1_chain_status_is_genesis">chain_status::is_genesis</a>();
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-remove_oidc_provider_for_next_epoch-1"><a class="header" href="#function-remove_oidc_provider_for_next_epoch-1">Function <code>remove_oidc_provider_for_next_epoch</code> <a id="@Specification_1_remove_oidc_provider_for_next_epoch"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_remove_oidc_provider_for_next_epoch">remove_oidc_provider_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> verify_duration_estimate = 80;
+<b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> std::signer::address_of(fx) != @aptos_framework;
+<b>modifies</b> <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="jwks.html#0x1_jwks_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
@@ -1373,6 +1403,24 @@ Maintains the sorted-by-issuer invariant in <code><a href="jwks.html#0x1_jwks_Al
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_set_patches">set_patches</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, patches: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_Patch">jwks::Patch</a>&gt;)
 </code></pre>
 <pre><code><b>pragma</b> verify_duration_estimate = 80;
+</code></pre>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_initialize">initialize</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> std::signer::address_of(fx) != @aptos_framework;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_ObservedJWKs">ObservedJWKs</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_Patches">Patches</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_PatchedJWKs">PatchedJWKs</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_ObservedJWKs">ObservedJWKs</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_Patches">Patches</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_PatchedJWKs">PatchedJWKs</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_ObservedJWKs">ObservedJWKs</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_Patches">Patches</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_PatchedJWKs">PatchedJWKs</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-initialize_with_defaults-1"><a class="header" href="#function-initialize_with_defaults-1">Function <code>initialize_with_defaults</code> <a id="@Specification_1_initialize_with_defaults"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_initialize_with_defaults">initialize_with_defaults</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, providers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_OIDCProvider">jwks::OIDCProvider</a>&gt;, patches: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_Patch">jwks::Patch</a>&gt;)

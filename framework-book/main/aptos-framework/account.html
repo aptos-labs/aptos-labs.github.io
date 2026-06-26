@@ -2849,31 +2849,43 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
 <h3 id="function-create_guid-1"><a class="header" href="#function-create_guid-1">Function <code>create_guid</code> <a id="@Specification_4_create_guid"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_guid">create_guid</a>(account_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="guid.html#0x1_guid_GUID">guid::GUID</a>
 </code></pre>
-<p>The Account existed under the signer.
-The guid_creation_num of the account resource is up to MAX_U64.</p>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(account_signer);
-<b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a> {
-    <a href="account.html#0x1_account">account</a>: account_signer,
-};
+<p>The Account existed under the signer.</p>
+<pre><code><b>pragma</b> verify = <b>true</b>;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(account_signer);
+<b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a> { <a href="account.html#0x1_account">account</a>: account_signer };
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 // This enforces <a id="high-level-req-11" href="#high-level-req">high-level requirement 11</a>:
-<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == <b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num) + 1;
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt;
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == <b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num) + 1;
+<b>ensures</b> !<b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt;
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == 3;
 </code></pre>
 <h3 id="function-new_event_handle-1"><a class="header" href="#function-new_event_handle-1">Function <code>new_event_handle</code> <a id="@Specification_4_new_event_handle"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_new_event_handle">new_event_handle</a>&lt;T: drop, store&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;
 </code></pre>
-<p>The Account existed under the signer.
-The guid_creation_num of the Account is up to MAX_U64.</p>
-<pre><code><b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a>;
+<pre><code><b>pragma</b> verify = <b>true</b>;
+<b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a>;
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
 </code></pre>
 <p><a id="0x1_account_NewEventHandleAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a> {
     <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-    <b>let</b> <a href="account.html#0x1_account">account</a> = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-    <b>aborts_if</b> <a href="account.html#0x1_account">account</a>.guid_creation_num + 1 &gt; <a href="account.html#0x1_account_MAX_U64">MAX_U64</a>;
-    <b>aborts_if</b> <a href="account.html#0x1_account">account</a>.guid_creation_num + 1 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">MAX_GUID_CREATION_NUM</a>;
+    <b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+    <b>let</b> account_exists_pre = <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+    <b>aborts_if</b> !account_exists_pre && !feature_on;
+    <b>aborts_if</b> !account_exists_pre && feature_on
+        && (addr == @vm_reserved || addr == @aptos_framework || addr == @aptos_token);
+    <b>aborts_if</b> !account_exists_pre && feature_on
+        && len(<a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(addr)) != 32;
+    <b>let</b> creation_num = <b>if</b> (account_exists_pre) {
+        <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num
+    } <b>else</b> {
+        2
+    };
+    <b>aborts_if</b> creation_num + 1 &gt; <a href="account.html#0x1_account_MAX_U64">MAX_U64</a>;
+    <b>aborts_if</b> creation_num + 1 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">MAX_GUID_CREATION_NUM</a>;
 }
 </code></pre>
 <h3 id="function-register_coin-1"><a class="header" href="#function-register_coin-1">Function <code>register_coin</code> <a id="@Specification_4_register_coin"></a></a></h3>

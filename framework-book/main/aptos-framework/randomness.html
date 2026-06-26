@@ -211,6 +211,7 @@ and (2) the randomness cannot be biased in any way by validators, developers or 
 <li><a href="#@Specification_1_u256_integer_internal">Function <code>u256_integer_internal</code></a></li>
 <li><a href="#@Specification_1_u8_range">Function <code>u8_range</code></a></li>
 <li><a href="#@Specification_1_u64_range">Function <code>u64_range</code></a></li>
+<li><a href="#@Specification_1_u64_range_internal">Function <code>u64_range_internal</code></a></li>
 <li><a href="#@Specification_1_u256_range">Function <code>u256_range</code></a></li>
 <li><a href="#@Specification_1_permutation">Function <code>permutation</code></a></li>
 <li><a href="#@Specification_1_fetch_and_increment_txn_counter">Function <code>fetch_and_increment_txn_counter</code></a></li>
@@ -663,32 +664,15 @@ If n is 0, returns the empty vector.</p>
 
     // Initialize into [0, 1, ..., n-1].
     <b>let</b> i = 0;
-    <b>while</b> ({
-        <b>spec</b> {
-            <b>invariant</b> i &lt;= n;
-            <b>invariant</b> len(values) == i;
-        };
-        i &lt; n
-    }) {
+    <b>while</b> (i &lt; n) {
         values.push_back(i);
         i += 1;
-    };
-    <b>spec</b> {
-        <b>assert</b> len(values) == n;
     };
 
     // Shuffle.
     <b>let</b> tail = n - 1;
-    <b>while</b> ({
-        <b>spec</b> {
-            <b>invariant</b> tail &gt;= 0 && tail &lt; len(values);
-        };
-        tail &gt; 0
-    }) {
+    <b>while</b> (tail &gt; 0) {
         <b>let</b> pop_position = <a href="randomness.html#0x1_randomness_u64_range_internal">u64_range_internal</a>(0, tail + 1);
-        <b>spec</b> {
-            <b>assert</b> pop_position &lt; len(values);
-        };
         values.swap(pop_position, tail);
         tail -= 1;
     };
@@ -755,9 +739,16 @@ function as its payload.</li>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
-<b>invariant</b> [suspendable] <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt; <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework);
+<b>invariant</b> [suspendable] <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt;
+    <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework);
 <a id="0x1_randomness_var"></a>
 <b>global</b> <a href="randomness.html#0x1_randomness_var">var</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+<p><a id="0x1_randomness_spec_safe_add_mod"></a></p>
+<pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_spec_safe_add_mod">spec_safe_add_mod</a>(a: u256, b: u256, m: u256): u256 {
+   <b>if</b> (a &lt; m - b) { a + b }
+   <b>else</b> { a - (m - b) }
+}
 </code></pre>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
@@ -768,10 +759,17 @@ function as its payload.</li>
 <h3 id="function-on_new_block-1"><a class="header" href="#function-on_new_block-1">Function <code>on_new_block</code> <a id="@Specification_1_on_new_block"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="randomness.html#0x1_randomness_on_new_block">on_new_block</a>(vm: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, epoch: u64, round: u64, seed_for_new_block: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 </code></pre>
-<pre><code><b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(vm) != @vm;
-<b>ensures</b> <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework) ==&gt; <b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).seed == seed_for_new_block;
-<b>ensures</b> <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework) ==&gt; <b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).epoch == epoch;
-<b>ensures</b> <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework) ==&gt; <b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).round == round;
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(vm) != @vm;
+<b>ensures</b> <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).seed == seed_for_new_block;
+<b>ensures</b> <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).epoch == epoch;
+<b>ensures</b> <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).round == round;
+<b>ensures</b> !<b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework) ==&gt;
+    !<b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-next_32_bytes-1"><a class="header" href="#function-next_32_bytes-1">Function <code>next_32_bytes</code> <a id="@Specification_1_next_32_bytes"></a></a></h3>
 <pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_next_32_bytes">next_32_bytes</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
@@ -783,7 +781,13 @@ function as its payload.</li>
 <b>let</b> txn_hash = <a href="transaction_context.html#0x1_transaction_context_spec_get_txn_hash">transaction_context::spec_get_txn_hash</a>();
 <b>let</b> txn_counter = <a href="randomness.html#0x1_randomness_spec_fetch_and_increment_txn_counter">spec_fetch_and_increment_txn_counter</a>();
 <b>ensures</b> len(result) == 32;
-<b>ensures</b> result == <a href="../move-stdlib/hash.html#0x1_hash_sha3_256">hash::sha3_256</a>(concat(concat(concat(input, seed), txn_hash), txn_counter));
+<b>ensures</b> result
+    == <a href="../move-stdlib/hash.html#0x1_hash_sha3_256">hash::sha3_256</a>(
+        concat(
+            concat(concat(input, seed), txn_hash),
+            txn_counter
+        )
+    );
 </code></pre>
 <p><a id="0x1_randomness_NextBlobAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a> {
@@ -825,16 +829,14 @@ function as its payload.</li>
 <h3 id="function-u256_integer-1"><a class="header" href="#function-u256_integer-1">Function <code>u256_integer</code> <a id="@Specification_1_u256_integer"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u256_integer">u256_integer</a>(): u256
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 300;
-<b>pragma</b> unroll = 32;
+<pre><code><b>pragma</b> unroll = 32;
 <b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>ensures</b> [abstract] result == <a href="randomness.html#0x1_randomness_spec_u256_integer">spec_u256_integer</a>();
 </code></pre>
 <h3 id="function-u256_integer_internal-1"><a class="header" href="#function-u256_integer_internal-1">Function <code>u256_integer_internal</code> <a id="@Specification_1_u256_integer_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_u256_integer_internal">u256_integer_internal</a>(): u256
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 300;
-<b>pragma</b> unroll = 32;
+<pre><code><b>pragma</b> unroll = 32;
 <b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 </code></pre>
 <p><a id="0x1_randomness_spec_u256_integer"></a></p>
@@ -843,16 +845,22 @@ function as its payload.</li>
 <h3 id="function-u8_range-1"><a class="header" href="#function-u8_range-1">Function <code>u8_range</code> <a id="@Specification_1_u8_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u8_range">u8_range</a>(min_incl: u8, max_excl: u8): u8
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>pragma</b> opaque;
-<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-u64_range-1"><a class="header" href="#function-u64_range-1">Function <code>u64_range</code> <a id="@Specification_1_u64_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u64_range">u64_range</a>(min_incl: u64, max_excl: u64): u64
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<pre><code><b>pragma</b> seed = 2;
+<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<b>aborts_if</b> min_incl &gt;= max_excl;
+<b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
+</code></pre>
+<h3 id="function-u64_range_internal-1"><a class="header" href="#function-u64_range_internal-1">Function <code>u64_range_internal</code> <a id="@Specification_1_u64_range_internal"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u64_range_internal">u64_range_internal</a>(min_incl: u64, max_excl: u64): u64
+</code></pre>
+<pre><code><b>pragma</b> seed = 2;
 <b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
@@ -860,24 +868,18 @@ function as its payload.</li>
 <h3 id="function-u256_range-1"><a class="header" href="#function-u256_range-1">Function <code>u256_range</code> <a id="@Specification_1_u256_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u256_range">u256_range</a>(min_incl: u256, max_excl: u256): u256
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-permutation-1"><a class="header" href="#function-permutation-1">Function <code>permutation</code> <a id="@Specification_1_permutation"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_permutation">permutation</a>(n: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-</code></pre>
-<p><a id="0x1_randomness_spec_safe_add_mod"></a></p>
-<pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_spec_safe_add_mod">spec_safe_add_mod</a>(a: u256, b: u256, m: u256): u256 {
-   <b>if</b> (a &lt; m - b) {
-       a + b
-   } <b>else</b> {
-       a - (m - b)
-   }
-}
+<pre><code><b>pragma</b> unroll = 1;
+<b>aborts_if</b> n &gt; 1 && !<b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework);
+<b>aborts_if</b> n &gt; 1 && <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).seed);
+<b>aborts_if</b> n &gt; 1 && !<a href="randomness.html#0x1_randomness_spec_is_unbiasable">spec_is_unbiasable</a>();
+<b>ensures</b> len(result) == n;
 </code></pre>
 <h3 id="function-fetch_and_increment_txn_counter-1"><a class="header" href="#function-fetch_and_increment_txn_counter-1">Function <code>fetch_and_increment_txn_counter</code> <a id="@Specification_1_fetch_and_increment_txn_counter"></a></a></h3>
 <pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_fetch_and_increment_txn_counter">fetch_and_increment_txn_counter</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;

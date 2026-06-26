@@ -328,6 +328,14 @@ return true.</p>
 <li><a href="#0x1_features_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
 <li><a href="#0x1_features_get_multisig_timelock_feature">Function <code>get_multisig_timelock_feature</code></a></li>
 <li><a href="#0x1_features_is_multisig_timelock_enabled">Function <code>is_multisig_timelock_enabled</code></a></li>
+<li><a href="#0x1_features_get_trading_native_feature">Function <code>get_trading_native_feature</code></a></li>
+<li><a href="#0x1_features_is_trading_native_enabled">Function <code>is_trading_native_enabled</code></a></li>
+<li><a href="#0x1_features_get_native_position_feature">Function <code>get_native_position_feature</code></a></li>
+<li><a href="#0x1_features_is_native_position_enabled">Function <code>is_native_position_enabled</code></a></li>
+<li><a href="#0x1_features_get_native_orderbook_feature">Function <code>get_native_orderbook_feature</code></a></li>
+<li><a href="#0x1_features_is_native_orderbook_enabled">Function <code>is_native_orderbook_enabled</code></a></li>
+<li><a href="#0x1_features_get_native_collateral_feature">Function <code>get_native_collateral_feature</code></a></li>
+<li><a href="#0x1_features_is_native_collateral_enabled">Function <code>is_native_collateral_enabled</code></a></li>
 <li><a href="#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -468,6 +476,15 @@ Lifetime: transient</p>
 <p>Whether the operator commission rate change in delegation pool is enabled.
 Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_COMMISSION_CHANGE_DELEGATION_POOL">COMMISSION_CHANGE_DELEGATION_POOL</a>: u64 = 42;
+</code></pre>
+<p><a id="0x1_features_COMPUTE_TRADING_NATIVE_STATE_ROOTS"></a></p>
+<p>When enabled, execution computes the trading-native state roots and commits them to
+<code>TransactionInfoV1</code>, so they are consensus-verified. Requires <code><a href="features.html#0x1_features_TRANSACTION_INFO_V1">TRANSACTION_INFO_V1</a></code>.
+Covers the native-position tree today and is intended to cover the other trading-native
+trees as they are added. Enabling it first commits the (empty-tree) roots to transaction
+info; the actual Move-side writes to those trees are gated by separate flags.
+Lifetime: permanent</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_COMPUTE_TRADING_NATIVE_STATE_ROOTS">COMPUTE_TRADING_NATIVE_STATE_ROOTS</a>: u64 = 122;
 </code></pre>
 <p><a id="0x1_features_CONCURRENT_FUNGIBLE_ASSETS"></a></p>
 <p>Whether enable Fungible Asset creation
@@ -627,8 +644,20 @@ This is needed because of the introduction of a new native function.
 Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_MULTI_ED25519_PK_VALIDATE_V2_NATIVES">MULTI_ED25519_PK_VALIDATE_V2_NATIVES</a>: u64 = 7;
 </code></pre>
+<p><a id="0x1_features_NATIVE_COLLATERAL"></a></p>
+<p>Gates native-collateral writes.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>: u64 = 121;
+</code></pre>
 <p><a id="0x1_features_NATIVE_MEMORY_OPERATIONS"></a></p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_MEMORY_OPERATIONS">NATIVE_MEMORY_OPERATIONS</a>: u64 = 80;
+</code></pre>
+<p><a id="0x1_features_NATIVE_ORDERBOOK"></a></p>
+<p>Gates native-orderbook writes.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>: u64 = 120;
+</code></pre>
+<p><a id="0x1_features_NATIVE_POSITION"></a></p>
+<p>Gates native-position writes.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>: u64 = 119;
 </code></pre>
 <p><a id="0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE"></a></p>
 <p>Whether new accounts default to the Fungible Asset store.
@@ -701,6 +730,11 @@ Lifetime: transient</p>
 <p>Whether struct constructors are enabled</p>
 <p>Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_STRUCT_CONSTRUCTORS">STRUCT_CONSTRUCTORS</a>: u64 = 15;
+</code></pre>
+<p><a id="0x1_features_TRADING_NATIVE"></a></p>
+<p>Umbrella auth flag for the native-trading subsystem; the per-store
+flags below gate the actual writes. Both must be on to write.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>: u64 = 118;
 </code></pre>
 <p><a id="0x1_features_TRANSACTION_CONTEXT_EXTENSION"></a></p>
 <p>Whether the transaction context extension is enabled. This feature allows the module
@@ -2124,6 +2158,86 @@ Lifetime: transient</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_timelock_enabled">is_multisig_timelock_enabled</a>(): bool {
     <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_trading_native_feature"><a class="header" href="#function-get_trading_native_feature">Function <code>get_trading_native_feature</code> <a id="0x1_features_get_trading_native_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_trading_native_feature">get_trading_native_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_trading_native_feature">get_trading_native_feature</a>(): u64 {
+    <a href="features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_trading_native_enabled"><a class="header" href="#function-is_trading_native_enabled">Function <code>is_trading_native_enabled</code> <a id="0x1_features_is_trading_native_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_trading_native_enabled">is_trading_native_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_trading_native_enabled">is_trading_native_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_position_feature"><a class="header" href="#function-get_native_position_feature">Function <code>get_native_position_feature</code> <a id="0x1_features_get_native_position_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_position_feature">get_native_position_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_position_feature">get_native_position_feature</a>(): u64 {
+    <a href="features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_position_enabled"><a class="header" href="#function-is_native_position_enabled">Function <code>is_native_position_enabled</code> <a id="0x1_features_is_native_position_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_position_enabled">is_native_position_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_position_enabled">is_native_position_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_orderbook_feature"><a class="header" href="#function-get_native_orderbook_feature">Function <code>get_native_orderbook_feature</code> <a id="0x1_features_get_native_orderbook_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_orderbook_feature">get_native_orderbook_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_orderbook_feature">get_native_orderbook_feature</a>(): u64 {
+    <a href="features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_orderbook_enabled"><a class="header" href="#function-is_native_orderbook_enabled">Function <code>is_native_orderbook_enabled</code> <a id="0x1_features_is_native_orderbook_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_orderbook_enabled">is_native_orderbook_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_orderbook_enabled">is_native_orderbook_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_collateral_feature"><a class="header" href="#function-get_native_collateral_feature">Function <code>get_native_collateral_feature</code> <a id="0x1_features_get_native_collateral_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_collateral_feature">get_native_collateral_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_collateral_feature">get_native_collateral_feature</a>(): u64 {
+    <a href="features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_collateral_enabled"><a class="header" href="#function-is_native_collateral_enabled">Function <code>is_native_collateral_enabled</code> <a id="0x1_features_is_native_collateral_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_collateral_enabled">is_native_collateral_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_collateral_enabled">is_native_collateral_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>)
 }
 </code></pre>
 </details>

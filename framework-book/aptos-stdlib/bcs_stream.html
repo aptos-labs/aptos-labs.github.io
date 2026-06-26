@@ -236,6 +236,21 @@ especially useful for systems requiring cross-chain message interpretation or of
 </li>
 <li>
 <p><a href="#@Specification_1">Specification</a></p>
+<ul>
+<li><a href="#@Specification_1_new">Function <code>new</code></a></li>
+<li><a href="#@Specification_1_has_remaining">Function <code>has_remaining</code></a></li>
+<li><a href="#@Specification_1_deserialize_uleb128">Function <code>deserialize_uleb128</code></a></li>
+<li><a href="#@Specification_1_deserialize_bool">Function <code>deserialize_bool</code></a></li>
+<li><a href="#@Specification_1_deserialize_address">Function <code>deserialize_address</code></a></li>
+<li><a href="#@Specification_1_deserialize_u8">Function <code>deserialize_u8</code></a></li>
+<li><a href="#@Specification_1_deserialize_u16">Function <code>deserialize_u16</code></a></li>
+<li><a href="#@Specification_1_deserialize_u32">Function <code>deserialize_u32</code></a></li>
+<li><a href="#@Specification_1_deserialize_u64">Function <code>deserialize_u64</code></a></li>
+<li><a href="#@Specification_1_deserialize_u128">Function <code>deserialize_u128</code></a></li>
+<li><a href="#@Specification_1_deserialize_u256">Function <code>deserialize_u256</code></a></li>
+<li><a href="#@Specification_1_deserialize_u256_entry">Function <code>deserialize_u256_entry</code></a></li>
+<li><a href="#@Specification_1_deserialize_string">Function <code>deserialize_string</code></a></li>
+</ul>
 </li>
 </ul>
 <pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
@@ -307,7 +322,14 @@ In the BCS format, lengths of vectors are represented using ULEB128 encoding.</p
     <b>let</b> res = 0;
     <b>let</b> shift = 0;
 
-    <b>while</b> (stream.cur &lt; stream.data.length()) {
+    <b>while</b> ({
+        <b>spec</b> {
+            <b>invariant</b> stream.data == <b>old</b>(stream).data;
+            <b>invariant</b> stream.cur &gt;= <b>old</b>(stream).cur;
+            <b>invariant</b> shift &lt;= (64 <b>as</b> u8);
+        };
+        stream.cur &lt; stream.data.length()
+    }) {
         <b>let</b> byte = stream.data[stream.cur];
         stream.cur += 1;
 
@@ -634,7 +656,134 @@ The <code>elem_deserializer</code> lambda expression is used to deserialize the 
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<pre><code><b>pragma</b> verify = <b>true</b>;
+</code></pre>
+<h3 id="function-new-1"><a class="header" href="#function-new-1">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_new">new</a>(data: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>
+</code></pre>
+<p>Constructing a new stream simply pairs the buffer with cursor 0.</p>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">BCSStream</a> { data, cur: 0 };
+</code></pre>
+<h3 id="function-has_remaining-1"><a class="header" href="#function-has_remaining-1">Function <code>has_remaining</code> <a id="@Specification_1_has_remaining"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_has_remaining">has_remaining</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): bool
+</code></pre>
+<p><code>has_remaining</code> is a pure read: returns whether the cursor is still within bounds.</p>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (stream.cur &lt; len(stream.data));
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur);
+</code></pre>
+<h3 id="function-deserialize_uleb128-1"><a class="header" href="#function-deserialize_uleb128-1">Function <code>deserialize_uleb128</code> <a id="@Specification_1_deserialize_uleb128"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_uleb128">deserialize_uleb128</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> stream.cur &gt;= len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur &gt; <b>old</b>(stream.cur);
+<b>ensures</b> stream.cur &lt;= len(stream.data);
+</code></pre>
+<h3 id="function-deserialize_bool-1"><a class="header" href="#function-deserialize_bool-1">Function <code>deserialize_bool</code> <a id="@Specification_1_deserialize_bool"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_bool">deserialize_bool</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): bool
+</code></pre>
+<p>Reads one byte and decodes it as bool; aborts if byte ∉ {0, 1}.</p>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> stream.cur &gt;= len(stream.data);
+<b>let</b> byte = stream.data[stream.cur];
+<b>aborts_if</b> byte != (0 <b>as</b> u8) && byte != (1 <b>as</b> u8);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur) + (1 <b>as</b> u64);
+<b>ensures</b> result == (<b>old</b>(stream.data)[<b>old</b>(stream.cur)] == (1 <b>as</b> u8));
+</code></pre>
+<h3 id="function-deserialize_address-1"><a class="header" href="#function-deserialize_address-1">Function <code>deserialize_address</code> <a id="@Specification_1_deserialize_address"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_address">deserialize_address</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): <b>address</b>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> stream.cur + (32 <b>as</b> u64) &gt; MAX_U64;
+<b>aborts_if</b> stream.cur + (32 <b>as</b> u64) &gt; len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur) + (32 <b>as</b> u64);
+</code></pre>
+<h3 id="function-deserialize_u8-1"><a class="header" href="#function-deserialize_u8-1">Function <code>deserialize_u8</code> <a id="@Specification_1_deserialize_u8"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_u8">deserialize_u8</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): u8
+</code></pre>
+<p>Reads one byte and advances the cursor by 1.</p>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> stream.cur &gt;= len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur) + (1 <b>as</b> u64);
+<b>ensures</b> result == <b>old</b>(stream.data)[<b>old</b>(stream.cur)];
+</code></pre>
+<h3 id="function-deserialize_u16-1"><a class="header" href="#function-deserialize_u16-1">Function <code>deserialize_u16</code> <a id="@Specification_1_deserialize_u16"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_u16">deserialize_u16</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): u16
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> stream.cur + (2 <b>as</b> u64) &gt; MAX_U64;
+<b>aborts_if</b> stream.cur + (2 <b>as</b> u64) &gt; len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur) + (2 <b>as</b> u64);
+</code></pre>
+<h3 id="function-deserialize_u32-1"><a class="header" href="#function-deserialize_u32-1">Function <code>deserialize_u32</code> <a id="@Specification_1_deserialize_u32"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_u32">deserialize_u32</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): u32
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> stream.cur + (4 <b>as</b> u64) &gt; MAX_U64;
+<b>aborts_if</b> stream.cur + (4 <b>as</b> u64) &gt; len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur) + (4 <b>as</b> u64);
+</code></pre>
+<h3 id="function-deserialize_u64-1"><a class="header" href="#function-deserialize_u64-1">Function <code>deserialize_u64</code> <a id="@Specification_1_deserialize_u64"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_u64">deserialize_u64</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> stream.cur + (8 <b>as</b> u64) &gt; MAX_U64;
+<b>aborts_if</b> stream.cur + (8 <b>as</b> u64) &gt; len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur) + (8 <b>as</b> u64);
+</code></pre>
+<h3 id="function-deserialize_u128-1"><a class="header" href="#function-deserialize_u128-1">Function <code>deserialize_u128</code> <a id="@Specification_1_deserialize_u128"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_u128">deserialize_u128</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): u128
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> stream.cur + (16 <b>as</b> u64) &gt; MAX_U64;
+<b>aborts_if</b> stream.cur + (16 <b>as</b> u64) &gt; len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur) + (16 <b>as</b> u64);
+</code></pre>
+<h3 id="function-deserialize_u256-1"><a class="header" href="#function-deserialize_u256-1">Function <code>deserialize_u256</code> <a id="@Specification_1_deserialize_u256"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_u256">deserialize_u256</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): u256
+</code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
+<b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> stream.cur + (32 <b>as</b> u64) &gt; MAX_U64;
+<b>aborts_if</b> stream.cur + (32 <b>as</b> u64) &gt; len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur == <b>old</b>(stream.cur) + (32 <b>as</b> u64);
+</code></pre>
+<h3 id="function-deserialize_u256_entry-1"><a class="header" href="#function-deserialize_u256_entry-1">Function <code>deserialize_u256_entry</code> <a id="@Specification_1_deserialize_u256_entry"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_u256_entry">deserialize_u256_entry</a>(data: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cursor: u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> cursor + (32 <b>as</b> u64) &gt; MAX_U64;
+</code></pre>
+<h3 id="function-deserialize_string-1"><a class="header" href="#function-deserialize_string-1">Function <code>deserialize_string</code> <a id="@Specification_1_deserialize_string"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bcs_stream.html#0x1_bcs_stream_deserialize_string">deserialize_string</a>(stream: &<b>mut</b> <a href="bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> stream.cur &gt;= len(stream.data);
+<b>ensures</b> stream.data == <b>old</b>(stream.data);
+<b>ensures</b> stream.cur &gt; <b>old</b>(stream.cur);
 </code></pre>
 
                     </main>
