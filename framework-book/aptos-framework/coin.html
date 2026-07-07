@@ -2628,7 +2628,9 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <h3 id="function-extract_all-1"><a class="header" href="#function-extract_all-1">Function <code>extract_all</code> <a id="@Specification_1_extract_all"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_extract_all">extract_all</a>&lt;CoinType&gt;(<a href="coin.html#0x1_coin">coin</a>: &<b>mut</b> <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;): <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;
 </code></pre>
-<pre><code><b>ensures</b> result.value == <b>old</b>(<a href="coin.html#0x1_coin">coin</a>).value;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result.value == <b>old</b>(<a href="coin.html#0x1_coin">coin</a>).value;
 <b>ensures</b> <a href="coin.html#0x1_coin">coin</a>.value == 0;
 </code></pre>
 <h3 id="function-freeze_coin_store-1"><a class="header" href="#function-freeze_coin_store-1">Function <code>freeze_coin_store</code> <a id="@Specification_1_freeze_coin_store"></a></a></h3>
@@ -2733,8 +2735,11 @@ Only the creator of <code>CoinType</code> can initialize.</p>
 <h3 id="function-merge-1"><a class="header" href="#function-merge-1">Function <code>merge</code> <a id="@Specification_1_merge"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_merge">merge</a>&lt;CoinType&gt;(dst_coin: &<b>mut</b> <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;, source_coin: <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;)
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> dst_coin.value + source_coin.value &gt; <a href="coin.html#0x1_coin_MAX_U64">MAX_U64</a>;
+// This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
 <b>ensures</b> dst_coin.value == <b>old</b>(dst_coin.value) + source_coin.value;
+<b>ensures</b> <a href="coin.html#0x1_coin_supply">supply</a>&lt;CoinType&gt; == <b>old</b>(<a href="coin.html#0x1_coin_supply">supply</a>&lt;CoinType&gt;);
 </code></pre>
 <h3 id="function-mint-1"><a class="header" href="#function-mint-1">Function <code>mint</code> <a id="@Specification_1_mint"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_mint">mint</a>&lt;CoinType&gt;(amount: u64, _cap: &<a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;): <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;

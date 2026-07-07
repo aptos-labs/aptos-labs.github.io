@@ -214,6 +214,7 @@ and (2) the randomness cannot be biased in any way by validators, developers or 
 <li><a href="#@Specification_1_u64_range_internal">Function <code>u64_range_internal</code></a></li>
 <li><a href="#@Specification_1_u256_range">Function <code>u256_range</code></a></li>
 <li><a href="#@Specification_1_permutation">Function <code>permutation</code></a></li>
+<li><a href="#@Specification_1_safe_add_mod">Function <code>safe_add_mod</code></a></li>
 <li><a href="#@Specification_1_fetch_and_increment_txn_counter">Function <code>fetch_and_increment_txn_counter</code></a></li>
 <li><a href="#@Specification_1_is_unbiasable">Function <code>is_unbiasable</code></a></li>
 </ul>
@@ -744,12 +745,6 @@ function as its payload.</li>
 <a id="0x1_randomness_var"></a>
 <b>global</b> <a href="randomness.html#0x1_randomness_var">var</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
 </code></pre>
-<p><a id="0x1_randomness_spec_safe_add_mod"></a></p>
-<pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_spec_safe_add_mod">spec_safe_add_mod</a>(a: u256, b: u256, m: u256): u256 {
-   <b>if</b> (a &lt; m - b) { a + b }
-   <b>else</b> { a - (m - b) }
-}
-</code></pre>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
@@ -836,7 +831,8 @@ function as its payload.</li>
 <h3 id="function-u256_integer_internal-1"><a class="header" href="#function-u256_integer_internal-1">Function <code>u256_integer_internal</code> <a id="@Specification_1_u256_integer_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_u256_integer_internal">u256_integer_internal</a>(): u256
 </code></pre>
-<pre><code><b>pragma</b> unroll = 32;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> unroll = 32;
 <b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 </code></pre>
 <p><a id="0x1_randomness_spec_u256_integer"></a></p>
@@ -852,16 +848,14 @@ function as its payload.</li>
 <h3 id="function-u64_range-1"><a class="header" href="#function-u64_range-1">Function <code>u64_range</code> <a id="@Specification_1_u64_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u64_range">u64_range</a>(min_incl: u64, max_excl: u64): u64
 </code></pre>
-<pre><code><b>pragma</b> seed = 2;
-<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-u64_range_internal-1"><a class="header" href="#function-u64_range_internal-1">Function <code>u64_range_internal</code> <a id="@Specification_1_u64_range_internal"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u64_range_internal">u64_range_internal</a>(min_incl: u64, max_excl: u64): u64
 </code></pre>
-<pre><code><b>pragma</b> seed = 2;
-<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
@@ -880,6 +874,20 @@ function as its payload.</li>
 <b>aborts_if</b> n &gt; 1 && <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).seed);
 <b>aborts_if</b> n &gt; 1 && !<a href="randomness.html#0x1_randomness_spec_is_unbiasable">spec_is_unbiasable</a>();
 <b>ensures</b> len(result) == n;
+</code></pre>
+<h3 id="function-safe_add_mod-1"><a class="header" href="#function-safe_add_mod-1">Function <code>safe_add_mod</code> <a id="@Specification_1_safe_add_mod"></a></a></h3>
+<pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_safe_add_mod">safe_add_mod</a>(a: u256, b: u256, m: u256): u256
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> m &lt; b;
+<b>aborts_if</b> a &lt; m - b && a + b &gt; <a href="randomness.html#0x1_randomness_MAX_U256">MAX_U256</a>;
+<b>ensures</b> result == <a href="randomness.html#0x1_randomness_spec_safe_add_mod">spec_safe_add_mod</a>(a, b, m);
+</code></pre>
+<p><a id="0x1_randomness_spec_safe_add_mod"></a></p>
+<pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_spec_safe_add_mod">spec_safe_add_mod</a>(a: u256, b: u256, m: u256): u256 {
+   <b>if</b> (a &lt; m - b) { a + b }
+   <b>else</b> { a - (m - b) }
+}
 </code></pre>
 <h3 id="function-fetch_and_increment_txn_counter-1"><a class="header" href="#function-fetch_and_increment_txn_counter-1">Function <code>fetch_and_increment_txn_counter</code> <a id="@Specification_1_fetch_and_increment_txn_counter"></a></a></h3>
 <pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_fetch_and_increment_txn_counter">fetch_and_increment_txn_counter</a>(): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;

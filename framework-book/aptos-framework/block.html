@@ -194,11 +194,15 @@
 <li><a href="#@Specification_1_BlockResource">Resource <code>BlockResource</code></a></li>
 <li><a href="#@Specification_1_CommitHistory">Resource <code>CommitHistory</code></a></li>
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_1_initialize_commit_history">Function <code>initialize_commit_history</code></a></li>
 <li><a href="#@Specification_1_update_epoch_interval_microsecs">Function <code>update_epoch_interval_microsecs</code></a></li>
 <li><a href="#@Specification_1_get_epoch_interval_secs">Function <code>get_epoch_interval_secs</code></a></li>
 <li><a href="#@Specification_1_block_prologue_common">Function <code>block_prologue_common</code></a></li>
 <li><a href="#@Specification_1_block_prologue">Function <code>block_prologue</code></a></li>
 <li><a href="#@Specification_1_block_prologue_ext">Function <code>block_prologue_ext</code></a></li>
+<li><a href="#@Specification_1_block_prologue_ext_v2">Function <code>block_prologue_ext_v2</code></a></li>
+<li><a href="#@Specification_1_block_prologue_ext_v3">Function <code>block_prologue_ext_v3</code></a></li>
+<li><a href="#@Specification_1_block_epilogue">Function <code>block_epilogue</code></a></li>
 <li><a href="#@Specification_1_get_current_block_height">Function <code>get_current_block_height</code></a></li>
 <li><a href="#@Specification_1_emit_new_block_event">Function <code>emit_new_block_event</code></a></li>
 <li><a href="#@Specification_1_emit_genesis_block_event">Function <code>emit_genesis_block_event</code></a></li>
@@ -898,7 +902,7 @@ new block event for WriteSetPayload.</p>
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> verify = <b>true</b>;
 <b>invariant</b> [suspendable] <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt; <b>exists</b>&lt;<a href="block.html#0x1_block_BlockResource">BlockResource</a>&gt;(@aptos_framework);
 <b>invariant</b> [suspendable] <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt; <b>exists</b>&lt;<a href="block.html#0x1_block_CommitHistory">CommitHistory</a>&gt;(@aptos_framework);
 </code></pre>
@@ -970,6 +974,16 @@ The number of new events created does not exceed MAX_U64.</p>
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>let</b> <a href="account.html#0x1_account">account</a> = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr);
 <b>aborts_if</b> <a href="account.html#0x1_account">account</a>.guid_creation_num + 2 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">account::MAX_GUID_CREATION_NUM</a>;
+</code></pre>
+<h3 id="function-initialize_commit_history-1"><a class="header" href="#function-initialize_commit_history-1">Function <code>initialize_commit_history</code> <a id="@Specification_1_initialize_commit_history"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="block.html#0x1_block_initialize_commit_history">initialize_commit_history</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, max_capacity: u32)
+</code></pre>
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx);
+<b>aborts_if</b> max_capacity == 0;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="block.html#0x1_block_CommitHistory">CommitHistory</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="block.html#0x1_block_CommitHistory">CommitHistory</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="block.html#0x1_block_CommitHistory">CommitHistory</a>&gt;(addr).max_capacity == max_capacity;
+<b>ensures</b> <b>global</b>&lt;<a href="block.html#0x1_block_CommitHistory">CommitHistory</a>&gt;(addr).next_idx == 0;
 </code></pre>
 <p><a id="0x1_block_BlockRequirement"></a></p>
 <pre><code><b>schema</b> <a href="block.html#0x1_block_BlockRequirement">BlockRequirement</a> {
@@ -1049,8 +1063,7 @@ The BlockResource existed under the @aptos_framework.</p>
 <h3 id="function-block_prologue_common-1"><a class="header" href="#function-block_prologue_common-1">Function <code>block_prologue_common</code> <a id="@Specification_1_block_prologue_common"></a></a></h3>
 <pre><code><b>fun</b> <a href="block.html#0x1_block_block_prologue_common">block_prologue_common</a>(vm: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: <b>address</b>, epoch: u64, round: u64, proposer: <b>address</b>, failed_proposer_indices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, previous_block_votes_bitvec: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="timestamp.html#0x1_timestamp">timestamp</a>: u64): u64
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> opaque;
 <b>include</b> <a href="block.html#0x1_block_BlockRequirement">BlockRequirement</a>;
 <b>aborts_if</b> <b>false</b>;
 <b>modifies</b> <b>global</b>&lt;<a href="block.html#0x1_block_BlockResource">BlockResource</a>&gt;(@aptos_framework);
@@ -1063,24 +1076,32 @@ The BlockResource existed under the @aptos_framework.</p>
     <b>old</b>(<b>global</b>&lt;<a href="block.html#0x1_block_BlockResource">BlockResource</a>&gt;(@aptos_framework).new_block_events.counter);
 <b>ensures</b> <b>global</b>&lt;<a href="block.html#0x1_block_BlockResource">BlockResource</a>&gt;(@aptos_framework).epoch_interval ==
     <b>old</b>(<b>global</b>&lt;<a href="block.html#0x1_block_BlockResource">BlockResource</a>&gt;(@aptos_framework).epoch_interval);
+<b>ensures</b> <a href="timestamp.html#0x1_timestamp_spec_now_microseconds">timestamp::spec_now_microseconds</a>() == <a href="timestamp.html#0x1_timestamp">timestamp</a>;
 </code></pre>
 <h3 id="function-block_prologue-1"><a class="header" href="#function-block_prologue-1">Function <code>block_prologue</code> <a id="@Specification_1_block_prologue"></a></a></h3>
 <pre><code><b>fun</b> <a href="block.html#0x1_block_block_prologue">block_prologue</a>(vm: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: <b>address</b>, epoch: u64, round: u64, proposer: <b>address</b>, failed_proposer_indices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, previous_block_votes_bitvec: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="timestamp.html#0x1_timestamp">timestamp</a>: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 1000;
-<b>requires</b> <a href="timestamp.html#0x1_timestamp">timestamp</a> &gt;= <a href="reconfiguration.html#0x1_reconfiguration_last_reconfiguration_time">reconfiguration::last_reconfiguration_time</a>();
-<b>include</b> <a href="block.html#0x1_block_BlockRequirement">BlockRequirement</a>;
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-block_prologue_ext-1"><a class="header" href="#function-block_prologue_ext-1">Function <code>block_prologue_ext</code> <a id="@Specification_1_block_prologue_ext"></a></a></h3>
 <pre><code><b>fun</b> <a href="block.html#0x1_block_block_prologue_ext">block_prologue_ext</a>(vm: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: <b>address</b>, epoch: u64, round: u64, proposer: <b>address</b>, failed_proposer_indices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, previous_block_votes_bitvec: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="timestamp.html#0x1_timestamp">timestamp</a>: u64, randomness_seed: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 1000;
-<b>requires</b> <a href="timestamp.html#0x1_timestamp">timestamp</a> &gt;= <a href="reconfiguration.html#0x1_reconfiguration_last_reconfiguration_time">reconfiguration::last_reconfiguration_time</a>();
-<b>include</b> <a href="block.html#0x1_block_BlockRequirement">BlockRequirement</a>;
-<b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">stake::ResourceRequirement</a>;
-<b>include</b> <a href="stake.html#0x1_stake_GetReconfigStartTimeRequirement">stake::GetReconfigStartTimeRequirement</a>;
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-block_prologue_ext_v2-1"><a class="header" href="#function-block_prologue_ext_v2-1">Function <code>block_prologue_ext_v2</code> <a id="@Specification_1_block_prologue_ext_v2"></a></a></h3>
+<pre><code><b>fun</b> <a href="block.html#0x1_block_block_prologue_ext_v2">block_prologue_ext_v2</a>(vm: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: <b>address</b>, epoch: u64, round: u64, proposer: <b>address</b>, failed_proposer_indices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, previous_block_votes_bitvec: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="timestamp.html#0x1_timestamp">timestamp</a>: u64, randomness_seed: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, decryption_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-block_prologue_ext_v3-1"><a class="header" href="#function-block_prologue_ext_v3-1">Function <code>block_prologue_ext_v3</code> <a id="@Specification_1_block_prologue_ext_v3"></a></a></h3>
+<pre><code><b>fun</b> <a href="block.html#0x1_block_block_prologue_ext_v3">block_prologue_ext_v3</a>(vm: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: <b>address</b>, epoch: u64, round: u64, proposer: <b>address</b>, failed_proposer_indices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, previous_block_votes_bitvec: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="timestamp.html#0x1_timestamp">timestamp</a>: u64, randomness_seed: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, decryption_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, decryption_round: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-block_epilogue-1"><a class="header" href="#function-block_epilogue-1">Function <code>block_epilogue</code> <a id="@Specification_1_block_epilogue"></a></a></h3>
+<pre><code><b>fun</b> <a href="block.html#0x1_block_block_epilogue">block_epilogue</a>(vm: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_distribution_validator_indices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, fee_amounts_octa: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-get_current_block_height-1"><a class="header" href="#function-get_current_block_height-1">Function <code>get_current_block_height</code> <a id="@Specification_1_get_current_block_height"></a></a></h3>
 <pre><code>#[view]

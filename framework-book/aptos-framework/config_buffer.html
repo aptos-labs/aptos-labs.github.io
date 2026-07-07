@@ -185,6 +185,7 @@ This is typically done by implementing <code>C::set()</code> to update the confi
 <li><a href="#0x1_config_buffer_extract_v2">Function <code>extract_v2</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_does_exist">Function <code>does_exist</code></a></li>
 <li><a href="#@Specification_1_upsert">Function <code>upsert</code></a></li>
 <li><a href="#@Specification_1_extract_v2">Function <code>extract_v2</code></a></li>
@@ -298,10 +299,24 @@ Should only be used at the end of a reconfiguration.</p>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="config_buffer.html#0x1_config_buffer_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<b>aborts_if</b> addr != @aptos_framework;
+<b>modifies</b> <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework);
+<b>ensures</b> !<b>old</b>(<b>exists</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework)) ==&gt;
+    <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_len">simple_map::spec_len</a>(<b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework).configs) == 0;
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework)) ==&gt;
+    <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework) == <b>old</b>(<b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework));
+</code></pre>
 <h3 id="function-does_exist-1"><a class="header" href="#function-does_exist-1">Function <code>does_exist</code> <a id="@Specification_1_does_exist"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="config_buffer.html#0x1_config_buffer_does_exist">does_exist</a>&lt;T: store&gt;(): bool
 </code></pre>
-<pre><code><b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
 <b>let</b> type_name = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;T&gt;();
 <b>ensures</b> result == <a href="config_buffer.html#0x1_config_buffer_spec_fun_does_exist">spec_fun_does_exist</a>&lt;T&gt;(type_name);
 </code></pre>
@@ -332,6 +347,12 @@ Should only be used at the end of a reconfiguration.</p>
 <pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework);
 <b>include</b> <a href="config_buffer.html#0x1_config_buffer_ExtractAbortsIf">ExtractAbortsIf</a>&lt;T&gt;;
 <b>modifies</b> <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework);
+<b>let</b> key = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;T&gt;();
+<b>let</b> pre_configs = <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework).configs;
+<b>let</b> stored = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(pre_configs, key);
+<b>let</b> <b>post</b> post_configs = <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework).configs;
+<b>ensures</b> result == <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;T&gt;(stored.data);
+<b>ensures</b> !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(post_configs, key);
 </code></pre>
 <p><a id="0x1_config_buffer_ExtractAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="config_buffer.html#0x1_config_buffer_ExtractAbortsIf">ExtractAbortsIf</a>&lt;T&gt; {
@@ -351,15 +372,6 @@ Should only be used at the end of a reconfiguration.</p>
     <b>aborts_if</b> account_addr != @aptos_framework;
     <b>aborts_if</b> len(config) == 0;
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework);
-}
-</code></pre>
-<p><a id="0x1_config_buffer_OnNewEpochAbortsIf"></a></p>
-<pre><code><b>schema</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochAbortsIf">OnNewEpochAbortsIf</a>&lt;T&gt; {
-    <b>let</b> type_name = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;T&gt;();
-    <b>let</b> configs = <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">PendingConfigs</a>&gt;(@aptos_framework);
-    <b>include</b> <a href="config_buffer.html#0x1_config_buffer_spec_fun_does_exist">spec_fun_does_exist</a>&lt;T&gt;(type_name) ==&gt; <a href="../aptos-stdlib/any.html#0x1_any_UnpackAbortsIf">any::UnpackAbortsIf</a>&lt;T&gt; {
-        self: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(configs.configs, type_name)
-    };
 }
 </code></pre>
 <p><a id="0x1_config_buffer_OnNewEpochRequirement"></a></p>

@@ -175,7 +175,13 @@ It is used to represent public keys for the Ed25519, SECP256K1, WebAuthn, and Ke
 <li><a href="#0x1_single_key_from_ed25519_public_key_unvalidated">Function <code>from_ed25519_public_key_unvalidated</code></a></li>
 <li><a href="#0x1_single_key_from_ed25519_public_key">Function <code>from_ed25519_public_key</code></a></li>
 <li><a href="#0x1_single_key_to_authentication_key">Function <code>to_authentication_key</code></a></li>
-<li><a href="#@Specification_1">Specification</a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_is_keyless_or_federated_keyless_public_key">Function <code>is_keyless_or_federated_keyless_public_key</code></a></li>
+<li><a href="#@Specification_1_from_ed25519_public_key_unvalidated">Function <code>from_ed25519_public_key_unvalidated</code></a></li>
+<li><a href="#@Specification_1_to_authentication_key">Function <code>to_authentication_key</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="../move-stdlib/bcs.html#0x1_bcs">0x1::bcs</a>;
 <b>use</b> <a href="bcs_stream.html#0x1_bcs_stream">0x1::bcs_stream</a>;
@@ -388,7 +394,27 @@ It does check that the bytes deserialize into a well-formed public key for the g
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> verify = <b>true</b>;
+</code></pre>
+<h3 id="function-is_keyless_or_federated_keyless_public_key-1"><a class="header" href="#function-is_keyless_or_federated_keyless_public_key-1">Function <code>is_keyless_or_federated_keyless_public_key</code> <a id="@Specification_1_is_keyless_or_federated_keyless_public_key"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_key.html#0x1_single_key_is_keyless_or_federated_keyless_public_key">is_keyless_or_federated_keyless_public_key</a>(pk: &<a href="single_key.html#0x1_single_key_AnyPublicKey">single_key::AnyPublicKey</a>): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-from_ed25519_public_key_unvalidated-1"><a class="header" href="#function-from_ed25519_public_key_unvalidated-1">Function <code>from_ed25519_public_key_unvalidated</code> <a id="@Specification_1_from_ed25519_public_key_unvalidated"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_key.html#0x1_single_key_from_ed25519_public_key_unvalidated">from_ed25519_public_key_unvalidated</a>(pk: <a href="ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a>): <a href="single_key.html#0x1_single_key_AnyPublicKey">single_key::AnyPublicKey</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == AnyPublicKey::Ed25519 { pk };
+</code></pre>
+<h3 id="function-to_authentication_key-1"><a class="header" href="#function-to_authentication_key-1">Function <code>to_authentication_key</code> <a id="@Specification_1_to_authentication_key"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_key.html#0x1_single_key_to_authentication_key">to_authentication_key</a>(self: &<a href="single_key.html#0x1_single_key_AnyPublicKey">single_key::AnyPublicKey</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> len(result) == 32;
 </code></pre>
 
                     </main>

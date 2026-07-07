@@ -1168,9 +1168,6 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
                     a.active_handles[i] != a.active_handles[j]
     );
 </code></pre>
-<p><a id="0x1_permissioned_signer_spec_is_permissioned_signer_impl"></a></p>
-<pre><code><b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer_impl">spec_is_permissioned_signer_impl</a>(s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>): bool;
-</code></pre>
 <h3 id="function-create_permissioned_handle-1"><a class="header" href="#function-create_permissioned_handle-1">Function <code>create_permissioned_handle</code> <a id="@Specification_1_create_permissioned_handle"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_create_permissioned_handle">create_permissioned_handle</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="permissioned_signer.html#0x1_permissioned_signer_PermissionedHandle">permissioned_signer::PermissionedHandle</a>
 </code></pre>
@@ -1254,6 +1251,7 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 };
 <b>let</b> pre_has = <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">big_ordered_map::spec_contains_key</a>(pre_perms, key);
 <b>let</b> pre_stored = <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">big_ordered_map::spec_get</a>(pre_perms, key);
+<b>ensures</b> <b>exists</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(addr) == <b>old</b>(<b>exists</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">PermissionStorage</a>&gt;(addr));
 <b>ensures</b> [concrete] !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) ==&gt; result == <b>true</b>;
 <b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) && !pre_has) ==&gt; result == <b>false</b>;
 <b>ensures</b> [concrete] (<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s)
@@ -1265,6 +1263,7 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
         && !(pre_stored is StoredPermission::Unlimited))
     ==&gt; (result == (pre_stored.0 &gt;= 1));
 <b>ensures</b> [abstract] result == <a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">spec_check_permission_exists</a>(s, perm);
+<b>ensures</b> [abstract] !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s) ==&gt; result == <b>true</b>;
 </code></pre>
 <p><a id="0x1_permissioned_signer_spec_check_permission_exists"></a></p>
 <pre><code><b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">spec_check_permission_exists</a>&lt;PermKey: <b>copy</b> + drop + store&gt;(s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, perm: PermKey): bool;
@@ -1347,7 +1346,7 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
-<b>ensures</b> [abstract] result == <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer_impl">spec_is_permissioned_signer_impl</a>(s);
+<b>ensures</b> [abstract] result == std::signer::spec_is_permissioned_signer_impl(s);
 </code></pre>
 <p><a id="0x1_permissioned_signer_spec_is_permissioned_signer"></a></p>
 <pre><code><b>fun</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">spec_is_permissioned_signer</a>(s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>): bool {
@@ -1356,7 +1355,7 @@ signer::address_of(master) == signer::address_of(signer_from_permissioned_handle
    <b>if</b> (!<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(PERMISSIONED_SIGNER)) {
        <b>false</b>
    } <b>else</b> {
-       <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer_impl">spec_is_permissioned_signer_impl</a>(s)
+       std::signer::spec_is_permissioned_signer_impl(s)
    }
 }
 </code></pre>

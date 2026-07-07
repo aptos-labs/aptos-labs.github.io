@@ -312,6 +312,7 @@ or if their stake drops below the min required, they would get removed at the en
 <li><a href="#@Specification_1_get_pending_transaction_fee">Function <code>get_pending_transaction_fee</code></a></li>
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_remove_validators">Function <code>remove_validators</code></a></li>
+<li><a href="#@Specification_1_initialize_pending_transaction_fee">Function <code>initialize_pending_transaction_fee</code></a></li>
 <li><a href="#@Specification_1_initialize_stake_owner">Function <code>initialize_stake_owner</code></a></li>
 <li><a href="#@Specification_1_initialize_validator">Function <code>initialize_validator</code></a></li>
 <li><a href="#@Specification_1_extract_owner_cap">Function <code>extract_owner_cap</code></a></li>
@@ -3694,6 +3695,108 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <a id="0x1_stake_ghost_pending_inactive_num"></a>
 <b>global</b> <a href="stake.html#0x1_stake_ghost_pending_inactive_num">ghost_pending_inactive_num</a>: u64;
 </code></pre>
+<p><a id="0x1_stake_spec_validator_index_upper_bound"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>(): u64 {
+   len(<b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework).validators)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_has_stake_pool"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_has_stake_pool">spec_has_stake_pool</a>(a: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(a)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_has_validator_config"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_has_validator_config">spec_has_validator_config</a>(a: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(a)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_rewards_amount"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_rewards_amount">spec_rewards_amount</a>(
+   stake_amount: u64,
+   num_successful_proposals: u64,
+   num_total_proposals: u64,
+   rewards_rate: u64,
+   rewards_rate_denominator: u64
+): u64;
+</code></pre>
+<p><a id="0x1_stake_spec_contains"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validators: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a>&gt;, addr: <b>address</b>): bool {
+   <b>exists</b> i in 0..len(validators): validators[i].addr == addr
+}
+</code></pre>
+<p><a id="0x1_stake_spec_is_current_epoch_validator"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(pool_address: <b>address</b>): bool {
+   <b>let</b> validator_set = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+   !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
+       && (
+           <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
+               || <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address)
+       )
+}
+</code></pre>
+<p><a id="0x1_stake_ResourceRequirement"></a></p>
+<pre><code><b>schema</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a> {
+    <b>requires</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">AptosCoinCapabilities</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;StakingConfig&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;StakingRewardsConfig&gt;(@aptos_framework)
+        || !<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+    <b>requires</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+}
+</code></pre>
+<p><a id="0x1_stake_spec_get_reward_rate_1"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_get_reward_rate_1">spec_get_reward_rate_1</a>(config: StakingConfig): num {
+   <b>if</b> (<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
+       <b>let</b> epoch_rewards_rate =
+           <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
+       <b>if</b> (epoch_rewards_rate.value == 0) { 0 }
+       <b>else</b> {
+           <b>let</b> denominator_0 =
+               aptos_std::fixed_point64::spec_divide_u128(
+                   <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
+               );
+           <b>let</b> denominator =
+               <b>if</b> (denominator_0 &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
+                   <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>
+               } <b>else</b> {
+                   denominator_0
+               };
+           <b>let</b> nominator =
+               aptos_std::fixed_point64::spec_multiply_u128(
+                   denominator, epoch_rewards_rate
+               );
+           nominator
+       }
+   } <b>else</b> {
+       config.rewards_rate
+   }
+}
+</code></pre>
+<p><a id="0x1_stake_spec_get_reward_rate_2"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_get_reward_rate_2">spec_get_reward_rate_2</a>(config: StakingConfig): num {
+   <b>if</b> (<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
+       <b>let</b> epoch_rewards_rate =
+           <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
+       <b>if</b> (epoch_rewards_rate.value == 0) { 1 }
+       <b>else</b> {
+           <b>let</b> denominator_0 =
+               aptos_std::fixed_point64::spec_divide_u128(
+                   <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
+               );
+           <b>let</b> denominator =
+               <b>if</b> (denominator_0 &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
+                   <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>
+               } <b>else</b> {
+                   denominator_0
+               };
+           denominator
+       }
+   } <b>else</b> {
+       config.rewards_rate_denominator
+   }
+}
+</code></pre>
 <h3 id="resource-validatorset-1"><a class="header" href="#resource-validatorset-1">Resource <code>ValidatorSet</code> <a id="@Specification_1_ValidatorSet"></a></a></h3>
 <pre><code><b>struct</b> <a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a> <b>has</b> <b>copy</b>, drop, store, key
 </code></pre>
@@ -3845,6 +3948,11 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <b>invariant</b> len(active_validators) &gt; 0;
 <b>ensures</b> len(active_validators) + len(pending_inactive_validators)
     == len(post_active_validators) + len(post_pending_inactive_validators);
+</code></pre>
+<h3 id="function-initialize_pending_transaction_fee-1"><a class="header" href="#function-initialize_pending_transaction_fee-1">Function <code>initialize_pending_transaction_fee</code> <a id="@Specification_1_initialize_pending_transaction_fee"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_initialize_pending_transaction_fee">initialize_pending_transaction_fee</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-initialize_stake_owner-1"><a class="header" href="#function-initialize_stake_owner-1">Function <code>initialize_stake_owner</code> <a id="@Specification_1_initialize_stake_owner"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_initialize_stake_owner">initialize_stake_owner</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, initial_stake_amount: u64, operator: <b>address</b>, voter: <b>address</b>)
@@ -4406,45 +4514,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
        == <a href="stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>()
 }
 </code></pre>
-<p><a id="0x1_stake_spec_validator_index_upper_bound"></a></p>
-<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>(): u64 {
-   len(<b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework).validators)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_has_stake_pool"></a></p>
-<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_has_stake_pool">spec_has_stake_pool</a>(a: <b>address</b>): bool {
-   <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(a)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_has_validator_config"></a></p>
-<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_has_validator_config">spec_has_validator_config</a>(a: <b>address</b>): bool {
-   <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(a)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_rewards_amount"></a></p>
-<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_rewards_amount">spec_rewards_amount</a>(
-   stake_amount: u64,
-   num_successful_proposals: u64,
-   num_total_proposals: u64,
-   rewards_rate: u64,
-   rewards_rate_denominator: u64
-): u64;
-</code></pre>
-<p><a id="0x1_stake_spec_contains"></a></p>
-<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validators: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a>&gt;, addr: <b>address</b>): bool {
-   <b>exists</b> i in 0..len(validators): validators[i].addr == addr
-}
-</code></pre>
-<p><a id="0x1_stake_spec_is_current_epoch_validator"></a></p>
-<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(pool_address: <b>address</b>): bool {
-   <b>let</b> validator_set = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
-   !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
-       && (
-           <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
-               || <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address)
-       )
-}
-</code></pre>
 <h3 id="function-update_stake_pool-1"><a class="header" href="#function-update_stake_pool-1">Function <code>update_stake_pool</code> <a id="@Specification_1_update_stake_pool"></a></a></h3>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_update_stake_pool">update_stake_pool</a>(validator_perf: &<a href="stake.html#0x1_stake_ValidatorPerformance">stake::ValidatorPerformance</a>, pool_address: <b>address</b>, <a href="staking_config.html#0x1_staking_config">staking_config</a>: &<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>)
 </code></pre>
@@ -4522,16 +4591,19 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_get_reconfig_start_time_secs">get_reconfig_start_time_secs</a>(): u64
 </code></pre>
 <pre><code><b>include</b> <a href="stake.html#0x1_stake_GetReconfigStartTimeRequirement">GetReconfigStartTimeRequirement</a>;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="stake.html#0x1_stake_spec_get_reconfig_start_time_secs">spec_get_reconfig_start_time_secs</a>();
 </code></pre>
 <p><a id="0x1_stake_GetReconfigStartTimeRequirement"></a></p>
 <pre><code><b>schema</b> <a href="stake.html#0x1_stake_GetReconfigStartTimeRequirement">GetReconfigStartTimeRequirement</a> {
     <b>requires</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
-    <b>include</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_StartTimeSecsRequirement">reconfiguration_state::StartTimeSecsRequirement</a>;
+    <b>include</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>() ==&gt;
+        <a href="reconfiguration_state.html#0x1_reconfiguration_state_StartTimeSecsRequirement">reconfiguration_state::StartTimeSecsRequirement</a>;
 }
 </code></pre>
 <p><a id="0x1_stake_spec_get_reconfig_start_time_secs"></a></p>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_get_reconfig_start_time_secs">spec_get_reconfig_start_time_secs</a>(): u64 {
-   <b>if</b> (<b>exists</b>&lt;<a href="reconfiguration_state.html#0x1_reconfiguration_state_State">reconfiguration_state::State</a>&gt;(@aptos_framework)) {
+   <b>if</b> (<a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>()) {
        <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_start_time_secs">reconfiguration_state::spec_start_time_secs</a>()
    } <b>else</b> {
        <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>()
@@ -4575,7 +4647,8 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-distribute_rewards-1"><a class="header" href="#function-distribute_rewards-1">Function <code>distribute_rewards</code> <a id="@Specification_1_distribute_rewards"></a></a></h3>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_distribute_rewards">distribute_rewards</a>(<a href="stake.html#0x1_stake">stake</a>: &<b>mut</b> <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;, num_successful_proposals: u64, num_total_proposals: u64, rewards_rate: u64, rewards_rate_denominator: u64): u64
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
 <b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
 <b>requires</b> rewards_rate &lt;= <a href="stake.html#0x1_stake_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>;
 <b>requires</b> rewards_rate_denominator &gt; 0;
@@ -4622,12 +4695,10 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
             rewards_rate_denominator
         )
     } <b>else</b> { 0 };
-    <b>let</b> amount = rewards_amount;
     <b>let</b> addr = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;AptosCoin&gt;().account_address;
     <b>aborts_if</b> (rewards_amount &gt; 0) && !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(addr);
+    <b>aborts_if</b> (rewards_amount &gt; 0) && (<a href="stake.html#0x1_stake">stake</a>.value + rewards_amount &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>);
     <b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(addr);
-    <b>include</b> (rewards_amount &gt; 0) ==&gt;
-        <a href="coin.html#0x1_coin_CoinAddAbortsIf">coin::CoinAddAbortsIf</a>&lt;AptosCoin&gt; { amount: amount };
 }
 </code></pre>
 <h3 id="function-append-1"><a class="header" href="#function-append-1">Function <code>append</code> <a id="@Specification_1_append"></a></a></h3>
