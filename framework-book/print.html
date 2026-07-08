@@ -4928,6 +4928,10 @@ a function value is returned which can be safely used in future executions as in
 type.</p>
 <p>In order to be accessible, the resolved function must be public. This prevents reflection to
 work around the languages modular encapsulation guarantees.</p>
+<p>A small set of framework functions are additionally forbidden from being resolved (the call
+returns <code>FunctionNotAccessible</code>), because their rules are enforced by the bytecode verifier at
+the call site and cannot be upheld for a dynamically-resolved function value. Currently this
+is only <code>0x1::event::emit</code>.</p>
 <p>The resolved function can be generic, in which case the instantiation must be inferrible
 from the provided <code>FuncType</code>. For example, <code><b>public</b> <b>fun</b> foo&lt;T&gt;(T)</code>, with <code>FunType = |u64|</code>,
 <code>T = u64</code> can be derived. If not all type parameters can be inferred, an error will be
@@ -27487,7 +27491,8 @@ The length of new_auth_key is 32.</p>
 </code></pre>
 <p>The Account existed under the signer
 The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>pragma</b> aborts_if_is_partial;
 <b>include</b> <a href="aptos-framework/account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="aptos-framework/account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::KeyRotation {} };
 <b>let</b> addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="aptos-framework/account.html#0x1_account">account</a>);
 <b>include</b> <a href="aptos-framework/account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr };
@@ -61953,6 +61958,11 @@ the current owner.</p>
 <p>Exceeds maximum nesting for an object transfer.</p>
 <pre><code><b>const</b> <a href="aptos-framework/object.html#0x1_object_EMAXIMUM_NESTING">EMAXIMUM_NESTING</a>: u64 = 6;
 </code></pre>
+<p><a id="0x1_object_ENOT_A_RESOURCE_TYPE"></a></p>
+<p>Returned by <code>exists_at</code> when its type argument is not a resource (struct) type with the
+<code>key</code> ability.</p>
+<pre><code><b>const</b> <a href="aptos-framework/object.html#0x1_object_ENOT_A_RESOURCE_TYPE">ENOT_A_RESOURCE_TYPE</a>: u64 = 11;
+</code></pre>
 <p><a id="0x1_object_ENOT_OBJECT_OWNER"></a></p>
 <p>The caller does not have ownership permissions</p>
 <pre><code><b>const</b> <a href="aptos-framework/object.html#0x1_object_ENOT_OBJECT_OWNER">ENOT_OBJECT_OWNER</a>: u64 = 4;
@@ -68583,7 +68593,8 @@ function as its payload.</li>
 <h3 id="function-u256_integer-1"><a class="header" href="#function-u256_integer-1">Function <code>u256_integer</code> <a id="@Specification_1_u256_integer"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/randomness.html#0x1_randomness_u256_integer">u256_integer</a>(): u256
 </code></pre>
-<pre><code><b>pragma</b> unroll = 32;
+<pre><code><b>pragma</b> verify_duration_estimate = 300;
+<b>pragma</b> unroll = 32;
 <b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>ensures</b> [abstract] result == <a href="aptos-framework/randomness.html#0x1_randomness_spec_u256_integer">spec_u256_integer</a>();
 </code></pre>
@@ -68591,6 +68602,7 @@ function as its payload.</li>
 <pre><code><b>fun</b> <a href="aptos-framework/randomness.html#0x1_randomness_u256_integer_internal">u256_integer_internal</a>(): u256
 </code></pre>
 <pre><code><b>pragma</b> opaque;
+<b>pragma</b> verify_duration_estimate = 300;
 <b>pragma</b> unroll = 32;
 <b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 </code></pre>
@@ -68600,28 +68612,32 @@ function as its payload.</li>
 <h3 id="function-u8_range-1"><a class="header" href="#function-u8_range-1">Function <code>u8_range</code> <a id="@Specification_1_u8_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/randomness.html#0x1_randomness_u8_range">u8_range</a>(min_incl: u8, max_excl: u8): u8
 </code></pre>
-<pre><code><b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-u64_range-1"><a class="header" href="#function-u64_range-1">Function <code>u64_range</code> <a id="@Specification_1_u64_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/randomness.html#0x1_randomness_u64_range">u64_range</a>(min_incl: u64, max_excl: u64): u64
 </code></pre>
-<pre><code><b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-u64_range_internal-1"><a class="header" href="#function-u64_range_internal-1">Function <code>u64_range_internal</code> <a id="@Specification_1_u64_range_internal"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/randomness.html#0x1_randomness_u64_range_internal">u64_range_internal</a>(min_incl: u64, max_excl: u64): u64
 </code></pre>
-<pre><code><b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-u256_range-1"><a class="header" href="#function-u256_range-1">Function <code>u256_range</code> <a id="@Specification_1_u256_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/randomness.html#0x1_randomness_u256_range">u256_range</a>(min_incl: u256, max_excl: u256): u256
 </code></pre>
-<pre><code><b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>include</b> <a href="aptos-framework/randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
