@@ -204,6 +204,7 @@
 <li><a href="#0x1_coin_fungible_asset_to_coin">Function <code>fungible_asset_to_coin</code></a></li>
 <li><a href="#0x1_coin_assert_paired_metadata_exists">Function <code>assert_paired_metadata_exists</code></a></li>
 <li><a href="#0x1_coin_paired_mint_ref_exists">Function <code>paired_mint_ref_exists</code></a></li>
+<li><a href="#0x1_coin_get_paired_mint_copy_ref">Function <code>get_paired_mint_copy_ref</code></a></li>
 <li><a href="#0x1_coin_get_paired_mint_ref">Function <code>get_paired_mint_ref</code></a></li>
 <li><a href="#0x1_coin_return_paired_mint_ref">Function <code>return_paired_mint_ref</code></a></li>
 <li><a href="#0x1_coin_paired_transfer_ref_exists">Function <code>paired_transfer_ref_exists</code></a></li>
@@ -214,6 +215,7 @@
 <li><a href="#0x1_coin_get_paired_burn_ref">Function <code>get_paired_burn_ref</code></a></li>
 <li><a href="#0x1_coin_convert_and_take_paired_burn_ref">Function <code>convert_and_take_paired_burn_ref</code></a></li>
 <li><a href="#0x1_coin_return_paired_burn_ref">Function <code>return_paired_burn_ref</code></a></li>
+<li><a href="#0x1_coin_borrow_paired_mint_ref">Function <code>borrow_paired_mint_ref</code></a></li>
 <li><a href="#0x1_coin_borrow_paired_burn_ref">Function <code>borrow_paired_burn_ref</code></a></li>
 <li><a href="#0x1_coin_allow_supply_upgrades">Function <code>allow_supply_upgrades</code></a></li>
 <li><a href="#0x1_coin_calculate_amount_to_withdraw">Function <code>calculate_amount_to_withdraw</code></a></li>
@@ -1162,6 +1164,26 @@ is set, coin creators are allowed to upgrade to parallelizable implementations.<
 }
 </code></pre>
 </details>
+<h2 id="function-get_paired_mint_copy_ref"><a class="header" href="#function-get_paired_mint_copy_ref">Function <code>get_paired_mint_copy_ref</code> <a id="0x1_coin_get_paired_mint_copy_ref"></a></a></h2>
+<p>Return an independent, standalone copy of the paired fungible asset's <code>MintRef</code>, derived
+from a <code><a href="coin.html#0x1_coin_MintCapability">MintCapability</a></code>. Unlike <code>get_paired_mint_ref</code>, which flash-borrows the single
+stored <code>MintRef</code> out of <code><a href="coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a></code> and requires it to be returned via a
+<code><a href="coin.html#0x1_coin_MintRefReceipt">MintRefReceipt</a></code>, this leaves the stored ref in place and hands back an owned <code>MintRef</code>
+that the caller can store permanently (e.g. in <code><a href="transaction_fee.html#0x1_transaction_fee">transaction_fee</a></code>) and use without any
+per-call read-modify-write of the shared <code><a href="coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a></code> resource. Mirrors
+<code>get_paired_burn_copy_ref</code>.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="coin.html#0x1_coin_get_paired_mint_copy_ref">get_paired_mint_copy_ref</a>&lt;CoinType&gt;(mint_cap: &<a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;): <a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="coin.html#0x1_coin_get_paired_mint_copy_ref">get_paired_mint_copy_ref</a>&lt;CoinType&gt;(
+    mint_cap: &<a href="coin.html#0x1_coin_MintCapability">MintCapability</a>&lt;CoinType&gt;
+): MintRef <b>acquires</b> <a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>, <a href="coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a> {
+    <b>let</b> mint_ref = <a href="coin.html#0x1_coin_borrow_paired_mint_ref">borrow_paired_mint_ref</a>(mint_cap);
+    mint_ref.generate_mint_copy_ref()
+}
+</code></pre>
+</details>
 <h2 id="function-get_paired_mint_ref"><a class="header" href="#function-get_paired_mint_ref">Function <code>get_paired_mint_ref</code> <a id="0x1_coin_get_paired_mint_ref"></a></a></h2>
 <p>Get the <code>MintRef</code> of paired fungible asset of a coin type from <code><a href="coin.html#0x1_coin_MintCapability">MintCapability</a></code>.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_get_paired_mint_ref">get_paired_mint_ref</a>&lt;CoinType&gt;(_: &<a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;): (<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>, <a href="coin.html#0x1_coin_MintRefReceipt">coin::MintRefReceipt</a>)
@@ -1362,6 +1384,27 @@ is set, coin creators are allowed to upgrade to parallelizable implementations.<
     <b>let</b> burn_ref_opt =
         &<b>mut</b> <b>borrow_global_mut</b>&lt;<a href="coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a>&gt;(metadata_addr).burn_ref_opt;
     burn_ref_opt.fill(burn_ref);
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_paired_mint_ref"><a class="header" href="#function-borrow_paired_mint_ref">Function <code>borrow_paired_mint_ref</code> <a id="0x1_coin_borrow_paired_mint_ref"></a></a></h2>
+<pre><code><b>fun</b> <a href="coin.html#0x1_coin_borrow_paired_mint_ref">borrow_paired_mint_ref</a>&lt;CoinType&gt;(_: &<a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;): &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="coin.html#0x1_coin_borrow_paired_mint_ref">borrow_paired_mint_ref</a>&lt;CoinType&gt;(
+    _: &<a href="coin.html#0x1_coin_MintCapability">MintCapability</a>&lt;CoinType&gt;
+): &MintRef {
+    <b>let</b> metadata = <a href="coin.html#0x1_coin_assert_paired_metadata_exists">assert_paired_metadata_exists</a>&lt;CoinType&gt;();
+    <b>let</b> metadata_addr = metadata.object_address();
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a>&gt;(metadata_addr),
+        <a href="../move-stdlib/error.html#0x1_error_internal">error::internal</a>(<a href="coin.html#0x1_coin_EPAIRED_FUNGIBLE_ASSET_REFS_NOT_FOUND">EPAIRED_FUNGIBLE_ASSET_REFS_NOT_FOUND</a>)
+    );
+    <b>let</b> mint_ref_opt =
+        &<b>borrow_global</b>&lt;<a href="coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a>&gt;(metadata_addr).mint_ref_opt;
+    <b>assert</b>!(mint_ref_opt.is_some(), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="coin.html#0x1_coin_EMINT_REF_NOT_FOUND">EMINT_REF_NOT_FOUND</a>));
+    mint_ref_opt.borrow()
 }
 </code></pre>
 </details>
@@ -2685,21 +2728,6 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
     symbol: symbol.bytes
 };
 <b>ensures</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(addr);
-</code></pre>
-<p>Make sure <code>name</code> and <code>symbol</code> are legal length.
-Only the creator of <code>CoinType</code> can initialize.</p>
-<p><a id="0x1_coin_InitializeInternalSchema"></a></p>
-<pre><code><b>schema</b> <a href="coin.html#0x1_coin_InitializeInternalSchema">InitializeInternalSchema</a>&lt;CoinType&gt; {
-    <a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
-    symbol: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
-    <b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-    <b>let</b> coin_address = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
-    <b>aborts_if</b> coin_address != account_addr;
-    <b>aborts_if</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(account_addr);
-    <b>aborts_if</b> len(name) &gt; <a href="coin.html#0x1_coin_MAX_COIN_NAME_LENGTH">MAX_COIN_NAME_LENGTH</a>;
-    <b>aborts_if</b> len(symbol) &gt; <a href="coin.html#0x1_coin_MAX_COIN_SYMBOL_LENGTH">MAX_COIN_SYMBOL_LENGTH</a>;
-}
 </code></pre>
 <h3 id="function-initialize_internal-1"><a class="header" href="#function-initialize_internal-1">Function <code>initialize_internal</code> <a id="@Specification_1_initialize_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="coin.html#0x1_coin_initialize_internal">initialize_internal</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, monitor_supply: bool, parallelizable: bool): (<a href="coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_FreezeCapability">coin::FreezeCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;)

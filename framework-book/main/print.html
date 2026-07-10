@@ -1338,6 +1338,7 @@ return true.</p>
 <li><a href="move-stdlib/features.html#0x1_features_is_native_orderbook_enabled">Function <code>is_native_orderbook_enabled</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_get_native_collateral_feature">Function <code>get_native_collateral_feature</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_is_native_collateral_enabled">Function <code>is_native_collateral_enabled</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_gas_refund_fa_mint_enabled">Function <code>gas_refund_fa_mint_enabled</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -1572,6 +1573,14 @@ Lifetime: transient</p>
 <p><a id="0x1_features_FUNCTION_REFLECTION"></a></p>
 <p>Whether function reflection is enabled.</p>
 <pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>: u64 = 105;
+</code></pre>
+<p><a id="0x1_features_GAS_REFUND_FA_MINT"></a></p>
+<p>When enabled, the gas refund in the epilogue mints APT directly as a fungible asset
+via the paired <code>MintRef</code> (stored in <code>transaction_fee::AptosFAMintCapabilities</code>), instead
+of minting a coin and converting it. This avoids touching the legacy coin supply
+aggregator (v1), reducing Block-STM contention on refund transactions.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_GAS_REFUND_FA_MINT">GAS_REFUND_FA_MINT</a>: u64 = 124;
 </code></pre>
 <p><a id="0x1_features_HOTNESS_IN_EPILOGUE"></a></p>
 <p>When enabled, per-block hot-state promotions are persisted through the block
@@ -3271,6 +3280,16 @@ Lifetime: transient</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_native_collateral_enabled">is_native_collateral_enabled</a>(): bool {
     <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-gas_refund_fa_mint_enabled"><a class="header" href="#function-gas_refund_fa_mint_enabled">Function <code>gas_refund_fa_mint_enabled</code> <a id="0x1_features_gas_refund_fa_mint_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_gas_refund_fa_mint_enabled">gas_refund_fa_mint_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_gas_refund_fa_mint_enabled">gas_refund_fa_mint_enabled</a>(): bool {
+    <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_GAS_REFUND_FA_MINT">GAS_REFUND_FA_MINT</a>)
 }
 </code></pre>
 </details>
@@ -29563,6 +29582,7 @@ If length of prefix and suffix together exceeds 1024 bytes, ECONCAT_STRING_LENGT
 <li><a href="aptos-framework/aptos_account.html#0x1_aptos_account_fungible_transfer_only">Function <code>fungible_transfer_only</code></a></li>
 <li><a href="aptos-framework/aptos_account.html#0x1_aptos_account_is_fungible_balance_at_least">Function <code>is_fungible_balance_at_least</code></a></li>
 <li><a href="aptos-framework/aptos_account.html#0x1_aptos_account_burn_from_fungible_store_for_gas">Function <code>burn_from_fungible_store_for_gas</code></a></li>
+<li><a href="aptos-framework/aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">Function <code>mint_to_fungible_store_for_gas</code></a></li>
 <li><a href="aptos-framework/aptos_account.html#0x1_aptos_account_ensure_primary_fungible_store_exists">Function <code>ensure_primary_fungible_store_exists</code></a></li>
 <li><a href="aptos-framework/aptos_account.html#0x1_aptos_account_primary_fungible_store_address">Function <code>primary_fungible_store_address</code></a></li>
 <li><a href="aptos-framework/aptos_account.html#@Specification_1">Specification</a>
@@ -29586,6 +29606,7 @@ If length of prefix and suffix together exceeds 1024 bytes, ECONCAT_STRING_LENGT
 <li><a href="aptos-framework/aptos_account.html#@Specification_1_fungible_transfer_only">Function <code>fungible_transfer_only</code></a></li>
 <li><a href="aptos-framework/aptos_account.html#@Specification_1_is_fungible_balance_at_least">Function <code>is_fungible_balance_at_least</code></a></li>
 <li><a href="aptos-framework/aptos_account.html#@Specification_1_burn_from_fungible_store_for_gas">Function <code>burn_from_fungible_store_for_gas</code></a></li>
+<li><a href="aptos-framework/aptos_account.html#@Specification_1_mint_to_fungible_store_for_gas">Function <code>mint_to_fungible_store_for_gas</code></a></li>
 </ul>
 </li>
 </ul>
@@ -30004,6 +30025,24 @@ to transfer APT) - if we want to allow APT PFS without account itself</p>
 }
 </code></pre>
 </details>
+<h2 id="function-mint_to_fungible_store_for_gas"><a class="header" href="#function-mint_to_fungible_store_for_gas">Function <code>mint_to_fungible_store_for_gas</code> <a id="0x1_aptos_account_mint_to_fungible_store_for_gas"></a></a></h2>
+<p>Mint into APT Primary FungibleStore for gas refund</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">mint_to_fungible_store_for_gas</a>(ref: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>, <a href="aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, amount: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">mint_to_fungible_store_for_gas</a>(
+    ref: &MintRef, <a href="aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, amount: u64
+) {
+    // Skip minting <b>if</b> amount is zero. This shouldn't <a href="aptos-framework/../move-stdlib/error.html#0x1_error">error</a> out <b>as</b> it's called <b>as</b> part of gas refund.
+    <b>if</b> (amount != 0) {
+        <b>let</b> store_addr = <a href="aptos-framework/aptos_account.html#0x1_aptos_account_ensure_primary_fungible_store_exists">ensure_primary_fungible_store_exists</a>(<a href="aptos-framework/account.html#0x1_account">account</a>);
+        <b>let</b> fa = <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_mint">fungible_asset::mint</a>(ref, amount);
+        <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_unchecked_deposit_with_no_events">fungible_asset::unchecked_deposit_with_no_events</a>(store_addr, fa);
+    };
+}
+</code></pre>
+</details>
 <h2 id="function-ensure_primary_fungible_store_exists"><a class="header" href="#function-ensure_primary_fungible_store_exists">Function <code>ensure_primary_fungible_store_exists</code> <a id="0x1_aptos_account_ensure_primary_fungible_store_exists"></a></a></h2>
 <p>Ensure that APT Primary FungibleStore exists (and create if it doesn't)</p>
 <pre><code><b>fun</b> <a href="aptos-framework/aptos_account.html#0x1_aptos_account_ensure_primary_fungible_store_exists">ensure_primary_fungible_store_exists</a>(owner: <b>address</b>): <b>address</b>
@@ -30336,6 +30375,11 @@ Check if the AptosCoin under the address existed.</p>
     <b>ensures</b> coin_store_source.<a href="aptos-framework/coin.html#0x1_coin">coin</a>.value - amount == p_coin_store_source.<a href="aptos-framework/coin.html#0x1_coin">coin</a>.value;
     <b>ensures</b> if_exist_account && if_exist_coin ==&gt; coin_store_to.<a href="aptos-framework/coin.html#0x1_coin">coin</a>.value + amount == p_coin_store_to.<a href="aptos-framework/coin.html#0x1_coin">coin</a>.value;
 }
+</code></pre>
+<h3 id="function-mint_to_fungible_store_for_gas-1"><a class="header" href="#function-mint_to_fungible_store_for_gas-1">Function <code>mint_to_fungible_store_for_gas</code> <a id="@Specification_1_mint_to_fungible_store_for_gas"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">mint_to_fungible_store_for_gas</a>(ref: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>, <a href="aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, amount: u64)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x1aptos_coin"><a class="header" href="#module-0x1aptos_coin">Module <code>0x1::aptos_coin</code> <a id="0x1_aptos_coin"></a></a></h1>
 <p>This module defines a minimal and generic Coin and Balance.
@@ -38791,6 +38835,7 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 <li><a href="aptos-framework/coin.html#0x1_coin_fungible_asset_to_coin">Function <code>fungible_asset_to_coin</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_assert_paired_metadata_exists">Function <code>assert_paired_metadata_exists</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_paired_mint_ref_exists">Function <code>paired_mint_ref_exists</code></a></li>
+<li><a href="aptos-framework/coin.html#0x1_coin_get_paired_mint_copy_ref">Function <code>get_paired_mint_copy_ref</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_get_paired_mint_ref">Function <code>get_paired_mint_ref</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_return_paired_mint_ref">Function <code>return_paired_mint_ref</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_paired_transfer_ref_exists">Function <code>paired_transfer_ref_exists</code></a></li>
@@ -38801,6 +38846,7 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 <li><a href="aptos-framework/coin.html#0x1_coin_get_paired_burn_ref">Function <code>get_paired_burn_ref</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_convert_and_take_paired_burn_ref">Function <code>convert_and_take_paired_burn_ref</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_return_paired_burn_ref">Function <code>return_paired_burn_ref</code></a></li>
+<li><a href="aptos-framework/coin.html#0x1_coin_borrow_paired_mint_ref">Function <code>borrow_paired_mint_ref</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_borrow_paired_burn_ref">Function <code>borrow_paired_burn_ref</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_allow_supply_upgrades">Function <code>allow_supply_upgrades</code></a></li>
 <li><a href="aptos-framework/coin.html#0x1_coin_calculate_amount_to_withdraw">Function <code>calculate_amount_to_withdraw</code></a></li>
@@ -39749,6 +39795,26 @@ is set, coin creators are allowed to upgrade to parallelizable implementations.<
 }
 </code></pre>
 </details>
+<h2 id="function-get_paired_mint_copy_ref"><a class="header" href="#function-get_paired_mint_copy_ref">Function <code>get_paired_mint_copy_ref</code> <a id="0x1_coin_get_paired_mint_copy_ref"></a></a></h2>
+<p>Return an independent, standalone copy of the paired fungible asset's <code>MintRef</code>, derived
+from a <code><a href="aptos-framework/coin.html#0x1_coin_MintCapability">MintCapability</a></code>. Unlike <code>get_paired_mint_ref</code>, which flash-borrows the single
+stored <code>MintRef</code> out of <code><a href="aptos-framework/coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a></code> and requires it to be returned via a
+<code><a href="aptos-framework/coin.html#0x1_coin_MintRefReceipt">MintRefReceipt</a></code>, this leaves the stored ref in place and hands back an owned <code>MintRef</code>
+that the caller can store permanently (e.g. in <code><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee">transaction_fee</a></code>) and use without any
+per-call read-modify-write of the shared <code><a href="aptos-framework/coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a></code> resource. Mirrors
+<code>get_paired_burn_copy_ref</code>.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/coin.html#0x1_coin_get_paired_mint_copy_ref">get_paired_mint_copy_ref</a>&lt;CoinType&gt;(mint_cap: &<a href="aptos-framework/coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;): <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/coin.html#0x1_coin_get_paired_mint_copy_ref">get_paired_mint_copy_ref</a>&lt;CoinType&gt;(
+    mint_cap: &<a href="aptos-framework/coin.html#0x1_coin_MintCapability">MintCapability</a>&lt;CoinType&gt;
+): MintRef <b>acquires</b> <a href="aptos-framework/coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>, <a href="aptos-framework/coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a> {
+    <b>let</b> mint_ref = <a href="aptos-framework/coin.html#0x1_coin_borrow_paired_mint_ref">borrow_paired_mint_ref</a>(mint_cap);
+    mint_ref.generate_mint_copy_ref()
+}
+</code></pre>
+</details>
 <h2 id="function-get_paired_mint_ref"><a class="header" href="#function-get_paired_mint_ref">Function <code>get_paired_mint_ref</code> <a id="0x1_coin_get_paired_mint_ref"></a></a></h2>
 <p>Get the <code>MintRef</code> of paired fungible asset of a coin type from <code><a href="aptos-framework/coin.html#0x1_coin_MintCapability">MintCapability</a></code>.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/coin.html#0x1_coin_get_paired_mint_ref">get_paired_mint_ref</a>&lt;CoinType&gt;(_: &<a href="aptos-framework/coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;): (<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>, <a href="aptos-framework/coin.html#0x1_coin_MintRefReceipt">coin::MintRefReceipt</a>)
@@ -39949,6 +40015,27 @@ is set, coin creators are allowed to upgrade to parallelizable implementations.<
     <b>let</b> burn_ref_opt =
         &<b>mut</b> <b>borrow_global_mut</b>&lt;<a href="aptos-framework/coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a>&gt;(metadata_addr).burn_ref_opt;
     burn_ref_opt.fill(burn_ref);
+}
+</code></pre>
+</details>
+<h2 id="function-borrow_paired_mint_ref"><a class="header" href="#function-borrow_paired_mint_ref">Function <code>borrow_paired_mint_ref</code> <a id="0x1_coin_borrow_paired_mint_ref"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-framework/coin.html#0x1_coin_borrow_paired_mint_ref">borrow_paired_mint_ref</a>&lt;CoinType&gt;(_: &<a href="aptos-framework/coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;): &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos-framework/coin.html#0x1_coin_borrow_paired_mint_ref">borrow_paired_mint_ref</a>&lt;CoinType&gt;(
+    _: &<a href="aptos-framework/coin.html#0x1_coin_MintCapability">MintCapability</a>&lt;CoinType&gt;
+): &MintRef {
+    <b>let</b> metadata = <a href="aptos-framework/coin.html#0x1_coin_assert_paired_metadata_exists">assert_paired_metadata_exists</a>&lt;CoinType&gt;();
+    <b>let</b> metadata_addr = metadata.object_address();
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="aptos-framework/coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a>&gt;(metadata_addr),
+        <a href="aptos-framework/../move-stdlib/error.html#0x1_error_internal">error::internal</a>(<a href="aptos-framework/coin.html#0x1_coin_EPAIRED_FUNGIBLE_ASSET_REFS_NOT_FOUND">EPAIRED_FUNGIBLE_ASSET_REFS_NOT_FOUND</a>)
+    );
+    <b>let</b> mint_ref_opt =
+        &<b>borrow_global</b>&lt;<a href="aptos-framework/coin.html#0x1_coin_PairedFungibleAssetRefs">PairedFungibleAssetRefs</a>&gt;(metadata_addr).mint_ref_opt;
+    <b>assert</b>!(mint_ref_opt.is_some(), <a href="aptos-framework/../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos-framework/coin.html#0x1_coin_EMINT_REF_NOT_FOUND">EMINT_REF_NOT_FOUND</a>));
+    mint_ref_opt.borrow()
 }
 </code></pre>
 </details>
@@ -41272,21 +41359,6 @@ Returns minted <code><a href="aptos-framework/coin.html#0x1_coin_Coin">Coin</a><
     symbol: symbol.bytes
 };
 <b>ensures</b> <b>exists</b>&lt;<a href="aptos-framework/coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(addr);
-</code></pre>
-<p>Make sure <code>name</code> and <code>symbol</code> are legal length.
-Only the creator of <code>CoinType</code> can initialize.</p>
-<p><a id="0x1_coin_InitializeInternalSchema"></a></p>
-<pre><code><b>schema</b> <a href="aptos-framework/coin.html#0x1_coin_InitializeInternalSchema">InitializeInternalSchema</a>&lt;CoinType&gt; {
-    <a href="aptos-framework/account.html#0x1_account">account</a>: <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>;
-    name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
-    symbol: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
-    <b>let</b> account_addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="aptos-framework/account.html#0x1_account">account</a>);
-    <b>let</b> coin_address = <a href="aptos-framework/../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
-    <b>aborts_if</b> coin_address != account_addr;
-    <b>aborts_if</b> <b>exists</b>&lt;<a href="aptos-framework/coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(account_addr);
-    <b>aborts_if</b> len(name) &gt; <a href="aptos-framework/coin.html#0x1_coin_MAX_COIN_NAME_LENGTH">MAX_COIN_NAME_LENGTH</a>;
-    <b>aborts_if</b> len(symbol) &gt; <a href="aptos-framework/coin.html#0x1_coin_MAX_COIN_SYMBOL_LENGTH">MAX_COIN_SYMBOL_LENGTH</a>;
-}
 </code></pre>
 <h3 id="function-initialize_internal-1"><a class="header" href="#function-initialize_internal-1">Function <code>initialize_internal</code> <a id="@Specification_1_initialize_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/coin.html#0x1_coin_initialize_internal">initialize_internal</a>&lt;CoinType&gt;(<a href="aptos-framework/account.html#0x1_account">account</a>: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="aptos-framework/../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="aptos-framework/../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, monitor_supply: bool, parallelizable: bool): (<a href="aptos-framework/coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;CoinType&gt;, <a href="aptos-framework/coin.html#0x1_coin_FreezeCapability">coin::FreezeCapability</a>&lt;CoinType&gt;, <a href="aptos-framework/coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;)
@@ -51122,6 +51194,7 @@ metadata object can be any object that equipped with <code><a href="aptos-framew
 <li><a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_mint_ref">Function <code>generate_mint_ref</code></a></li>
 <li><a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_burn_ref">Function <code>generate_burn_ref</code></a></li>
 <li><a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_burn_copy_ref">Function <code>generate_burn_copy_ref</code></a></li>
+<li><a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_mint_copy_ref">Function <code>generate_mint_copy_ref</code></a></li>
 <li><a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_transfer_ref">Function <code>generate_transfer_ref</code></a></li>
 <li><a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_raw_balance_ref">Function <code>generate_raw_balance_ref</code></a></li>
 <li><a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_raw_supply_ref">Function <code>generate_raw_supply_ref</code></a></li>
@@ -52246,6 +52319,17 @@ This can only be called at object creation time as constructor_ref is only avail
 <summary>Implementation</summary>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_burn_copy_ref">generate_burn_copy_ref</a>(self: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_BurnRef">BurnRef</a>): <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_BurnRef">BurnRef</a> {
     <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_BurnRef">BurnRef</a> { metadata: self.metadata }
+}
+</code></pre>
+</details>
+<h2 id="function-generate_mint_copy_ref"><a class="header" href="#function-generate_mint_copy_ref">Function <code>generate_mint_copy_ref</code> <a id="0x1_fungible_asset_generate_mint_copy_ref"></a></a></h2>
+<p>Creates a mint copy ref that can be used to mint fungible assets from the given mint ref.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_mint_copy_ref">generate_mint_copy_ref</a>(self: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>): <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_generate_mint_copy_ref">generate_mint_copy_ref</a>(self: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a>): <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a> {
+    <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a> { metadata: self.metadata }
 }
 </code></pre>
 </details>
@@ -77667,108 +77751,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <a id="0x1_stake_ghost_pending_inactive_num"></a>
 <b>global</b> <a href="aptos-framework/stake.html#0x1_stake_ghost_pending_inactive_num">ghost_pending_inactive_num</a>: u64;
 </code></pre>
-<p><a id="0x1_stake_spec_validator_index_upper_bound"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>(): u64 {
-   len(<b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework).validators)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_has_stake_pool"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_has_stake_pool">spec_has_stake_pool</a>(a: <b>address</b>): bool {
-   <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_StakePool">StakePool</a>&gt;(a)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_has_validator_config"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_has_validator_config">spec_has_validator_config</a>(a: <b>address</b>): bool {
-   <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(a)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_rewards_amount"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_rewards_amount">spec_rewards_amount</a>(
-   stake_amount: u64,
-   num_successful_proposals: u64,
-   num_total_proposals: u64,
-   rewards_rate: u64,
-   rewards_rate_denominator: u64
-): u64;
-</code></pre>
-<p><a id="0x1_stake_spec_contains"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validators: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a>&gt;, addr: <b>address</b>): bool {
-   <b>exists</b> i in 0..len(validators): validators[i].addr == addr
-}
-</code></pre>
-<p><a id="0x1_stake_spec_is_current_epoch_validator"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(pool_address: <b>address</b>): bool {
-   <b>let</b> validator_set = <b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
-   !<a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
-       && (
-           <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
-               || <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address)
-       )
-}
-</code></pre>
-<p><a id="0x1_stake_ResourceRequirement"></a></p>
-<pre><code><b>schema</b> <a href="aptos-framework/stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a> {
-    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_AptosCoinCapabilities">AptosCoinCapabilities</a>&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;StakingConfig&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;StakingRewardsConfig&gt;(@aptos_framework)
-        || !<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
-    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
-}
-</code></pre>
-<p><a id="0x1_stake_spec_get_reward_rate_1"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_get_reward_rate_1">spec_get_reward_rate_1</a>(config: StakingConfig): num {
-   <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
-       <b>let</b> epoch_rewards_rate =
-           <b>global</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
-       <b>if</b> (epoch_rewards_rate.value == 0) { 0 }
-       <b>else</b> {
-           <b>let</b> denominator_0 =
-               aptos_std::fixed_point64::spec_divide_u128(
-                   <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
-               );
-           <b>let</b> denominator =
-               <b>if</b> (denominator_0 &gt; <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
-                   <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>
-               } <b>else</b> {
-                   denominator_0
-               };
-           <b>let</b> nominator =
-               aptos_std::fixed_point64::spec_multiply_u128(
-                   denominator, epoch_rewards_rate
-               );
-           nominator
-       }
-   } <b>else</b> {
-       config.rewards_rate
-   }
-}
-</code></pre>
-<p><a id="0x1_stake_spec_get_reward_rate_2"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_get_reward_rate_2">spec_get_reward_rate_2</a>(config: StakingConfig): num {
-   <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
-       <b>let</b> epoch_rewards_rate =
-           <b>global</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
-       <b>if</b> (epoch_rewards_rate.value == 0) { 1 }
-       <b>else</b> {
-           <b>let</b> denominator_0 =
-               aptos_std::fixed_point64::spec_divide_u128(
-                   <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
-               );
-           <b>let</b> denominator =
-               <b>if</b> (denominator_0 &gt; <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
-                   <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>
-               } <b>else</b> {
-                   denominator_0
-               };
-           denominator
-       }
-   } <b>else</b> {
-       config.rewards_rate_denominator
-   }
-}
-</code></pre>
 <h3 id="resource-validatorset-1"><a class="header" href="#resource-validatorset-1">Resource <code>ValidatorSet</code> <a id="@Specification_1_ValidatorSet"></a></a></h3>
 <pre><code><b>struct</b> <a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a> <b>has</b> <b>copy</b>, drop, store, key
 </code></pre>
@@ -77924,7 +77906,8 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-initialize_pending_transaction_fee-1"><a class="header" href="#function-initialize_pending_transaction_fee-1">Function <code>initialize_pending_transaction_fee</code> <a id="@Specification_1_initialize_pending_transaction_fee"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_initialize_pending_transaction_fee">initialize_pending_transaction_fee</a>(framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>modifies</b> <b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-initialize_stake_owner-1"><a class="header" href="#function-initialize_stake_owner-1">Function <code>initialize_stake_owner</code> <a id="@Specification_1_initialize_stake_owner"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_initialize_stake_owner">initialize_stake_owner</a>(owner: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, initial_stake_amount: u64, operator: <b>address</b>, voter: <b>address</b>)
@@ -78484,6 +78467,108 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_validator_indices_active_pending_inactive">spec_validator_indices_active_pending_inactive</a>(validator_set: <a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>): bool {
    len(validator_set.pending_inactive) + len(validator_set.active_validators)
        == <a href="aptos-framework/stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>()
+}
+</code></pre>
+<p><a id="0x1_stake_spec_validator_index_upper_bound"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>(): u64 {
+   len(<b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework).validators)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_has_stake_pool"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_has_stake_pool">spec_has_stake_pool</a>(a: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_StakePool">StakePool</a>&gt;(a)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_has_validator_config"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_has_validator_config">spec_has_validator_config</a>(a: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(a)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_rewards_amount"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_rewards_amount">spec_rewards_amount</a>(
+   stake_amount: u64,
+   num_successful_proposals: u64,
+   num_total_proposals: u64,
+   rewards_rate: u64,
+   rewards_rate_denominator: u64
+): u64;
+</code></pre>
+<p><a id="0x1_stake_spec_contains"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validators: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a>&gt;, addr: <b>address</b>): bool {
+   <b>exists</b> i in 0..len(validators): validators[i].addr == addr
+}
+</code></pre>
+<p><a id="0x1_stake_spec_is_current_epoch_validator"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(pool_address: <b>address</b>): bool {
+   <b>let</b> validator_set = <b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+   !<a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
+       && (
+           <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
+               || <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address)
+       )
+}
+</code></pre>
+<p><a id="0x1_stake_ResourceRequirement"></a></p>
+<pre><code><b>schema</b> <a href="aptos-framework/stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a> {
+    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_AptosCoinCapabilities">AptosCoinCapabilities</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;StakingConfig&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;StakingRewardsConfig&gt;(@aptos_framework)
+        || !<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+}
+</code></pre>
+<p><a id="0x1_stake_spec_get_reward_rate_1"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_get_reward_rate_1">spec_get_reward_rate_1</a>(config: StakingConfig): num {
+   <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
+       <b>let</b> epoch_rewards_rate =
+           <b>global</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
+       <b>if</b> (epoch_rewards_rate.value == 0) { 0 }
+       <b>else</b> {
+           <b>let</b> denominator_0 =
+               aptos_std::fixed_point64::spec_divide_u128(
+                   <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
+               );
+           <b>let</b> denominator =
+               <b>if</b> (denominator_0 &gt; <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
+                   <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>
+               } <b>else</b> {
+                   denominator_0
+               };
+           <b>let</b> nominator =
+               aptos_std::fixed_point64::spec_multiply_u128(
+                   denominator, epoch_rewards_rate
+               );
+           nominator
+       }
+   } <b>else</b> {
+       config.rewards_rate
+   }
+}
+</code></pre>
+<p><a id="0x1_stake_spec_get_reward_rate_2"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_get_reward_rate_2">spec_get_reward_rate_2</a>(config: StakingConfig): num {
+   <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
+       <b>let</b> epoch_rewards_rate =
+           <b>global</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
+       <b>if</b> (epoch_rewards_rate.value == 0) { 1 }
+       <b>else</b> {
+           <b>let</b> denominator_0 =
+               aptos_std::fixed_point64::spec_divide_u128(
+                   <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
+               );
+           <b>let</b> denominator =
+               <b>if</b> (denominator_0 &gt; <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
+                   <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>
+               } <b>else</b> {
+                   denominator_0
+               };
+           denominator
+       }
+   } <b>else</b> {
+       config.rewards_rate_denominator
+   }
 }
 </code></pre>
 <h3 id="function-update_stake_pool-1"><a class="header" href="#function-update_stake_pool-1">Function <code>update_stake_pool</code> <a id="@Specification_1_update_stake_pool"></a></a></h3>
@@ -85822,6 +85907,7 @@ the monotonically increasing behavior.</p>
 <ul>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFABurnCapabilities">Resource <code>AptosFABurnCapabilities</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">Resource <code>AptosCoinMintCapability</code></a></li>
+<li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">Resource <code>AptosFAMintCapabilities</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_FeeStatement">Struct <code>FeeStatement</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinCapabilities">Resource <code>AptosCoinCapabilities</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_CollectedFeesPerBlock">Resource <code>CollectedFeesPerBlock</code></a></li>
@@ -85830,6 +85916,7 @@ the monotonically increasing behavior.</p>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_mint_and_refund">Function <code>mint_and_refund</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_store_aptos_coin_burn_cap">Function <code>store_aptos_coin_burn_cap</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_store_aptos_coin_mint_cap">Function <code>store_aptos_coin_mint_cap</code></a></li>
+<li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_convert_to_aptos_fa_mint_ref">Function <code>convert_to_aptos_fa_mint_ref</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_emit_fee_statement">Function <code>emit_fee_statement</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_storage_fee_refund_octas">Function <code>storage_fee_refund_octas</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_initialize_fee_collection_and_distribution">Function <code>initialize_fee_collection_and_distribution</code></a></li>
@@ -85845,6 +85932,7 @@ the monotonically increasing behavior.</p>
 <li><a href="aptos-framework/transaction_fee.html#@Specification_1_mint_and_refund">Function <code>mint_and_refund</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#@Specification_1_store_aptos_coin_burn_cap">Function <code>store_aptos_coin_burn_cap</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#@Specification_1_store_aptos_coin_mint_cap">Function <code>store_aptos_coin_mint_cap</code></a></li>
+<li><a href="aptos-framework/transaction_fee.html#@Specification_1_convert_to_aptos_fa_mint_ref">Function <code>convert_to_aptos_fa_mint_ref</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#@Specification_1_emit_fee_statement">Function <code>emit_fee_statement</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#@Specification_1_initialize_fee_collection_and_distribution">Function <code>initialize_fee_collection_and_distribution</code></a></li>
 <li><a href="aptos-framework/transaction_fee.html#@Specification_1_initialize_storage_refund">Function <code>initialize_storage_refund</code></a></li>
@@ -85856,6 +85944,7 @@ the monotonically increasing behavior.</p>
 <b>use</b> <a href="aptos-framework/coin.html#0x1_coin">0x1::coin</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="aptos-framework/event.html#0x1_event">0x1::event</a>;
+<b>use</b> <a href="aptos-framework/../move-stdlib/features.html#0x1_features">0x1::features</a>;
 <b>use</b> <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset">0x1::fungible_asset</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="aptos-framework/system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
@@ -85875,7 +85964,8 @@ the monotonically increasing behavior.</p>
 </dl>
 </details>
 <h2 id="resource-aptoscoinmintcapability"><a class="header" href="#resource-aptoscoinmintcapability">Resource <code>AptosCoinMintCapability</code> <a id="0x1_transaction_fee_AptosCoinMintCapability"></a></a></h2>
-<p>Stores mint capability to mint the refunds.</p>
+<p>Stores the coin mint capability to mint the refunds. Used as the fallback path when
+<code>GAS_REFUND_FA_MINT</code> is disabled or <code><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a></code> is not yet published.</p>
 <pre><code><b>struct</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a> <b>has</b> key
 </code></pre>
 <details>
@@ -85883,6 +85973,20 @@ the monotonically increasing behavior.</p>
 <dl>
 <dt>
 <code>mint_cap: <a href="aptos-framework/coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="aptos-framework/aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-aptosfamintcapabilities"><a class="header" href="#resource-aptosfamintcapabilities">Resource <code>AptosFAMintCapabilities</code> <a id="0x1_transaction_fee_AptosFAMintCapabilities"></a></a></h2>
+<p>Stores mint ref to mint the refunds as APT FA. Used when <code>GAS_REFUND_FA_MINT</code> is enabled.</p>
+<pre><code><b>struct</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>mint_ref: <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a></code>
 </dt>
 <dd>
 </dd>
@@ -86024,9 +86128,15 @@ information about collected amounts is already published.</p>
 <pre><code><b>friend</b> <b>fun</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_mint_and_refund">mint_and_refund</a>(
     <a href="aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, refund: u64
 ) {
-    <b>let</b> mint_cap = &<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a>[@aptos_framework].mint_cap;
-    <b>let</b> refund_coin = <a href="aptos-framework/coin.html#0x1_coin_mint">coin::mint</a>(refund, mint_cap);
-    <a href="aptos-framework/coin.html#0x1_coin_deposit_for_gas_fee">coin::deposit_for_gas_fee</a>(<a href="aptos-framework/account.html#0x1_account">account</a>, refund_coin);
+    <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_gas_refund_fa_mint_enabled">features::gas_refund_fa_mint_enabled</a>()
+        && <b>exists</b>&lt;<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a>&gt;(@aptos_framework)) {
+        <b>let</b> mint_ref = &<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a>[@aptos_framework].mint_ref;
+        <a href="aptos-framework/aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">aptos_account::mint_to_fungible_store_for_gas</a>(mint_ref, <a href="aptos-framework/account.html#0x1_account">account</a>, refund);
+    } <b>else</b> {
+        <b>let</b> mint_cap = &<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a>[@aptos_framework].mint_cap;
+        <b>let</b> refund_coin = <a href="aptos-framework/coin.html#0x1_coin_mint">coin::mint</a>(refund, mint_cap);
+        <a href="aptos-framework/coin.html#0x1_coin_deposit_for_gas_fee">coin::deposit_for_gas_fee</a>(<a href="aptos-framework/account.html#0x1_account">account</a>, refund_coin);
+    }
 }
 </code></pre>
 </details>
@@ -86056,7 +86166,29 @@ information about collected amounts is already published.</p>
     aptos_framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, mint_cap: MintCapability&lt;AptosCoin&gt;
 ) {
     <a href="aptos-framework/system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
-    <b>move_to</b>(aptos_framework, <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a> { mint_cap })
+    // Store the FA mint ref (used when GAS_REFUND_FA_MINT is enabled) and keep the legacy
+    // <a href="aptos-framework/coin.html#0x1_coin">coin</a> mint cap <b>as</b> the fallback, so the feature flag remains a safe two-way switch.
+    <b>let</b> mint_ref = <a href="aptos-framework/coin.html#0x1_coin_get_paired_mint_copy_ref">coin::get_paired_mint_copy_ref</a>(&mint_cap);
+    <b>move_to</b>(aptos_framework, <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a> { mint_ref });
+    <b>move_to</b>(aptos_framework, <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a> { mint_cap });
+}
+</code></pre>
+</details>
+<h2 id="function-convert_to_aptos_fa_mint_ref"><a class="header" href="#function-convert_to_aptos_fa_mint_ref">Function <code>convert_to_aptos_fa_mint_ref</code> <a id="0x1_transaction_fee_convert_to_aptos_fa_mint_ref"></a></a></h2>
+<p>Migrate an existing chain from the legacy <code><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a></code> (coin <code>MintCapability</code>)
+to <code><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a></code> (FA <code>MintRef</code>), so gas refunds mint APT FA directly without
+touching the legacy coin supply aggregator. Gated by the aptos_framework signer (governance).</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_convert_to_aptos_fa_mint_ref">convert_to_aptos_fa_mint_ref</a>(aptos_framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_convert_to_aptos_fa_mint_ref">convert_to_aptos_fa_mint_ref</a>(
+    aptos_framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>
+) <b>acquires</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a> {
+    <a href="aptos-framework/system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(aptos_framework);
+    <b>let</b> mint_cap = &<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a>[@aptos_framework].mint_cap;
+    <b>let</b> mint_ref = <a href="aptos-framework/coin.html#0x1_coin_get_paired_mint_copy_ref">coin::get_paired_mint_copy_ref</a>(mint_cap);
+    <b>move_to</b>(aptos_framework, <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a> { mint_ref });
 }
 </code></pre>
 </details>
@@ -86271,11 +86403,25 @@ Aborts if <code><a href="aptos-framework/transaction_fee.html#0x1_transaction_fe
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_store_aptos_coin_mint_cap">store_aptos_coin_mint_cap</a>(aptos_framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, mint_cap: <a href="aptos-framework/coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="aptos-framework/aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;)
 </code></pre>
 <p>Ensure caller is admin.
-Aborts if <code><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a></code> already exists.</p>
-<pre><code><b>let</b> addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+Aborts if <code><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a></code> or <code><a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a></code> already exists.</p>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>let</b> addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>aborts_if</b> !<a href="aptos-framework/system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(addr);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a>&gt;(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a>&gt;(addr);
 <b>ensures</b> <b>exists</b>&lt;<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a>&gt;(addr);
+</code></pre>
+<h3 id="function-convert_to_aptos_fa_mint_ref-1"><a class="header" href="#function-convert_to_aptos_fa_mint_ref-1">Function <code>convert_to_aptos_fa_mint_ref</code> <a id="@Specification_1_convert_to_aptos_fa_mint_ref"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_convert_to_aptos_fa_mint_ref">convert_to_aptos_fa_mint_ref</a>(aptos_framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<p>Ensure caller is admin.</p>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>let</b> addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<b>aborts_if</b> !<a href="aptos-framework/system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a>&gt;(addr);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">AptosFAMintCapabilities</a>&gt;(addr);
 </code></pre>
 <h3 id="function-emit_fee_statement-1"><a class="header" href="#function-emit_fee_statement-1">Function <code>emit_fee_statement</code> <a id="@Specification_1_emit_fee_statement"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_emit_fee_statement">emit_fee_statement</a>(fee_statement: <a href="aptos-framework/transaction_fee.html#0x1_transaction_fee_FeeStatement">transaction_fee::FeeStatement</a>)

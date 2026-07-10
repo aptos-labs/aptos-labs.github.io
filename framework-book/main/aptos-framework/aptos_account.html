@@ -186,6 +186,7 @@
 <li><a href="#0x1_aptos_account_fungible_transfer_only">Function <code>fungible_transfer_only</code></a></li>
 <li><a href="#0x1_aptos_account_is_fungible_balance_at_least">Function <code>is_fungible_balance_at_least</code></a></li>
 <li><a href="#0x1_aptos_account_burn_from_fungible_store_for_gas">Function <code>burn_from_fungible_store_for_gas</code></a></li>
+<li><a href="#0x1_aptos_account_mint_to_fungible_store_for_gas">Function <code>mint_to_fungible_store_for_gas</code></a></li>
 <li><a href="#0x1_aptos_account_ensure_primary_fungible_store_exists">Function <code>ensure_primary_fungible_store_exists</code></a></li>
 <li><a href="#0x1_aptos_account_primary_fungible_store_address">Function <code>primary_fungible_store_address</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
@@ -209,6 +210,7 @@
 <li><a href="#@Specification_1_fungible_transfer_only">Function <code>fungible_transfer_only</code></a></li>
 <li><a href="#@Specification_1_is_fungible_balance_at_least">Function <code>is_fungible_balance_at_least</code></a></li>
 <li><a href="#@Specification_1_burn_from_fungible_store_for_gas">Function <code>burn_from_fungible_store_for_gas</code></a></li>
+<li><a href="#@Specification_1_mint_to_fungible_store_for_gas">Function <code>mint_to_fungible_store_for_gas</code></a></li>
 </ul>
 </li>
 </ul>
@@ -627,6 +629,24 @@ to transfer APT) - if we want to allow APT PFS without account itself</p>
 }
 </code></pre>
 </details>
+<h2 id="function-mint_to_fungible_store_for_gas"><a class="header" href="#function-mint_to_fungible_store_for_gas">Function <code>mint_to_fungible_store_for_gas</code> <a id="0x1_aptos_account_mint_to_fungible_store_for_gas"></a></a></h2>
+<p>Mint into APT Primary FungibleStore for gas refund</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">mint_to_fungible_store_for_gas</a>(ref: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>, <a href="account.html#0x1_account">account</a>: <b>address</b>, amount: u64)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">mint_to_fungible_store_for_gas</a>(
+    ref: &MintRef, <a href="account.html#0x1_account">account</a>: <b>address</b>, amount: u64
+) {
+    // Skip minting <b>if</b> amount is zero. This shouldn't <a href="../move-stdlib/error.html#0x1_error">error</a> out <b>as</b> it's called <b>as</b> part of gas refund.
+    <b>if</b> (amount != 0) {
+        <b>let</b> store_addr = <a href="aptos_account.html#0x1_aptos_account_ensure_primary_fungible_store_exists">ensure_primary_fungible_store_exists</a>(<a href="account.html#0x1_account">account</a>);
+        <b>let</b> fa = <a href="fungible_asset.html#0x1_fungible_asset_mint">fungible_asset::mint</a>(ref, amount);
+        <a href="fungible_asset.html#0x1_fungible_asset_unchecked_deposit_with_no_events">fungible_asset::unchecked_deposit_with_no_events</a>(store_addr, fa);
+    };
+}
+</code></pre>
+</details>
 <h2 id="function-ensure_primary_fungible_store_exists"><a class="header" href="#function-ensure_primary_fungible_store_exists">Function <code>ensure_primary_fungible_store_exists</code> <a id="0x1_aptos_account_ensure_primary_fungible_store_exists"></a></a></h2>
 <p>Ensure that APT Primary FungibleStore exists (and create if it doesn't)</p>
 <pre><code><b>fun</b> <a href="aptos_account.html#0x1_aptos_account_ensure_primary_fungible_store_exists">ensure_primary_fungible_store_exists</a>(owner: <b>address</b>): <b>address</b>
@@ -959,6 +979,11 @@ Check if the AptosCoin under the address existed.</p>
     <b>ensures</b> coin_store_source.<a href="coin.html#0x1_coin">coin</a>.value - amount == p_coin_store_source.<a href="coin.html#0x1_coin">coin</a>.value;
     <b>ensures</b> if_exist_account && if_exist_coin ==&gt; coin_store_to.<a href="coin.html#0x1_coin">coin</a>.value + amount == p_coin_store_to.<a href="coin.html#0x1_coin">coin</a>.value;
 }
+</code></pre>
+<h3 id="function-mint_to_fungible_store_for_gas-1"><a class="header" href="#function-mint_to_fungible_store_for_gas-1">Function <code>mint_to_fungible_store_for_gas</code> <a id="@Specification_1_mint_to_fungible_store_for_gas"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">mint_to_fungible_store_for_gas</a>(ref: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>, <a href="account.html#0x1_account">account</a>: <b>address</b>, amount: u64)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 
                     </main>
