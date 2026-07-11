@@ -198,7 +198,6 @@ the resolution process.</li>
 <li><a href="#0x1_voting_VoteEvent">Struct <code>VoteEvent</code></a></li>
 <li><a href="#0x1_voting_VotePermission">Struct <code>VotePermission</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
-<li><a href="#0x1_voting_check_vote_permission">Function <code>check_vote_permission</code></a></li>
 <li><a href="#0x1_voting_grant_permission">Function <code>grant_permission</code></a></li>
 <li><a href="#0x1_voting_register">Function <code>register</code></a></li>
 <li><a href="#0x1_voting_create_proposal">Function <code>create_proposal</code></a></li>
@@ -262,7 +261,6 @@ the resolution process.</li>
 <b>use</b> <a href="event.html#0x1_event">0x1::event</a>;
 <b>use</b> <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs">0x1::from_bcs</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map">0x1::simple_map</a>;
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
@@ -597,7 +595,8 @@ the resolution process.</li>
 </dl>
 </details>
 <h2 id="struct-votepermission"><a class="header" href="#struct-votepermission">Struct <code>VotePermission</code> <a id="0x1_voting_VotePermission"></a></a></h2>
-<pre><code><b>struct</b> <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+<b>struct</b> <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Fields</summary>
@@ -610,6 +609,10 @@ the resolution process.</li>
 </dl>
 </details>
 <h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_voting_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="voting.html#0x1_voting_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 14;
+</code></pre>
 <p><a id="0x1_voting_EINVALID_MIN_VOTE_THRESHOLD"></a></p>
 <p>Minimum vote threshold cannot be higher than early resolution threshold.</p>
 <pre><code><b>const</b> <a href="voting.html#0x1_voting_EINVALID_MIN_VOTE_THRESHOLD">EINVALID_MIN_VOTE_THRESHOLD</a>: u64 = 7;
@@ -622,10 +625,6 @@ If we use <code><a href="voting.html#0x1_voting_resolve">resolve</a>()</code> to
 <p><a id="0x1_voting_EMULTI_STEP_PROPOSAL_IN_EXECUTION"></a></p>
 <p>Cannot vote if the specified multi-step proposal is in execution.</p>
 <pre><code><b>const</b> <a href="voting.html#0x1_voting_EMULTI_STEP_PROPOSAL_IN_EXECUTION">EMULTI_STEP_PROPOSAL_IN_EXECUTION</a>: u64 = 9;
-</code></pre>
-<p><a id="0x1_voting_ENO_VOTE_PERMISSION"></a></p>
-<p>Cannot call <code><a href="voting.html#0x1_voting_is_multi_step_proposal_in_execution">is_multi_step_proposal_in_execution</a>()</code> on single-step proposals.</p>
-<pre><code><b>const</b> <a href="voting.html#0x1_voting_ENO_VOTE_PERMISSION">ENO_VOTE_PERMISSION</a>: u64 = 13;
 </code></pre>
 <p><a id="0x1_voting_EPROPOSAL_ALREADY_RESOLVED"></a></p>
 <p>Proposal cannot be resolved more than once</p>
@@ -686,28 +685,14 @@ If we use <code><a href="voting.html#0x1_voting_resolve">resolve</a>()</code> to
 <p>Key used to track the resolvable time in the proposal's metadata.</p>
 <pre><code><b>const</b> <a href="voting.html#0x1_voting_RESOLVABLE_TIME_METADATA_KEY">RESOLVABLE_TIME_METADATA_KEY</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [82, 69, 83, 79, 76, 86, 65, 66, 76, 69, 95, 84, 73, 77, 69, 95, 77, 69, 84, 65, 68, 65, 84, 65, 95, 75, 69, 89];
 </code></pre>
-<h2 id="function-check_vote_permission"><a class="header" href="#function-check_vote_permission">Function <code>check_vote_permission</code> <a id="0x1_voting_check_vote_permission"></a></a></h2>
-<p>Permissions</p>
-<pre><code><b>fun</b> <a href="voting.html#0x1_voting_check_vote_permission">check_vote_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="voting.html#0x1_voting_check_vote_permission">check_vote_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="voting.html#0x1_voting_ENO_VOTE_PERMISSION">ENO_VOTE_PERMISSION</a>),
-    );
-}
-</code></pre>
-</details>
 <h2 id="function-grant_permission"><a class="header" href="#function-grant_permission">Function <code>grant_permission</code> <a id="0x1_voting_grant_permission"></a></a></h2>
-<p>Grant permission to vote on behalf of the master signer.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_grant_permission">grant_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_grant_permission">grant_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_grant_permission">grant_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> {})
+<pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_grant_permission">grant_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="voting.html#0x1_voting_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -717,7 +702,6 @@ If we use <code><a href="voting.html#0x1_voting_resolve">resolve</a>()</code> to
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_register">register</a>&lt;ProposalType: store&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="voting.html#0x1_voting_check_vote_permission">check_vote_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <b>assert</b>!(!<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr), <a href="../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="voting.html#0x1_voting_EVOTING_FORUM_ALREADY_REGISTERED">EVOTING_FORUM_ALREADY_REGISTERED</a>));
 
@@ -1405,18 +1389,10 @@ there are more yes votes than no. If either of these conditions is not met, this
 <pre><code><b>pragma</b> verify = <b>true</b>;
 <b>pragma</b> aborts_if_is_partial;
 </code></pre>
-<p><a id="0x1_voting_AbortsIfPermissionedSigner"></a></p>
-<pre><code><b>schema</b> <a href="voting.html#0x1_voting_AbortsIfPermissionedSigner">AbortsIfPermissionedSigner</a> {
-    s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    <b>let</b> perm = <a href="voting.html#0x1_voting_VotePermission">VotePermission</a> {};
-    <b>aborts_if</b> !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">permissioned_signer::spec_check_permission_exists</a>(s, perm);
-}
-</code></pre>
 <h3 id="function-register-1"><a class="header" href="#function-register-1">Function <code>register</code> <a id="@Specification_1_register"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_register">register</a>&lt;ProposalType: store&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfPermissionedSigner">AbortsIfPermissionedSigner</a> { s: <a href="account.html#0x1_account">account</a> };
-<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr);
 <b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;ProposalType&gt;();
 <b>ensures</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr);

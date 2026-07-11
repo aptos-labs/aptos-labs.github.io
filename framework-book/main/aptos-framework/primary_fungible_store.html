@@ -180,6 +180,7 @@ fungible asset to it. This emits an deposit event.</li>
 </ol>
 <ul>
 <li><a href="#0x1_primary_fungible_store_DeriveRefPod">Resource <code>DeriveRefPod</code></a></li>
+<li><a href="#@Constants_0">Constants</a></li>
 <li><a href="#0x1_primary_fungible_store_create_primary_store_enabled_fungible_asset">Function <code>create_primary_store_enabled_fungible_asset</code></a></li>
 <li><a href="#0x1_primary_fungible_store_ensure_primary_store_exists">Function <code>ensure_primary_store_exists</code></a></li>
 <li><a href="#0x1_primary_fungible_store_create_primary_store">Function <code>create_primary_store</code></a></li>
@@ -206,17 +207,18 @@ fungible asset to it. This emits an deposit event.</li>
 <li><a href="#0x1_primary_fungible_store_deposit_with_ref">Function <code>deposit_with_ref</code></a></li>
 <li><a href="#0x1_primary_fungible_store_transfer_with_ref">Function <code>transfer_with_ref</code></a></li>
 <li><a href="#0x1_primary_fungible_store_may_be_unburn">Function <code>may_be_unburn</code></a></li>
-<li><a href="#@Specification_0">Specification</a>
+<li><a href="#@Specification_1">Specification</a>
 <ul>
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
-<li><a href="#@Specification_0_primary_store_address">Function <code>primary_store_address</code></a></li>
-<li><a href="#@Specification_0_primary_store">Function <code>primary_store</code></a></li>
-<li><a href="#@Specification_0_primary_store_exists">Function <code>primary_store_exists</code></a></li>
+<li><a href="#@Specification_1_primary_store_address">Function <code>primary_store_address</code></a></li>
+<li><a href="#@Specification_1_primary_store">Function <code>primary_store</code></a></li>
+<li><a href="#@Specification_1_primary_store_exists">Function <code>primary_store_exists</code></a></li>
 </ul>
 </li>
 </ul>
 <pre><code><b>use</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset">0x1::dispatchable_fungible_asset</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="fungible_asset.html#0x1_fungible_asset">0x1::fungible_asset</a>;
 <b>use</b> <a href="object.html#0x1_object">0x1::object</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
@@ -240,6 +242,11 @@ assets.</p>
 </dd>
 </dl>
 </details>
+<h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_primary_fungible_store_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 1;
+</code></pre>
 <h2 id="function-create_primary_store_enabled_fungible_asset"><a class="header" href="#function-create_primary_store_enabled_fungible_asset">Function <code>create_primary_store_enabled_fungible_asset</code> <a id="0x1_primary_fungible_store_create_primary_store_enabled_fungible_asset"></a></a></h2>
 <p>Create a fungible asset with primary store support. When users transfer fungible assets to each other, their
 primary stores will be created automatically if they don't exist. Primary stores have deterministic addresses
@@ -391,41 +398,33 @@ Use instead of the corresponding view functions for dispatchable hooks to avoid 
 </code></pre>
 </details>
 <h2 id="function-grant_permission"><a class="header" href="#function-grant_permission">Function <code>grant_permission</code> <a id="0x1_primary_fungible_store_grant_permission"></a></a></h2>
-<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_grant_permission">grant_permission</a>&lt;T: key&gt;(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_grant_permission">grant_permission</a>&lt;T: key&gt;(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, _amount: u64)
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_grant_permission">grant_permission</a>&lt;T: key&gt;(
-    master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    metadata: Object&lt;T&gt;,
-    amount: u64
+    _master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _metadata: Object&lt;T&gt;,
+    _amount: u64
 ) {
-    <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_address">fungible_asset::grant_permission_by_address</a>(
-        master,
-        permissioned,
-        <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store_address_inlined">primary_store_address_inlined</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(permissioned), metadata),
-        amount
-    );
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="primary_fungible_store.html#0x1_primary_fungible_store_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
 <h2 id="function-grant_apt_permission"><a class="header" href="#function-grant_apt_permission">Function <code>grant_apt_permission</code> <a id="0x1_primary_fungible_store_grant_apt_permission"></a></a></h2>
-<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_grant_apt_permission">grant_apt_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_grant_apt_permission">grant_apt_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _amount: u64)
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_grant_apt_permission">grant_apt_permission</a>(
-    master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    amount: u64
+    _master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _amount: u64
 ) {
-    <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_address">fungible_asset::grant_permission_by_address</a>(
-        master,
-        permissioned,
-        <a href="object.html#0x1_object_create_user_derived_object_address">object::create_user_derived_object_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(permissioned), @aptos_fungible_asset),
-        amount
-    );
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="primary_fungible_store.html#0x1_primary_fungible_store_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -505,21 +504,11 @@ Use instead of the corresponding view functions for dispatchable hooks to avoid 
 </details>
 <h2 id="function-deposit_with_signer"><a class="header" href="#function-deposit_with_signer">Function <code>deposit_with_signer</code> <a id="0x1_primary_fungible_store_deposit_with_signer"></a></a></h2>
 <p>Deposit fungible asset <code>fa</code> to the given account's primary store using signer.</p>
-<p>If <code>owner</code> is a permissioned signer, the signer will be granted with permission to withdraw
-the same amount of fund in the future.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_deposit_with_signer">deposit_with_signer</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_deposit_with_signer">deposit_with_signer</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fa: FungibleAsset) <b>acquires</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a> {
-    <a href="fungible_asset.html#0x1_fungible_asset_refill_permission">fungible_asset::refill_permission</a>(
-        owner,
-        <a href="fungible_asset.html#0x1_fungible_asset_amount">fungible_asset::amount</a>(&fa),
-        <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store_address_inlined">primary_store_address_inlined</a>(
-            <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner),
-            fa.asset_metadata(),
-        )
-    );
     <b>let</b> metadata = fa.asset_metadata();
     <b>let</b> store = <a href="primary_fungible_store.html#0x1_primary_fungible_store_ensure_primary_store_exists">ensure_primary_store_exists</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner), metadata);
     <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_deposit">dispatchable_fungible_asset::deposit</a>(store, fa);
@@ -667,7 +656,7 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 }
 </code></pre>
 </details>
-<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_0"></a></a></h2>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements"><a class="header" href="#high-level-requirements">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -772,7 +761,7 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
    <a href="object.html#0x1_object_spec_create_user_derived_object_address">object::spec_create_user_derived_object_address</a>(owner, metadata_addr)
 }
 </code></pre>
-<h3 id="function-primary_store_address-1"><a class="header" href="#function-primary_store_address-1">Function <code>primary_store_address</code> <a id="@Specification_0_primary_store_address"></a></a></h3>
+<h3 id="function-primary_store_address-1"><a class="header" href="#function-primary_store_address-1">Function <code>primary_store_address</code> <a id="@Specification_1_primary_store_address"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store_address">primary_store_address</a>&lt;T: key&gt;(owner: <b>address</b>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <b>address</b>
 </code></pre>
@@ -780,7 +769,7 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 <b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, metadata);
 </code></pre>
-<h3 id="function-primary_store-1"><a class="header" href="#function-primary_store-1">Function <code>primary_store</code> <a id="@Specification_0_primary_store"></a></a></h3>
+<h3 id="function-primary_store-1"><a class="header" href="#function-primary_store-1">Function <code>primary_store</code> <a id="@Specification_1_primary_store"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store">primary_store</a>&lt;T: key&gt;(owner: <b>address</b>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;
 </code></pre>
@@ -790,7 +779,7 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 <b>aborts_if</b> !<a href="object.html#0x1_object_spec_exists_at">object::spec_exists_at</a>&lt;FungibleStore&gt;(store_addr);
 <b>ensures</b> <a href="object.html#0x1_object_object_address">object::object_address</a>(result) == store_addr;
 </code></pre>
-<h3 id="function-primary_store_exists-1"><a class="header" href="#function-primary_store_exists-1">Function <code>primary_store_exists</code> <a id="@Specification_0_primary_store_exists"></a></a></h3>
+<h3 id="function-primary_store_exists-1"><a class="header" href="#function-primary_store_exists-1">Function <code>primary_store_exists</code> <a id="@Specification_1_primary_store_exists"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store_exists">primary_store_exists</a>&lt;T: key&gt;(<a href="account.html#0x1_account">account</a>: <b>address</b>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
 </code></pre>

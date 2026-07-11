@@ -230,7 +230,6 @@ or if their stake drops below the min required, they would get removed at the en
 <li><a href="#0x1_stake_Ghost$ghost_active_num">Resource <code>Ghost$ghost_active_num</code></a></li>
 <li><a href="#0x1_stake_Ghost$ghost_pending_inactive_num">Resource <code>Ghost$ghost_pending_inactive_num</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
-<li><a href="#0x1_stake_check_stake_permission">Function <code>check_stake_permission</code></a></li>
 <li><a href="#0x1_stake_grant_permission">Function <code>grant_permission</code></a></li>
 <li><a href="#0x1_stake_get_lockup_secs">Function <code>get_lockup_secs</code></a></li>
 <li><a href="#0x1_stake_get_remaining_lockup_secs">Function <code>get_remaining_lockup_secs</code></a></li>
@@ -362,7 +361,6 @@ or if their stake drops below the min required, they would get removed at the en
 <b>use</b> <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64">0x1::fixed_point64</a>;
 <b>use</b> <a href="../aptos-stdlib/math64.html#0x1_math64">0x1::math64</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state">0x1::reconfiguration_state</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="staking_config.html#0x1_staking_config">0x1::staking_config</a>;
@@ -736,7 +734,8 @@ Resource existence is the "ready" flag — no Option wrapper needed.</p>
 </dl>
 </details>
 <h2 id="struct-stakemanagementpermission"><a class="header" href="#struct-stakemanagementpermission">Struct <code>StakeManagementPermission</code> <a id="0x1_stake_StakeManagementPermission"></a></a></h2>
-<pre><code><b>struct</b> <a href="stake.html#0x1_stake_StakeManagementPermission">StakeManagementPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+<b>struct</b> <a href="stake.html#0x1_stake_StakeManagementPermission">StakeManagementPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Fields</summary>
@@ -1321,6 +1320,10 @@ security of the testnet. This will NOT be enabled in Mainnet.</p>
 <p><a id="0x1_stake_MAX_U64"></a></p>
 <pre><code><b>const</b> <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>: u128 = 18446744073709551615;
 </code></pre>
+<p><a id="0x1_stake_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="stake.html#0x1_stake_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 31;
+</code></pre>
 <p><a id="0x1_stake_EALREADY_REGISTERED"></a></p>
 <p>Account is already registered as a validator candidate.</p>
 <pre><code><b>const</b> <a href="stake.html#0x1_stake_EALREADY_REGISTERED">EALREADY_REGISTERED</a>: u64 = 8;
@@ -1368,10 +1371,6 @@ security of the testnet. This will NOT be enabled in Mainnet.</p>
 <p><a id="0x1_stake_ENO_POST_GENESIS_VALIDATOR_SET_CHANGE_ALLOWED"></a></p>
 <p>Validators cannot join or leave post genesis on this test network.</p>
 <pre><code><b>const</b> <a href="stake.html#0x1_stake_ENO_POST_GENESIS_VALIDATOR_SET_CHANGE_ALLOWED">ENO_POST_GENESIS_VALIDATOR_SET_CHANGE_ALLOWED</a>: u64 = 10;
-</code></pre>
-<p><a id="0x1_stake_ENO_STAKE_PERMISSION"></a></p>
-<p>Signer does not have permission to perform stake logic.</p>
-<pre><code><b>const</b> <a href="stake.html#0x1_stake_ENO_STAKE_PERMISSION">ENO_STAKE_PERMISSION</a>: u64 = 28;
 </code></pre>
 <p><a id="0x1_stake_EOWNER_CAP_ALREADY_EXISTS"></a></p>
 <p>An account cannot own more than one owner capability.</p>
@@ -1435,32 +1434,16 @@ https://github.com/aptos-labs/aptos-core/blob/main/crates/aptos-bitvec/src/lib.r
 <p><a id="0x1_stake_VALIDATOR_STATUS_PENDING_INACTIVE"></a></p>
 <pre><code><b>const</b> <a href="stake.html#0x1_stake_VALIDATOR_STATUS_PENDING_INACTIVE">VALIDATOR_STATUS_PENDING_INACTIVE</a>: u64 = 3;
 </code></pre>
-<h2 id="function-check_stake_permission"><a class="header" href="#function-check_stake_permission">Function <code>check_stake_permission</code> <a id="0x1_stake_check_stake_permission"></a></a></h2>
-<p>Permissions</p>
-<pre><code><b>fun</b> <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, <a href="stake.html#0x1_stake_StakeManagementPermission">StakeManagementPermission</a> {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="stake.html#0x1_stake_ENO_STAKE_PERMISSION">ENO_STAKE_PERMISSION</a>)
-    );
-}
-</code></pre>
-</details>
 <h2 id="function-grant_permission"><a class="header" href="#function-grant_permission">Function <code>grant_permission</code> <a id="0x1_stake_grant_permission"></a></a></h2>
-<p>Grant permission to mutate staking on behalf of the master signer.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_grant_permission">grant_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_grant_permission">grant_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_grant_permission">grant_permission</a>(
-    master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+    _master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>
 ) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(
-        master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, <a href="stake.html#0x1_stake_StakeManagementPermission">StakeManagementPermission</a> {}
-    )
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="stake.html#0x1_stake_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -1904,7 +1887,6 @@ to set later.</p>
     operator: <b>address</b>,
     voter: <b>address</b>
 ) <b>acquires</b> <a href="stake.html#0x1_stake_AllowedValidators">AllowedValidators</a>, <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>, <a href="stake.html#0x1_stake_StakePool">StakePool</a>, <a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <a href="stake.html#0x1_stake_initialize_owner">initialize_owner</a>(owner);
     <b>move_to</b>(
         owner,
@@ -1943,7 +1925,6 @@ to set later.</p>
     network_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     fullnode_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 ) <b>acquires</b> <a href="stake.html#0x1_stake_AllowedValidators">AllowedValidators</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(<a href="account.html#0x1_account">account</a>);
     // Checks the <b>public</b> key <b>has</b> a valid proof-of-possession <b>to</b> prevent rogue-key attacks.
     <b>let</b> pubkey_from_pop =
         &<a href="../aptos-stdlib/bls12381.html#0x1_bls12381_public_key_from_bytes_with_pop">bls12381::public_key_from_bytes_with_pop</a>(
@@ -1973,7 +1954,6 @@ to set later.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_initialize_owner">initialize_owner</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="stake.html#0x1_stake_AllowedValidators">AllowedValidators</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>assert</b>!(<a href="stake.html#0x1_stake_is_allowed">is_allowed</a>(owner_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="stake.html#0x1_stake_EINELIGIBLE_VALIDATOR">EINELIGIBLE_VALIDATOR</a>));
     <b>assert</b>!(
@@ -2030,7 +2010,6 @@ to set later.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_extract_owner_cap">extract_owner_cap</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a> <b>acquires</b> <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner_address);
     <b>move_from</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address)
@@ -2047,7 +2026,6 @@ staking pool.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_deposit_owner_cap">deposit_owner_cap</a>(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, owner_cap: <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>
 ) {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <b>assert</b>!(
         !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner)),
         <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="stake.html#0x1_stake_EOWNER_CAP_ALREADY_EXISTS">EOWNER_CAP_ALREADY_EXISTS</a>)
@@ -2076,7 +2054,6 @@ staking pool.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_set_operator">set_operator</a>(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_operator: <b>address</b>
 ) <b>acquires</b> <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>, <a href="stake.html#0x1_stake_StakePool">StakePool</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner_address);
     <b>let</b> ownership_cap = <b>borrow_global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
@@ -2112,7 +2089,6 @@ staking pool.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_set_delegated_voter">set_delegated_voter</a>(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_voter: <b>address</b>
 ) <b>acquires</b> <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>, <a href="stake.html#0x1_stake_StakePool">StakePool</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner_address);
     <b>let</b> ownership_cap = <b>borrow_global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
@@ -2145,7 +2121,6 @@ staking pool.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_add_stake">add_stake</a>(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64
 ) <b>acquires</b> <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>, <a href="stake.html#0x1_stake_StakePool">StakePool</a>, <a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner_address);
     <b>let</b> ownership_cap = <b>borrow_global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
@@ -2209,7 +2184,6 @@ staking pool.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_reactivate_stake">reactivate_stake</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64) <b>acquires</b> <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>, <a href="stake.html#0x1_stake_StakePool">StakePool</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <a href="stake.html#0x1_stake_assert_reconfig_not_in_progress">assert_reconfig_not_in_progress</a>();
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner_address);
@@ -2257,7 +2231,6 @@ staking pool.</p>
     new_consensus_pubkey: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     proof_of_possession: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 ) <b>acquires</b> <a href="stake.html#0x1_stake_StakePool">StakePool</a>, <a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(operator);
     <a href="stake.html#0x1_stake_assert_reconfig_not_in_progress">assert_reconfig_not_in_progress</a>();
     <a href="stake.html#0x1_stake_assert_stake_pool_exists">assert_stake_pool_exists</a>(pool_address);
 
@@ -2302,7 +2275,6 @@ staking pool.</p>
     new_network_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     new_fullnode_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 ) <b>acquires</b> <a href="stake.html#0x1_stake_StakePool">StakePool</a>, <a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(operator);
     <a href="stake.html#0x1_stake_assert_reconfig_not_in_progress">assert_reconfig_not_in_progress</a>();
     <a href="stake.html#0x1_stake_assert_stake_pool_exists">assert_stake_pool_exists</a>(pool_address);
     <b>let</b> stake_pool = <b>borrow_global_mut</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
@@ -2339,7 +2311,6 @@ staking pool.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_increase_lockup">increase_lockup</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>, <a href="stake.html#0x1_stake_StakePool">StakePool</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner_address);
     <b>let</b> ownership_cap = <b>borrow_global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
@@ -2385,7 +2356,6 @@ directly inactive if it's not from an active validator.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_join_validator_set">join_validator_set</a>(
     operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pool_address: <b>address</b>
 ) <b>acquires</b> <a href="stake.html#0x1_stake_StakePool">StakePool</a>, <a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>, <a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(operator);
     <b>assert</b>!(
         <a href="staking_config.html#0x1_staking_config_get_allow_validator_set_change">staking_config::get_allow_validator_set_change</a>(&<a href="staking_config.html#0x1_staking_config_get">staking_config::get</a>()),
         <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="stake.html#0x1_stake_ENO_POST_GENESIS_VALIDATOR_SET_CHANGE_ALLOWED">ENO_POST_GENESIS_VALIDATOR_SET_CHANGE_ALLOWED</a>)
@@ -2472,7 +2442,6 @@ epoch starts (eligibility will be rechecked).</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_unlock">unlock</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64) <b>acquires</b> <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>, <a href="stake.html#0x1_stake_StakePool">StakePool</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <a href="stake.html#0x1_stake_assert_reconfig_not_in_progress">assert_reconfig_not_in_progress</a>();
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner_address);
@@ -2515,7 +2484,6 @@ epoch starts (eligibility will be rechecked).</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_withdraw">withdraw</a>(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, withdraw_amount: u64
 ) <b>acquires</b> <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>, <a href="stake.html#0x1_stake_StakePool">StakePool</a>, <a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(owner);
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner_address);
     <b>let</b> ownership_cap = <b>borrow_global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
@@ -2570,7 +2538,6 @@ is still operational.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_leave_validator_set">leave_validator_set</a>(
     operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pool_address: <b>address</b>
 ) <b>acquires</b> <a href="stake.html#0x1_stake_StakePool">StakePool</a>, <a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a> {
-    <a href="stake.html#0x1_stake_check_stake_permission">check_stake_permission</a>(operator);
     <a href="stake.html#0x1_stake_assert_reconfig_not_in_progress">assert_reconfig_not_in_progress</a>();
     <b>let</b> config = <a href="staking_config.html#0x1_staking_config_get">staking_config::get</a>();
     <b>assert</b>!(
@@ -3859,7 +3826,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <pre><code><b>pragma</b> verify_duration_estimate = 120;
 <b>pragma</b> verify = <b>false</b>;
 <b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: owner };
 <b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(addr)
@@ -3882,7 +3848,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_initialize_validator">initialize_validator</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, consensus_pubkey: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, proof_of_possession: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, network_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, fullnode_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: <a href="account.html#0x1_account">account</a> };
 <b>let</b> pubkey_from_pop = <a href="../aptos-stdlib/bls12381.html#0x1_bls12381_spec_public_key_from_bytes_with_pop">bls12381::spec_public_key_from_bytes_with_pop</a>(
     consensus_pubkey,
     proof_of_possession_from_bytes(proof_of_possession)
@@ -3915,7 +3880,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_extract_owner_cap">extract_owner_cap</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>
 </code></pre>
 <pre><code><b>pragma</b> verify_duration_estimate = 300;
-<b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: owner };
 <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
 <b>ensures</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
@@ -3923,8 +3887,7 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-deposit_owner_cap-1"><a class="header" href="#function-deposit_owner_cap-1">Function <code>deposit_owner_cap</code> <a id="@Specification_1_deposit_owner_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_deposit_owner_cap">deposit_owner_cap</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, owner_cap: <a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>)
 </code></pre>
-<pre><code><b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: owner };
-<b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<pre><code><b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
 <b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
 <b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address) == owner_cap;
@@ -3953,7 +3916,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 <b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: owner };
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
 <b>include</b> <a href="stake.html#0x1_stake_AddStakeAbortsIfAndEnsures">AddStakeAbortsIfAndEnsures</a>;
@@ -3988,8 +3950,7 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-rotate_consensus_key-1"><a class="header" href="#function-rotate_consensus_key-1">Function <code>rotate_consensus_key</code> <a id="@Specification_1_rotate_consensus_key"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_rotate_consensus_key">rotate_consensus_key</a>(operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pool_address: <b>address</b>, new_consensus_pubkey: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, proof_of_possession: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: operator };
-<b>let</b> pre_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<pre><code><b>let</b> pre_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>let</b> <b>post</b> validator_info = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(pool_address);
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
@@ -4007,8 +3968,7 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-update_network_and_fullnode_addresses-1"><a class="header" href="#function-update_network_and_fullnode_addresses-1">Function <code>update_network_and_fullnode_addresses</code> <a id="@Specification_1_update_network_and_fullnode_addresses"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_update_network_and_fullnode_addresses">update_network_and_fullnode_addresses</a>(operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pool_address: <b>address</b>, new_network_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, new_fullnode_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: operator };
-<b>let</b> pre_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<pre><code><b>let</b> pre_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>let</b> <b>post</b> validator_info = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(pool_address);
 <b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(pool_address);
 <b>include</b> <a href="stake.html#0x1_stake_StakedValueNochange">StakedValueNochange</a>;
@@ -4042,7 +4002,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 </code></pre>
 <pre><code><b>pragma</b> verify_duration_estimate = 60;
 <b>pragma</b> disable_invariants_in_body;
-<b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: operator };
 <b>aborts_if</b> !<a href="staking_config.html#0x1_staking_config_get_allow_validator_set_change">staking_config::get_allow_validator_set_change</a>(<a href="staking_config.html#0x1_staking_config_get">staking_config::get</a>());
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(pool_address);
@@ -4119,7 +4078,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_withdraw">withdraw</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, withdraw_amount: u64)
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: owner };
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>let</b> ownership_cap = <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr);
@@ -4178,7 +4136,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 </code></pre>
 <pre><code><b>pragma</b> disable_invariants_in_body;
 <b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> { s: operator };
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>let</b> config = <a href="staking_config.html#0x1_staking_config_get">staking_config::get</a>();
 <b>aborts_if</b> !<a href="staking_config.html#0x1_staking_config_get_allow_validator_set_change">staking_config::get_allow_validator_set_change</a>(config);
@@ -4566,13 +4523,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
     post_pending_inactive_value
         == stake_pool.pending_inactive.value + rewards_amount_2
 };
-</code></pre>
-<p><a id="0x1_stake_AbortsIfSignerPermissionStake"></a></p>
-<pre><code><b>schema</b> <a href="stake.html#0x1_stake_AbortsIfSignerPermissionStake">AbortsIfSignerPermissionStake</a> {
-    s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    <b>let</b> perm = <a href="stake.html#0x1_stake_StakeManagementPermission">StakeManagementPermission</a> {};
-    <b>aborts_if</b> !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">permissioned_signer::spec_check_permission_exists</a>(s, perm);
-}
 </code></pre>
 <p><a id="0x1_stake_UpdateStakePoolAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="stake.html#0x1_stake_UpdateStakePoolAbortsIf">UpdateStakePoolAbortsIf</a> {

@@ -332,9 +332,7 @@ transferred to A
 <li><a href="#0x1_delegation_pool_allowlisting_enabled">Function <code>allowlisting_enabled</code></a></li>
 <li><a href="#0x1_delegation_pool_delegator_allowlisted">Function <code>delegator_allowlisted</code></a></li>
 <li><a href="#0x1_delegation_pool_get_delegators_allowlist">Function <code>get_delegators_allowlist</code></a></li>
-<li><a href="#0x1_delegation_pool_check_delegation_pool_management_permission">Function <code>check_delegation_pool_management_permission</code></a></li>
 <li><a href="#0x1_delegation_pool_grant_delegation_pool_management_permission">Function <code>grant_delegation_pool_management_permission</code></a></li>
-<li><a href="#0x1_delegation_pool_check_stake_management_permission">Function <code>check_stake_management_permission</code></a></li>
 <li><a href="#0x1_delegation_pool_grant_stake_management_permission">Function <code>grant_stake_management_permission</code></a></li>
 <li><a href="#0x1_delegation_pool_initialize_delegation_pool">Function <code>initialize_delegation_pool</code></a></li>
 <li><a href="#0x1_delegation_pool_beneficiary_for_operator">Function <code>beneficiary_for_operator</code></a></li>
@@ -412,7 +410,6 @@ transferred to A
 <b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="event.html#0x1_event">0x1::event</a>;
 <b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../aptos-stdlib/pool_u64_unbound.html#0x1_pool_u64_unbound">0x1::pool_u64_unbound</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../aptos-stdlib/smart_table.html#0x1_smart_table">0x1::smart_table</a>;
@@ -683,7 +680,8 @@ evicted later by the pool owner.</p>
 </dl>
 </details>
 <h2 id="enum-delegationpermission"><a class="header" href="#enum-delegationpermission">Enum <code>DelegationPermission</code> <a id="0x1_delegation_pool_DelegationPermission"></a></a></h2>
-<pre><code>enum <a href="delegation_pool.html#0x1_delegation_pool_DelegationPermission">DelegationPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+enum <a href="delegation_pool.html#0x1_delegation_pool_DelegationPermission">DelegationPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Variants</summary>
@@ -1263,6 +1261,10 @@ evicted later by the pool owner.</p>
 <p><a id="0x1_delegation_pool_MAX_U64"></a></p>
 <pre><code><b>const</b> <a href="delegation_pool.html#0x1_delegation_pool_MAX_U64">MAX_U64</a>: u64 = 18446744073709551615;
 </code></pre>
+<p><a id="0x1_delegation_pool_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="delegation_pool.html#0x1_delegation_pool_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 30;
+</code></pre>
 <p><a id="0x1_delegation_pool_EDEPRECATED_FUNCTION"></a></p>
 <p>Function is deprecated.</p>
 <pre><code><b>const</b> <a href="delegation_pool.html#0x1_delegation_pool_EDEPRECATED_FUNCTION">EDEPRECATED_FUNCTION</a>: u64 = 12;
@@ -1349,10 +1351,6 @@ evicted later by the pool owner.</p>
 <p><a id="0x1_delegation_pool_ENOT_ENOUGH_ACTIVE_STAKE_TO_UNLOCK"></a></p>
 <p>There is not enough <code>active</code> stake on the stake pool to <code>unlock</code>.</p>
 <pre><code><b>const</b> <a href="delegation_pool.html#0x1_delegation_pool_ENOT_ENOUGH_ACTIVE_STAKE_TO_UNLOCK">ENOT_ENOUGH_ACTIVE_STAKE_TO_UNLOCK</a>: u64 = 6;
-</code></pre>
-<p><a id="0x1_delegation_pool_ENO_DELEGATION_PERMISSION"></a></p>
-<p>Signer does not have permission to perform delegation logic.</p>
-<pre><code><b>const</b> <a href="delegation_pool.html#0x1_delegation_pool_ENO_DELEGATION_PERMISSION">ENO_DELEGATION_PERMISSION</a>: u64 = 28;
 </code></pre>
 <p><a id="0x1_delegation_pool_EOPERATOR_BENEFICIARY_CHANGE_NOT_SUPPORTED"></a></p>
 <p>Changing beneficiaries for operators is not supported.</p>
@@ -1877,50 +1875,29 @@ A delegator is allowlisted if:</p>
 }
 </code></pre>
 </details>
-<h2 id="function-check_delegation_pool_management_permission"><a class="header" href="#function-check_delegation_pool_management_permission">Function <code>check_delegation_pool_management_permission</code> <a id="0x1_delegation_pool_check_delegation_pool_management_permission"></a></a></h2>
-<p>Permissions</p>
-<pre><code><b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, DelegationPermission::DelegationPoolManagementPermission {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="delegation_pool.html#0x1_delegation_pool_ENO_DELEGATION_PERMISSION">ENO_DELEGATION_PERMISSION</a>),
-    );
-}
-</code></pre>
-</details>
 <h2 id="function-grant_delegation_pool_management_permission"><a class="header" href="#function-grant_delegation_pool_management_permission">Function <code>grant_delegation_pool_management_permission</code> <a id="0x1_delegation_pool_grant_delegation_pool_management_permission"></a></a></h2>
-<pre><code><b>public</b> <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_grant_delegation_pool_management_permission">grant_delegation_pool_management_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_grant_delegation_pool_management_permission">grant_delegation_pool_management_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_grant_delegation_pool_management_permission">grant_delegation_pool_management_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, DelegationPermission::DelegationPoolManagementPermission {})
-}
-</code></pre>
-</details>
-<h2 id="function-check_stake_management_permission"><a class="header" href="#function-check_stake_management_permission">Function <code>check_stake_management_permission</code> <a id="0x1_delegation_pool_check_stake_management_permission"></a></a></h2>
-<pre><code><b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, DelegationPermission::StakeManagementPermission {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="delegation_pool.html#0x1_delegation_pool_ENO_DELEGATION_PERMISSION">ENO_DELEGATION_PERMISSION</a>),
-    );
+<pre><code><b>public</b> <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_grant_delegation_pool_management_permission">grant_delegation_pool_management_permission</a>(
+    _master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="delegation_pool.html#0x1_delegation_pool_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
 <h2 id="function-grant_stake_management_permission"><a class="header" href="#function-grant_stake_management_permission">Function <code>grant_stake_management_permission</code> <a id="0x1_delegation_pool_grant_stake_management_permission"></a></a></h2>
-<pre><code><b>public</b> <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_grant_stake_management_permission">grant_stake_management_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_grant_stake_management_permission">grant_stake_management_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_grant_stake_management_permission">grant_stake_management_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, DelegationPermission::StakeManagementPermission {})
+<pre><code><b>public</b> <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_grant_stake_management_permission">grant_stake_management_permission</a>(
+    _master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="delegation_pool.html#0x1_delegation_pool_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -1938,7 +1915,6 @@ Ownership over setting the operator/voter is granted to <code>owner</code> who h
     operator_commission_percentage: u64,
     delegation_pool_creation_seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(owner);
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>assert</b>!(!<a href="delegation_pool.html#0x1_delegation_pool_owner_cap_exists">owner_cap_exists</a>(owner_address), <a href="../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="delegation_pool.html#0x1_delegation_pool_EOWNER_CAP_ALREADY_EXISTS">EOWNER_CAP_ALREADY_EXISTS</a>));
     <b>assert</b>!(<a href="delegation_pool.html#0x1_delegation_pool_operator_commission_percentage">operator_commission_percentage</a> &lt;= <a href="delegation_pool.html#0x1_delegation_pool_MAX_FEE">MAX_FEE</a>, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="delegation_pool.html#0x1_delegation_pool_EINVALID_COMMISSION_PERCENTAGE">EINVALID_COMMISSION_PERCENTAGE</a>));
@@ -2046,7 +2022,6 @@ The existing voter will be replaced. The function is permissionless.</p>
     voting_power: u64,
     should_pass: bool
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(voter);
     <a href="delegation_pool.html#0x1_delegation_pool_assert_partial_governance_voting_enabled">assert_partial_governance_voting_enabled</a>(pool_address);
     // synchronize delegation and <a href="stake.html#0x1_stake">stake</a> pools before <a href="../aptos-stdlib/any.html#0x1_any">any</a> user operation.
     <a href="delegation_pool.html#0x1_delegation_pool_synchronize_delegation_pool">synchronize_delegation_pool</a>(pool_address);
@@ -2100,7 +2075,6 @@ voting power in THIS delegation pool must be not less than the minimum required 
     metadata_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     is_multi_step_proposal: bool,
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(voter);
     <a href="delegation_pool.html#0x1_delegation_pool_assert_partial_governance_voting_enabled">assert_partial_governance_voting_enabled</a>(pool_address);
 
     // synchronize delegation and <a href="stake.html#0x1_stake">stake</a> pools before <a href="../aptos-stdlib/any.html#0x1_any">any</a> user operation
@@ -2512,7 +2486,6 @@ power, which equals to the sum of the coin amounts.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     new_operator: <b>address</b>
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolOwnership">DelegationPoolOwnership</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(owner);
     <b>let</b> pool_address = <a href="delegation_pool.html#0x1_delegation_pool_get_owned_pool_address">get_owned_pool_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
     // synchronize delegation and <a href="stake.html#0x1_stake">stake</a> pools before <a href="../aptos-stdlib/any.html#0x1_any">any</a> user operation
     // ensure the <b>old</b> operator is paid its uncommitted commission rewards
@@ -2534,7 +2507,6 @@ one for each pool.</p>
     operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     new_beneficiary: <b>address</b>
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(operator);
     // The beneficiay <b>address</b> of an operator is stored under the operator's <b>address</b>.
     // So, the operator does not need <b>to</b> be validated <b>with</b> respect <b>to</b> a staking pool.
     <b>let</b> operator_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(operator);
@@ -2563,7 +2535,6 @@ one for each pool.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     new_commission_percentage: u64
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolOwnership">DelegationPoolOwnership</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(owner);
     <b>assert</b>!(new_commission_percentage &lt;= <a href="delegation_pool.html#0x1_delegation_pool_MAX_FEE">MAX_FEE</a>, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="delegation_pool.html#0x1_delegation_pool_EINVALID_COMMISSION_PERCENTAGE">EINVALID_COMMISSION_PERCENTAGE</a>));
     <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>let</b> pool_address = <a href="delegation_pool.html#0x1_delegation_pool_get_owned_pool_address">get_owned_pool_address</a>(owner_address);
@@ -2629,7 +2600,6 @@ this change won't take effects until the next lockup period.</p>
     pool_address: <b>address</b>,
     new_voter: <b>address</b>
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(delegator);
     <a href="delegation_pool.html#0x1_delegation_pool_assert_partial_governance_voting_enabled">assert_partial_governance_voting_enabled</a>(pool_address);
 
     // synchronize delegation and <a href="stake.html#0x1_stake">stake</a> pools before <a href="../aptos-stdlib/any.html#0x1_any">any</a> user operation
@@ -2683,7 +2653,6 @@ this change won't take effects until the next lockup period.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_enable_delegators_allowlisting">enable_delegators_allowlisting</a>(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolOwnership">DelegationPoolOwnership</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(owner);
     <b>assert</b>!(
         <a href="../move-stdlib/features.html#0x1_features_delegation_pool_allowlisting_enabled">features::delegation_pool_allowlisting_enabled</a>(),
         <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="delegation_pool.html#0x1_delegation_pool_EDELEGATORS_ALLOWLISTING_NOT_SUPPORTED">EDELEGATORS_ALLOWLISTING_NOT_SUPPORTED</a>)
@@ -2708,7 +2677,6 @@ this change won't take effects until the next lockup period.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="delegation_pool.html#0x1_delegation_pool_disable_delegators_allowlisting">disable_delegators_allowlisting</a>(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolOwnership">DelegationPoolOwnership</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolAllowlisting">DelegationPoolAllowlisting</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(owner);
     <b>let</b> pool_address = <a href="delegation_pool.html#0x1_delegation_pool_get_owned_pool_address">get_owned_pool_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
     <a href="delegation_pool.html#0x1_delegation_pool_assert_allowlisting_enabled">assert_allowlisting_enabled</a>(pool_address);
 
@@ -2730,7 +2698,6 @@ this change won't take effects until the next lockup period.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     delegator_address: <b>address</b>,
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolOwnership">DelegationPoolOwnership</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolAllowlisting">DelegationPoolAllowlisting</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(owner);
     <b>let</b> pool_address = <a href="delegation_pool.html#0x1_delegation_pool_get_owned_pool_address">get_owned_pool_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
     <a href="delegation_pool.html#0x1_delegation_pool_assert_allowlisting_enabled">assert_allowlisting_enabled</a>(pool_address);
 
@@ -2752,7 +2719,6 @@ this change won't take effects until the next lockup period.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     delegator_address: <b>address</b>,
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolOwnership">DelegationPoolOwnership</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolAllowlisting">DelegationPoolAllowlisting</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(owner);
     <b>let</b> pool_address = <a href="delegation_pool.html#0x1_delegation_pool_get_owned_pool_address">get_owned_pool_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
     <a href="delegation_pool.html#0x1_delegation_pool_assert_allowlisting_enabled">assert_allowlisting_enabled</a>(pool_address);
 
@@ -2774,7 +2740,6 @@ this change won't take effects until the next lockup period.</p>
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     delegator_address: <b>address</b>,
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolOwnership">DelegationPoolOwnership</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolAllowlisting">DelegationPoolAllowlisting</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_delegation_pool_management_permission">check_delegation_pool_management_permission</a>(owner);
     <b>let</b> pool_address = <a href="delegation_pool.html#0x1_delegation_pool_get_owned_pool_address">get_owned_pool_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
     <a href="delegation_pool.html#0x1_delegation_pool_assert_allowlisting_enabled">assert_allowlisting_enabled</a>(pool_address);
     <b>assert</b>!(
@@ -2805,7 +2770,6 @@ this change won't take effects until the next lockup period.</p>
     pool_address: <b>address</b>,
     amount: u64
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolAllowlisting">DelegationPoolAllowlisting</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(delegator);
     // short-circuit <b>if</b> amount <b>to</b> add is 0 so no <a href="event.html#0x1_event">event</a> is emitted
     <b>if</b> (amount == 0) { <b>return</b> };
 
@@ -2857,7 +2821,6 @@ at most how much active stake there is on the stake pool.</p>
     pool_address: <b>address</b>,
     amount: u64
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(delegator);
     // short-circuit <b>if</b> amount <b>to</b> unlock is 0 so no <a href="event.html#0x1_event">event</a> is emitted
     <b>if</b> (amount == 0) { <b>return</b> };
 
@@ -2920,7 +2883,6 @@ at most how much active stake there is on the stake pool.</p>
     pool_address: <b>address</b>,
     amount: u64
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a>, <a href="delegation_pool.html#0x1_delegation_pool_DelegationPoolAllowlisting">DelegationPoolAllowlisting</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(delegator);
     // short-circuit <b>if</b> amount <b>to</b> reactivate is 0 so no <a href="event.html#0x1_event">event</a> is emitted
     <b>if</b> (amount == 0) { <b>return</b> };
 
@@ -2966,7 +2928,6 @@ at most how much active stake there is on the stake pool.</p>
     pool_address: <b>address</b>,
     amount: u64
 ) <b>acquires</b> <a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">DelegationPool</a>, <a href="delegation_pool.html#0x1_delegation_pool_GovernanceRecords">GovernanceRecords</a>, <a href="delegation_pool.html#0x1_delegation_pool_BeneficiaryForOperator">BeneficiaryForOperator</a>, <a href="delegation_pool.html#0x1_delegation_pool_NextCommissionPercentage">NextCommissionPercentage</a> {
-    <a href="delegation_pool.html#0x1_delegation_pool_check_stake_management_permission">check_stake_management_permission</a>(delegator);
     <b>assert</b>!(amount &gt; 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="delegation_pool.html#0x1_delegation_pool_EWITHDRAW_ZERO_STAKE">EWITHDRAW_ZERO_STAKE</a>));
     // synchronize delegation and <a href="stake.html#0x1_stake">stake</a> pools before <a href="../aptos-stdlib/any.html#0x1_any">any</a> user operation
     <a href="delegation_pool.html#0x1_delegation_pool_synchronize_delegation_pool">synchronize_delegation_pool</a>(pool_address);

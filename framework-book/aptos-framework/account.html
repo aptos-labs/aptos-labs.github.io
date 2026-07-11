@@ -183,8 +183,6 @@
 <li><a href="#0x1_account_SignerCapabilityOfferProofChallengeV2">Struct <code>SignerCapabilityOfferProofChallengeV2</code></a></li>
 <li><a href="#0x1_account_AccountPermission">Enum <code>AccountPermission</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
-<li><a href="#0x1_account_check_rotation_permission">Function <code>check_rotation_permission</code></a></li>
-<li><a href="#0x1_account_check_offering_permission">Function <code>check_offering_permission</code></a></li>
 <li><a href="#0x1_account_grant_key_rotation_permission">Function <code>grant_key_rotation_permission</code></a></li>
 <li><a href="#0x1_account_grant_key_offering_permission">Function <code>grant_key_offering_permission</code></a></li>
 <li><a href="#0x1_account_initialize">Function <code>initialize</code></a></li>
@@ -299,7 +297,6 @@
 <b>use</b> <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519">0x1::multi_ed25519</a>;
 <b>use</b> <a href="../aptos-stdlib/multi_key.html#0x1_multi_key">0x1::multi_key</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../aptos-stdlib/single_key.html#0x1_single_key">0x1::single_key</a>;
 <b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
@@ -673,7 +670,8 @@ This V2 struct adds the <code><a href="chain_id.html#0x1_chain_id">chain_id</a><
 </dl>
 </details>
 <h2 id="enum-accountpermission"><a class="header" href="#enum-accountpermission">Enum <code>AccountPermission</code> <a id="0x1_account_AccountPermission"></a></a></h2>
-<pre><code>enum <a href="account.html#0x1_account_AccountPermission">AccountPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+enum <a href="account.html#0x1_account_AccountPermission">AccountPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Variants</summary>
@@ -774,10 +772,6 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p>The provided public key is not the original public key for the account</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ENOT_THE_ORIGINAL_PUBLIC_KEY">ENOT_THE_ORIGINAL_PUBLIC_KEY</a>: u64 = 26;
 </code></pre>
-<p><a id="0x1_account_ENO_ACCOUNT_PERMISSION"></a></p>
-<p>Current permissioned signer cannot perform the privilaged operations.</p>
-<pre><code><b>const</b> <a href="account.html#0x1_account_ENO_ACCOUNT_PERMISSION">ENO_ACCOUNT_PERMISSION</a>: u64 = 23;
-</code></pre>
 <p><a id="0x1_account_ENO_CAPABILITY"></a></p>
 <p>The caller does not have a digital-signature-based capability to call this function</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ENO_CAPABILITY">ENO_CAPABILITY</a>: u64 = 9;
@@ -805,6 +799,10 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p><a id="0x1_account_EOUT_OF_GAS"></a></p>
 <p>Transaction exceeded its allocated max gas</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_EOUT_OF_GAS">EOUT_OF_GAS</a>: u64 = 6;
+</code></pre>
+<p><a id="0x1_account_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 30;
 </code></pre>
 <p><a id="0x1_account_ERESOURCE_ACCCOUNT_EXISTS"></a></p>
 <p>An attempt to create a resource account on a claimed account</p>
@@ -850,54 +848,25 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p><a id="0x1_account_ZERO_AUTH_KEY"></a></p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 </code></pre>
-<h2 id="function-check_rotation_permission"><a class="header" href="#function-check_rotation_permission">Function <code>check_rotation_permission</code> <a id="0x1_account_check_rotation_permission"></a></a></h2>
-<p>Permissions</p>
-<pre><code><b>fun</b> <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, AccountPermission::KeyRotation {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="account.html#0x1_account_ENO_ACCOUNT_PERMISSION">ENO_ACCOUNT_PERMISSION</a>),
-    );
-}
-</code></pre>
-</details>
-<h2 id="function-check_offering_permission"><a class="header" href="#function-check_offering_permission">Function <code>check_offering_permission</code> <a id="0x1_account_check_offering_permission"></a></a></h2>
-<pre><code><b>fun</b> <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, AccountPermission::Offering {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="account.html#0x1_account_ENO_ACCOUNT_PERMISSION">ENO_ACCOUNT_PERMISSION</a>),
-    );
-}
-</code></pre>
-</details>
 <h2 id="function-grant_key_rotation_permission"><a class="header" href="#function-grant_key_rotation_permission">Function <code>grant_key_rotation_permission</code> <a id="0x1_account_grant_key_rotation_permission"></a></a></h2>
-<p>Grant permission to perform key rotations on behalf of the master signer.</p>
-<p>This is <strong>extremely dangerous</strong> and should be granted only when it's absolutely needed.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, AccountPermission::KeyRotation {})
+<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="account.html#0x1_account_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
 <h2 id="function-grant_key_offering_permission"><a class="header" href="#function-grant_key_offering_permission">Function <code>grant_key_offering_permission</code> <a id="0x1_account_grant_key_offering_permission"></a></a></h2>
-<p>Grant permission to use offered address's signer on behalf of the master signer.</p>
-<p>This is <strong>extremely dangerous</strong> and should be granted only when it's absolutely needed.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_offering_permission">grant_key_offering_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_offering_permission">grant_key_offering_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_offering_permission">grant_key_offering_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, AccountPermission::Offering {})
+<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_offering_permission">grant_key_offering_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="account.html#0x1_account_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -1160,7 +1129,6 @@ many contexts:</p>
         new_auth_key.length() == 32,
         <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="account.html#0x1_account_EMALFORMED_AUTHENTICATION_KEY">EMALFORMED_AUTHENTICATION_KEY</a>)
     );
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[addr];
     account_resource.authentication_key = new_auth_key;
 }
@@ -1425,7 +1393,6 @@ to rotate his address to Alice's address in the first place.</p>
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a>, <a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a> {
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr);
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[addr];
     <b>let</b> old_auth_key = account_resource.authentication_key;
     // Verify the given `from_public_key_bytes` matches this <a href="account.html#0x1_account">account</a>'s current authentication key.
@@ -1506,7 +1473,6 @@ to rotate his address to Alice's address in the first place.</p>
     new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a>, <a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a> {
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(delegate_signer);
     <b>assert</b>!(<a href="account.html#0x1_account_resource_exists_at">resource_exists_at</a>(rotation_cap_offerer_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EOFFERER_ADDRESS_DOES_NOT_EXIST">EOFFERER_ADDRESS_DOES_NOT_EXIST</a>));
 
     // Check that there <b>exists</b> a rotation capability offer at the offerer's <a href="account.html#0x1_account">account</a> resource for the delegate.
@@ -1591,7 +1557,6 @@ offer, calling this function will replace the previous <code>recipient_address</
     account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     recipient_address: <b>address</b>,
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr);
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(recipient_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
@@ -1722,7 +1687,6 @@ authority of the new authentication key.</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_rotation_capability">revoke_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, to_be_revoked_address: <b>address</b>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(to_be_revoked_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(addr, <a href="account.html#0x1_account_ENO_SUCH_ROTATION_CAPABILITY_OFFER">ENO_SUCH_ROTATION_CAPABILITY_OFFER</a>);
     <b>let</b> account_resource = &<a href="account.html#0x1_account_Account">Account</a>[addr];
@@ -1741,7 +1705,6 @@ authority of the new authentication key.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_any_rotation_capability">revoke_any_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> offerer_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(offerer_addr, <a href="account.html#0x1_account_ENO_SUCH_ROTATION_CAPABILITY_OFFER">ENO_SUCH_ROTATION_CAPABILITY_OFFER</a>);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>)];
@@ -1770,7 +1733,6 @@ to the account owner's signer capability).</p>
     account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     recipient_address: <b>address</b>
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(source_address);
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(recipient_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
@@ -1836,7 +1798,6 @@ has a signer capability offer from <code><a href="account.html#0x1_account">acco
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_signer_capability">revoke_signer_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, to_be_revoked_address: <b>address</b>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(to_be_revoked_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(addr, <a href="account.html#0x1_account_ENO_SUCH_SIGNER_CAPABILITY">ENO_SUCH_SIGNER_CAPABILITY</a>);
@@ -1856,7 +1817,6 @@ has a signer capability offer from <code><a href="account.html#0x1_account">acco
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_any_signer_capability">revoke_any_signer_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> offerer_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(offerer_addr, <a href="account.html#0x1_account_ENO_SUCH_SIGNER_CAPABILITY">ENO_SUCH_SIGNER_CAPABILITY</a>);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>)];
@@ -1872,7 +1832,6 @@ at the offerer's address.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_authorized_signer">create_authorized_signer</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, offerer_address: <b>address</b>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a> <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(offerer_address, <a href="account.html#0x1_account_ENO_SUCH_SIGNER_CAPABILITY">ENO_SUCH_SIGNER_CAPABILITY</a>);
     // Check <b>if</b> there's an existing <a href="../move-stdlib/signer.html#0x1_signer">signer</a> capability offer from the offerer.
     <b>let</b> account_resource = &<a href="account.html#0x1_account_Account">Account</a>[offerer_address];
@@ -2339,7 +2298,6 @@ Limit the new account address is not @vm_reserved / @aptos_framework / @aptos_to
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == new_address;
 // This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
 <b>ensures</b> !feature_on ==&gt; <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address);
-<b>ensures</b> !<a href="../move-stdlib/signer.html#0x1_signer_spec_is_permissioned_signer_impl">signer::spec_is_permissioned_signer_impl</a>(result);
 </code></pre>
 <h3 id="function-create_account_unchecked-1"><a class="header" href="#function-create_account_unchecked-1">Function <code>create_account_unchecked</code> <a id="@Specification_4_create_account_unchecked"></a></a></h3>
 <pre><code><b>fun</b> <a href="account.html#0x1_account_create_account_unchecked">create_account_unchecked</a>(new_address: <b>address</b>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
@@ -2352,7 +2310,6 @@ The Account does not exist under the new address before creating the account.</p
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == new_address;
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address);
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address).guid_creation_num == 2;
-<b>ensures</b> !<a href="../move-stdlib/signer.html#0x1_signer_spec_is_permissioned_signer_impl">signer::spec_is_permissioned_signer_impl</a>(result);
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address).sequence_number == 0;
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address).authentication_key == <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(new_address);
 </code></pre>
@@ -2460,7 +2417,6 @@ The Account does not exist under the new address before creating the account.</p
 <p>The Account existed under the signer before the call.
 The length of new_auth_key is 32.</p>
 <pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-<b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::KeyRotation {} };
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
 <b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_auth_key) != 32;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
@@ -2471,7 +2427,6 @@ The length of new_auth_key is 32.</p>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_call">rotate_authentication_key_call</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_auth_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-<b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::KeyRotation {} };
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
 <b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_auth_key) != 32;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
@@ -2482,7 +2437,6 @@ The length of new_auth_key is 32.</p>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_from_public_key">rotate_authentication_key_from_public_key</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, scheme: u8, new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::KeyRotation {} };
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>
@@ -2513,7 +2467,6 @@ The length of new_auth_key is 32.</p>
 The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <pre><code><b>pragma</b> verify_duration_estimate = 120;
 <b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::KeyRotation {} };
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr };
 // This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
@@ -2569,8 +2522,7 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-rotate_authentication_key_with_rotation_capability-1"><a class="header" href="#function-rotate_authentication_key_with_rotation_capability-1">Function <code>rotate_authentication_key_with_rotation_capability</code> <a id="@Specification_4_rotate_authentication_key_with_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_with_rotation_capability">rotate_authentication_key_with_rotation_capability</a>(delegate_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rotation_cap_offerer_address: <b>address</b>, new_scheme: u8, new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { <a href="account.html#0x1_account">account</a>: delegate_signer, perm: AccountPermission::KeyRotation {} };
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>let</b> delegate_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(delegate_signer);
 <b>let</b> offerer_account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(offerer_account_resource.authentication_key);
@@ -2613,7 +2565,6 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_offer_rotation_capability">offer_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rotation_capability_sig_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, account_scheme: u8, account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, recipient_address: <b>address</b>)
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::KeyRotation {} };
 <b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr: source_address };
 <b>let</b> current_auth_key_bytes = <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(source_address);
@@ -2663,8 +2614,7 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-revoke_rotation_capability-1"><a class="header" href="#function-revoke_rotation_capability-1">Function <code>revoke_rotation_capability</code> <a id="@Specification_4_revoke_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_rotation_capability">revoke_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, to_be_revoked_address: <b>address</b>)
 </code></pre>
-<pre><code><b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::KeyRotation {} };
-<b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(to_be_revoked_address);
+<pre><code><b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(to_be_revoked_address);
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
@@ -2676,8 +2626,7 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-revoke_any_rotation_capability-1"><a class="header" href="#function-revoke_any_rotation_capability-1">Function <code>revoke_any_rotation_capability</code> <a id="@Specification_4_revoke_any_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_any_rotation_capability">revoke_any_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::KeyRotation {} };
-<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
@@ -2692,7 +2641,6 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <p>The Account existed under the signer.
 The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.</p>
 <pre><code><b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::Offering {} };
 <b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr: source_address };
 <b>let</b> current_auth_key_bytes = <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(source_address);
@@ -2738,8 +2686,7 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.</p>
 </code></pre>
 <p>The Account existed under the signer.
 The value of signer_capability_offer.for of Account resource under the signer is to_be_revoked_address.</p>
-<pre><code><b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::Offering {} };
-<b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(to_be_revoked_address);
+<pre><code><b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(to_be_revoked_address);
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
@@ -2749,8 +2696,7 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <h3 id="function-revoke_any_signer_capability-1"><a class="header" href="#function-revoke_any_signer_capability-1">Function <code>revoke_any_signer_capability</code> <a id="@Specification_4_revoke_any_signer_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_any_signer_capability">revoke_any_signer_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::Offering {} };
-<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
+<pre><code><b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
 // This enforces <a id="high-level-req-7.4" href="#high-level-req">high-level requirement 7</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
 <b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
@@ -2761,8 +2707,7 @@ The value of signer_capability_offer.for of Account resource under the signer is
 </code></pre>
 <p>The Account existed under the signer.
 The value of signer_capability_offer.for of Account resource under the signer is offerer_address.</p>
-<pre><code><b>include</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;<a href="account.html#0x1_account_AccountPermission">AccountPermission</a>&gt; { perm: AccountPermission::Offering {} };
-// This enforces <a id="high-level-req-8" href="#high-level-req">high-level requirement 8</a>:
+<pre><code>// This enforces <a id="high-level-req-8" href="#high-level-req">high-level requirement 8</a>:
 <b>include</b> <a href="account.html#0x1_account_AccountContainsAddr">AccountContainsAddr</a>{
     <a href="account.html#0x1_account">account</a>,
     <b>address</b>: offerer_address,
@@ -2939,15 +2884,6 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
         && (addr == @vm_reserved || addr == @aptos_framework || addr == @aptos_token);
     <b>aborts_if</b> !account_exists_pre && feature_on
         && len(<a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(addr)) != 32;
-}
-</code></pre>
-<p><a id="0x1_account_AccountPermissionAbortsIf"></a></p>
-<pre><code><b>schema</b> <a href="account.html#0x1_account_AccountPermissionAbortsIf">AccountPermissionAbortsIf</a>&lt;Perm&gt; {
-    <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    perm: Perm;
-    <b>aborts_if</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">permissioned_signer::spec_is_permissioned_signer</a>(<a href="account.html#0x1_account">account</a>)
-        && !<b>exists</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">permissioned_signer::PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">permissioned_signer::spec_permission_address</a>(<a href="account.html#0x1_account">account</a>));
-    <b>aborts_if</b> !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">permissioned_signer::spec_check_permission_exists</a>(<a href="account.html#0x1_account">account</a>, perm);
 }
 </code></pre>
 <p><a id="0x1_account_NewEventHandleAbortsIf"></a></p>

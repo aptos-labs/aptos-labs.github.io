@@ -208,7 +208,6 @@
 <b>use</b> <a href="object.html#0x1_object">0x1::object</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="ordered_map.html#0x1_ordered_map">0x1::ordered_map</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
 <b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
@@ -311,9 +310,6 @@ enum <a href="account_abstraction.html#0x1_account_abstraction_DispatchableAuthe
 <h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_account_abstraction_MAX_U64"></a></p>
 <pre><code><b>const</b> <a href="account_abstraction.html#0x1_account_abstraction_MAX_U64">MAX_U64</a>: u128 = 18446744073709551615;
-</code></pre>
-<p><a id="0x1_account_abstraction_ENOT_MASTER_SIGNER"></a></p>
-<pre><code><b>const</b> <a href="account_abstraction.html#0x1_account_abstraction_ENOT_MASTER_SIGNER">ENOT_MASTER_SIGNER</a>: u64 = 4;
 </code></pre>
 <p><a id="0x1_account_abstraction_DERIVABLE_ABSTRACTION_DERIVED_SCHEME"></a></p>
 <p>derivable_aa_account_address uses this for domain separation within its native implementation
@@ -428,7 +424,6 @@ Note: it is a private entry function that can only be called directly from trans
     function_name: String,
 ) <b>acquires</b> <a href="account_abstraction.html#0x1_account_abstraction_DispatchableAuthenticator">DispatchableAuthenticator</a> {
     <b>assert</b>!(<a href="../move-stdlib/features.html#0x1_features_is_account_abstraction_enabled">features::is_account_abstraction_enabled</a>(), <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="account_abstraction.html#0x1_account_abstraction_EACCOUNT_ABSTRACTION_NOT_ENABLED">EACCOUNT_ABSTRACTION_NOT_ENABLED</a>));
-    <b>assert</b>!(!is_permissioned_signer(<a href="account.html#0x1_account">account</a>), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="account_abstraction.html#0x1_account_abstraction_ENOT_MASTER_SIGNER">ENOT_MASTER_SIGNER</a>));
     <a href="account_abstraction.html#0x1_account_abstraction_update_dispatchable_authenticator_impl">update_dispatchable_authenticator_impl</a>(
         <a href="account.html#0x1_account">account</a>,
         <a href="function_info.html#0x1_function_info_new_function_info_from_address">function_info::new_function_info_from_address</a>(module_address, module_name, function_name),
@@ -451,7 +446,6 @@ Note: it is a private entry function that can only be called directly from trans
     module_name: String,
     function_name: String,
 ) <b>acquires</b> <a href="account_abstraction.html#0x1_account_abstraction_DispatchableAuthenticator">DispatchableAuthenticator</a> {
-    <b>assert</b>!(!is_permissioned_signer(<a href="account.html#0x1_account">account</a>), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="account_abstraction.html#0x1_account_abstraction_ENOT_MASTER_SIGNER">ENOT_MASTER_SIGNER</a>));
     <a href="account_abstraction.html#0x1_account_abstraction_update_dispatchable_authenticator_impl">update_dispatchable_authenticator_impl</a>(
         <a href="account.html#0x1_account">account</a>,
         <a href="function_info.html#0x1_function_info_new_function_info_from_address">function_info::new_function_info_from_address</a>(module_address, module_name, function_name),
@@ -471,7 +465,6 @@ Note: it is a private entry function that can only be called directly from trans
 <pre><code>entry <b>fun</b> <a href="account_abstraction.html#0x1_account_abstraction_remove_authenticator">remove_authenticator</a>(
     <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
 ) <b>acquires</b> <a href="account_abstraction.html#0x1_account_abstraction_DispatchableAuthenticator">DispatchableAuthenticator</a> {
-    <b>assert</b>!(!is_permissioned_signer(<a href="account.html#0x1_account">account</a>), <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="account_abstraction.html#0x1_account_abstraction_ENOT_MASTER_SIGNER">ENOT_MASTER_SIGNER</a>));
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> resource_addr = <a href="account_abstraction.html#0x1_account_abstraction_resource_addr">resource_addr</a>(addr);
     <b>if</b> (<b>exists</b>&lt;<a href="account_abstraction.html#0x1_account_abstraction_DispatchableAuthenticator">DispatchableAuthenticator</a>&gt;(resource_addr)) {

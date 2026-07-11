@@ -229,7 +229,6 @@ withdrawable, admin can call admin_withdraw to withdraw all funds to the vesting
 <li><a href="#0x1_vesting_AdminWithdrawEvent">Struct <code>AdminWithdrawEvent</code></a></li>
 <li><a href="#0x1_vesting_VestPermission">Struct <code>VestPermission</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
-<li><a href="#0x1_vesting_check_vest_permission">Function <code>check_vest_permission</code></a></li>
 <li><a href="#0x1_vesting_grant_permission">Function <code>grant_permission</code></a></li>
 <li><a href="#0x1_vesting_stake_pool_address">Function <code>stake_pool_address</code></a></li>
 <li><a href="#0x1_vesting_vesting_start_secs">Function <code>vesting_start_secs</code></a></li>
@@ -335,7 +334,6 @@ withdrawable, admin can call admin_withdraw to withdraw all funds to the vesting
 <b>use</b> <a href="event.html#0x1_event">0x1::event</a>;
 <b>use</b> <a href="../move-stdlib/fixed_point32.html#0x1_fixed_point32">0x1::fixed_point32</a>;
 <b>use</b> <a href="../aptos-stdlib/math64.html#0x1_math64">0x1::math64</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../aptos-stdlib/pool_u64.html#0x1_pool_u64">0x1::pool_u64</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map">0x1::simple_map</a>;
@@ -1148,7 +1146,8 @@ withdrawable, admin can call admin_withdraw to withdraw all funds to the vesting
 </details>
 <h2 id="struct-vestpermission"><a class="header" href="#struct-vestpermission">Struct <code>VestPermission</code> <a id="0x1_vesting_VestPermission"></a></a></h2>
 <p>Permissions to mutate the vesting config for a given account.</p>
-<pre><code><b>struct</b> <a href="vesting.html#0x1_vesting_VestPermission">VestPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+<b>struct</b> <a href="vesting.html#0x1_vesting_VestPermission">VestPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Fields</summary>
@@ -1161,6 +1160,10 @@ withdrawable, admin can call admin_withdraw to withdraw all funds to the vesting
 </dl>
 </details>
 <h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_vesting_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="vesting.html#0x1_vesting_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 18;
+</code></pre>
 <p><a id="0x1_vesting_EEMPTY_VESTING_SCHEDULE"></a></p>
 <p>Vesting schedule cannot be empty.</p>
 <pre><code><b>const</b> <a href="vesting.html#0x1_vesting_EEMPTY_VESTING_SCHEDULE">EEMPTY_VESTING_SCHEDULE</a>: u64 = 2;
@@ -1176,10 +1179,6 @@ withdrawable, admin can call admin_withdraw to withdraw all funds to the vesting
 <p><a id="0x1_vesting_ENO_SHAREHOLDERS"></a></p>
 <p>Shareholders list cannot be empty.</p>
 <pre><code><b>const</b> <a href="vesting.html#0x1_vesting_ENO_SHAREHOLDERS">ENO_SHAREHOLDERS</a>: u64 = 4;
-</code></pre>
-<p><a id="0x1_vesting_ENO_VESTING_PERMISSION"></a></p>
-<p>Current permissioned signer cannot perform vesting operations.</p>
-<pre><code><b>const</b> <a href="vesting.html#0x1_vesting_ENO_VESTING_PERMISSION">ENO_VESTING_PERMISSION</a>: u64 = 17;
 </code></pre>
 <p><a id="0x1_vesting_EPENDING_STAKE_FOUND"></a></p>
 <p>Cannot terminate the vesting contract with pending active stake. Need to wait until next epoch.</p>
@@ -1249,28 +1248,14 @@ Vesting contract is active and distributions can be made.</p>
 <p>Vesting contract has been terminated and all funds have been released back to the withdrawal address.</p>
 <pre><code><b>const</b> <a href="vesting.html#0x1_vesting_VESTING_POOL_TERMINATED">VESTING_POOL_TERMINATED</a>: u64 = 2;
 </code></pre>
-<h2 id="function-check_vest_permission"><a class="header" href="#function-check_vest_permission">Function <code>check_vest_permission</code> <a id="0x1_vesting_check_vest_permission"></a></a></h2>
-<p>Permissions</p>
-<pre><code><b>fun</b> <a href="vesting.html#0x1_vesting_check_vest_permission">check_vest_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="vesting.html#0x1_vesting_check_vest_permission">check_vest_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, <a href="vesting.html#0x1_vesting_VestPermission">VestPermission</a> {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="vesting.html#0x1_vesting_ENO_VESTING_PERMISSION">ENO_VESTING_PERMISSION</a>),
-    );
-}
-</code></pre>
-</details>
 <h2 id="function-grant_permission"><a class="header" href="#function-grant_permission">Function <code>grant_permission</code> <a id="0x1_vesting_grant_permission"></a></a></h2>
-<p>Grant permission to perform vesting operations on behalf of the master signer.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="vesting.html#0x1_vesting_grant_permission">grant_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="vesting.html#0x1_vesting_grant_permission">grant_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="vesting.html#0x1_vesting_grant_permission">grant_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, <a href="vesting.html#0x1_vesting_VestPermission">VestPermission</a> {})
+<pre><code><b>public</b> <b>fun</b> <a href="vesting.html#0x1_vesting_grant_permission">grant_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="vesting.html#0x1_vesting_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -1563,7 +1548,6 @@ address is actually a shareholder address, just return the address back.</p>
     // Optional seed used when creating the staking contract <a href="account.html#0x1_account">account</a>.
     contract_creation_seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
 ): <b>address</b> <b>acquires</b> <a href="vesting.html#0x1_vesting_AdminStore">AdminStore</a> {
-    <a href="vesting.html#0x1_vesting_check_vest_permission">check_vest_permission</a>(admin);
     <b>assert</b>!(
         !<a href="system_addresses.html#0x1_system_addresses_is_reserved_address">system_addresses::is_reserved_address</a>(withdrawal_address),
         <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="vesting.html#0x1_vesting_EINVALID_WITHDRAWAL_ADDRESS">EINVALID_WITHDRAWAL_ADDRESS</a>),
@@ -2060,7 +2044,6 @@ account.</p>
     contract_address: <b>address</b>,
     shareholder: <b>address</b>,
 ) <b>acquires</b> <a href="vesting.html#0x1_vesting_VestingAccountManagement">VestingAccountManagement</a>, <a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a> {
-    <a href="vesting.html#0x1_vesting_check_vest_permission">check_vest_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> vesting_contract = <b>borrow_global_mut</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <b>assert</b>!(
@@ -2182,7 +2165,6 @@ This address should be deterministic for the same admin and vesting contract cre
     admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
     contract_creation_seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
 ): (<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, SignerCapability) <b>acquires</b> <a href="vesting.html#0x1_vesting_AdminStore">AdminStore</a> {
-    <a href="vesting.html#0x1_vesting_check_vest_permission">check_vest_permission</a>(admin);
     <b>let</b> admin_store = <b>borrow_global_mut</b>&lt;<a href="vesting.html#0x1_vesting_AdminStore">AdminStore</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(admin));
     <b>let</b> seed = <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(&<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(admin));
     seed.append(<a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(&admin_store.nonce));
@@ -2208,7 +2190,6 @@ This address should be deterministic for the same admin and vesting contract cre
 <details>
 <summary>Implementation</summary>
 <pre><code><b>fun</b> <a href="vesting.html#0x1_vesting_verify_admin">verify_admin</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, vesting_contract: &<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>) {
-    <a href="vesting.html#0x1_vesting_check_vest_permission">check_vest_permission</a>(admin);
     <b>assert</b>!(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(admin) == vesting_contract.admin, <a href="../move-stdlib/error.html#0x1_error_unauthenticated">error::unauthenticated</a>(<a href="vesting.html#0x1_vesting_ENOT_ADMIN">ENOT_ADMIN</a>));
 }
 </code></pre>
@@ -2365,13 +2346,6 @@ This address should be deterministic for the same admin and vesting contract cre
 // This enforces <a id="high-level-spec-2" href="#high-level-req">high-level requirement 2</a>:
 <b>invariant</b> <b>forall</b> a: <b>address</b> <b>where</b> <b>exists</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(a):
     <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(a).grant_pool.shareholders_limit &lt;= <a href="vesting.html#0x1_vesting_MAXIMUM_SHAREHOLDERS">MAXIMUM_SHAREHOLDERS</a>;
-</code></pre>
-<p><a id="0x1_vesting_AbortsIfPermissionedSigner"></a></p>
-<pre><code><b>schema</b> <a href="vesting.html#0x1_vesting_AbortsIfPermissionedSigner">AbortsIfPermissionedSigner</a> {
-    s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    <b>let</b> perm = <a href="vesting.html#0x1_vesting_VestPermission">VestPermission</a> {};
-    <b>aborts_if</b> !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">permissioned_signer::spec_check_permission_exists</a>(s, perm);
-}
 </code></pre>
 <h3 id="function-stake_pool_address-1"><a class="header" href="#function-stake_pool_address-1">Function <code>stake_pool_address</code> <a id="@Specification_1_stake_pool_address"></a></a></h3>
 <pre><code>#[view]
@@ -2750,7 +2724,6 @@ This address should be deterministic for the same admin and vesting contract cre
 <pre><code><b>fun</b> <a href="vesting.html#0x1_vesting_verify_admin">verify_admin</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, vesting_contract: &<a href="vesting.html#0x1_vesting_VestingContract">vesting::VestingContract</a>)
 </code></pre>
 <pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>aborts_if</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">permissioned_signer::spec_is_permissioned_signer</a>(admin);
 // This enforces <a id="high-level-req-9" href="#high-level-req">high-level requirement 9</a>:
 <b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(admin) != vesting_contract.admin;
 </code></pre>
@@ -2846,7 +2819,6 @@ This address should be deterministic for the same admin and vesting contract cre
 <pre><code><b>schema</b> <a href="vesting.html#0x1_vesting_VerifyAdminAbortsIf">VerifyAdminAbortsIf</a> {
     contract_address: <b>address</b>;
     admin: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    <b>aborts_if</b> <a href="permissioned_signer.html#0x1_permissioned_signer_spec_is_permissioned_signer">permissioned_signer::spec_is_permissioned_signer</a>(admin);
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
     <b>let</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
     <b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(admin) != vesting_contract.admin;
