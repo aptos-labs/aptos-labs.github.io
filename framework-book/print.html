@@ -1338,6 +1338,8 @@ return true.</p>
 <li><a href="move-stdlib/features.html#0x1_features_get_native_collateral_feature">Function <code>get_native_collateral_feature</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_is_native_collateral_enabled">Function <code>is_native_collateral_enabled</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_gas_refund_fa_mint_enabled">Function <code>gas_refund_fa_mint_enabled</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_get_function_value_dispatch_feature">Function <code>get_function_value_dispatch_feature</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">Function <code>is_function_value_dispatch_enabled</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -1572,6 +1574,13 @@ Lifetime: transient</p>
 <p><a id="0x1_features_FUNCTION_REFLECTION"></a></p>
 <p>Whether function reflection is enabled.</p>
 <pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>: u64 = 105;
+</code></pre>
+<p><a id="0x1_features_FUNCTION_VALUE_DISPATCH"></a></p>
+<p>Whether <code>FunctionInfo</code>-based dispatch (dispatchable fungible assets and account
+abstraction) runs via function values from <code>std::reflect</code> instead of the legacy
+native dispatch machinery. Requires <code><a href="move-stdlib/features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a></code>.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_FUNCTION_VALUE_DISPATCH">FUNCTION_VALUE_DISPATCH</a>: u64 = 125;
 </code></pre>
 <p><a id="0x1_features_GAS_REFUND_FA_MINT"></a></p>
 <p>When enabled, the gas refund in the epilogue mints APT directly as a fungible asset
@@ -3288,6 +3297,27 @@ Lifetime: transient</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_gas_refund_fa_mint_enabled">gas_refund_fa_mint_enabled</a>(): bool {
     <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_GAS_REFUND_FA_MINT">GAS_REFUND_FA_MINT</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_function_value_dispatch_feature"><a class="header" href="#function-get_function_value_dispatch_feature">Function <code>get_function_value_dispatch_feature</code> <a id="0x1_features_get_function_value_dispatch_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_function_value_dispatch_feature">get_function_value_dispatch_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_get_function_value_dispatch_feature">get_function_value_dispatch_feature</a>(): u64 {
+    <a href="move-stdlib/features.html#0x1_features_FUNCTION_VALUE_DISPATCH">FUNCTION_VALUE_DISPATCH</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_function_value_dispatch_enabled"><a class="header" href="#function-is_function_value_dispatch_enabled">Function <code>is_function_value_dispatch_enabled</code> <a id="0x1_features_is_function_value_dispatch_enabled"></a></a></h2>
+<p>Requires function reflection, without which function-value dispatch stays disabled.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">is_function_value_dispatch_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">is_function_value_dispatch_enabled</a>(): bool {
+    <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_FUNCTION_VALUE_DISPATCH">FUNCTION_VALUE_DISPATCH</a>) && <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>)
 }
 </code></pre>
 </details>
@@ -27959,12 +27989,14 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
 <li><a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatchable_authenticator_internal">Function <code>dispatchable_authenticator_internal</code></a></li>
 <li><a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatchable_derivable_authenticator_internal">Function <code>dispatchable_derivable_authenticator_internal</code></a></li>
 <li><a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_authenticate">Function <code>authenticate</code></a></li>
+<li><a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">Function <code>dispatch_authenticate_hook</code></a></li>
 <li><a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatchable_authenticate">Function <code>dispatchable_authenticate</code></a></li>
 <li><a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_add_dispatchable_authentication_function">Function <code>add_dispatchable_authentication_function</code></a></li>
 <li><a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_remove_dispatchable_authentication_function">Function <code>remove_dispatchable_authentication_function</code></a></li>
 <li><a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_remove_dispatchable_authenticator">Function <code>remove_dispatchable_authenticator</code></a></li>
 <li><a href="aptos-framework/account_abstraction.html#@Specification_1">Specification</a>
 <ul>
+<li><a href="aptos-framework/account_abstraction.html#@Specification_1_dispatch_authenticate_hook">Function <code>dispatch_authenticate_hook</code></a></li>
 <li><a href="aptos-framework/account_abstraction.html#@Specification_1_dispatchable_authenticate">Function <code>dispatchable_authenticate</code></a></li>
 </ul>
 </li>
@@ -28415,14 +28447,37 @@ only be obtained as a part of the governance script.</p>
         <b>assert</b>!(func_infos.contains(&func_info), <a href="aptos-framework/../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_EFUNCTION_INFO_EXISTENCE">EFUNCTION_INFO_EXISTENCE</a>));
     };
 
-    <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(&func_info);
-    <b>let</b> returned_signer = <a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatchable_authenticate">dispatchable_authenticate</a>(<a href="aptos-framework/account.html#0x1_account">account</a>, signing_data, &func_info);
+    <b>let</b> returned_signer = <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">features::is_function_value_dispatch_enabled</a>()) {
+        <a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">dispatch_authenticate_hook</a>(<a href="aptos-framework/account.html#0x1_account">account</a>, signing_data, &func_info)
+    } <b>else</b> {
+        <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(&func_info);
+        <a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatchable_authenticate">dispatchable_authenticate</a>(<a href="aptos-framework/account.html#0x1_account">account</a>, signing_data, &func_info)
+    };
     // Returned <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a> MUST represent the same <a href="aptos-framework/account.html#0x1_account">account</a> <b>address</b>. Otherwise, it may <b>break</b> the <b>invariant</b> of Aptos blockchain!
     <b>assert</b>!(
         master_signer_addr == <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(&returned_signer),
         <a href="aptos-framework/../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_EINCONSISTENT_SIGNER_ADDRESS">EINCONSISTENT_SIGNER_ADDRESS</a>)
     );
     returned_signer
+}
+</code></pre>
+</details>
+<h2 id="function-dispatch_authenticate_hook"><a class="header" href="#function-dispatch_authenticate_hook">Function <code>dispatch_authenticate_hook</code> <a id="0x1_account_abstraction_dispatch_authenticate_hook"></a></a></h2>
+<p>Runs an authentication hook as a function value, replacing the legacy native
+dispatch below; <code>#[module_lock]</code> preserves its reentrancy semantics.</p>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">dispatch_authenticate_hook</a>(<a href="aptos-framework/account.html#0x1_account">account</a>: <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, signing_data: <a href="aptos-framework/auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">dispatch_authenticate_hook</a>(
+    <a href="aptos-framework/account.html#0x1_account">account</a>: <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>,
+    signing_data: AbstractionAuthData,
+    function: &FunctionInfo,
+): <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a> {
+    <b>let</b> f = function.load_function_value&lt;
+        |<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, AbstractionAuthData|<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a> <b>has</b> <b>copy</b> + drop&gt;();
+    f(<a href="aptos-framework/account.html#0x1_account">account</a>, signing_data)
 }
 </code></pre>
 </details>
@@ -28493,6 +28548,13 @@ only be obtained as a part of the governance script.</p>
    signing_data: AbstractionAuthData,
    function: &FunctionInfo
 ): <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>;
+</code></pre>
+<h3 id="function-dispatch_authenticate_hook-1"><a class="header" href="#function-dispatch_authenticate_hook-1">Function <code>dispatch_authenticate_hook</code> <a id="@Specification_1_dispatch_authenticate_hook"></a></a></h3>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">dispatch_authenticate_hook</a>(<a href="aptos-framework/account.html#0x1_account">account</a>: <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, signing_data: <a href="aptos-framework/auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>ensures</b> [abstract] result == <a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_spec_dispatchable_authenticate">spec_dispatchable_authenticate</a>(<a href="aptos-framework/account.html#0x1_account">account</a>, signing_data, function);
 </code></pre>
 <h3 id="function-dispatchable_authenticate-1"><a class="header" href="#function-dispatchable_authenticate-1">Function <code>dispatchable_authenticate</code> <a id="@Specification_1_dispatchable_authenticate"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/account_abstraction.html#0x1_account_abstraction_dispatchable_authenticate">dispatchable_authenticate</a>(<a href="aptos-framework/account.html#0x1_account">account</a>: <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, signing_data: <a href="aptos-framework/auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>
@@ -49085,8 +49147,13 @@ and is safe for non-dispatchable (aka vanilla) fungible assets as well.</p>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_transfer_assert_minimum_deposit">Function <code>transfer_assert_minimum_deposit</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_balance">Function <code>derived_balance</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_is_derived_balance_at_least">Function <code>is_derived_balance_at_least</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatched_derived_balance">Function <code>dispatched_derived_balance</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_supply">Function <code>derived_supply</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_borrow_transfer_ref">Function <code>borrow_transfer_ref</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_withdraw_hook">Function <code>dispatch_withdraw_hook</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_deposit_hook">Function <code>dispatch_deposit_hook</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_balance_hook">Function <code>dispatch_derived_balance_hook</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_supply_hook">Function <code>dispatch_derived_supply_hook</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_withdraw">Function <code>dispatchable_withdraw</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_deposit">Function <code>dispatchable_deposit</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_derived_balance">Function <code>dispatchable_derived_balance</code></a></li>
@@ -49095,6 +49162,10 @@ and is safe for non-dispatchable (aka vanilla) fungible assets as well.</p>
 <ul>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_withdraw">Function <code>withdraw</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_deposit">Function <code>deposit</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_dispatch_withdraw_hook">Function <code>dispatch_withdraw_hook</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_dispatch_deposit_hook">Function <code>dispatch_deposit_hook</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_dispatch_derived_balance_hook">Function <code>dispatch_derived_balance_hook</code></a></li>
+<li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_dispatch_derived_supply_hook">Function <code>dispatch_derived_supply_hook</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_dispatchable_withdraw">Function <code>dispatchable_withdraw</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_dispatchable_deposit">Function <code>dispatchable_deposit</code></a></li>
 <li><a href="aptos-framework/dispatchable_fungible_asset.html#@Specification_1_dispatchable_derived_balance">Function <code>dispatchable_derived_balance</code></a></li>
@@ -49103,6 +49174,7 @@ and is safe for non-dispatchable (aka vanilla) fungible assets as well.</p>
 </li>
 </ul>
 <pre><code><b>use</b> <a href="aptos-framework/../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="aptos-framework/../move-stdlib/features.html#0x1_features">0x1::features</a>;
 <b>use</b> <a href="aptos-framework/function_info.html#0x1_function_info">0x1::function_info</a>;
 <b>use</b> <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset">0x1::fungible_asset</a>;
 <b>use</b> <a href="aptos-framework/object.html#0x1_object">0x1::object</a>;
@@ -49194,14 +49266,17 @@ and is safe for non-dispatchable (aka vanilla) fungible assets as well.</p>
     <b>let</b> func_opt = <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_withdraw_dispatch_function">fungible_asset::withdraw_dispatch_function</a>(store);
     <b>if</b> (func_opt.is_some()) {
         <b>let</b> func = func_opt.borrow();
-        <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
-        <b>let</b> fa = <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_withdraw">dispatchable_withdraw</a>(
-            store,
-            amount,
-            <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_borrow_transfer_ref">borrow_transfer_ref</a>(store),
-            func,
-        );
-        fa
+        <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">features::is_function_value_dispatch_enabled</a>()) {
+            <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_withdraw_hook">dispatch_withdraw_hook</a>(store, amount, <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_borrow_transfer_ref">borrow_transfer_ref</a>(store), func)
+        } <b>else</b> {
+            <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
+            <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_withdraw">dispatchable_withdraw</a>(
+                store,
+                amount,
+                <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_borrow_transfer_ref">borrow_transfer_ref</a>(store),
+                func,
+            )
+        }
     } <b>else</b> {
         <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_unchecked_withdraw">fungible_asset::unchecked_withdraw</a>(store.object_address(), amount)
     }
@@ -49220,13 +49295,17 @@ and is safe for non-dispatchable (aka vanilla) fungible assets as well.</p>
     <b>let</b> func_opt = <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_deposit_dispatch_function">fungible_asset::deposit_dispatch_function</a>(store);
     <b>if</b> (func_opt.is_some()) {
         <b>let</b> func = func_opt.borrow();
-        <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
-        <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_deposit">dispatchable_deposit</a>(
-            store,
-            fa,
-            <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_borrow_transfer_ref">borrow_transfer_ref</a>(store),
-            func
-        )
+        <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">features::is_function_value_dispatch_enabled</a>()) {
+            <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_deposit_hook">dispatch_deposit_hook</a>(store, fa, <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_borrow_transfer_ref">borrow_transfer_ref</a>(store), func)
+        } <b>else</b> {
+            <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
+            <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_deposit">dispatchable_deposit</a>(
+                store,
+                fa,
+                <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_borrow_transfer_ref">borrow_transfer_ref</a>(store),
+                func
+            )
+        }
     } <b>else</b> {
         <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_unchecked_deposit">fungible_asset::unchecked_deposit</a>(store.object_address(), fa)
     }
@@ -49285,9 +49364,7 @@ Note: it does not move the underlying object.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_balance">derived_balance</a>&lt;T: key&gt;(store: Object&lt;T&gt;): u64 {
     <b>let</b> func_opt = <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_derived_balance_dispatch_function">fungible_asset::derived_balance_dispatch_function</a>(store);
     <b>if</b> (func_opt.is_some()) {
-        <b>let</b> func = func_opt.borrow();
-        <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
-        <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_derived_balance">dispatchable_derived_balance</a>(store, func)
+        <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatched_derived_balance">dispatched_derived_balance</a>(store, func_opt.borrow())
     } <b>else</b> {
         <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_balance">fungible_asset::balance</a>(store)
     }
@@ -49305,11 +49382,26 @@ Note: it does not move the underlying object.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_is_derived_balance_at_least">is_derived_balance_at_least</a>&lt;T: key&gt;(store: Object&lt;T&gt;, amount: u64): bool {
     <b>let</b> func_opt = <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_derived_balance_dispatch_function">fungible_asset::derived_balance_dispatch_function</a>(store);
     <b>if</b> (func_opt.is_some()) {
-        <b>let</b> func = func_opt.borrow();
-        <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
-        <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_derived_balance">dispatchable_derived_balance</a>(store, func) &gt;= amount
+        <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatched_derived_balance">dispatched_derived_balance</a>(store, func_opt.borrow()) &gt;= amount
     } <b>else</b> {
         <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_is_balance_at_least">fungible_asset::is_balance_at_least</a>(store, amount)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-dispatched_derived_balance"><a class="header" href="#function-dispatched_derived_balance">Function <code>dispatched_derived_balance</code> <a id="0x1_dispatchable_fungible_asset_dispatched_derived_balance"></a></a></h2>
+<p>Runs the derived-balance hook via the enabled dispatch mechanism. Inline, so both
+callers compile to the same code as if the branch were written in place.</p>
+<pre><code><b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatched_derived_balance">dispatched_derived_balance</a>&lt;T: key&gt;(store: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, func: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatched_derived_balance">dispatched_derived_balance</a>&lt;T: key&gt;(store: Object&lt;T&gt;, func: &FunctionInfo): u64 {
+    <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">features::is_function_value_dispatch_enabled</a>()) {
+        <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_balance_hook">dispatch_derived_balance_hook</a>(store, func)
+    } <b>else</b> {
+        <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
+        <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_derived_balance">dispatchable_derived_balance</a>(store, func)
     }
 }
 </code></pre>
@@ -49326,8 +49418,12 @@ Note: it does not move the underlying object.</p>
     <b>let</b> func_opt = <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_derived_supply_dispatch_function">fungible_asset::derived_supply_dispatch_function</a>(metadata);
     <b>if</b> (func_opt.is_some()) {
         <b>let</b> func = func_opt.borrow();
-        <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
-        <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_derived_supply">dispatchable_derived_supply</a>(metadata, func)
+        <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">features::is_function_value_dispatch_enabled</a>()) {
+            <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_supply_hook">dispatch_derived_supply_hook</a>(metadata, func)
+        } <b>else</b> {
+            <a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(func);
+            <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_derived_supply">dispatchable_derived_supply</a>(metadata, func)
+        }
     } <b>else</b> {
         <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_supply">fungible_asset::supply</a>(metadata)
     }
@@ -49346,6 +49442,74 @@ Note: it does not move the underlying object.</p>
         <a href="aptos-framework/../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_ESTORE_NOT_FOUND">ESTORE_NOT_FOUND</a>)
     );
     &<b>borrow_global</b>&lt;<a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_TransferRefStore">TransferRefStore</a>&gt;(metadata_addr).transfer_ref
+}
+</code></pre>
+</details>
+<h2 id="function-dispatch_withdraw_hook"><a class="header" href="#function-dispatch_withdraw_hook">Function <code>dispatch_withdraw_hook</code> <a id="0x1_dispatchable_fungible_asset_dispatch_withdraw_hook"></a></a></h2>
+<p>Runs a withdraw hook as a function value, replacing the legacy native dispatch, as
+do the following runners; <code>#[module_lock]</code> preserves AIP-73 reentrancy semantics.</p>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_withdraw_hook">dispatch_withdraw_hook</a>&lt;T: key&gt;(store: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64, transfer_ref: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_withdraw_hook">dispatch_withdraw_hook</a>&lt;T: key&gt;(
+    store: Object&lt;T&gt;,
+    amount: u64,
+    transfer_ref: &TransferRef,
+    function: &FunctionInfo,
+): FungibleAsset {
+    <b>let</b> f = function.load_function_value&lt;
+        |Object&lt;T&gt;, u64, &TransferRef|FungibleAsset <b>has</b> <b>copy</b> + drop&gt;();
+    f(store, amount, transfer_ref)
+}
+</code></pre>
+</details>
+<h2 id="function-dispatch_deposit_hook"><a class="header" href="#function-dispatch_deposit_hook">Function <code>dispatch_deposit_hook</code> <a id="0x1_dispatchable_fungible_asset_dispatch_deposit_hook"></a></a></h2>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_deposit_hook">dispatch_deposit_hook</a>&lt;T: key&gt;(store: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, fa: <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>, transfer_ref: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_deposit_hook">dispatch_deposit_hook</a>&lt;T: key&gt;(
+    store: Object&lt;T&gt;,
+    fa: FungibleAsset,
+    transfer_ref: &TransferRef,
+    function: &FunctionInfo,
+) {
+    <b>let</b> f = function.load_function_value&lt;
+        |Object&lt;T&gt;, FungibleAsset, &TransferRef| <b>has</b> <b>copy</b> + drop&gt;();
+    f(store, fa, transfer_ref)
+}
+</code></pre>
+</details>
+<h2 id="function-dispatch_derived_balance_hook"><a class="header" href="#function-dispatch_derived_balance_hook">Function <code>dispatch_derived_balance_hook</code> <a id="0x1_dispatchable_fungible_asset_dispatch_derived_balance_hook"></a></a></h2>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_balance_hook">dispatch_derived_balance_hook</a>&lt;T: key&gt;(store: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_balance_hook">dispatch_derived_balance_hook</a>&lt;T: key&gt;(
+    store: Object&lt;T&gt;,
+    function: &FunctionInfo,
+): u64 {
+    <b>let</b> f = function.load_function_value&lt;|Object&lt;T&gt;|u64 <b>has</b> <b>copy</b> + drop&gt;();
+    f(store)
+}
+</code></pre>
+</details>
+<h2 id="function-dispatch_derived_supply_hook"><a class="header" href="#function-dispatch_derived_supply_hook">Function <code>dispatch_derived_supply_hook</code> <a id="0x1_dispatchable_fungible_asset_dispatch_derived_supply_hook"></a></a></h2>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_supply_hook">dispatch_derived_supply_hook</a>&lt;T: key&gt;(metadata: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_supply_hook">dispatch_derived_supply_hook</a>&lt;T: key&gt;(
+    metadata: Object&lt;T&gt;,
+    function: &FunctionInfo,
+): Option&lt;u128&gt; {
+    <b>let</b> f = function.load_function_value&lt;|Object&lt;T&gt;|Option&lt;u128&gt; <b>has</b> <b>copy</b> + drop&gt;();
+    f(metadata)
 }
 </code></pre>
 </details>
@@ -49411,6 +49575,30 @@ Note: it does not move the underlying object.</p>
 </code></pre>
 <pre><code><b>modifies</b> <b>global</b>&lt;<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(<a href="aptos-framework/object.html#0x1_object_object_address">object::object_address</a>(store));
 <b>modifies</b> <b>global</b>&lt;<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(<a href="aptos-framework/object.html#0x1_object_object_address">object::object_address</a>(store));
+</code></pre>
+<h3 id="function-dispatch_withdraw_hook-1"><a class="header" href="#function-dispatch_withdraw_hook-1">Function <code>dispatch_withdraw_hook</code> <a id="@Specification_1_dispatch_withdraw_hook"></a></a></h3>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_withdraw_hook">dispatch_withdraw_hook</a>&lt;T: key&gt;(store: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64, transfer_ref: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-dispatch_deposit_hook-1"><a class="header" href="#function-dispatch_deposit_hook-1">Function <code>dispatch_deposit_hook</code> <a id="@Specification_1_dispatch_deposit_hook"></a></a></h3>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_deposit_hook">dispatch_deposit_hook</a>&lt;T: key&gt;(store: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, fa: <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>, transfer_ref: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-dispatch_derived_balance_hook-1"><a class="header" href="#function-dispatch_derived_balance_hook-1">Function <code>dispatch_derived_balance_hook</code> <a id="@Specification_1_dispatch_derived_balance_hook"></a></a></h3>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_balance_hook">dispatch_derived_balance_hook</a>&lt;T: key&gt;(store: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-dispatch_derived_supply_hook-1"><a class="header" href="#function-dispatch_derived_supply_hook-1">Function <code>dispatch_derived_supply_hook</code> <a id="@Specification_1_dispatch_derived_supply_hook"></a></a></h3>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatch_derived_supply_hook">dispatch_derived_supply_hook</a>&lt;T: key&gt;(metadata: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
 </code></pre>
 <h3 id="function-dispatchable_withdraw-1"><a class="header" href="#function-dispatchable_withdraw-1">Function <code>dispatchable_withdraw</code> <a id="@Specification_1_dispatchable_withdraw"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatchable_withdraw">dispatchable_withdraw</a>&lt;T: key&gt;(store: <a href="aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64, transfer_ref: &<a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, function: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="aptos-framework/fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
@@ -50747,6 +50935,7 @@ When setting now time must be later than last_reconfiguration_time.</p>
 <li><a href="aptos-framework/function_info.html#0x1_function_info_new_function_info_from_address">Function <code>new_function_info_from_address</code></a></li>
 <li><a href="aptos-framework/function_info.html#0x1_function_info_check_dispatch_type_compatibility">Function <code>check_dispatch_type_compatibility</code></a></li>
 <li><a href="aptos-framework/function_info.html#0x1_function_info_load_module_from_function">Function <code>load_module_from_function</code></a></li>
+<li><a href="aptos-framework/function_info.html#0x1_function_info_load_function_value">Function <code>load_function_value</code></a></li>
 <li><a href="aptos-framework/function_info.html#0x1_function_info_check_dispatch_type_compatibility_impl">Function <code>check_dispatch_type_compatibility_impl</code></a></li>
 <li><a href="aptos-framework/function_info.html#0x1_function_info_is_identifier">Function <code>is_identifier</code></a></li>
 <li><a href="aptos-framework/function_info.html#0x1_function_info_load_function_impl">Function <code>load_function_impl</code></a></li>
@@ -50754,13 +50943,16 @@ When setting now time must be later than last_reconfiguration_time.</p>
 <ul>
 <li><a href="aptos-framework/function_info.html#@Specification_1_new_function_info">Function <code>new_function_info</code></a></li>
 <li><a href="aptos-framework/function_info.html#@Specification_1_new_function_info_from_address">Function <code>new_function_info_from_address</code></a></li>
+<li><a href="aptos-framework/function_info.html#@Specification_1_load_function_value">Function <code>load_function_value</code></a></li>
 <li><a href="aptos-framework/function_info.html#@Specification_1_check_dispatch_type_compatibility_impl">Function <code>check_dispatch_type_compatibility_impl</code></a></li>
 <li><a href="aptos-framework/function_info.html#@Specification_1_is_identifier">Function <code>is_identifier</code></a></li>
 <li><a href="aptos-framework/function_info.html#@Specification_1_load_function_impl">Function <code>load_function_impl</code></a></li>
 </ul>
 </li>
 </ul>
-<pre><code><b>use</b> <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<pre><code><b>use</b> <a href="aptos-framework/../move-stdlib/reflect.html#0x1_reflect">0x1::reflect</a>;
+<b>use</b> 0x1::result;
+<b>use</b> <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/string.html#0x1_string">0x1::string</a>;
 </code></pre>
 <h2 id="struct-functioninfo"><a class="header" href="#struct-functioninfo">Struct <code>FunctionInfo</code> <a id="0x1_function_info_FunctionInfo"></a></a></h2>
@@ -50881,6 +51073,25 @@ if such module isn't accessed previously in the transaction.</p>
 }
 </code></pre>
 </details>
+<h2 id="function-load_function_value"><a class="header" href="#function-load_function_value">Function <code>load_function_value</code> <a id="0x1_function_info_load_function_value"></a></a></h2>
+<p>Resolves the function referenced by <code>self</code> into a function value of type <code>FuncType</code>.
+Aborts with <code><a href="aptos-framework/function_info.html#0x1_function_info_EINVALID_FUNCTION">EINVALID_FUNCTION</a></code> on failure; unreachable for targets validated via
+<code>check_dispatch_type_compatibility</code>, whose signatures are frozen by upgrade rules.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/function_info.html#0x1_function_info_load_function_value">load_function_value</a>&lt;FuncType&gt;(self: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): FuncType
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/function_info.html#0x1_function_info_load_function_value">load_function_value</a>&lt;FuncType&gt;(self: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">FunctionInfo</a>): FuncType {
+    <b>let</b> result = <a href="aptos-framework/../move-stdlib/reflect.html#0x1_reflect_resolve">reflect::resolve</a>&lt;FuncType&gt;(
+        self.module_address,
+        &self.module_name,
+        &self.function_name,
+    );
+    <b>assert</b>!(result.is_ok(), <a href="aptos-framework/function_info.html#0x1_function_info_EINVALID_FUNCTION">EINVALID_FUNCTION</a>);
+    result.unwrap()
+}
+</code></pre>
+</details>
 <h2 id="function-check_dispatch_type_compatibility_impl"><a class="header" href="#function-check_dispatch_type_compatibility_impl">Function <code>check_dispatch_type_compatibility_impl</code> <a id="0x1_function_info_check_dispatch_type_compatibility_impl"></a></a></h2>
 <pre><code><b>fun</b> <a href="aptos-framework/function_info.html#0x1_function_info_check_dispatch_type_compatibility_impl">check_dispatch_type_compatibility_impl</a>(lhs: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>, r: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): bool
 </code></pre>
@@ -50930,6 +51141,12 @@ if such module isn't accessed previously in the transaction.</p>
     module_name,
     function_name,
 };
+</code></pre>
+<h3 id="function-load_function_value-1"><a class="header" href="#function-load_function_value-1">Function <code>load_function_value</code> <a id="@Specification_1_load_function_value"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/function_info.html#0x1_function_info_load_function_value">load_function_value</a>&lt;FuncType&gt;(self: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): FuncType
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>pragma</b> opaque;
 </code></pre>
 <h3 id="function-check_dispatch_type_compatibility_impl-1"><a class="header" href="#function-check_dispatch_type_compatibility_impl-1">Function <code>check_dispatch_type_compatibility_impl</code> <a id="@Specification_1_check_dispatch_type_compatibility_impl"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/function_info.html#0x1_function_info_check_dispatch_type_compatibility_impl">check_dispatch_type_compatibility_impl</a>(lhs: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>, r: &<a href="aptos-framework/function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): bool
@@ -65211,6 +65428,11 @@ using lambdas to destroy the individual keys and values.</p>
 <h2 id="specification-92"><a class="header" href="#specification-92">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_replace_key_inplace"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_replace_key_inplace">spec_aborts_replace_key_inplace</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, old_key: K, new_key: K): bool {
+   !<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, old_key) || old_key != new_key
+}
+</code></pre>
 <h3 id="enum-orderedmap-1"><a class="header" href="#enum-orderedmap-1">Enum <code>OrderedMap</code> <a id="@Specification_1_OrderedMap"></a></a></h3>
 <pre><code>enum <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt; <b>has</b> <b>copy</b>, drop, store
 </code></pre>
@@ -65236,6 +65458,26 @@ using lambdas to destroy the individual keys and values.</p>
     map_destroy_empty = destroy_empty,
     map_has_key = contains,
     map_add_no_override = add,
+    map_upsert = upsert,
+    map_del_must_exist = remove,
+    map_remove_or_none = remove_or_none,
+    map_get = get,
+    map_borrow_front = borrow_front,
+    map_borrow_back = borrow_back,
+    map_pop_front = pop_front,
+    map_pop_back = pop_back,
+    map_prev_key = prev_key,
+    map_next_key = next_key,
+    map_keys = keys,
+    map_values = values,
+    map_to_vec_pair = to_vec_pair,
+    map_new_from = new_from,
+    map_add_all = add_all,
+    map_upsert_all = upsert_all,
+    map_append = append,
+    map_append_disjoint = append_disjoint,
+    map_trim = trim,
+    map_replace_key_inplace = replace_key_inplace,
     map_borrow = borrow,
     map_borrow_mut = borrow_mut,
     map_spec_get = spec_get,
@@ -65243,6 +65485,13 @@ using lambdas to destroy the individual keys and values.</p>
     map_spec_del = spec_remove,
     map_spec_len = spec_len,
     map_spec_has_key = spec_contains_key,
+    map_spec_aborts_empty = spec_aborts_empty,
+    map_spec_aborts_add_all = spec_aborts_add_all,
+    map_spec_aborts_new_from = spec_aborts_new_from,
+    map_spec_aborts_append_disjoint = spec_aborts_append_disjoint,
+    map_spec_aborts_trim = spec_aborts_trim,
+    map_spec_aborts_upsert_all = spec_aborts_upsert_all,
+    map_spec_aborts_replace_key_inplace = spec_aborts_replace_key_inplace,
     map_is_empty = is_empty;
 </code></pre>
 <p><a id="0x1_ordered_map_spec_len"></a></p>
@@ -65260,6 +65509,39 @@ using lambdas to destroy the individual keys and values.</p>
 <p><a id="0x1_ordered_map_spec_get"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): V;
 </code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_empty"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_empty">spec_aborts_empty</a>&lt;K, V&gt;(t: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
+   <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(t) == 0
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_add_all"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_add_all">spec_aborts_add_all</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+       || (<b>exists</b> i in 0..len(keys): <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, keys[i]))
+       || (<b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j: keys[i] == keys[j])
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_new_from"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_new_from">spec_aborts_new_from</a>&lt;K, V&gt;(keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+       || (<b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j: keys[i] == keys[j])
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_append_disjoint"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_append_disjoint">spec_aborts_append_disjoint</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, other: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
+   <b>exists</b> k: K: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, k) && <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(other, k)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_trim"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_trim">spec_aborts_trim</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, at: u64): bool {
+   at &gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(m)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_upsert_all"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_upsert_all">spec_aborts_upsert_all</a>&lt;K, V&gt;(_m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+}
+</code></pre>
 <h3 id="function-new-25"><a class="header" href="#function-new-25">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_new">new</a>&lt;K, V&gt;(): <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;
 </code></pre>
@@ -65268,13 +65550,7 @@ using lambdas to destroy the individual keys and values.</p>
 <h3 id="function-new_from-5"><a class="header" href="#function-new_from-5">Function <code>new_from</code> <a id="@Specification_1_new_from"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_new_from">new_from</a>&lt;K, V&gt;(keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> [abstract] <b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j : keys[i] == keys[j];
-<b>aborts_if</b> [abstract] len(keys) != len(values);
-<b>ensures</b> [abstract] <b>forall</b> k: K {<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(result, k)} : <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(keys,k) &lt;==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(result, k);
-<b>ensures</b> [abstract] <b>forall</b> i in 0..len(keys) : <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(result, keys[i]) == values[i];
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(result) == len(keys);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-length-13"><a class="header" href="#function-length-13">Function <code>length</code> <a id="@Specification_1_length"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_length">length</a>&lt;K, V&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): u64
@@ -65294,43 +65570,17 @@ using lambdas to destroy the individual keys and values.</p>
 <h3 id="function-upsert-12"><a class="header" href="#function-upsert-12">Function <code>upsert</code> <a id="@Specification_1_upsert"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_upsert">upsert</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: K, value: V): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] !<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="aptos-framework/../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result);
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, key) == value;
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; ((<a href="aptos-framework/../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result)) && (<a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(
-    self), key)));
-<b>ensures</b> [abstract] !<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) + 1 == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self);
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self);
-<b>ensures</b> [abstract] <b>forall</b> k: K: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) && k != key ==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, k);
-<b>ensures</b> [abstract] <b>forall</b> k: K: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) ==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-remove-20"><a class="header" href="#function-remove-20">Function <code>remove</code> <a id="@Specification_1_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_remove">remove</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): V
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> [abstract] !<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> [abstract] !<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), key) == result;
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self) + 1;
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != key: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, k) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k);
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != key: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-remove_or_none-3"><a class="header" href="#function-remove_or_none-3">Function <code>remove_or_none</code> <a id="@Specification_1_remove_or_none"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_remove_or_none">remove_or_none</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> [abstract] <b>false</b>;
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; result == <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), key));
-<b>ensures</b> [abstract] !<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; result == <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>();
-<b>ensures</b> [abstract] !<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> [abstract] <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_is_none">option::spec_is_none</a>(result) ==&gt; self == <b>old</b>(self);
-<b>ensures</b> [abstract] <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_is_some">option::spec_is_some</a>(result) ==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self) + 1;
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != key: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, k) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k);
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != key: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) == <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-contains-23"><a class="header" href="#function-contains-23">Function <code>contains</code> <a id="@Specification_1_contains"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_contains">contains</a>&lt;K, V&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): bool
@@ -65350,38 +65600,32 @@ using lambdas to destroy the individual keys and values.</p>
 <h3 id="function-get-4"><a class="header" href="#function-get-4">Function <code>get</code> <a id="@Specification_1_get"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_get">get</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-replace_key_inplace-1"><a class="header" href="#function-replace_key_inplace-1">Function <code>replace_key_inplace</code> <a id="@Specification_1_replace_key_inplace"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_replace_key_inplace">replace_key_inplace</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, old_key: &K, new_key: K)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-add_all-8"><a class="header" href="#function-add_all-8">Function <code>add_all</code> <a id="@Specification_1_add_all"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_add_all">add_all</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-upsert_all-1"><a class="header" href="#function-upsert_all-1">Function <code>upsert_all</code> <a id="@Specification_1_upsert_all"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_upsert_all">upsert_all</a>&lt;K: drop, V: drop&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-append-8"><a class="header" href="#function-append-8">Function <code>append</code> <a id="@Specification_1_append"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_append">append</a>&lt;K: drop, V: drop&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, other: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-append_disjoint-1"><a class="header" href="#function-append_disjoint-1">Function <code>append_disjoint</code> <a id="@Specification_1_append_disjoint"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_append_disjoint">append_disjoint</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, other: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-append_impl-1"><a class="header" href="#function-append_impl-1">Function <code>append_impl</code> <a id="@Specification_1_append_impl"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_append_impl">append_impl</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, other: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/ordered_map.html#0x1_ordered_map_Entry">ordered_map::Entry</a>&lt;K, V&gt;&gt;
@@ -65392,70 +65636,37 @@ using lambdas to destroy the individual keys and values.</p>
 <h3 id="function-trim-3"><a class="header" href="#function-trim-3">Function <code>trim</code> <a id="@Specification_1_trim"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_trim">trim</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, at: u64): <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-borrow_front-3"><a class="header" href="#function-borrow_front-3">Function <code>borrow_front</code> <a id="@Specification_1_borrow_front"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_borrow_front">borrow_front</a>&lt;K, V&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (&K, &V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, result_1) == result_2;
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != result_1: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt;
-std::cmp::compare(result_1, k) == std::cmp::Ordering::Less;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-borrow_back-3"><a class="header" href="#function-borrow_back-3">Function <code>borrow_back</code> <a id="@Specification_1_borrow_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_borrow_back">borrow_back</a>&lt;K, V&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (&K, &V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
-<b>ensures</b> [abstract] <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, result_1) == result_2;
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != result_1: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt;
-std::cmp::compare(result_1, k) == std::cmp::Ordering::Greater;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-pop_front-3"><a class="header" href="#function-pop_front-3">Function <code>pop_front</code> <a id="@Specification_1_pop_front"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_pop_front">pop_front</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (K, V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-pop_back-8"><a class="header" href="#function-pop_back-8">Function <code>pop_back</code> <a id="@Specification_1_pop_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_pop_back">pop_back</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (K, V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-prev_key-3"><a class="header" href="#function-prev_key-3">Function <code>prev_key</code> <a id="@Specification_1_prev_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_prev_key">prev_key</a>&lt;K: <b>copy</b>, V&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] result == std::option::spec_none() &lt;==&gt;
-(<b>forall</b> k: K {<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)
-&& k != key: std::cmp::compare(key, k) == std::cmp::Ordering::Less);
-<b>ensures</b> [abstract] result.is_some() &lt;==&gt;
-    <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, <a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result)) &&
-    (std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), key) == std::cmp::Ordering::Less)
-    && (<b>forall</b> k: K {<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k), std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), k), std::cmp::compare(key, k)} <b>where</b> k != <a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result): ((<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) &&
-    std::cmp::compare(k, key) == std::cmp::Ordering::Less)) ==&gt;
-    std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), k) == std::cmp::Ordering::Greater);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-next_key-3"><a class="header" href="#function-next_key-3">Function <code>next_key</code> <a id="@Specification_1_next_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_next_key">next_key</a>&lt;K: <b>copy</b>, V&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] result == std::option::spec_none() &lt;==&gt;
-(<b>forall</b> k: K {<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) && k != key:
-std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
-<b>ensures</b> [abstract] result.is_some() &lt;==&gt;
-    <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, <a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result)) &&
-    (std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), key) == std::cmp::Ordering::Greater)
-    && (<b>forall</b> k: K {<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> k != <a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result): ((<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) &&
-    std::cmp::compare(k, key) == std::cmp::Ordering::Greater)) ==&gt;
-    std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), k) == std::cmp::Ordering::Less);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-internal_lower_bound-3"><a class="header" href="#function-internal_lower_bound-3">Function <code>internal_lower_bound</code> <a id="@Specification_1_internal_lower_bound"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_internal_lower_bound">internal_lower_bound</a>&lt;K, V&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>
@@ -65555,21 +65766,17 @@ std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
 <h3 id="function-keys-7"><a class="header" href="#function-keys-7">Function <code>keys</code> <a id="@Specification_1_keys"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_keys">keys</a>&lt;K: <b>copy</b>, V&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> opaque;
-<b>ensures</b> [abstract] <b>forall</b> k: K: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(result, k) &lt;==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-values-3"><a class="header" href="#function-values-3">Function <code>values</code> <a id="@Specification_1_values"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_values">values</a>&lt;K, V: <b>copy</b>&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-to_vec_pair-3"><a class="header" href="#function-to_vec_pair-3">Function <code>to_vec_pair</code> <a id="@Specification_1_to_vec_pair"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_to_vec_pair">to_vec_pair</a>&lt;K, V&gt;(self: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-binary_search-1"><a class="header" href="#function-binary_search-1">Function <code>binary_search</code> <a id="@Specification_1_binary_search"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_binary_search">binary_search</a>&lt;K, V&gt;(key: &K, entries: &<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/ordered_map.html#0x1_ordered_map_Entry">ordered_map::Entry</a>&lt;K, V&gt;&gt;, start: u64, end: u64): u64
@@ -75585,7 +75792,7 @@ fell back to retaining the previous active set.</p>
         // in consensus anymore. In this case, the chain is considered effectively dead, and we must retain
         // the previous active validator set <b>as</b> a last-resort liveness fallback.
         // Recompute each validator's info from current <a href="aptos-framework/stake.html#0x1_stake">stake</a> (after update_stake_pool) so that
-        // voting_power and total_voting_power reflect rewards, fees, and merged <a href="aptos-framework/stake.html#0x1_stake">stake</a>—not stale values.
+        // voting_power and total_voting_power <a href="aptos-framework/../move-stdlib/reflect.html#0x1_reflect">reflect</a> rewards, fees, and merged <a href="aptos-framework/stake.html#0x1_stake">stake</a>—not stale values.
         <b>let</b> refreshed_validators = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
         <b>let</b> emergency_total_voting_power = 0u128;
         <b>let</b> fallback_vlen = validator_set.active_validators.length();

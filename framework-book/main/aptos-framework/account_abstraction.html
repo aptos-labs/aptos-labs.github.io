@@ -185,12 +185,14 @@
 <li><a href="#0x1_account_abstraction_dispatchable_authenticator_internal">Function <code>dispatchable_authenticator_internal</code></a></li>
 <li><a href="#0x1_account_abstraction_dispatchable_derivable_authenticator_internal">Function <code>dispatchable_derivable_authenticator_internal</code></a></li>
 <li><a href="#0x1_account_abstraction_authenticate">Function <code>authenticate</code></a></li>
+<li><a href="#0x1_account_abstraction_dispatch_authenticate_hook">Function <code>dispatch_authenticate_hook</code></a></li>
 <li><a href="#0x1_account_abstraction_dispatchable_authenticate">Function <code>dispatchable_authenticate</code></a></li>
 <li><a href="#0x1_account_abstraction_add_dispatchable_authentication_function">Function <code>add_dispatchable_authentication_function</code></a></li>
 <li><a href="#0x1_account_abstraction_remove_dispatchable_authentication_function">Function <code>remove_dispatchable_authentication_function</code></a></li>
 <li><a href="#0x1_account_abstraction_remove_dispatchable_authenticator">Function <code>remove_dispatchable_authenticator</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_dispatch_authenticate_hook">Function <code>dispatch_authenticate_hook</code></a></li>
 <li><a href="#@Specification_1_dispatchable_authenticate">Function <code>dispatchable_authenticate</code></a></li>
 </ul>
 </li>
@@ -641,14 +643,37 @@ only be obtained as a part of the governance script.</p>
         <b>assert</b>!(func_infos.contains(&func_info), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account_abstraction.html#0x1_account_abstraction_EFUNCTION_INFO_EXISTENCE">EFUNCTION_INFO_EXISTENCE</a>));
     };
 
-    <a href="function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(&func_info);
-    <b>let</b> returned_signer = <a href="account_abstraction.html#0x1_account_abstraction_dispatchable_authenticate">dispatchable_authenticate</a>(<a href="account.html#0x1_account">account</a>, signing_data, &func_info);
+    <b>let</b> returned_signer = <b>if</b> (<a href="../move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">features::is_function_value_dispatch_enabled</a>()) {
+        <a href="account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">dispatch_authenticate_hook</a>(<a href="account.html#0x1_account">account</a>, signing_data, &func_info)
+    } <b>else</b> {
+        <a href="function_info.html#0x1_function_info_load_module_from_function">function_info::load_module_from_function</a>(&func_info);
+        <a href="account_abstraction.html#0x1_account_abstraction_dispatchable_authenticate">dispatchable_authenticate</a>(<a href="account.html#0x1_account">account</a>, signing_data, &func_info)
+    };
     // Returned <a href="../move-stdlib/signer.html#0x1_signer">signer</a> MUST represent the same <a href="account.html#0x1_account">account</a> <b>address</b>. Otherwise, it may <b>break</b> the <b>invariant</b> of Aptos blockchain!
     <b>assert</b>!(
         master_signer_addr == <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(&returned_signer),
         <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="account_abstraction.html#0x1_account_abstraction_EINCONSISTENT_SIGNER_ADDRESS">EINCONSISTENT_SIGNER_ADDRESS</a>)
     );
     returned_signer
+}
+</code></pre>
+</details>
+<h2 id="function-dispatch_authenticate_hook"><a class="header" href="#function-dispatch_authenticate_hook">Function <code>dispatch_authenticate_hook</code> <a id="0x1_account_abstraction_dispatch_authenticate_hook"></a></a></h2>
+<p>Runs an authentication hook as a function value, replacing the legacy native
+dispatch below; <code>#[module_lock]</code> preserves its reentrancy semantics.</p>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">dispatch_authenticate_hook</a>(<a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, signing_data: <a href="auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>, function: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">dispatch_authenticate_hook</a>(
+    <a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    signing_data: AbstractionAuthData,
+    function: &FunctionInfo,
+): <a href="../move-stdlib/signer.html#0x1_signer">signer</a> {
+    <b>let</b> f = function.load_function_value&lt;
+        |<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, AbstractionAuthData|<a href="../move-stdlib/signer.html#0x1_signer">signer</a> <b>has</b> <b>copy</b> + drop&gt;();
+    f(<a href="account.html#0x1_account">account</a>, signing_data)
 }
 </code></pre>
 </details>
@@ -719,6 +744,13 @@ only be obtained as a part of the governance script.</p>
    signing_data: AbstractionAuthData,
    function: &FunctionInfo
 ): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
+</code></pre>
+<h3 id="function-dispatch_authenticate_hook-1"><a class="header" href="#function-dispatch_authenticate_hook-1">Function <code>dispatch_authenticate_hook</code> <a id="@Specification_1_dispatch_authenticate_hook"></a></a></h3>
+<pre><code>#[module_lock]
+<b>fun</b> <a href="account_abstraction.html#0x1_account_abstraction_dispatch_authenticate_hook">dispatch_authenticate_hook</a>(<a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, signing_data: <a href="auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>, function: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>ensures</b> [abstract] result == <a href="account_abstraction.html#0x1_account_abstraction_spec_dispatchable_authenticate">spec_dispatchable_authenticate</a>(<a href="account.html#0x1_account">account</a>, signing_data, function);
 </code></pre>
 <h3 id="function-dispatchable_authenticate-1"><a class="header" href="#function-dispatchable_authenticate-1">Function <code>dispatchable_authenticate</code> <a id="@Specification_1_dispatchable_authenticate"></a></a></h3>
 <pre><code><b>fun</b> <a href="account_abstraction.html#0x1_account_abstraction_dispatchable_authenticate">dispatchable_authenticate</a>(<a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, signing_data: <a href="auth_data.html#0x1_auth_data_AbstractionAuthData">auth_data::AbstractionAuthData</a>, function: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
