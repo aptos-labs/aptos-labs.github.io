@@ -951,13 +951,17 @@ StakingConfig does not exist under the aptos_framework before creating it.</p>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_reward_rate">reward_rate</a>(): (u64, u64)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>let</b> config = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">StakingConfig</a>&gt;(@aptos_framework);
 <b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
+<b>ensures</b> result_1 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>;
+<b>ensures</b> result_2 &gt; 0;
+<b>ensures</b> result_1 &lt;= result_2;
 <b>ensures</b> (<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>() &&
     (<b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate.value <b>as</b> u64) != 0) ==&gt;
-    result_1 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a> && result_2 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>;
+        result_2 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>;
+proof {
+  split <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+}
 </code></pre>
 <h3 id="function-initialize_rewards-1"><a class="header" href="#function-initialize_rewards-1">Function <code>initialize_rewards</code> <a id="@Specification_1_initialize_rewards"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_initialize_rewards">initialize_rewards</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, min_rewards_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, rewards_rate_period_in_secs: u64, last_rewards_rate_period_start_in_secs: u64, rewards_rate_decrease_rate: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>)
@@ -966,8 +970,7 @@ StakingConfig does not exist under the aptos_framework before creating it.</p>
 last_rewards_rate_period_start_in_secs cannot be later than now.
 Abort at any condition in StakingRewardsConfigValidationAborts.
 StakingRewardsConfig does not exist under the aptos_framework before creating it.</p>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>requires</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<pre><code><b>requires</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 // This enforces <a id="high-level-req-1.2" href="#high-level-req">high-level requirement 1</a>:
 <b>aborts_if</b> addr != @aptos_framework;
@@ -993,20 +996,21 @@ StakingRewardsConfig does not exist under the aptos_framework before creating it
 <b>ensures</b> (<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>() &&
     (<b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate.value <b>as</b> u64) != 0) ==&gt;
         result_2 &lt;= <a href="staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>;
+proof {
+  split <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+}
 </code></pre>
 <h3 id="function-calculate_and_save_latest_epoch_rewards_rate-1"><a class="header" href="#function-calculate_and_save_latest_epoch_rewards_rate-1">Function <code>calculate_and_save_latest_epoch_rewards_rate</code> <a id="@Specification_1_calculate_and_save_latest_epoch_rewards_rate"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_epoch_rewards_rate">calculate_and_save_latest_epoch_rewards_rate</a>(): <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
 <b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
 <b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
 </code></pre>
 <h3 id="function-calculate_and_save_latest_rewards_config-1"><a class="header" href="#function-calculate_and_save_latest_rewards_config-1">Function <code>calculate_and_save_latest_rewards_config</code> <a id="@Specification_1_calculate_and_save_latest_rewards_config"></a></a></h3>
 <pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_rewards_config">calculate_and_save_latest_rewards_config</a>(): <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>requires</b> <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+<pre><code><b>requires</b> <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
 <b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
 </code></pre>
@@ -1069,8 +1073,7 @@ rewards_rate/rewards_rate_denominator &lt;= 1.</p>
 </code></pre>
 <p>Caller must be @aptos_framework.
 StakingRewardsConfig is under the @aptos_framework.</p>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
+<pre><code><b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 // This enforces <a id="high-level-req-1.6" href="#high-level-req">high-level requirement 1</a>:
 <b>aborts_if</b> addr != @aptos_framework;

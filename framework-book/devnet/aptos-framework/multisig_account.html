@@ -317,6 +317,7 @@ and implement the governance voting logic on top.</p>
 <li><a href="#@Specification_1_create_with_owners_internal">Function <code>create_with_owners_internal</code></a></li>
 <li><a href="#@Specification_1_upsert_timelock">Function <code>upsert_timelock</code></a></li>
 <li><a href="#@Specification_1_remove_timelock">Function <code>remove_timelock</code></a></li>
+<li><a href="#@Specification_1_update_metadata_internal">Function <code>update_metadata_internal</code></a></li>
 <li><a href="#@Specification_1_create_transaction">Function <code>create_transaction</code></a></li>
 <li><a href="#@Specification_1_create_transaction_with_hash">Function <code>create_transaction_with_hash</code></a></li>
 <li><a href="#@Specification_1_approve_transaction">Function <code>approve_transaction</code></a></li>
@@ -326,6 +327,7 @@ and implement the governance voting logic on top.</p>
 <li><a href="#@Specification_1_execute_rejected_transaction">Function <code>execute_rejected_transaction</code></a></li>
 <li><a href="#@Specification_1_validate_multisig_transaction">Function <code>validate_multisig_transaction</code></a></li>
 <li><a href="#@Specification_1_remove_executed_transaction">Function <code>remove_executed_transaction</code></a></li>
+<li><a href="#@Specification_1_validate_owners">Function <code>validate_owners</code></a></li>
 </ul>
 </li>
 </ul>
@@ -2202,6 +2204,10 @@ maliciously alter the number of signatures required.</p>
 
         metadata.add(key, value);
         i += 1;
+    }  <b>spec</b> {
+        <b>invariant</b> i &lt;= num_attributes;
+        <b>invariant</b> <b>forall</b> k in 0..i: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(metadata, keys[k]);
+        <b>invariant</b> <b>forall</b> m in 0..i, n in 0..i: m != n ==&gt; keys[m] != keys[n];
     };
 
     <b>if</b> (emit_event) {
@@ -3173,10 +3179,17 @@ at every call site. Its preconditions and result are therefore captured here via
 <h3 id="function-create_with_owners_internal-1"><a class="header" href="#function-create_with_owners_internal-1">Function <code>create_with_owners_internal</code> <a id="@Specification_1_create_with_owners_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_create_with_owners_internal">create_with_owners_internal</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, num_signatures_required: u64, multisig_account_signer_cap: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>&gt;, metadata_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, metadata_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> verify = <b>true</b>;
+<b>pragma</b> aborts_if_is_partial;
+<b>let</b> multisig_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
 <b>aborts_if</b> num_signatures_required == 0 || num_signatures_required &gt; len(owners);
-<b>ensures</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>));
-<b>let</b> <b>post</b> multisig = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>));
+<b>aborts_if</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>aborts_if</b> <b>exists</b> i in 0..len(owners): owners[i] == multisig_address;
+<b>aborts_if</b> <b>exists</b> i in 0..len(owners), j in 0..len(owners):
+    i &lt; j && owners[i] == owners[j];
+<b>ensures</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>let</b> <b>post</b> multisig = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>ensures</b> multisig.owners == owners;
 <b>ensures</b> multisig.num_signatures_required == num_signatures_required;
 <b>ensures</b> multisig.last_executed_sequence_number == 0;
 <b>ensures</b> multisig.next_sequence_number == 1;
@@ -3208,6 +3221,25 @@ at every call site. Its preconditions and result are therefore captured here via
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccountTimeLock">MultisigAccountTimeLock</a>&gt;(multisig_address);
 <b>ensures</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccountTimeLock">MultisigAccountTimeLock</a>&gt;(multisig_address);
 <b>ensures</b> <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address) == <b>old</b>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address));
+</code></pre>
+<h3 id="function-update_metadata_internal-1"><a class="header" href="#function-update_metadata_internal-1">Function <code>update_metadata_internal</code> <a id="@Specification_1_update_metadata_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_update_metadata_internal">update_metadata_internal</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, emit_event: bool)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
+<b>let</b> multisig_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>aborts_if</b> len(keys) != len(values);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>modifies</b> <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>let</b> pre = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>let</b> <b>post</b> post_r = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>ensures</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>ensures</b> post_r.owners == pre.owners;
+<b>ensures</b> post_r.num_signatures_required == pre.num_signatures_required;
+<b>ensures</b> post_r.transactions == pre.transactions;
+<b>ensures</b> post_r.last_executed_sequence_number == pre.last_executed_sequence_number;
+<b>ensures</b> post_r.next_sequence_number == pre.next_sequence_number;
+<b>ensures</b> post_r.signer_cap == pre.signer_cap;
 </code></pre>
 <h3 id="function-create_transaction-1"><a class="header" href="#function-create_transaction-1">Function <code>create_transaction</code> <a id="@Specification_1_create_transaction"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_create_transaction">create_transaction</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, payload: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
@@ -3292,6 +3324,15 @@ level state (and, for timelock, an inline helper plus the optional
 );
 <b>ensures</b> multisig_account_resource.last_executed_sequence_number ==
     <b>old</b>(multisig_account_resource).last_executed_sequence_number + 1;
+</code></pre>
+<h3 id="function-validate_owners-1"><a class="header" href="#function-validate_owners-1">Function <code>validate_owners</code> <a id="@Specification_1_validate_owners"></a></a></h3>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_validate_owners">validate_owners</a>(owners: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> [abstract] <b>exists</b> i in 0..len(owners): owners[i] == <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>;
+<b>aborts_if</b> [abstract] <b>exists</b> i in 0..len(owners), j in 0..len(owners) <b>where</b> i &lt; j:
+    owners[i] == owners[j];
 </code></pre>
 
                     </main>

@@ -406,16 +406,18 @@ Abort if the current state is not "in progress".</p>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> <b>false</b>;
-<b>ensures</b> result == <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">spec_is_in_progress</a>();
+<b>ensures</b> [abstract] result == <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">spec_is_in_progress</a>();
+<b>ensures</b> [concrete] result == (<b>exists</b>&lt;<a href="reconfiguration_state.html#0x1_reconfiguration_state_State">State</a>&gt;(@aptos_framework) &&
+    <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_type_name">copyable_any::type_name</a>(<b>global</b>&lt;<a href="reconfiguration_state.html#0x1_reconfiguration_state_State">State</a>&gt;(@aptos_framework).variant).bytes
+        == b"<a href="reconfiguration_state.html#0x1_reconfiguration_state_StateActive">0x1::reconfiguration_state::StateActive</a>");
 </code></pre>
 <p><a id="0x1_reconfiguration_state_spec_is_in_progress"></a></p>
 <pre><code><b>fun</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">spec_is_in_progress</a>(): bool {
-   <b>if</b> (!<b>exists</b>&lt;<a href="reconfiguration_state.html#0x1_reconfiguration_state_State">State</a>&gt;(@aptos_framework)) {
-       <b>false</b>
-   } <b>else</b> {
-       <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_type_name">copyable_any::type_name</a>(<b>global</b>&lt;<a href="reconfiguration_state.html#0x1_reconfiguration_state_State">State</a>&gt;(@aptos_framework).variant).bytes == b"<a href="reconfiguration_state.html#0x1_reconfiguration_state_StateActive">0x1::reconfiguration_state::StateActive</a>"
-   }
+   <b>exists</b>&lt;<a href="reconfiguration_state.html#0x1_reconfiguration_state_State">State</a>&gt;(@aptos_framework) && <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_state_is_active">spec_state_is_active</a>(<b>global</b>&lt;<a href="reconfiguration_state.html#0x1_reconfiguration_state_State">State</a>&gt;(@aptos_framework))
 }
+</code></pre>
+<p><a id="0x1_reconfiguration_state_spec_state_is_active"></a></p>
+<pre><code><b>fun</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_state_is_active">spec_state_is_active</a>(s: <a href="reconfiguration_state.html#0x1_reconfiguration_state_State">State</a>): bool;
 </code></pre>
 <h3 id="function-on_reconfig_start-1"><a class="header" href="#function-on_reconfig_start-1">Function <code>on_reconfig_start</code> <a id="@Specification_1_on_reconfig_start"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_on_reconfig_start">on_reconfig_start</a>()

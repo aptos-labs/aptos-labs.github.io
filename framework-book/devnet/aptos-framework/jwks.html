@@ -232,6 +232,7 @@ have a simple layout which is easily accessible in Rust.</p>
 <li><a href="#@Specification_1_set_patches">Function <code>set_patches</code></a></li>
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_initialize_with_defaults">Function <code>initialize_with_defaults</code></a></li>
+<li><a href="#@Specification_1_remove_oidc_provider_internal">Function <code>remove_oidc_provider_internal</code></a></li>
 <li><a href="#@Specification_1_upsert_into_observed_jwks">Function <code>upsert_into_observed_jwks</code></a></li>
 <li><a href="#@Specification_1_remove_issuer_from_observed_jwks">Function <code>remove_issuer_from_observed_jwks</code></a></li>
 <li><a href="#@Specification_1_regenerate_patched_jwks">Function <code>regenerate_patched_jwks</code></a></li>
@@ -1386,8 +1387,7 @@ Maintains the sorted-by-issuer invariant in <code><a href="jwks.html#0x1_jwks_Al
 <h3 id="function-remove_oidc_provider_for_next_epoch-1"><a class="header" href="#function-remove_oidc_provider_for_next_epoch-1">Function <code>remove_oidc_provider_for_next_epoch</code> <a id="@Specification_1_remove_oidc_provider_for_next_epoch"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_remove_oidc_provider_for_next_epoch">remove_oidc_provider_for_next_epoch</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 80;
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> opaque;
 <b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> std::signer::address_of(fx) != @aptos_framework;
 <b>modifies</b> <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework);
@@ -1426,6 +1426,12 @@ Maintains the sorted-by-issuer invariant in <code><a href="jwks.html#0x1_jwks_Al
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_initialize_with_defaults">initialize_with_defaults</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, providers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_OIDCProvider">jwks::OIDCProvider</a>&gt;, patches: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_Patch">jwks::Patch</a>&gt;)
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-remove_oidc_provider_internal-1"><a class="header" href="#function-remove_oidc_provider_internal-1">Function <code>remove_oidc_provider_internal</code> <a id="@Specification_1_remove_oidc_provider_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="jwks.html#0x1_jwks_remove_oidc_provider_internal">remove_oidc_provider_internal</a>(provider_set: &<b>mut</b> <a href="jwks.html#0x1_jwks_SupportedOIDCProviders">jwks::SupportedOIDCProviders</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
 </code></pre>
 <h3 id="function-upsert_into_observed_jwks-1"><a class="header" href="#function-upsert_into_observed_jwks-1">Function <code>upsert_into_observed_jwks</code> <a id="@Specification_1_upsert_into_observed_jwks"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_upsert_into_observed_jwks">upsert_into_observed_jwks</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, provider_jwks_vec: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_ProviderJWKs">jwks::ProviderJWKs</a>&gt;)

@@ -246,6 +246,10 @@ a function value is returned which can be safely used in future executions as in
 type.</p>
 <p>In order to be accessible, the resolved function must be public. This prevents reflection to
 work around the languages modular encapsulation guarantees.</p>
+<p>A small set of framework functions are additionally forbidden from being resolved (the call
+returns <code>FunctionNotAccessible</code>), because their rules are enforced by the bytecode verifier at
+the call site and cannot be upheld for a dynamically-resolved function value. Currently this
+is only <code>0x1::event::emit</code>.</p>
 <p>The resolved function can be generic, in which case the instantiation must be inferrible
 from the provided <code>FuncType</code>. For example, <code><b>public</b> <b>fun</b> foo&lt;T&gt;(T)</code>, with <code>FunType = |u64|</code>,
 <code>T = u64</code> can be derived. If not all type parameters can be inferred, an error will be

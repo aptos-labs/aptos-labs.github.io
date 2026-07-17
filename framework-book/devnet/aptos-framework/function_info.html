@@ -172,6 +172,7 @@
 <li><a href="#0x1_function_info_new_function_info_from_address">Function <code>new_function_info_from_address</code></a></li>
 <li><a href="#0x1_function_info_check_dispatch_type_compatibility">Function <code>check_dispatch_type_compatibility</code></a></li>
 <li><a href="#0x1_function_info_load_module_from_function">Function <code>load_module_from_function</code></a></li>
+<li><a href="#0x1_function_info_load_function_value">Function <code>load_function_value</code></a></li>
 <li><a href="#0x1_function_info_check_dispatch_type_compatibility_impl">Function <code>check_dispatch_type_compatibility_impl</code></a></li>
 <li><a href="#0x1_function_info_is_identifier">Function <code>is_identifier</code></a></li>
 <li><a href="#0x1_function_info_load_function_impl">Function <code>load_function_impl</code></a></li>
@@ -179,13 +180,16 @@
 <ul>
 <li><a href="#@Specification_1_new_function_info">Function <code>new_function_info</code></a></li>
 <li><a href="#@Specification_1_new_function_info_from_address">Function <code>new_function_info_from_address</code></a></li>
+<li><a href="#@Specification_1_load_function_value">Function <code>load_function_value</code></a></li>
 <li><a href="#@Specification_1_check_dispatch_type_compatibility_impl">Function <code>check_dispatch_type_compatibility_impl</code></a></li>
 <li><a href="#@Specification_1_is_identifier">Function <code>is_identifier</code></a></li>
 <li><a href="#@Specification_1_load_function_impl">Function <code>load_function_impl</code></a></li>
 </ul>
 </li>
 </ul>
-<pre><code><b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
+<pre><code><b>use</b> <a href="../move-stdlib/reflect.html#0x1_reflect">0x1::reflect</a>;
+<b>use</b> 0x1::result;
+<b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
 </code></pre>
 <h2 id="struct-functioninfo"><a class="header" href="#struct-functioninfo">Struct <code>FunctionInfo</code> <a id="0x1_function_info_FunctionInfo"></a></a></h2>
@@ -306,6 +310,25 @@ if such module isn't accessed previously in the transaction.</p>
 }
 </code></pre>
 </details>
+<h2 id="function-load_function_value"><a class="header" href="#function-load_function_value">Function <code>load_function_value</code> <a id="0x1_function_info_load_function_value"></a></a></h2>
+<p>Resolves the function referenced by <code>self</code> into a function value of type <code>FuncType</code>.
+Aborts with <code><a href="function_info.html#0x1_function_info_EINVALID_FUNCTION">EINVALID_FUNCTION</a></code> on failure; unreachable for targets validated via
+<code>check_dispatch_type_compatibility</code>, whose signatures are frozen by upgrade rules.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="function_info.html#0x1_function_info_load_function_value">load_function_value</a>&lt;FuncType&gt;(self: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): FuncType
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="function_info.html#0x1_function_info_load_function_value">load_function_value</a>&lt;FuncType&gt;(self: &<a href="function_info.html#0x1_function_info_FunctionInfo">FunctionInfo</a>): FuncType {
+    <b>let</b> result = <a href="../move-stdlib/reflect.html#0x1_reflect_resolve">reflect::resolve</a>&lt;FuncType&gt;(
+        self.module_address,
+        &self.module_name,
+        &self.function_name,
+    );
+    <b>assert</b>!(result.is_ok(), <a href="function_info.html#0x1_function_info_EINVALID_FUNCTION">EINVALID_FUNCTION</a>);
+    result.unwrap()
+}
+</code></pre>
+</details>
 <h2 id="function-check_dispatch_type_compatibility_impl"><a class="header" href="#function-check_dispatch_type_compatibility_impl">Function <code>check_dispatch_type_compatibility_impl</code> <a id="0x1_function_info_check_dispatch_type_compatibility_impl"></a></a></h2>
 <pre><code><b>fun</b> <a href="function_info.html#0x1_function_info_check_dispatch_type_compatibility_impl">check_dispatch_type_compatibility_impl</a>(lhs: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>, r: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): bool
 </code></pre>
@@ -355,6 +378,12 @@ if such module isn't accessed previously in the transaction.</p>
     module_name,
     function_name,
 };
+</code></pre>
+<h3 id="function-load_function_value-1"><a class="header" href="#function-load_function_value-1">Function <code>load_function_value</code> <a id="@Specification_1_load_function_value"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="function_info.html#0x1_function_info_load_function_value">load_function_value</a>&lt;FuncType&gt;(self: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): FuncType
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>pragma</b> opaque;
 </code></pre>
 <h3 id="function-check_dispatch_type_compatibility_impl-1"><a class="header" href="#function-check_dispatch_type_compatibility_impl-1">Function <code>check_dispatch_type_compatibility_impl</code> <a id="@Specification_1_check_dispatch_type_compatibility_impl"></a></a></h3>
 <pre><code><b>fun</b> <a href="function_info.html#0x1_function_info_check_dispatch_type_compatibility_impl">check_dispatch_type_compatibility_impl</a>(lhs: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>, r: &<a href="function_info.html#0x1_function_info_FunctionInfo">function_info::FunctionInfo</a>): bool

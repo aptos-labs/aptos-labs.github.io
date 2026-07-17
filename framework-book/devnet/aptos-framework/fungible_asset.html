@@ -205,6 +205,7 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_generate_mint_ref">Function <code>generate_mint_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_burn_ref">Function <code>generate_burn_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_burn_copy_ref">Function <code>generate_burn_copy_ref</code></a></li>
+<li><a href="#0x1_fungible_asset_generate_mint_copy_ref">Function <code>generate_mint_copy_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_transfer_ref">Function <code>generate_transfer_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_raw_balance_ref">Function <code>generate_raw_balance_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_raw_supply_ref">Function <code>generate_raw_supply_ref</code></a></li>
@@ -248,8 +249,6 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_create_store">Function <code>create_store</code></a></li>
 <li><a href="#0x1_fungible_asset_remove_store">Function <code>remove_store</code></a></li>
 <li><a href="#0x1_fungible_asset_withdraw">Function <code>withdraw</code></a></li>
-<li><a href="#0x1_fungible_asset_withdraw_permission_check">Function <code>withdraw_permission_check</code></a></li>
-<li><a href="#0x1_fungible_asset_withdraw_permission_check_by_address">Function <code>withdraw_permission_check_by_address</code></a></li>
 <li><a href="#0x1_fungible_asset_withdraw_sanity_check">Function <code>withdraw_sanity_check</code></a></li>
 <li><a href="#0x1_fungible_asset_withdraw_sanity_check_impl">Function <code>withdraw_sanity_check_impl</code></a></li>
 <li><a href="#0x1_fungible_asset_deposit_sanity_check">Function <code>deposit_sanity_check</code></a></li>
@@ -287,8 +286,6 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_upgrade_store_to_concurrent">Function <code>upgrade_store_to_concurrent</code></a></li>
 <li><a href="#0x1_fungible_asset_ensure_store_upgraded_to_concurrent_internal">Function <code>ensure_store_upgraded_to_concurrent_internal</code></a></li>
 <li><a href="#0x1_fungible_asset_grant_permission_by_store">Function <code>grant_permission_by_store</code></a></li>
-<li><a href="#0x1_fungible_asset_grant_permission_by_address">Function <code>grant_permission_by_address</code></a></li>
-<li><a href="#0x1_fungible_asset_refill_permission">Function <code>refill_permission</code></a></li>
 <li><a href="#0x1_fungible_asset_revoke_permission">Function <code>revoke_permission</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
@@ -314,7 +311,6 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#@Specification_1_object_from_metadata_ref">Function <code>object_from_metadata_ref</code></a></li>
 <li><a href="#@Specification_1_create_store">Function <code>create_store</code></a></li>
 <li><a href="#@Specification_1_remove_store">Function <code>remove_store</code></a></li>
-<li><a href="#@Specification_1_withdraw_permission_check">Function <code>withdraw_permission_check</code></a></li>
 <li><a href="#@Specification_1_deposit">Function <code>deposit</code></a></li>
 <li><a href="#@Specification_1_extract">Function <code>extract</code></a></li>
 <li><a href="#@Specification_1_merge">Function <code>merge</code></a></li>
@@ -332,7 +328,6 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <b>use</b> <a href="function_info.html#0x1_function_info">0x1::function_info</a>;
 <b>use</b> <a href="object.html#0x1_object">0x1::object</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
 </code></pre>
@@ -617,7 +612,8 @@ and allow the holder of TransferRef to transfer fungible assets from any account
 </dl>
 </details>
 <h2 id="enum-withdrawpermission"><a class="header" href="#enum-withdrawpermission">Enum <code>WithdrawPermission</code> <a id="0x1_fungible_asset_WithdrawPermission"></a></a></h2>
-<pre><code>enum <a href="fungible_asset.html#0x1_fungible_asset_WithdrawPermission">WithdrawPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+enum <a href="fungible_asset.html#0x1_fungible_asset_WithdrawPermission">WithdrawPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Variants</summary>
@@ -837,6 +833,10 @@ and allow the holder of TransferRef to transfer fungible assets from any account
 <p>Maximum possible coin supply.</p>
 <pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_MAX_U128">MAX_U128</a>: u128 = 340282366920938463463374607431768211455;
 </code></pre>
+<p><a id="0x1_fungible_asset_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 37;
+</code></pre>
 <p><a id="0x1_fungible_asset_EALREADY_REGISTERED"></a></p>
 <p>Trying to re-register dispatch hook on a fungible asset.</p>
 <pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_EALREADY_REGISTERED">EALREADY_REGISTERED</a>: u64 = 29;
@@ -977,10 +977,6 @@ Need to invoke dispatchable_fungible_asset::withdraw/deposit to perform transfer
 <p><a id="0x1_fungible_asset_EWITHDRAW_FUNCTION_SIGNATURE_MISMATCH"></a></p>
 <p>Provided withdraw function type doesn't meet the signature requirement.</p>
 <pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_EWITHDRAW_FUNCTION_SIGNATURE_MISMATCH">EWITHDRAW_FUNCTION_SIGNATURE_MISMATCH</a>: u64 = 25;
-</code></pre>
-<p><a id="0x1_fungible_asset_EWITHDRAW_PERMISSION_DENIED"></a></p>
-<p>signer don't have the permission to perform withdraw operation</p>
-<pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_EWITHDRAW_PERMISSION_DENIED">EWITHDRAW_PERMISSION_DENIED</a>: u64 = 36;
 </code></pre>
 <p><a id="0x1_fungible_asset_MAX_DECIMALS"></a></p>
 <pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_MAX_DECIMALS">MAX_DECIMALS</a>: u8 = 32;
@@ -1329,6 +1325,17 @@ This can only be called at object creation time as constructor_ref is only avail
 <summary>Implementation</summary>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_generate_burn_copy_ref">generate_burn_copy_ref</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_BurnRef">BurnRef</a>): <a href="fungible_asset.html#0x1_fungible_asset_BurnRef">BurnRef</a> {
     <a href="fungible_asset.html#0x1_fungible_asset_BurnRef">BurnRef</a> { metadata: self.metadata }
+}
+</code></pre>
+</details>
+<h2 id="function-generate_mint_copy_ref"><a class="header" href="#function-generate_mint_copy_ref">Function <code>generate_mint_copy_ref</code> <a id="0x1_fungible_asset_generate_mint_copy_ref"></a></a></h2>
+<p>Creates a mint copy ref that can be used to mint fungible assets from the given mint ref.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_generate_mint_copy_ref">generate_mint_copy_ref</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>): <a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_generate_mint_copy_ref">generate_mint_copy_ref</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a>): <a href="fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a> {
+    <a href="fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a> { metadata: self.metadata }
 }
 </code></pre>
 </details>
@@ -2014,50 +2021,7 @@ that function unless you DO NOT want to support fungible assets with dispatchabl
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: Object&lt;T&gt;, amount: u64
 ): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">FungibleAsset</a> <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> {
     <a href="fungible_asset.html#0x1_fungible_asset_withdraw_sanity_check">withdraw_sanity_check</a>(owner, store, <b>true</b>);
-    <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check">withdraw_permission_check</a>(owner, store, amount);
     <a href="fungible_asset.html#0x1_fungible_asset_unchecked_withdraw">unchecked_withdraw</a>(store.object_address(), amount)
-}
-</code></pre>
-</details>
-<h2 id="function-withdraw_permission_check"><a class="header" href="#function-withdraw_permission_check">Function <code>withdraw_permission_check</code> <a id="0x1_fungible_asset_withdraw_permission_check"></a></a></h2>
-<p>Check the permission for withdraw operation.</p>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check">withdraw_permission_check</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check">withdraw_permission_check</a>&lt;T: key&gt;(
-    owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: Object&lt;T&gt;, amount: u64
-) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_consume">permissioned_signer::check_permission_consume</a>(
-            owner,
-            amount <b>as</b> u256,
-            WithdrawPermission::ByStore {
-                store_address: store.object_address()
-            }
-        ),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="fungible_asset.html#0x1_fungible_asset_EWITHDRAW_PERMISSION_DENIED">EWITHDRAW_PERMISSION_DENIED</a>)
-    );
-}
-</code></pre>
-</details>
-<h2 id="function-withdraw_permission_check_by_address"><a class="header" href="#function-withdraw_permission_check_by_address">Function <code>withdraw_permission_check_by_address</code> <a id="0x1_fungible_asset_withdraw_permission_check_by_address"></a></a></h2>
-<p>Check the permission for withdraw operation.</p>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check_by_address">withdraw_permission_check_by_address</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store_address: <b>address</b>, amount: u64)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check_by_address">withdraw_permission_check_by_address</a>(
-    owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store_address: <b>address</b>, amount: u64
-) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_consume">permissioned_signer::check_permission_consume</a>(
-            owner,
-            amount <b>as</b> u256,
-            WithdrawPermission::ByStore { store_address }
-        ),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="fungible_asset.html#0x1_fungible_asset_EWITHDRAW_PERMISSION_DENIED">EWITHDRAW_PERMISSION_DENIED</a>)
-    );
 }
 </code></pre>
 </details>
@@ -2755,60 +2719,18 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 </code></pre>
 </details>
 <h2 id="function-grant_permission_by_store"><a class="header" href="#function-grant_permission_by_store">Function <code>grant_permission_by_store</code> <a id="0x1_fungible_asset_grant_permission_by_store"></a></a></h2>
-<p>Permission management</p>
-<p>Master signer grant permissioned signer ability to withdraw a given amount of fungible asset.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_store">grant_permission_by_store</a>&lt;T: key&gt;(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_store">grant_permission_by_store</a>&lt;T: key&gt;(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, _amount: u64)
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_store">grant_permission_by_store</a>&lt;T: key&gt;(
-    master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    store: Object&lt;T&gt;,
-    amount: u64
+    _master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _store: Object&lt;T&gt;,
+    _amount: u64
 ) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_increase">permissioned_signer::authorize_increase</a>(
-        master,
-        permissioned,
-        amount <b>as</b> u256,
-        WithdrawPermission::ByStore { store_address: store.object_address() }
-    )
-}
-</code></pre>
-</details>
-<h2 id="function-grant_permission_by_address"><a class="header" href="#function-grant_permission_by_address">Function <code>grant_permission_by_address</code> <a id="0x1_fungible_asset_grant_permission_by_address"></a></a></h2>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_address">grant_permission_by_address</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store_address: <b>address</b>, amount: u64)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_address">grant_permission_by_address</a>(
-    master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    store_address: <b>address</b>,
-    amount: u64
-) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_increase">permissioned_signer::authorize_increase</a>(
-        master,
-        permissioned,
-        amount <b>as</b> u256,
-        WithdrawPermission::ByStore { store_address }
-    )
-}
-</code></pre>
-</details>
-<h2 id="function-refill_permission"><a class="header" href="#function-refill_permission">Function <code>refill_permission</code> <a id="0x1_fungible_asset_refill_permission"></a></a></h2>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_refill_permission">refill_permission</a>(permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64, store_address: <b>address</b>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_refill_permission">refill_permission</a>(
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64, store_address: <b>address</b>
-) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_increase_limit">permissioned_signer::increase_limit</a>(
-        permissioned,
-        amount <b>as</b> u256,
-        WithdrawPermission::ByStore { store_address }
-    )
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="fungible_asset.html#0x1_fungible_asset_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -3121,11 +3043,6 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 <b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr)
     && <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">aggregator_v2::spec_get_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr).balance) != 0;
 <b>ensures</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
-</code></pre>
-<h3 id="function-withdraw_permission_check-1"><a class="header" href="#function-withdraw_permission_check-1">Function <code>withdraw_permission_check</code> <a id="@Specification_1_withdraw_permission_check"></a></a></h3>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check">withdraw_permission_check</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
-</code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">permissioned_signer::PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">permissioned_signer::spec_permission_address</a>(owner));
 </code></pre>
 <h3 id="function-deposit-1"><a class="header" href="#function-deposit-1">Function <code>deposit</code> <a id="@Specification_1_deposit"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_deposit">deposit</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
