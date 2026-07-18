@@ -1313,6 +1313,21 @@ using lambdas to destroy the individual keys and values.</p>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_append_disjoint"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_append_disjoint">spec_aborts_append_disjoint</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, other: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
+   <b>exists</b> k: K: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, k) && <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(other, k)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_trim"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_trim">spec_aborts_trim</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, at: u64): bool {
+   at &gt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(m)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_upsert_all"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_upsert_all">spec_aborts_upsert_all</a>&lt;K, V&gt;(_m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+}
+</code></pre>
 <p><a id="0x1_ordered_map_spec_aborts_replace_key_inplace"></a></p>
 <pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_replace_key_inplace">spec_aborts_replace_key_inplace</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, old_key: K, new_key: K): bool {
    !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, old_key) || old_key != new_key
@@ -1377,6 +1392,10 @@ using lambdas to destroy the individual keys and values.</p>
     map_spec_aborts_trim = spec_aborts_trim,
     map_spec_aborts_upsert_all = spec_aborts_upsert_all,
     map_spec_aborts_replace_key_inplace = spec_aborts_replace_key_inplace,
+    map_spec_aborts_destroy_empty = spec_aborts_destroy_empty,
+    map_spec_aborts_add = spec_aborts_add,
+    map_spec_aborts_del = spec_aborts_del,
+    map_spec_aborts_borrow = spec_aborts_borrow,
     map_is_empty = is_empty;
 </code></pre>
 <p><a id="0x1_ordered_map_spec_len"></a></p>
@@ -1394,6 +1413,18 @@ using lambdas to destroy the individual keys and values.</p>
 <p><a id="0x1_ordered_map_spec_get"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): V;
 </code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_destroy_empty"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_destroy_empty">spec_aborts_destroy_empty</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_add"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_add">spec_aborts_add</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K, v: V): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_del"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_del">spec_aborts_del</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_borrow"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_borrow">spec_aborts_borrow</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
 <p><a id="0x1_ordered_map_spec_aborts_empty"></a></p>
 <pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_empty">spec_aborts_empty</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
    <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(t) == 0
@@ -1410,21 +1441,6 @@ using lambdas to destroy the individual keys and values.</p>
 <pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_new_from">spec_aborts_new_from</a>&lt;K, V&gt;(keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
    len(keys) != len(values)
        || (<b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j: keys[i] == keys[j])
-}
-</code></pre>
-<p><a id="0x1_ordered_map_spec_aborts_append_disjoint"></a></p>
-<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_append_disjoint">spec_aborts_append_disjoint</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, other: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
-   <b>exists</b> k: K: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, k) && <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(other, k)
-}
-</code></pre>
-<p><a id="0x1_ordered_map_spec_aborts_trim"></a></p>
-<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_trim">spec_aborts_trim</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, at: u64): bool {
-   at &gt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(m)
-}
-</code></pre>
-<p><a id="0x1_ordered_map_spec_aborts_upsert_all"></a></p>
-<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_upsert_all">spec_aborts_upsert_all</a>&lt;K, V&gt;(_m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
-   len(keys) != len(values)
 }
 </code></pre>
 <h3 id="function-new-1"><a class="header" href="#function-new-1">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>

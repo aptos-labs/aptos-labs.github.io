@@ -442,6 +442,7 @@ it might change in the future to return Some() instead, if size becomes "known".
 <pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/bcs.html#0x1_bcs_constant_serialized_size">constant_serialized_size</a>&lt;MoveValue&gt;(): <a href="move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
 </code></pre>
 <pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x1bit_vector"><a class="header" href="#module-0x1bit_vector">Module <code>0x1::bit_vector</code> <a id="0x1_bit_vector"></a></a></h1>
 <ul>
@@ -33089,6 +33090,7 @@ A set of inline utility methods is provided instead, to provide guaranteed valid
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_iter_with_path_get_iter">Function <code>iter_with_path_get_iter</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_contains">Function <code>contains</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_borrow">Function <code>borrow</code></a></li>
+<li><a href="aptos-framework/big_ordered_map.html#@Specification_1_get">Function <code>get</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_borrow_mut">Function <code>borrow_mut</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_borrow_front">Function <code>borrow_front</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_front_key">Function <code>front_key</code></a></li>
@@ -33096,6 +33098,7 @@ A set of inline utility methods is provided instead, to provide guaranteed valid
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_back_key">Function <code>back_key</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_prev_key">Function <code>prev_key</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_next_key">Function <code>next_key</code></a></li>
+<li><a href="aptos-framework/big_ordered_map.html#@Specification_1_to_ordered_map">Function <code>to_ordered_map</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_keys">Function <code>keys</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_internal_new_begin_iter">Function <code>internal_new_begin_iter</code></a></li>
 <li><a href="aptos-framework/big_ordered_map.html#@Specification_1_internal_new_end_iter">Function <code>internal_new_end_iter</code></a></li>
@@ -35379,9 +35382,27 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </dl>
 <pre><code><b>pragma</b> intrinsic = map,
     map_new = new,
+    map_new_with_config = new_with_config,
+    map_len = compute_length,
     map_destroy_empty = destroy_empty,
     map_has_key = contains,
     map_add_no_override = add,
+    map_upsert = upsert,
+    map_del_must_exist = remove,
+    map_remove_or_none = remove_or_none,
+    map_get = get,
+    map_borrow_front = borrow_front,
+    map_borrow_back = borrow_back,
+    map_front_key = front_key,
+    map_back_key = back_key,
+    map_pop_front = pop_front,
+    map_pop_back = pop_back,
+    map_prev_key = prev_key,
+    map_next_key = next_key,
+    map_keys = keys,
+    map_to_ordered_map = to_ordered_map,
+    map_new_from = new_from,
+    map_add_all = add_all,
     map_borrow = borrow,
     map_borrow_mut = borrow_mut,
     map_spec_get = spec_get,
@@ -35389,6 +35410,14 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
     map_spec_del = spec_remove,
     map_spec_len = spec_len,
     map_spec_has_key = spec_contains_key,
+    map_spec_aborts_empty = spec_aborts_empty,
+    map_spec_aborts_add_all = spec_aborts_add_all,
+    map_spec_aborts_new_from = spec_aborts_new_from,
+    map_spec_aborts_new_with_config = spec_aborts_new_with_config,
+    map_spec_aborts_destroy_empty = spec_aborts_destroy_empty,
+    map_spec_aborts_add = spec_aborts_add,
+    map_spec_aborts_del = spec_aborts_del,
+    map_spec_aborts_borrow = spec_aborts_borrow,
     map_is_empty = is_empty;
 </code></pre>
 <p><a id="0x1_big_ordered_map_spec_len"></a></p>
@@ -35405,6 +35434,46 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <p><a id="0x1_big_ordered_map_spec_get"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, k: K): V;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_destroy_empty"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_destroy_empty">spec_aborts_destroy_empty</a>&lt;K, V&gt;(t: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_add"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_add">spec_aborts_add</a>&lt;K, V&gt;(t: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, k: K, v: V): bool;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_del"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_del">spec_aborts_del</a>&lt;K, V&gt;(t: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_borrow"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_borrow">spec_aborts_borrow</a>&lt;K, V&gt;(t: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_empty"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_empty">spec_aborts_empty</a>&lt;K, V&gt;(t: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool {
+   <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(t) == 0
+}
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_add_all"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_add_all">spec_aborts_add_all</a>&lt;K, V&gt;(m: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+       || (<b>exists</b> i in 0..len(keys): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(m, keys[i]))
+       || (<b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j: keys[i] == keys[j])
+}
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_new_from"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_new_from">spec_aborts_new_from</a>&lt;K, V&gt;(keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+       || (<b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j: keys[i] == keys[j])
+}
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_new_with_config"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_new_with_config">spec_aborts_new_with_config</a>&lt;K, V&gt;(
+   inner_max_degree: u16, leaf_max_degree: u16, _reuse_slots: bool
+): bool {
+   (inner_max_degree != 0
+       && (inner_max_degree &lt; 4 || (inner_max_degree <b>as</b> u64) &gt; 4096))
+   || (leaf_max_degree != 0
+       && (leaf_max_degree &lt; 3 || (leaf_max_degree <b>as</b> u64) &gt; 4096))
+}
 </code></pre>
 <h3 id="function-new-20"><a class="header" href="#function-new-20">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_new">new</a>&lt;K: store, V: store&gt;(): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;
@@ -35432,25 +35501,12 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <h3 id="function-new_with_config-3"><a class="header" href="#function-new_with_config-3">Function <code>new_with_config</code> <a id="@Specification_1_new_with_config"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_new_with_config">new_with_config</a>&lt;K: store, V: store&gt;(inner_max_degree: u16, leaf_max_degree: u16, reuse_slots: bool): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> opaque;
-<b>aborts_if</b> inner_max_degree != 0
-    && (inner_max_degree &lt; 4 || (inner_max_degree <b>as</b> u64) &gt; 4096);
-<b>aborts_if</b> leaf_max_degree != 0
-    && (leaf_max_degree &lt; 3 || (leaf_max_degree <b>as</b> u64) &gt; 4096);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(result) == 0;
-<b>ensures</b> <b>forall</b> k: K: !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(result, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-new_from-3"><a class="header" href="#function-new_from-3">Function <code>new_from</code> <a id="@Specification_1_new_from"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_new_from">new_from</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> <b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j : keys[i] == keys[j];
-<b>aborts_if</b> len(keys) != len(values);
-<b>ensures</b> <b>forall</b> k: K {<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(result, k)} : <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(keys,k) &lt;==&gt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(result, k);
-<b>ensures</b> <b>forall</b> i in 0..len(keys) : <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(result, keys[i]) == values[i];
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(result) == len(keys);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-destroy_empty-15"><a class="header" href="#function-destroy_empty-15">Function <code>destroy_empty</code> <a id="@Specification_1_destroy_empty"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_destroy_empty">destroy_empty</a>&lt;K: store, V: store&gt;(self: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;)
@@ -35471,9 +35527,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <h3 id="function-compute_length-1"><a class="header" href="#function-compute_length-1">Function <code>compute_length</code> <a id="@Specification_1_compute_length"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_compute_length">compute_length</a>&lt;K: store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): u64
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> opaque;
-<b>ensures</b> result == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-add-19"><a class="header" href="#function-add-19">Function <code>add</code> <a id="@Specification_1_add"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_add">add</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: K, value: V)
@@ -35483,87 +35537,32 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <h3 id="function-upsert-8"><a class="header" href="#function-upsert-8">Function <code>upsert</code> <a id="@Specification_1_upsert"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_upsert">upsert</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: K, value: V): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="aptos-framework/../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(self, key) == value;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; ((<a href="aptos-framework/../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result)) && (<a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(
-    self), key)));
-<b>ensures</b> !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) + 1 == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, key);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-remove-18"><a class="header" href="#function-remove-18">Function <code>remove</code> <a id="@Specification_1_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_remove">remove</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K): V
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), key) == result;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) + 1;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, key);
-</code></pre>
-<p><a id="0x1_big_ordered_map_spec_unchanged_except_at"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>&lt;K: drop + <b>copy</b> + store, V: store&gt;(
-   self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, key: &K
-): bool {
-   (<b>forall</b> k: K <b>where</b> k != key:
-       <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k))
-   && (<b>forall</b> k: K <b>where</b> k != key && <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k):
-       <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(self, k) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k))
-}
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-remove_or_none-1"><a class="header" href="#function-remove_or_none-1">Function <code>remove_or_none</code> <a id="@Specification_1_remove_or_none"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_remove_or_none">remove_or_none</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> <b>false</b>;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; (
-    <a href="aptos-framework/../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result)
-    && <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), key)
-    && !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, key)
-    && <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) - 1
-);
-<b>ensures</b> !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; (
-    <a href="aptos-framework/../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result)
-    && <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self))
-);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, key);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-add_all-6"><a class="header" href="#function-add_all-6">Function <code>add_all</code> <a id="@Specification_1_add_all"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_add_all">add_all</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-pop_front-1"><a class="header" href="#function-pop_front-1">Function <code>pop_front</code> <a id="@Specification_1_pop_front"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_pop_front">pop_front</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): (K, V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), result_1);
-<b>ensures</b> result_2 == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), result_1);
-<b>ensures</b> !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) - 1;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, result_1);
-<b>ensures</b> <b>forall</b> k: K <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) && k != result_1:
-    std::cmp::compare(result_1, k) == std::cmp::Ordering::Less;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-pop_back-6"><a class="header" href="#function-pop_back-6">Function <code>pop_back</code> <a id="@Specification_1_pop_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_pop_back">pop_back</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): (K, V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), result_1);
-<b>ensures</b> result_2 == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), result_1);
-<b>ensures</b> !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) - 1;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(self, result_1);
-<b>ensures</b> <b>forall</b> k: K <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) && k != result_1:
-    std::cmp::compare(result_1, k) == std::cmp::Ordering::Greater;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-internal_lower_bound-1"><a class="header" href="#function-internal_lower_bound-1">Function <code>internal_lower_bound</code> <a id="@Specification_1_internal_lower_bound"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_lower_bound">internal_lower_bound</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;
@@ -35617,6 +35616,21 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> intrinsic;
 </code></pre>
+<h3 id="function-get-1"><a class="header" href="#function-get-1">Function <code>get</code> <a id="@Specification_1_get"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_get">get</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_unchanged_except_at"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>&lt;K: drop + <b>copy</b> + store, V: store&gt;(
+   self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, key: &K
+): bool {
+   (<b>forall</b> k: K <b>where</b> k != key:
+       <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k))
+   && (<b>forall</b> k: K <b>where</b> k != key && <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k):
+       <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(self, k) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k))
+}
+</code></pre>
 <h3 id="function-borrow_mut-17"><a class="header" href="#function-borrow_mut-17">Function <code>borrow_mut</code> <a id="@Specification_1_borrow_mut"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_borrow_mut">borrow_mut</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K): &<b>mut</b> V
 </code></pre>
@@ -35625,79 +35639,42 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <h3 id="function-borrow_front-1"><a class="header" href="#function-borrow_front-1">Function <code>borrow_front</code> <a id="@Specification_1_borrow_front"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_borrow_front">borrow_front</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): (K, &V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(self, result_1) == result_2;
-<b>ensures</b> <b>forall</b> k: K <b>where</b> k != result_1: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt;
-std::cmp::compare(result_1, k) == std::cmp::Ordering::Less;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-front_key-1"><a class="header" href="#function-front_key-1">Function <code>front_key</code> <a id="@Specification_1_front_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_front_key">front_key</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): K
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == 0;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result);
-<b>ensures</b> <b>forall</b> k: K <b>where</b> k != result: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt;
-    std::cmp::compare(result, k) == std::cmp::Ordering::Less;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-borrow_back-1"><a class="header" href="#function-borrow_back-1">Function <code>borrow_back</code> <a id="@Specification_1_borrow_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_borrow_back">borrow_back</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): (K, &V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(self, result_1) == result_2;
-<b>ensures</b> <b>forall</b> k: K <b>where</b> k != result_1: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt;
-std::cmp::compare(result_1, k) == std::cmp::Ordering::Greater;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-back_key-1"><a class="header" href="#function-back_key-1">Function <code>back_key</code> <a id="@Specification_1_back_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_back_key">back_key</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): K
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == 0;
-<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result);
-<b>ensures</b> <b>forall</b> k: K <b>where</b> k != result: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt;
-    std::cmp::compare(result, k) == std::cmp::Ordering::Greater;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-prev_key-1"><a class="header" href="#function-prev_key-1">Function <code>prev_key</code> <a id="@Specification_1_prev_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_prev_key">prev_key</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> result == std::option::spec_none() &lt;==&gt;
-(<b>forall</b> k: K {<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)
-&& k != key: std::cmp::compare(key, k) == std::cmp::Ordering::Less);
-<b>ensures</b> result.is_some() &lt;==&gt;
-    <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result)) &&
-    (std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result), key) == std::cmp::Ordering::Less)
-    && (<b>forall</b> k: K {<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k), std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result), k), std::cmp::compare(key, k)} <b>where</b> k != <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result): ((<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) &&
-    std::cmp::compare(k, key) == std::cmp::Ordering::Less)) ==&gt;
-    std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result), k) == std::cmp::Ordering::Greater);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-next_key-1"><a class="header" href="#function-next_key-1">Function <code>next_key</code> <a id="@Specification_1_next_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_next_key">next_key</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> result == std::option::spec_none() &lt;==&gt;
-(<b>forall</b> k: K {<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) && k != key:
-std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
-<b>ensures</b> result.is_some() &lt;==&gt;
-    <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result)) &&
-    (std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result), key) == std::cmp::Ordering::Greater)
-    && (<b>forall</b> k: K {<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> k != <a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result): ((<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) &&
-    std::cmp::compare(k, key) == std::cmp::Ordering::Greater)) ==&gt;
-    std::cmp::compare(<a href="aptos-framework/../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(result), k) == std::cmp::Ordering::Less);
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<h3 id="function-to_ordered_map-1"><a class="header" href="#function-to_ordered_map-1">Function <code>to_ordered_map</code> <a id="@Specification_1_to_ordered_map"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_to_ordered_map">to_ordered_map</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;
+</code></pre>
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-keys-5"><a class="header" href="#function-keys-5">Function <code>keys</code> <a id="@Specification_1_keys"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_keys">keys</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> opaque;
-<b>ensures</b> <b>forall</b> k: K: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(result, k) &lt;==&gt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-internal_new_begin_iter-1"><a class="header" href="#function-internal_new_begin_iter-1">Function <code>internal_new_begin_iter</code> <a id="@Specification_1_internal_new_begin_iter"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_new_begin_iter">internal_new_begin_iter</a>&lt;K: <b>copy</b>, store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;
@@ -35725,11 +35702,7 @@ std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <b>false</b>;
-<b>ensures</b> (self is IteratorPtr::End&lt;K&gt;) ==&gt; (result &lt;==&gt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(map) == 0);
-<b>ensures</b> !(self is IteratorPtr::End&lt;K&gt;) ==&gt; (result &lt;==&gt;
-    (<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, self.key)
-        && (<b>forall</b> k: K <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k) && k != self.key:
-            std::cmp::compare(self.key, k) == std::cmp::Ordering::Less)));
+<b>ensures</b> result &lt;==&gt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_iter_is_begin">spec_iter_is_begin</a>(self, map);
 </code></pre>
 <h3 id="function-iter_is_end-1"><a class="header" href="#function-iter_is_end-1">Function <code>iter_is_end</code> <a id="@Specification_1_iter_is_end"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>&lt;K: store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;, _map: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): bool
@@ -35762,6 +35735,17 @@ std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map);
 <b>ensures</b> result == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key);
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_iter_is_begin"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_iter_is_begin">spec_iter_is_begin</a>&lt;K, V&gt;(self: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">IteratorPtr</a>&lt;K&gt;, map: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool {
+   <b>if</b> (self is IteratorPtr::End&lt;K&gt;) {
+       <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(map) == 0
+   } <b>else</b> {
+       <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, self.key)
+           && (<b>forall</b> k: K <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k) && k != self.key:
+               std::cmp::compare(self.key, k) == std::cmp::Ordering::Less)
+   }
+}
 </code></pre>
 <h3 id="function-iter_modify-1"><a class="header" href="#function-iter_modify-1">Function <code>iter_modify</code> <a id="@Specification_1_iter_modify"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_modify">iter_modify</a>&lt;K: drop, store, V: store, R&gt;(self: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;, map: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, f: |&<b>mut</b> V|R): R
@@ -35796,7 +35780,7 @@ std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_is_begin">iter_is_begin</a>(self, map);
+<b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_iter_is_begin">spec_iter_is_begin</a>(self, map);
 </code></pre>
 <h3 id="function-internal_leaf_new_begin_iter-1"><a class="header" href="#function-internal_leaf_new_begin_iter-1">Function <code>internal_leaf_new_begin_iter</code> <a id="@Specification_1_internal_leaf_new_begin_iter"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_leaf_new_begin_iter">internal_leaf_new_begin_iter</a>&lt;K: store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_LeafNodeIteratorPtr">big_ordered_map::LeafNodeIteratorPtr</a>
@@ -36889,7 +36873,7 @@ Publish the chain ID <code>id</code> of this instance under the SystemAddresses 
 }
 </code></pre>
 </details>
-<h2 id="function-get-1"><a class="header" href="#function-get-1">Function <code>get</code> <a id="0x1_chain_id_get"></a></a></h2>
+<h2 id="function-get-2"><a class="header" href="#function-get-2">Function <code>get</code> <a id="0x1_chain_id_get"></a></a></h2>
 <p>Return the chain ID of this instance.</p>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="aptos-framework/chain_id.html#0x1_chain_id_get">get</a>(): u8
@@ -36938,7 +36922,7 @@ Publish the chain ID <code>id</code> of this instance under the SystemAddresses 
 <b>ensures</b> <b>exists</b>&lt;<a href="aptos-framework/chain_id.html#0x1_chain_id_ChainId">ChainId</a>&gt;(addr);
 <b>ensures</b> <b>global</b>&lt;<a href="aptos-framework/chain_id.html#0x1_chain_id_ChainId">ChainId</a>&gt;(addr).id == id;
 </code></pre>
-<h3 id="function-get-2"><a class="header" href="#function-get-2">Function <code>get</code> <a id="@Specification_0_get"></a></a></h3>
+<h3 id="function-get-3"><a class="header" href="#function-get-3">Function <code>get</code> <a id="@Specification_0_get"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="aptos-framework/chain_id.html#0x1_chain_id_get">get</a>(): u8
 </code></pre>
@@ -64731,7 +64715,7 @@ Returns true if element already existed.</p>
 }
 </code></pre>
 </details>
-<h2 id="function-get-3"><a class="header" href="#function-get-3">Function <code>get</code> <a id="0x1_ordered_map_get"></a></a></h2>
+<h2 id="function-get-4"><a class="header" href="#function-get-4">Function <code>get</code> <a id="0x1_ordered_map_get"></a></a></h2>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_get">get</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
 <details>
@@ -65469,6 +65453,21 @@ using lambdas to destroy the individual keys and values.</p>
 <h2 id="specification-92"><a class="header" href="#specification-92">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_append_disjoint"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_append_disjoint">spec_aborts_append_disjoint</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, other: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
+   <b>exists</b> k: K: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, k) && <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(other, k)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_trim"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_trim">spec_aborts_trim</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, at: u64): bool {
+   at &gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(m)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_upsert_all"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_upsert_all">spec_aborts_upsert_all</a>&lt;K, V&gt;(_m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+}
+</code></pre>
 <p><a id="0x1_ordered_map_spec_aborts_replace_key_inplace"></a></p>
 <pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_replace_key_inplace">spec_aborts_replace_key_inplace</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, old_key: K, new_key: K): bool {
    !<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, old_key) || old_key != new_key
@@ -65533,6 +65532,10 @@ using lambdas to destroy the individual keys and values.</p>
     map_spec_aborts_trim = spec_aborts_trim,
     map_spec_aborts_upsert_all = spec_aborts_upsert_all,
     map_spec_aborts_replace_key_inplace = spec_aborts_replace_key_inplace,
+    map_spec_aborts_destroy_empty = spec_aborts_destroy_empty,
+    map_spec_aborts_add = spec_aborts_add,
+    map_spec_aborts_del = spec_aborts_del,
+    map_spec_aborts_borrow = spec_aborts_borrow,
     map_is_empty = is_empty;
 </code></pre>
 <p><a id="0x1_ordered_map_spec_len"></a></p>
@@ -65550,6 +65553,18 @@ using lambdas to destroy the individual keys and values.</p>
 <p><a id="0x1_ordered_map_spec_get"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): V;
 </code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_destroy_empty"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_destroy_empty">spec_aborts_destroy_empty</a>&lt;K, V&gt;(t: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_add"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_add">spec_aborts_add</a>&lt;K, V&gt;(t: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K, v: V): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_del"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_del">spec_aborts_del</a>&lt;K, V&gt;(t: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_borrow"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_borrow">spec_aborts_borrow</a>&lt;K, V&gt;(t: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
 <p><a id="0x1_ordered_map_spec_aborts_empty"></a></p>
 <pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_empty">spec_aborts_empty</a>&lt;K, V&gt;(t: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
    <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(t) == 0
@@ -65566,21 +65581,6 @@ using lambdas to destroy the individual keys and values.</p>
 <pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_new_from">spec_aborts_new_from</a>&lt;K, V&gt;(keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
    len(keys) != len(values)
        || (<b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j: keys[i] == keys[j])
-}
-</code></pre>
-<p><a id="0x1_ordered_map_spec_aborts_append_disjoint"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_append_disjoint">spec_aborts_append_disjoint</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, other: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
-   <b>exists</b> k: K: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, k) && <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(other, k)
-}
-</code></pre>
-<p><a id="0x1_ordered_map_spec_aborts_trim"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_trim">spec_aborts_trim</a>&lt;K, V&gt;(m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, at: u64): bool {
-   at &gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(m)
-}
-</code></pre>
-<p><a id="0x1_ordered_map_spec_aborts_upsert_all"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_aborts_upsert_all">spec_aborts_upsert_all</a>&lt;K, V&gt;(_m: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
-   len(keys) != len(values)
 }
 </code></pre>
 <h3 id="function-new-25"><a class="header" href="#function-new-25">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>
@@ -65638,7 +65638,7 @@ using lambdas to destroy the individual keys and values.</p>
 </code></pre>
 <pre><code><b>pragma</b> intrinsic;
 </code></pre>
-<h3 id="function-get-4"><a class="header" href="#function-get-4">Function <code>get</code> <a id="@Specification_1_get"></a></a></h3>
+<h3 id="function-get-5"><a class="header" href="#function-get-5">Function <code>get</code> <a id="@Specification_1_get"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_get">get</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
 <pre><code><b>pragma</b> intrinsic;
@@ -72817,7 +72817,7 @@ and ensure <code>new_balance</code> / <code>compressed_new_balance</code> have e
 }
 </code></pre>
 </details>
-<h2 id="function-get-5"><a class="header" href="#function-get-5">Function <code>get</code> <a id="0x1_sigma_protocol_witness_get"></a></a></h2>
+<h2 id="function-get-6"><a class="header" href="#function-get-6">Function <code>get</code> <a id="0x1_sigma_protocol_witness_get"></a></a></h2>
 <p>Returns the <code>i</code>th scalar in the witness.</p>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/sigma_protocol_witness.html#0x1_sigma_protocol_witness_get">get</a>(self: &<a href="aptos-framework/sigma_protocol_witness.html#0x1_sigma_protocol_witness_Witness">sigma_protocol_witness::Witness</a>, i: u64): &<a href="aptos-framework/../aptos-stdlib/ristretto255.html#0x1_ristretto255_Scalar">ristretto255::Scalar</a>
 </code></pre>
@@ -77968,7 +77968,7 @@ Can only be called as part of the Aptos governance proposal process established 
 }
 </code></pre>
 </details>
-<h2 id="function-get-6"><a class="header" href="#function-get-6">Function <code>get</code> <a id="0x1_staking_config_get"></a></a></h2>
+<h2 id="function-get-7"><a class="header" href="#function-get-7">Function <code>get</code> <a id="0x1_staking_config_get"></a></a></h2>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/staking_config.html#0x1_staking_config_get">get</a>(): <a href="aptos-framework/staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>
 </code></pre>
 <details>
@@ -78480,7 +78480,7 @@ StakingRewardsConfig does not exist under the aptos_framework before creating it
 <b>aborts_if</b> <b>exists</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(addr);
 <b>ensures</b> <b>exists</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(addr);
 </code></pre>
-<h3 id="function-get-7"><a class="header" href="#function-get-7">Function <code>get</code> <a id="@Specification_1_get"></a></a></h3>
+<h3 id="function-get-8"><a class="header" href="#function-get-8">Function <code>get</code> <a id="@Specification_1_get"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/staking_config.html#0x1_staking_config_get">get</a>(): <a href="aptos-framework/staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
@@ -95003,7 +95003,7 @@ by (numerator / denominator) * 100%</p>
 }
 </code></pre>
 </details>
-<h2 id="function-get-8"><a class="header" href="#function-get-8">Function <code>get</code> <a id="0x4_royalty_get"></a></a></h2>
+<h2 id="function-get-9"><a class="header" href="#function-get-9">Function <code>get</code> <a id="0x4_royalty_get"></a></a></h2>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/royalty.html#0x4_royalty_get">get</a>&lt;T: key&gt;(maybe_royalty: <a href="aptos-token-objects/../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="aptos-token-objects/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-token-objects/royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>&gt;
 </code></pre>
 <details>
@@ -98179,6 +98179,11 @@ particular match operation.</p>
 <li><a href="aptos-trading/single_order_types.html#0x5_single_order_types_destroy_single_order">Function <code>destroy_single_order</code></a></li>
 <li><a href="aptos-trading/single_order_types.html#0x5_single_order_types_destroy_single_order_request">Function <code>destroy_single_order_request</code></a></li>
 <li><a href="aptos-trading/single_order_types.html#0x5_single_order_types_new_single_order_request">Function <code>new_single_order_request</code></a></li>
+<li><a href="aptos-trading/single_order_types.html#@Specification_1">Specification</a>
+<ul>
+<li><a href="aptos-trading/single_order_types.html#@Specification_1_increase_remaining_size_from_state">Function <code>increase_remaining_size_from_state</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="aptos-trading/../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="aptos-trading/../move-stdlib/string.html#0x1_string">0x1::string</a>;
@@ -98728,6 +98733,14 @@ particular match operation.</p>
 }
 </code></pre>
 </details>
+<h2 id="specification-124"><a class="header" href="#specification-124">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-increase_remaining_size_from_state-1"><a class="header" href="#function-increase_remaining_size_from_state-1">Function <code>increase_remaining_size_from_state</code> <a id="@Specification_1_increase_remaining_size_from_state"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_increase_remaining_size_from_state">increase_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, size: u64)
+</code></pre>
+<pre><code><b>aborts_if</b> self.order.order_request.remaining_size + size &gt; MAX_U64;
+<b>ensures</b> self.order.order_request.remaining_size
+    == <b>old</b>(self.order.order_request.remaining_size) + size;
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aptos-experimental-framework"><a class="header" href="#aptos-experimental-framework">Aptos Experimental Framework <a id="@Aptos_Experimental_Framework_0"></a></a></h1>
 <p>This is the reference documentation of the Aptos experimental framework.</p>
 <h2 id="index-5"><a class="header" href="#index-5">Index <a id="@Index_1"></a></a></h2>
