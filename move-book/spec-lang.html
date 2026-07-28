@@ -955,6 +955,49 @@ execution -- establishing the base case.</li>
 <li>An <code>assume</code> statement that encodes the property that the invariant holds at loop iteration <code>I</code>.</li>
 <li>An <code>assert</code> statement that checks whether the invariant continues to hold at loop iteration <code>I+1</code>.</li>
 </ul>
+<p>Loop invariants for a <code>while</code> or <code>for</code> loop are placed in the loop header. For a <code>for</code>
+loop, the invariant is written directly after the range and before the loop body. At the
+loop head, the iterator variable holds the <em>next</em> value to be processed, so accumulator
+invariants are stated in their classical form. For example:</p>
+<pre><code class="language-move">module 0x42::m {
+  fun sum_range(n: u64): u64 {
+    let sum = 0;
+    for (i in 0..n spec {
+      invariant i &lt;= n;
+      invariant sum == i * (i - 1) / 2;
+    }) {
+      sum = sum + i;
+    };
+    sum
+  }
+  spec sum_range {
+    requires n &lt; 1000;
+    aborts_if false;
+    ensures result == n * (n - 1) / 2;
+  }
+}
+</code></pre>
+<p>Alternatively, and like a <code>while</code> loop, the invariant of a <code>for</code> loop may be given in a
+trailing spec block placed after the loop body instead of in the header. The iterator
+variable is in scope in the trailing spec block. The following is equivalent to the
+example above:</p>
+<pre><code class="language-move">module 0x42::m {
+  fun sum_range(n: u64): u64 {
+    let sum = 0;
+    for (i in 0..n) {
+      sum = sum + i;
+    } spec {
+      invariant i &lt;= n;
+      invariant sum == i * (i - 1) / 2;
+    };
+    sum
+  }
+}
+</code></pre>
+<p>The invariant may be placed in the header or in the trailing spec block, but not both. A
+<code>for</code> loop spec block may only contain <code>invariant</code> statements. A <code>continue</code> inside a <code>for</code>
+loop still advances the iterator, so the invariant must be preserved on the <code>continue</code>
+back edge as well.</p>
 <h3 id="referring-to-pre-state"><a class="header" href="#referring-to-pre-state">Referring to pre-state</a></h3>
 <p>Occasionally, we would like to refer to the pre-state of a mutable function argument in inline spec
 blocks. In MSL, this can be done with the <code>old(T)</code> expression. Similar to the semantics of <code>old(..)</code>
