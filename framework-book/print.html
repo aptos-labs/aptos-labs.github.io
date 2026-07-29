@@ -1341,6 +1341,7 @@ return true.</p>
 <li><a href="move-stdlib/features.html#0x1_features_gas_refund_fa_mint_enabled">Function <code>gas_refund_fa_mint_enabled</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_get_function_value_dispatch_feature">Function <code>get_function_value_dispatch_feature</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">Function <code>is_function_value_dispatch_enabled</code></a></li>
+<li><a href="move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">Function <code>is_lazy_module_initialization_enabled</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="move-stdlib/features.html#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -1637,6 +1638,12 @@ in JWK Consensus messages, in validator transactions, and in Move.</li>
 <p>Whether the ZK-less mode of the keyless accounts feature is enabled.</p>
 <p>Lifetime: transient</p>
 <pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_KEYLESS_BUT_ZKLESS_ACCOUNTS">KEYLESS_BUT_ZKLESS_ACCOUNTS</a>: u64 = 47;
+</code></pre>
+<p><a id="0x1_features_LAZY_MODULE_INITIALIZATION"></a></p>
+<p>Whether lazy module initialization via <code>aptos_framework::init::internal_maybe_initialize</code>
+is enabled. While disabled, that entry point aborts.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="move-stdlib/features.html#0x1_features_LAZY_MODULE_INITIALIZATION">LAZY_MODULE_INITIALIZATION</a>: u64 = 127;
 </code></pre>
 <p><a id="0x1_features_MAX_OBJECT_NESTING_CHECK"></a></p>
 <p>Whether checking the maximum object nesting is enabled.</p>
@@ -3319,6 +3326,16 @@ Lifetime: transient</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_function_value_dispatch_enabled">is_function_value_dispatch_enabled</a>(): bool {
     <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_FUNCTION_VALUE_DISPATCH">FUNCTION_VALUE_DISPATCH</a>) && <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-is_lazy_module_initialization_enabled"><a class="header" href="#function-is_lazy_module_initialization_enabled">Function <code>is_lazy_module_initialization_enabled</code> <a id="0x1_features_is_lazy_module_initialization_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">is_lazy_module_initialization_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">is_lazy_module_initialization_enabled</a>(): bool {
+    <a href="move-stdlib/features.html#0x1_features_is_enabled">is_enabled</a>(<a href="move-stdlib/features.html#0x1_features_LAZY_MODULE_INITIALIZATION">LAZY_MODULE_INITIALIZATION</a>)
 }
 </code></pre>
 </details>
@@ -11888,7 +11905,7 @@ The <code>elem_deserializer</code> lambda expression is used to deserialize the 
 <h3 id="function-deserialize_u128-1"><a class="header" href="#function-deserialize_u128-1">Function <code>deserialize_u128</code> <a id="@Specification_1_deserialize_u128"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-stdlib/bcs_stream.html#0x1_bcs_stream_deserialize_u128">deserialize_u128</a>(stream: &<b>mut</b> <a href="aptos-stdlib/bcs_stream.html#0x1_bcs_stream_BCSStream">bcs_stream::BCSStream</a>): u128
 </code></pre>
-<pre><code><b>pragma</b> seed = 2;
+<pre><code><b>pragma</b> verify = <b>false</b>;
 <b>pragma</b> opaque;
 <b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> stream.cur + (16 <b>as</b> u64) &gt; MAX_U64;
@@ -28354,6 +28371,7 @@ analysis of vector size dynamism.</p>
 <li><a href="aptos-framework/genesis.html#0x1_genesis"><code>0x1::genesis</code></a></li>
 <li><a href="aptos-framework/governance_proposal.html#0x1_governance_proposal"><code>0x1::governance_proposal</code></a></li>
 <li><a href="aptos-framework/guid.html#0x1_guid"><code>0x1::guid</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init"><code>0x1::init</code></a></li>
 <li><a href="aptos-framework/jwk_consensus_config.html#0x1_jwk_consensus_config"><code>0x1::jwk_consensus_config</code></a></li>
 <li><a href="aptos-framework/jwks.html#0x1_jwks"><code>0x1::jwks</code></a></li>
 <li><a href="aptos-framework/keyless_account.html#0x1_keyless_account"><code>0x1::keyless_account</code></a></li>
@@ -30889,7 +30907,8 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 </code></pre>
 <p>The Account existed under the signer.
 The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.</p>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>pragma</b> aborts_if_is_partial;
 <b>let</b> source_address = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="aptos-framework/account.html#0x1_account">account</a>);
 <b>include</b> <a href="aptos-framework/account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr: source_address };
 <b>let</b> current_auth_key_bytes = <a href="aptos-framework/account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(source_address);
@@ -41234,6 +41253,7 @@ The new <code>seq_num</code> must be strictly greater than the current on-chain 
 <b>use</b> <a href="aptos-framework/../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="aptos-framework/event.html#0x1_event">0x1::event</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="aptos-framework/init.html#0x1_init">0x1::init</a>;
 <b>use</b> <a href="aptos-framework/object.html#0x1_object">0x1::object</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
@@ -41588,6 +41608,16 @@ package.</p>
     // To avoid prover compiler <a href="aptos-framework/../move-stdlib/error.html#0x1_error">error</a> on <b>spec</b>
     // the <b>package</b> need <b>to</b> be an immutable variable
     <b>let</b> module_names = <a href="aptos-framework/code.html#0x1_code_get_module_names">get_module_names</a>(&pack);
+
+    // Record, per <b>module</b> in this <b>package</b>, the <a href="aptos-framework/object.html#0x1_object">object</a>'s transitive root owner at (re)publish, so
+    // lazy self-<a href="aptos-framework/init.html#0x1_init">init</a> can detect a later transfer of the <a href="aptos-framework/object.html#0x1_object">object</a> or an ancestor since that <b>module</b>
+    // was published (see `<a href="aptos-framework/init.html#0x1_init_internal_maybe_initialize">init::internal_maybe_initialize</a>`). Objects only; feature-gated.
+    <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>() && <a href="aptos-framework/object.html#0x1_object_is_object">object::is_object</a>(addr)) {
+        <b>let</b> owner = <a href="aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="aptos-framework/object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(addr).root_owner();
+        module_names.for_each_ref(|name| {
+            <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">init::record_deploy_owner</a>(addr, *name.bytes(), owner);
+        });
+    };
     <b>let</b> package_immutable = &<b>borrow_global</b>&lt;<a href="aptos-framework/code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(addr).packages;
     <b>let</b> len = package_immutable.length();
     <b>let</b> index = len;
@@ -41610,6 +41640,10 @@ package.</p>
     // Update registry
     <b>let</b> policy = pack.upgrade_policy;
     <b>if</b> (index &lt; len) {
+        pack.modules.for_each_ref(|m| {
+            <b>let</b> m: &<a href="aptos-framework/code.html#0x1_code_ModuleMetadata">ModuleMetadata</a> = m;
+            <a href="aptos-framework/init.html#0x1_init_reset_initialized">init::reset_initialized</a>(addr, *m.name.bytes());
+        });
         *packages.borrow_mut(index) = pack
     } <b>else</b> {
         packages.push_back(pack)
@@ -44140,7 +44174,7 @@ Returns minted <code><a href="aptos-framework/coin.html#0x1_coin_Coin">Coin</a><
 <b>global</b> <a href="aptos-framework/coin.html#0x1_coin_supply">supply</a>&lt;CoinType&gt;: num;
 <a id="0x1_coin_aggregate_supply"></a>
 <b>global</b> <a href="aptos-framework/coin.html#0x1_coin_aggregate_supply">aggregate_supply</a>&lt;CoinType&gt;: num;
-<b>apply</b> <a href="aptos-framework/coin.html#0x1_coin_TotalSupplyTracked">TotalSupplyTracked</a>&lt;CoinType&gt; <b>to</b> *&lt;CoinType&gt; <b>except</b> initialize, initialize_internal, initialize_with_parallelizable_supply;
+<b>apply</b> <a href="aptos-framework/coin.html#0x1_coin_TotalSupplyTracked">TotalSupplyTracked</a>&lt;CoinType&gt; <b>to</b> *&lt;CoinType&gt; <b>except</b> initialize, initialize_internal, initialize_with_parallelizable_supply, migrate_coin_store_to_fungible_store;
 </code></pre>
 <p><a id="0x1_coin_spec_fun_supply_tracked"></a></p>
 <pre><code><b>fun</b> <a href="aptos-framework/coin.html#0x1_coin_spec_fun_supply_tracked">spec_fun_supply_tracked</a>&lt;CoinType&gt;(val: u64, <a href="aptos-framework/coin.html#0x1_coin_supply">supply</a>: Option&lt;OptionalAggregator&gt;): bool {
@@ -44496,6 +44530,21 @@ Returns minted <code><a href="aptos-framework/coin.html#0x1_coin_Coin">Coin</a><
     symbol: symbol.bytes
 };
 <b>ensures</b> <b>exists</b>&lt;<a href="aptos-framework/coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(addr);
+</code></pre>
+<p>Make sure <code>name</code> and <code>symbol</code> are legal length.
+Only the creator of <code>CoinType</code> can initialize.</p>
+<p><a id="0x1_coin_InitializeInternalSchema"></a></p>
+<pre><code><b>schema</b> <a href="aptos-framework/coin.html#0x1_coin_InitializeInternalSchema">InitializeInternalSchema</a>&lt;CoinType&gt; {
+    <a href="aptos-framework/account.html#0x1_account">account</a>: <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>;
+    name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+    symbol: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+    <b>let</b> account_addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="aptos-framework/account.html#0x1_account">account</a>);
+    <b>let</b> coin_address = <a href="aptos-framework/../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
+    <b>aborts_if</b> coin_address != account_addr;
+    <b>aborts_if</b> <b>exists</b>&lt;<a href="aptos-framework/coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(account_addr);
+    <b>aborts_if</b> len(name) &gt; <a href="aptos-framework/coin.html#0x1_coin_MAX_COIN_NAME_LENGTH">MAX_COIN_NAME_LENGTH</a>;
+    <b>aborts_if</b> len(symbol) &gt; <a href="aptos-framework/coin.html#0x1_coin_MAX_COIN_SYMBOL_LENGTH">MAX_COIN_SYMBOL_LENGTH</a>;
+}
 </code></pre>
 <h3 id="function-initialize_internal-1"><a class="header" href="#function-initialize_internal-1">Function <code>initialize_internal</code> <a id="@Specification_1_initialize_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/coin.html#0x1_coin_initialize_internal">initialize_internal</a>&lt;CoinType&gt;(<a href="aptos-framework/account.html#0x1_account">account</a>: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="aptos-framework/../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="aptos-framework/../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, monitor_supply: bool, parallelizable: bool): (<a href="aptos-framework/coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;CoinType&gt;, <a href="aptos-framework/coin.html#0x1_coin_FreezeCapability">coin::FreezeCapability</a>&lt;CoinType&gt;, <a href="aptos-framework/coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;)
@@ -58826,6 +58875,287 @@ encoded in a single BCS byte array.</p>
 <b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == (<a href="aptos-framework/guid.html#0x1_guid">guid</a>.id == id);
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x1init"><a class="header" href="#module-0x1init">Module <code>0x1::init</code> <a id="0x1_init"></a></a></h1>
+<p>Module initialization support. This is internally used by the compiler.</p>
+<ul>
+<li><a href="aptos-framework/init.html#0x1_init_ModuleId">Struct <code>ModuleId</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_ModuleState">Struct <code>ModuleState</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_InitializationState">Enum Resource <code>InitializationState</code></a></li>
+<li><a href="aptos-framework/init.html#@Constants_0">Constants</a></li>
+<li><a href="aptos-framework/init.html#0x1_init_internal_maybe_initialize">Function <code>internal_maybe_initialize</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_assert_may_self_initialize">Function <code>assert_may_self_initialize</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_recorded_deploy_owner">Function <code>recorded_deploy_owner</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_record_deploy_owner">Function <code>record_deploy_owner</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_reset_initialized">Function <code>reset_initialized</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_module_id_from_name">Function <code>module_id_from_name</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_check_and_set_initialized">Function <code>check_and_set_initialized</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_ensure_module_state">Function <code>ensure_module_state</code></a></li>
+<li><a href="aptos-framework/init.html#0x1_init_get_caller_address_and_module_id">Function <code>get_caller_address_and_module_id</code></a></li>
+<li><a href="aptos-framework/init.html#@Specification_1">Specification</a>
+<ul>
+<li><a href="aptos-framework/init.html#@Specification_1_internal_maybe_initialize">Function <code>internal_maybe_initialize</code></a></li>
+<li><a href="aptos-framework/init.html#@Specification_1_get_caller_address_and_module_id">Function <code>get_caller_address_and_module_id</code></a></li>
+</ul>
+</li>
+</ul>
+<pre><code><b>use</b> <a href="aptos-framework/create_signer.html#0x1_create_signer">0x1::create_signer</a>;
+<b>use</b> <a href="aptos-framework/../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<b>use</b> <a href="aptos-framework/../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="aptos-framework/../aptos-stdlib/from_bcs.html#0x1_from_bcs">0x1::from_bcs</a>;
+<b>use</b> <a href="aptos-framework/../move-stdlib/hash.html#0x1_hash">0x1::hash</a>;
+<b>use</b> <a href="aptos-framework/object.html#0x1_object">0x1::object</a>;
+<b>use</b> <a href="aptos-framework/../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map">0x1::ordered_map</a>;
+<b>use</b> <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
+</code></pre>
+<h2 id="struct-moduleid"><a class="header" href="#struct-moduleid">Struct <code>ModuleId</code> <a id="0x1_init_ModuleId"></a></a></h2>
+<p>Opaque representation of module names.</p>
+<pre><code><b>struct</b> <a href="aptos-framework/init.html#0x1_init_ModuleId">ModuleId</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="aptos-framework/../move-stdlib/hash.html#0x1_hash">hash</a>: u128</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="struct-modulestate"><a class="header" href="#struct-modulestate">Struct <code>ModuleState</code> <a id="0x1_init_ModuleState"></a></a></h2>
+<p>Per-module initialization metadata.</p>
+<p><code>only_once</code> is the flag first passed at initialization: <code>none</code> before init, <code>some(<b>false</b>)</code>
+re-inits after each upgrade (cleared by <code>reset_initialized</code>), <code>some(<b>true</b>)</code> inits only once.
+<code>deploy_owner</code> is the object's transitive root owner recorded at this module's last publish
+and gates object self-init (see <code>assert_may_self_initialize</code>); <code>none</code> for account addresses.</p>
+<pre><code><b>struct</b> <a href="aptos-framework/init.html#0x1_init_ModuleState">ModuleState</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>only_once: <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;bool&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>deploy_owner: <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="enum-resource-initializationstate"><a class="header" href="#enum-resource-initializationstate">Enum Resource <code>InitializationState</code> <a id="0x1_init_InitializationState"></a></a></h2>
+<p>Per-address initialization metadata, keyed by module so each module is gated on the owner at
+its own last publish -- republishing one module does not re-arm a sibling.</p>
+<pre><code>enum <a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a> <b>has</b> key
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>modules: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;<a href="aptos-framework/init.html#0x1_init_ModuleId">init::ModuleId</a>, <a href="aptos-framework/init.html#0x1_init_ModuleState">init::ModuleState</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="constants-81"><a class="header" href="#constants-81">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_init_EINVALID_INITIALIZE_CALLER"></a></p>
+<p>Module initialization can only be requested by module code, not by scripts.</p>
+<pre><code><b>const</b> <a href="aptos-framework/init.html#0x1_init_EINVALID_INITIALIZE_CALLER">EINVALID_INITIALIZE_CALLER</a>: u64 = 1;
+</code></pre>
+<p><a id="0x1_init_ELAZY_MODULE_INITIALIZATION_NOT_ENABLED"></a></p>
+<p>Lazy module initialization is not enabled (see the <code>LAZY_MODULE_INITIALIZATION</code> feature).</p>
+<pre><code><b>const</b> <a href="aptos-framework/init.html#0x1_init_ELAZY_MODULE_INITIALIZATION_NOT_ENABLED">ELAZY_MODULE_INITIALIZATION_NOT_ENABLED</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_init_EOWNER_CHANGED_SINCE_DEPLOY"></a></p>
+<p>A module on an object cannot self-initialize once the object changed owner, or was deleted,
+since that module's code was last published.</p>
+<pre><code><b>const</b> <a href="aptos-framework/init.html#0x1_init_EOWNER_CHANGED_SINCE_DEPLOY">EOWNER_CHANGED_SINCE_DEPLOY</a>: u64 = 2;
+</code></pre>
+<h2 id="function-internal_maybe_initialize"><a class="header" href="#function-internal_maybe_initialize">Function <code>internal_maybe_initialize</code> <a id="0x1_init_internal_maybe_initialize"></a></a></h2>
+<p>If the calling module needs initialization -- never initialized, or (with <code>only_once</code> false)
+upgraded since -- marks it initialized and returns a signer for its address; else returns
+<code>none</code>. Marking happens before the initializer runs, so a cyclic call terminates.</p>
+<p>The caller module is derived by the VM from the call stack, so a module can only initialize
+itself. Aborts if the feature is disabled (<code><a href="aptos-framework/init.html#0x1_init_ELAZY_MODULE_INITIALIZATION_NOT_ENABLED">ELAZY_MODULE_INITIALIZATION_NOT_ENABLED</a></code>), the
+caller is not module code (<code><a href="aptos-framework/init.html#0x1_init_EINVALID_INITIALIZE_CALLER">EINVALID_INITIALIZE_CALLER</a></code>), or an object-hosted module changed
+owner since publish (<code><a href="aptos-framework/init.html#0x1_init_EOWNER_CHANGED_SINCE_DEPLOY">EOWNER_CHANGED_SINCE_DEPLOY</a></code>).</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_internal_maybe_initialize">internal_maybe_initialize</a>(only_once: bool): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_internal_maybe_initialize">internal_maybe_initialize</a>(only_once: bool): Option&lt;<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>&gt; {
+    <b>assert</b>!(
+        <a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>(),
+        <a href="aptos-framework/../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="aptos-framework/init.html#0x1_init_ELAZY_MODULE_INITIALIZATION_NOT_ENABLED">ELAZY_MODULE_INITIALIZATION_NOT_ENABLED</a>),
+    );
+    <b>let</b> (addr, module_id) = <a href="aptos-framework/init.html#0x1_init_get_caller_address_and_module_id">get_caller_address_and_module_id</a>();
+    <b>if</b> (<a href="aptos-framework/init.html#0x1_init_check_and_set_initialized">check_and_set_initialized</a>(addr, module_id, only_once)) {
+        <a href="aptos-framework/../move-stdlib/option.html#0x1_option_none">option::none</a>()
+    } <b>else</b> {
+        // Guard only when actually minting: a legitimate transfer after initialization must not
+        // brick ordinary calls. An <b>abort</b> here rolls back the mark set above.
+        <a href="aptos-framework/init.html#0x1_init_assert_may_self_initialize">assert_may_self_initialize</a>(addr, module_id);
+        <a href="aptos-framework/../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="aptos-framework/create_signer.html#0x1_create_signer_create_signer">create_signer::create_signer</a>(addr))
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-assert_may_self_initialize"><a class="header" href="#function-assert_may_self_initialize">Function <code>assert_may_self_initialize</code> <a id="0x1_init_assert_may_self_initialize"></a></a></h2>
+<p>Aborts unless the module at <code>addr</code> may self-initialize now. Only object-hosted modules are
+gated: an object must still have the transitive root owner recorded for this module at
+publish, so a transfer of the object or an ancestor, or its deletion, blocks self-init; an
+object with no record is fail-closed. Account addresses authorize their own code by publishing.</p>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_assert_may_self_initialize">assert_may_self_initialize</a>(addr: <b>address</b>, module_id: <a href="aptos-framework/init.html#0x1_init_ModuleId">init::ModuleId</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_assert_may_self_initialize">assert_may_self_initialize</a>(addr: <b>address</b>, module_id: <a href="aptos-framework/init.html#0x1_init_ModuleId">ModuleId</a>) {
+    <b>let</b> recorded = <a href="aptos-framework/init.html#0x1_init_recorded_deploy_owner">recorded_deploy_owner</a>(addr, module_id);
+    <b>let</b> ok = <b>if</b> (recorded.is_some()) {
+        <a href="aptos-framework/object.html#0x1_object_is_object">object::is_object</a>(addr)
+            && recorded.destroy_some() == <a href="aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;ObjectCore&gt;(addr).root_owner()
+    } <b>else</b> {
+        !<a href="aptos-framework/object.html#0x1_object_is_object">object::is_object</a>(addr)
+    };
+    <b>assert</b>!(ok, <a href="aptos-framework/../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos-framework/init.html#0x1_init_EOWNER_CHANGED_SINCE_DEPLOY">EOWNER_CHANGED_SINCE_DEPLOY</a>));
+}
+</code></pre>
+</details>
+<h2 id="function-recorded_deploy_owner"><a class="header" href="#function-recorded_deploy_owner">Function <code>recorded_deploy_owner</code> <a id="0x1_init_recorded_deploy_owner"></a></a></h2>
+<p>The object root owner recorded for <code>module_id</code> at its last publish, or <code>none</code> if the module
+has no such record (an account module, or an object module never recorded).</p>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_recorded_deploy_owner">recorded_deploy_owner</a>(addr: <b>address</b>, module_id: <a href="aptos-framework/init.html#0x1_init_ModuleId">init::ModuleId</a>): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_recorded_deploy_owner">recorded_deploy_owner</a>(addr: <b>address</b>, module_id: <a href="aptos-framework/init.html#0x1_init_ModuleId">ModuleId</a>): Option&lt;<b>address</b>&gt; {
+    <b>if</b> (!<b>exists</b>&lt;<a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)) <b>return</b> <a href="aptos-framework/../move-stdlib/option.html#0x1_option_none">option::none</a>();
+    <b>let</b> modules = &<a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>[addr].modules;
+    <b>if</b> (modules.contains(&module_id)) modules.borrow(&module_id).deploy_owner <b>else</b> <a href="aptos-framework/../move-stdlib/option.html#0x1_option_none">option::none</a>()
+}
+</code></pre>
+</details>
+<h2 id="function-record_deploy_owner"><a class="header" href="#function-record_deploy_owner">Function <code>record_deploy_owner</code> <a id="0x1_init_record_deploy_owner"></a></a></h2>
+<p>Records <code>owner</code> as the object root owner of the module named <code>module_name</code> at (re)publish, to
+gate its later self-init (see <code>assert_may_self_initialize</code>). Called per module by
+<code><a href="aptos-framework/code.html#0x1_code_publish_package">code::publish_package</a></code> for object addresses only.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">record_deploy_owner</a>(addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, owner: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>package</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">record_deploy_owner</a>(addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, owner: <b>address</b>) {
+    <b>let</b> module_id = <a href="aptos-framework/init.html#0x1_init_module_id_from_name">module_id_from_name</a>(module_name);
+    <a href="aptos-framework/init.html#0x1_init_ensure_module_state">ensure_module_state</a>(addr, module_id);
+    <a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>[addr].modules.borrow_mut(&module_id).deploy_owner = <a href="aptos-framework/../move-stdlib/option.html#0x1_option_some">option::some</a>(owner);
+}
+</code></pre>
+</details>
+<h2 id="function-reset_initialized"><a class="header" href="#function-reset_initialized">Function <code>reset_initialized</code> <a id="0x1_init_reset_initialized"></a></a></h2>
+<p>Called on code upgrade to request re-run of initialization for the named module. Skipped for
+modules that used <code>only_once = <b>true</b></code> when first initialized. Keeps the recorded deploy owner.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/init.html#0x1_init_reset_initialized">reset_initialized</a>(addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>package</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_reset_initialized">reset_initialized</a>(addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) {
+    <b>if</b> (<b>exists</b>&lt;<a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)) {
+        <b>let</b> modules = &<b>mut</b> <a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>[addr].modules;
+        <b>let</b> module_id = <a href="aptos-framework/init.html#0x1_init_module_id_from_name">module_id_from_name</a>(module_name);
+        <b>if</b> (modules.contains(&module_id)) {
+            <b>let</b> state = modules.borrow_mut(&module_id);
+            <b>if</b> (state.only_once == <a href="aptos-framework/../move-stdlib/option.html#0x1_option_some">option::some</a>(<b>false</b>)) {
+                state.only_once = <a href="aptos-framework/../move-stdlib/option.html#0x1_option_none">option::none</a>();
+            }
+        }
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-module_id_from_name"><a class="header" href="#function-module_id_from_name">Function <code>module_id_from_name</code> <a id="0x1_init_module_id_from_name"></a></a></h2>
+<p>Creates the id for a module name (see <code>get_caller_address_and_module_id</code> for the format).</p>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_module_id_from_name">module_id_from_name</a>(name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="aptos-framework/init.html#0x1_init_ModuleId">init::ModuleId</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_module_id_from_name">module_id_from_name</a>(name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="aptos-framework/init.html#0x1_init_ModuleId">ModuleId</a> {
+    <b>let</b> <a href="aptos-framework/../move-stdlib/hash.html#0x1_hash">hash</a> = <a href="aptos-framework/../move-stdlib/hash.html#0x1_hash_sha3_256">hash::sha3_256</a>(name);
+    <a href="aptos-framework/../move-stdlib/hash.html#0x1_hash">hash</a>.trim(16);
+    <a href="aptos-framework/init.html#0x1_init_ModuleId">ModuleId</a> { <a href="aptos-framework/../move-stdlib/hash.html#0x1_hash">hash</a>: <a href="aptos-framework/../aptos-stdlib/from_bcs.html#0x1_from_bcs_to_u128">from_bcs::to_u128</a>(<a href="aptos-framework/../move-stdlib/hash.html#0x1_hash">hash</a>) }
+}
+</code></pre>
+</details>
+<h2 id="function-check_and_set_initialized"><a class="header" href="#function-check_and_set_initialized">Function <code>check_and_set_initialized</code> <a id="0x1_init_check_and_set_initialized"></a></a></h2>
+<p>Returns true if the module is already initialized. Otherwise marks it initialized, recording
+<code>only_once</code>: if true the entry survives upgrades (initializer never re-runs); if false an
+upgrade resets it (initializer re-runs).</p>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_check_and_set_initialized">check_and_set_initialized</a>(addr: <b>address</b>, module_id: <a href="aptos-framework/init.html#0x1_init_ModuleId">init::ModuleId</a>, only_once: bool): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_check_and_set_initialized">check_and_set_initialized</a>(addr: <b>address</b>, module_id: <a href="aptos-framework/init.html#0x1_init_ModuleId">ModuleId</a>, only_once: bool): bool {
+    <a href="aptos-framework/init.html#0x1_init_ensure_module_state">ensure_module_state</a>(addr, module_id);
+    <b>let</b> state = <a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>[addr].modules.borrow_mut(&module_id);
+    <b>if</b> (state.only_once.is_some()) {
+        <b>true</b>
+    } <b>else</b> {
+        state.only_once = <a href="aptos-framework/../move-stdlib/option.html#0x1_option_some">option::some</a>(only_once);
+        <b>false</b>
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-ensure_module_state"><a class="header" href="#function-ensure_module_state">Function <code>ensure_module_state</code> <a id="0x1_init_ensure_module_state"></a></a></h2>
+<p>Ensures an <code><a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a></code> exists at <code>addr</code> holding an entry for <code>module_id</code>.</p>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_ensure_module_state">ensure_module_state</a>(addr: <b>address</b>, module_id: <a href="aptos-framework/init.html#0x1_init_ModuleId">init::ModuleId</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_ensure_module_state">ensure_module_state</a>(addr: <b>address</b>, module_id: <a href="aptos-framework/init.html#0x1_init_ModuleId">ModuleId</a>) {
+    <b>if</b> (!<b>exists</b>&lt;<a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)) {
+        <b>move_to</b>(
+            &<a href="aptos-framework/create_signer.html#0x1_create_signer_create_signer">create_signer::create_signer</a>(addr),
+            InitializationState::V1 { modules: <a href="aptos-framework/ordered_map.html#0x1_ordered_map_new">ordered_map::new</a>() },
+        );
+    };
+    <b>let</b> modules = &<b>mut</b> <a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>[addr].modules;
+    <b>if</b> (!modules.contains(&module_id)) {
+        modules.add(module_id, <a href="aptos-framework/init.html#0x1_init_ModuleState">ModuleState</a> { only_once: <a href="aptos-framework/../move-stdlib/option.html#0x1_option_none">option::none</a>(), deploy_owner: <a href="aptos-framework/../move-stdlib/option.html#0x1_option_none">option::none</a>() });
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-get_caller_address_and_module_id"><a class="header" href="#function-get_caller_address_and_module_id">Function <code>get_caller_address_and_module_id</code> <a id="0x1_init_get_caller_address_and_module_id"></a></a></h2>
+<p>Returns the address and module id of the module that directly called the function invoking
+this native. Aborts with <code><a href="aptos-framework/init.html#0x1_init_EINVALID_INITIALIZE_CALLER">EINVALID_INITIALIZE_CALLER</a></code> if there is no such module (e.g. a
+script). The module id is the sha3-256 of the module name, trimmed to 16 bytes and read as
+the bcs encoding of a u128.</p>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_get_caller_address_and_module_id">get_caller_address_and_module_id</a>(): (<b>address</b>, <a href="aptos-framework/init.html#0x1_init_ModuleId">init::ModuleId</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_get_caller_address_and_module_id">get_caller_address_and_module_id</a>(): (<b>address</b>, <a href="aptos-framework/init.html#0x1_init_ModuleId">ModuleId</a>);
+</code></pre>
+</details>
+<h2 id="specification-85"><a class="header" href="#specification-85">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-internal_maybe_initialize-1"><a class="header" href="#function-internal_maybe_initialize-1">Function <code>internal_maybe_initialize</code> <a id="@Specification_1_internal_maybe_initialize"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_internal_maybe_initialize">internal_maybe_initialize</a>(only_once: bool): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+</code></pre>
+<h3 id="function-get_caller_address_and_module_id-1"><a class="header" href="#function-get_caller_address_and_module_id-1">Function <code>get_caller_address_and_module_id</code> <a id="@Specification_1_get_caller_address_and_module_id"></a></a></h3>
+<pre><code><b>fun</b> <a href="aptos-framework/init.html#0x1_init_get_caller_address_and_module_id">get_caller_address_and_module_id</a>(): (<b>address</b>, <a href="aptos-framework/init.html#0x1_init_ModuleId">init::ModuleId</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x1jwk_consensus_config"><a class="header" href="#module-0x1jwk_consensus_config">Module <code>0x1::jwk_consensus_config</code> <a id="0x1_jwk_consensus_config"></a></a></h1>
 <p>Structs and functions related to JWK consensus configurations.</p>
 <ul>
@@ -58922,7 +59252,7 @@ encoded in a single BCS byte array.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-81"><a class="header" href="#constants-81">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-82"><a class="header" href="#constants-82">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_jwk_consensus_config_EDUPLICATE_PROVIDERS"></a></p>
 <p><code><a href="aptos-framework/jwk_consensus_config.html#0x1_jwk_consensus_config_ConfigV1">ConfigV1</a></code> creation failed with duplicated providers given.</p>
 <pre><code><b>const</b> <a href="aptos-framework/jwk_consensus_config.html#0x1_jwk_consensus_config_EDUPLICATE_PROVIDERS">EDUPLICATE_PROVIDERS</a>: u64 = 1;
@@ -59026,7 +59356,7 @@ aptos_governance::reconfigure(&amp;framework_signer);
 }
 </code></pre>
 </details>
-<h2 id="specification-85"><a class="header" href="#specification-85">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-86"><a class="header" href="#specification-86">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-initialize-35"><a class="header" href="#function-initialize-35">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/jwk_consensus_config.html#0x1_jwk_consensus_config_initialize">initialize</a>(framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="aptos-framework/jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">jwk_consensus_config::JWKConsensusConfig</a>)
 </code></pre>
@@ -59472,7 +59802,7 @@ This is what applications should consume.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-82"><a class="header" href="#constants-82">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-83"><a class="header" href="#constants-83">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_jwks_DELETE_COMMAND_INDICATOR"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/jwks.html#0x1_jwks_DELETE_COMMAND_INDICATOR">DELETE_COMMAND_INDICATOR</a>: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [84, 72, 73, 83, 95, 73, 83, 95, 65, 95, 68, 69, 76, 69, 84, 69, 95, 67, 79, 77, 77, 65, 78, 68];
 </code></pre>
@@ -60231,7 +60561,7 @@ Maintains the sorted-by-issuer invariant in <code><a href="aptos-framework/jwks.
 }
 </code></pre>
 </details>
-<h2 id="specification-86"><a class="header" href="#specification-86">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-87"><a class="header" href="#specification-87">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-patch_federated_jwks-1"><a class="header" href="#function-patch_federated_jwks-1">Function <code>patch_federated_jwks</code> <a id="@Specification_1_patch_federated_jwks"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/jwks.html#0x1_jwks_patch_federated_jwks">patch_federated_jwks</a>(jwk_owner: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, patches: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/jwks.html#0x1_jwks_Patch">jwks::Patch</a>&gt;)
 </code></pre>
@@ -60579,7 +60909,7 @@ where <code>MAX_B64U_JWT_HEADER_W_DOT_LEN</code> is a circuit constant hard-code
 </dd>
 </dl>
 </details>
-<h2 id="constants-83"><a class="header" href="#constants-83">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-84"><a class="header" href="#constants-84">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_keyless_account_E_INVALID_BN254_G1_SERIALIZATION"></a></p>
 <p>A serialized BN254 G1 point is invalid.</p>
 <pre><code><b>const</b> <a href="aptos-framework/keyless_account.html#0x1_keyless_account_E_INVALID_BN254_G1_SERIALIZATION">E_INVALID_BN254_G1_SERIALIZATION</a>: u64 = 2;
@@ -60998,7 +61328,7 @@ after reconfiguration. Only callable via governance proposal.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-87"><a class="header" href="#specification-87">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-88"><a class="header" href="#specification-88">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify=<b>false</b>;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x1managed_coin"><a class="header" href="#module-0x1managed_coin">Module <code>0x1::managed_coin</code> <a id="0x1_managed_coin"></a></a></h1>
@@ -61057,7 +61387,7 @@ The resource is stored on the account that initialized coin <code>CoinType</code
 </dd>
 </dl>
 </details>
-<h2 id="constants-84"><a class="header" href="#constants-84">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-85"><a class="header" href="#constants-85">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_managed_coin_ENO_CAPABILITIES"></a></p>
 <p>Account has no capabilities (burn/mint).</p>
 <pre><code><b>const</b> <a href="aptos-framework/managed_coin.html#0x1_managed_coin_ENO_CAPABILITIES">ENO_CAPABILITIES</a>: u64 = 1;
@@ -61190,7 +61520,7 @@ Required if user wants to start accepting deposits of <code>CoinType</code> in h
 }
 </code></pre>
 </details>
-<h2 id="specification-88"><a class="header" href="#specification-88">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-89"><a class="header" href="#specification-89">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-20"><a class="header" href="#high-level-requirements-20">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -62248,7 +62578,7 @@ number of signatures required.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-85"><a class="header" href="#constants-85">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-86"><a class="header" href="#constants-86">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_multisig_account_ZERO_AUTH_KEY"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/multisig_account.html#0x1_multisig_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 </code></pre>
@@ -64067,7 +64397,7 @@ This function is private so no other code can call this beside the VM itself as 
 }
 </code></pre>
 </details>
-<h2 id="specification-89"><a class="header" href="#specification-89">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-90"><a class="header" href="#specification-90">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-21"><a class="header" href="#high-level-requirements-21">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -64593,7 +64923,7 @@ level state (and, for timelock, an inline helper plus the optional
 </dd>
 </dl>
 </details>
-<h2 id="constants-86"><a class="header" href="#constants-86">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-87"><a class="header" href="#constants-87">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_nonce_validation_ETRANSACTION_EXPIRATION_TOO_FAR_IN_FUTURE"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/nonce_validation.html#0x1_nonce_validation_ETRANSACTION_EXPIRATION_TOO_FAR_IN_FUTURE">ETRANSACTION_EXPIRATION_TOO_FAR_IN_FUTURE</a>: u64 = 1002;
 </code></pre>
@@ -65178,7 +65508,7 @@ the current owner.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-87"><a class="header" href="#constants-87">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-88"><a class="header" href="#constants-88">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_object_EPERMISSIONED_SIGNER_REMOVED"></a></p>
 <p>The permissioned signer feature has been removed.</p>
 <pre><code><b>const</b> <a href="aptos-framework/object.html#0x1_object_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 12;
@@ -66181,7 +66511,7 @@ to determine the identity of the starting point of ownership.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-90"><a class="header" href="#specification-90">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-91"><a class="header" href="#specification-91">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-22"><a class="header" href="#high-level-requirements-22">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -66859,7 +67189,7 @@ Once modules are marked as immutable, they cannot be made mutable again.</li>
 </dd>
 </dl>
 </details>
-<h2 id="constants-88"><a class="header" href="#constants-88">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-89"><a class="header" href="#constants-89">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_object_code_deployment_ECODE_OBJECT_DOES_NOT_EXIST"></a></p>
 <p><code>code_object</code> does not exist.</p>
 <pre><code><b>const</b> <a href="aptos-framework/object_code_deployment.html#0x1_object_code_deployment_ECODE_OBJECT_DOES_NOT_EXIST">ECODE_OBJECT_DOES_NOT_EXIST</a>: u64 = 3;
@@ -67077,7 +67407,7 @@ aggregator (parallelizable) or via normal integers.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-89"><a class="header" href="#constants-89">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-90"><a class="header" href="#constants-90">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_optional_aggregator_MAX_U128"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/optional_aggregator.html#0x1_optional_aggregator_MAX_U128">MAX_U128</a>: u128 = 340282366920938463463374607431768211455;
 </code></pre>
@@ -67318,7 +67648,7 @@ aggregator (parallelizable) or via normal integers.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-91"><a class="header" href="#specification-91">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-92"><a class="header" href="#specification-92">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-23"><a class="header" href="#high-level-requirements-23">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -67732,7 +68062,7 @@ A set of inline utility methods is provided instead, to provide guaranteed valid
 </details>
 </details>
 </details>
-<h2 id="constants-90"><a class="header" href="#constants-90">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-91"><a class="header" href="#constants-91">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_ordered_map_EITER_OUT_OF_BOUNDS"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_EITER_OUT_OF_BOUNDS">EITER_OUT_OF_BOUNDS</a>: u64 = 3;
 </code></pre>
@@ -68674,7 +69004,7 @@ using lambdas to destroy the individual keys and values.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-92"><a class="header" href="#specification-92">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-93"><a class="header" href="#specification-93">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
 <p><a id="0x1_ordered_map_spec_aborts_append_disjoint"></a></p>
@@ -69132,7 +69462,7 @@ enum <a href="aptos-framework/permissioned_delegation.html#0x1_permissioned_dele
 </dd>
 </dl>
 </details>
-<h2 id="constants-91"><a class="header" href="#constants-91">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-92"><a class="header" href="#constants-92">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_permissioned_delegation_EPERMISSIONED_SIGNER_REMOVED"></a></p>
 <p>The permissioned signer feature has been removed.</p>
 <pre><code><b>const</b> <a href="aptos-framework/permissioned_delegation.html#0x1_permissioned_delegation_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 7;
@@ -69395,7 +69725,7 @@ enum <a href="aptos-framework/permissioned_signer.html#0x1_permissioned_signer_S
 </details>
 </details>
 </details>
-<h2 id="constants-92"><a class="header" href="#constants-92">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-93"><a class="header" href="#constants-93">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_permissioned_signer_EPERMISSION_SIGNER_DISABLED"></a></p>
 <p>Permissioned signer feature is not activated.</p>
 <pre><code><b>const</b> <a href="aptos-framework/permissioned_signer.html#0x1_permissioned_signer_EPERMISSION_SIGNER_DISABLED">EPERMISSION_SIGNER_DISABLED</a>: u64 = 9;
@@ -69581,7 +69911,7 @@ assets.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-93"><a class="header" href="#constants-93">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-94"><a class="header" href="#constants-94">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_primary_fungible_store_EPERMISSIONED_SIGNER_REMOVED"></a></p>
 <p>The permissioned signer feature has been removed.</p>
 <pre><code><b>const</b> <a href="aptos-framework/primary_fungible_store.html#0x1_primary_fungible_store_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 1;
@@ -69995,7 +70325,7 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 }
 </code></pre>
 </details>
-<h2 id="specification-93"><a class="header" href="#specification-93">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-94"><a class="header" href="#specification-94">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-24"><a class="header" href="#high-level-requirements-24">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -70243,7 +70573,7 @@ This resource is updated in every block prologue.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-94"><a class="header" href="#constants-94">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-95"><a class="header" href="#constants-95">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_randomness_MAX_U256"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/randomness.html#0x1_randomness_MAX_U256">MAX_U256</a>: u256 = 115792089237316195423570985008687907853269984665640564039457584007913129639935;
 </code></pre>
@@ -70701,7 +71031,7 @@ function as its payload.</li>
 <pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/randomness.html#0x1_randomness_is_unbiasable">is_unbiasable</a>(): bool;
 </code></pre>
 </details>
-<h2 id="specification-94"><a class="header" href="#specification-94">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-95"><a class="header" href="#specification-95">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 <b>invariant</b> [suspendable] <a href="aptos-framework/chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt;
     <b>exists</b>&lt;<a href="aptos-framework/randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework);
@@ -70992,7 +71322,7 @@ function as its payload.</li>
 }
 </code></pre>
 </details>
-<h2 id="specification-95"><a class="header" href="#specification-95">Specification <a id="@Specification_0"></a></a></h2>
+<h2 id="specification-96"><a class="header" href="#specification-96">Specification <a id="@Specification_0"></a></a></h2>
 <h3 id="function-initialize-44"><a class="header" href="#function-initialize-44">Function <code>initialize</code> <a id="@Specification_0_initialize"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/randomness_api_v0_config.html#0x1_randomness_api_v0_config_initialize">initialize</a>(framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, required_amount: <a href="aptos-framework/randomness_api_v0_config.html#0x1_randomness_api_v0_config_RequiredGasDeposit">randomness_api_v0_config::RequiredGasDeposit</a>, allow_custom_max_gas_flag: <a href="aptos-framework/randomness_api_v0_config.html#0x1_randomness_api_v0_config_AllowCustomMaxGasFlag">randomness_api_v0_config::AllowCustomMaxGasFlag</a>)
 </code></pre>
@@ -71143,7 +71473,7 @@ function as its payload.</li>
 </dd>
 </dl>
 </details>
-<h2 id="constants-95"><a class="header" href="#constants-95">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-96"><a class="header" href="#constants-96">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_randomness_config_EINVALID_CONFIG_VARIANT"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/randomness_config.html#0x1_randomness_config_EINVALID_CONFIG_VARIANT">EINVALID_CONFIG_VARIANT</a>: u64 = 1;
 </code></pre>
@@ -71276,7 +71606,7 @@ The feature works if and only if <code><a href="aptos-framework/consensus_config
 }
 </code></pre>
 </details>
-<h2 id="specification-96"><a class="header" href="#specification-96">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-97"><a class="header" href="#specification-97">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-initialize-46"><a class="header" href="#function-initialize-46">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/randomness_config.html#0x1_randomness_config_initialize">initialize</a>(framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="aptos-framework/randomness_config.html#0x1_randomness_config_RandomnessConfig">randomness_config::RandomnessConfig</a>)
 </code></pre>
@@ -71397,7 +71727,7 @@ Useful in a chain recovery from randomness stall.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-96"><a class="header" href="#constants-96">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-97"><a class="header" href="#constants-97">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_randomness_config_seqnum_E_SEQ_NUM_MUST_INCREASE"></a></p>
 <p>The new sequence number must be strictly greater than the current one.</p>
 <pre><code><b>const</b> <a href="aptos-framework/randomness_config_seqnum.html#0x1_randomness_config_seqnum_E_SEQ_NUM_MUST_INCREASE">E_SEQ_NUM_MUST_INCREASE</a>: u64 = 1;
@@ -71453,7 +71783,7 @@ The new <code>seq_num</code> must be strictly greater than the current on-chain 
 }
 </code></pre>
 </details>
-<h2 id="specification-97"><a class="header" href="#specification-97">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-98"><a class="header" href="#specification-98">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-set_for_next_epoch-20"><a class="header" href="#function-set_for_next_epoch-20">Function <code>set_for_next_epoch</code> <a id="@Specification_1_set_for_next_epoch"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/randomness_config_seqnum.html#0x1_randomness_config_seqnum_set_for_next_epoch">set_for_next_epoch</a>(framework: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, seq_num: u64)
 </code></pre>
@@ -71700,7 +72030,7 @@ aptos_framework system address</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-97"><a class="header" href="#constants-97">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-98"><a class="header" href="#constants-98">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_reconfiguration_ECONFIG"></a></p>
 <p>A <code>Reconfiguration</code> resource is in an invalid state</p>
 <pre><code><b>const</b> <a href="aptos-framework/reconfiguration.html#0x1_reconfiguration_ECONFIG">ECONFIG</a>: u64 = 2;
@@ -71886,7 +72216,7 @@ reconfiguration event.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-98"><a class="header" href="#specification-98">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-99"><a class="header" href="#specification-99">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-25"><a class="header" href="#high-level-requirements-25">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -72117,7 +72447,7 @@ Should equal to 0</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-98"><a class="header" href="#constants-98">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-99"><a class="header" href="#constants-99">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_reconfiguration_state_ERECONFIG_NOT_IN_PROGRESS"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/reconfiguration_state.html#0x1_reconfiguration_state_ERECONFIG_NOT_IN_PROGRESS">ERECONFIG_NOT_IN_PROGRESS</a>: u64 = 1;
 </code></pre>
@@ -72236,7 +72566,7 @@ Abort if the current state is not "in progress".</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-99"><a class="header" href="#specification-99">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-100"><a class="header" href="#specification-100">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>invariant</b> [suspendable] <a href="aptos-framework/chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>() ==&gt; <b>exists</b>&lt;<a href="aptos-framework/reconfiguration_state.html#0x1_reconfiguration_state_State">State</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="resource-state-1"><a class="header" href="#resource-state-1">Resource <code>State</code> <a id="@Specification_1_State"></a></a></h3>
@@ -72657,7 +72987,7 @@ re-dealing DKG (dkg::start is idempotent per epoch).</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-100"><a class="header" href="#specification-100">Specification <a id="@Specification_0"></a></a></h2>
+<h2 id="specification-101"><a class="header" href="#specification-101">Specification <a id="@Specification_0"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
 <h3 id="function-try_start-1"><a class="header" href="#function-try_start-1">Function <code>try_start</code> <a id="@Specification_0_try_start"></a></a></h3>
@@ -72845,7 +73175,7 @@ module.resource_signer_cap = option::some(resource_signer_cap);
 </dd>
 </dl>
 </details>
-<h2 id="constants-99"><a class="header" href="#constants-99">Constants <a id="@Constants_2"></a></a></h2>
+<h2 id="constants-100"><a class="header" href="#constants-100">Constants <a id="@Constants_2"></a></a></h2>
 <p><a id="0x1_resource_account_ZERO_AUTH_KEY"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/resource_account.html#0x1_resource_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 </code></pre>
@@ -73002,7 +73332,7 @@ the SignerCapability.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-101"><a class="header" href="#specification-101">Specification <a id="@Specification_3"></a></a></h2>
+<h2 id="specification-102"><a class="header" href="#specification-102">Specification <a id="@Specification_3"></a></a></h2>
 <h3 id="high-level-requirements-26"><a class="header" href="#high-level-requirements-26">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -73170,7 +73500,7 @@ the SignerCapability.</p>
 <li><a href="aptos-framework/sigma_protocol.html#0x1_sigma_protocol_verify">Function <code>verify</code></a></li>
 </ul>
 <pre><code></code></pre>
-<h2 id="constants-100"><a class="header" href="#constants-100">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-101"><a class="header" href="#constants-101">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_sigma_protocol_E_INTERNAL_INVARIANT_FAILED"></a></p>
 <p>One of our internal invariants was broken. There is likely a logical error in the code.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sigma_protocol.html#0x1_sigma_protocol_E_INTERNAL_INVARIANT_FAILED">E_INTERNAL_INVARIANT_FAILED</a>: u64 = 2;
@@ -73398,7 +73728,7 @@ an actual point.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-101"><a class="header" href="#constants-101">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-102"><a class="header" href="#constants-102">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_sigma_protocol_fiat_shamir_E_INTERNAL_INVARIANT_FAILED"></a></p>
 <p>One of our internal invariants was broken. There is likely a logical error in the code.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sigma_protocol_fiat_shamir.html#0x1_sigma_protocol_fiat_shamir_E_INTERNAL_INVARIANT_FAILED">E_INTERNAL_INVARIANT_FAILED</a>: u64 = 2;
@@ -73701,7 +74031,7 @@ $$</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-102"><a class="header" href="#constants-102">Constants <a id="@Constants_4"></a></a></h2>
+<h2 id="constants-103"><a class="header" href="#constants-103">Constants <a id="@Constants_4"></a></a></h2>
 <p><a id="0x1_sigma_protocol_key_rotation_E_STATEMENT_BUILDER_INCONSISTENCY"></a></p>
 <p>The homomorphism or transformation function implementation is not inserting points at the expected positions.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sigma_protocol_key_rotation.html#0x1_sigma_protocol_key_rotation_E_STATEMENT_BUILDER_INCONSISTENCY">E_STATEMENT_BUILDER_INCONSISTENCY</a>: u64 = 6;
@@ -73975,7 +74305,7 @@ new_R_i for i in [1..num_chunks]
 </dd>
 </dl>
 </details>
-<h2 id="constants-103"><a class="header" href="#constants-103">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-104"><a class="header" href="#constants-104">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_sigma_protocol_proof_E_MISMATCHED_NUMBER_OF_COMPRESSED_POINTS"></a></p>
 <p>When creating a <code><a href="aptos-framework/sigma_protocol_proof.html#0x1_sigma_protocol_proof_Proof">Proof</a></code>, the # of commitment points must match the # of compressed commitment points.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sigma_protocol_proof.html#0x1_sigma_protocol_proof_E_MISMATCHED_NUMBER_OF_COMPRESSED_POINTS">E_MISMATCHED_NUMBER_OF_COMPRESSED_POINTS</a>: u64 = 1;
@@ -74145,7 +74475,7 @@ This is needed during proof verification: when calling the homomorphism on the <
 </dd>
 </dl>
 </details>
-<h2 id="constants-104"><a class="header" href="#constants-104">Constants <a id="@Constants_1"></a></a></h2>
+<h2 id="constants-105"><a class="header" href="#constants-105">Constants <a id="@Constants_1"></a></a></h2>
 <p><a id="0x1_sigma_protocol_registration_K"></a></p>
 <p>The number of scalars $k$ in a $\mathcal{R}_\mathsf{dl}$ secret witness.
 WARNING: Crucial for security.</p>
@@ -74336,7 +74666,7 @@ a homomorphism $\psi$) will return $m$ representations. This makes it possible t
 </dd>
 </dl>
 </details>
-<h2 id="constants-105"><a class="header" href="#constants-105">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-106"><a class="header" href="#constants-106">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_sigma_protocol_representation_E_MISMATCHED_LENGTHS"></a></p>
 <p>The number of points and scalars in a Representation needs to be the same.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sigma_protocol_representation.html#0x1_sigma_protocol_representation_E_MISMATCHED_LENGTHS">E_MISMATCHED_LENGTHS</a>: u64 = 1;
@@ -74564,7 +74894,7 @@ Used to represent the output of the transformation function $f$ and the homomorp
 </dd>
 </dl>
 </details>
-<h2 id="constants-106"><a class="header" href="#constants-106">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-107"><a class="header" href="#constants-107">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_sigma_protocol_statement_E_MISMATCHED_NUMBER_OF_COMPRESSED_POINTS"></a></p>
 <p>When creating a <code><a href="aptos-framework/sigma_protocol_statement.html#0x1_sigma_protocol_statement_Statement">Statement</a></code>, the # of points must match the # of compressed points.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sigma_protocol_statement.html#0x1_sigma_protocol_statement_E_MISMATCHED_NUMBER_OF_COMPRESSED_POINTS">E_MISMATCHED_NUMBER_OF_COMPRESSED_POINTS</a>: u64 = 1;
@@ -74957,7 +75287,7 @@ $$</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-107"><a class="header" href="#constants-107">Constants <a id="@Constants_4"></a></a></h2>
+<h2 id="constants-108"><a class="header" href="#constants-108">Constants <a id="@Constants_4"></a></a></h2>
 <p><a id="0x1_sigma_protocol_transfer_E_AUDITOR_COUNT_MISMATCH"></a></p>
 <p>The number of auditor R components does not match the expected auditor count.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sigma_protocol_transfer.html#0x1_sigma_protocol_transfer_E_AUDITOR_COUNT_MISMATCH">E_AUDITOR_COUNT_MISMATCH</a>: u64 = 6;
@@ -75681,7 +76011,7 @@ $$</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-108"><a class="header" href="#constants-108">Constants <a id="@Constants_4"></a></a></h2>
+<h2 id="constants-109"><a class="header" href="#constants-109">Constants <a id="@Constants_4"></a></a></h2>
 <p><a id="0x1_sigma_protocol_withdraw_E_AUDITOR_COUNT_MISMATCH"></a></p>
 <p>The number of auditor R components does not match the expected auditor count.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sigma_protocol_withdraw.html#0x1_sigma_protocol_withdraw_E_AUDITOR_COUNT_MISMATCH">E_AUDITOR_COUNT_MISMATCH</a>: u64 = 6;
@@ -76150,7 +76480,7 @@ SIWS.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-109"><a class="header" href="#constants-109">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-110"><a class="header" href="#constants-110">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_solana_derivable_account_PUBLIC_KEY_NUM_BYTES"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/solana_derivable_account.html#0x1_solana_derivable_account_PUBLIC_KEY_NUM_BYTES">PUBLIC_KEY_NUM_BYTES</a>: u64 = 32;
 </code></pre>
@@ -76313,7 +76643,7 @@ the raw bytes version to do signature verification.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-102"><a class="header" href="#specification-102">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-103"><a class="header" href="#specification-103">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-to_public_key_bytes-1"><a class="header" href="#function-to_public_key_bytes-1">Function <code>to_public_key_bytes</code> <a id="@Specification_1_to_public_key_bytes"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/solana_derivable_account.html#0x1_solana_derivable_account_to_public_key_bytes">to_public_key_bytes</a>(base58_public_key: &<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 </code></pre>
@@ -77482,7 +77812,7 @@ security of the testnet. This will NOT be enabled in Mainnet.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-110"><a class="header" href="#constants-110">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-111"><a class="header" href="#constants-111">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_stake_MAX_U64"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>: u128 = 18446744073709551615;
 </code></pre>
@@ -77929,6 +78259,8 @@ Beyond genesis, no one can create AptosCoin mint/burn capabilities.</p>
             <b>invariant</b> <a href="aptos-framework/stake.html#0x1_stake_spec_validator_indices_are_valid">spec_validator_indices_are_valid</a>(pending_inactive);
             <b>invariant</b> <a href="aptos-framework/stake.html#0x1_stake_ghost_active_num">ghost_active_num</a> + <a href="aptos-framework/stake.html#0x1_stake_ghost_pending_inactive_num">ghost_pending_inactive_num</a>
                 == len(active_validators) + len(pending_inactive);
+            <b>invariant</b> len(active_validators) + len(pending_inactive)
+                == <a href="aptos-framework/stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>();
         };
         i &lt; len_validators
     }) {
@@ -79770,7 +80102,7 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 }
 </code></pre>
 </details>
-<h2 id="specification-103"><a class="header" href="#specification-103">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-104"><a class="header" href="#specification-104">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-27"><a class="header" href="#high-level-requirements-27">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -79827,6 +80159,108 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <b>global</b> <a href="aptos-framework/stake.html#0x1_stake_ghost_active_num">ghost_active_num</a>: u64;
 <a id="0x1_stake_ghost_pending_inactive_num"></a>
 <b>global</b> <a href="aptos-framework/stake.html#0x1_stake_ghost_pending_inactive_num">ghost_pending_inactive_num</a>: u64;
+</code></pre>
+<p><a id="0x1_stake_spec_validator_index_upper_bound"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>(): u64 {
+   len(<b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework).validators)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_has_stake_pool"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_has_stake_pool">spec_has_stake_pool</a>(a: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_StakePool">StakePool</a>&gt;(a)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_has_validator_config"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_has_validator_config">spec_has_validator_config</a>(a: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(a)
+}
+</code></pre>
+<p><a id="0x1_stake_spec_rewards_amount"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_rewards_amount">spec_rewards_amount</a>(
+   stake_amount: u64,
+   num_successful_proposals: u64,
+   num_total_proposals: u64,
+   rewards_rate: u64,
+   rewards_rate_denominator: u64
+): u64;
+</code></pre>
+<p><a id="0x1_stake_spec_contains"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validators: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a>&gt;, addr: <b>address</b>): bool {
+   <b>exists</b> i in 0..len(validators): validators[i].addr == addr
+}
+</code></pre>
+<p><a id="0x1_stake_spec_is_current_epoch_validator"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(pool_address: <b>address</b>): bool {
+   <b>let</b> validator_set = <b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+   !<a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
+       && (
+           <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
+               || <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address)
+       )
+}
+</code></pre>
+<p><a id="0x1_stake_ResourceRequirement"></a></p>
+<pre><code><b>schema</b> <a href="aptos-framework/stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a> {
+    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_AptosCoinCapabilities">AptosCoinCapabilities</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;StakingConfig&gt;(@aptos_framework);
+    <b>requires</b> <b>exists</b>&lt;StakingRewardsConfig&gt;(@aptos_framework)
+        || !<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+}
+</code></pre>
+<p><a id="0x1_stake_spec_get_reward_rate_1"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_get_reward_rate_1">spec_get_reward_rate_1</a>(config: StakingConfig): num {
+   <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
+       <b>let</b> epoch_rewards_rate =
+           <b>global</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
+       <b>if</b> (epoch_rewards_rate.value == 0) { 0 }
+       <b>else</b> {
+           <b>let</b> denominator_0 =
+               aptos_std::fixed_point64::spec_divide_u128(
+                   <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
+               );
+           <b>let</b> denominator =
+               <b>if</b> (denominator_0 &gt; <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
+                   <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>
+               } <b>else</b> {
+                   denominator_0
+               };
+           <b>let</b> nominator =
+               aptos_std::fixed_point64::spec_multiply_u128(
+                   denominator, epoch_rewards_rate
+               );
+           nominator
+       }
+   } <b>else</b> {
+       config.rewards_rate
+   }
+}
+</code></pre>
+<p><a id="0x1_stake_spec_get_reward_rate_2"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_get_reward_rate_2">spec_get_reward_rate_2</a>(config: StakingConfig): num {
+   <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
+       <b>let</b> epoch_rewards_rate =
+           <b>global</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
+       <b>if</b> (epoch_rewards_rate.value == 0) { 1 }
+       <b>else</b> {
+           <b>let</b> denominator_0 =
+               aptos_std::fixed_point64::spec_divide_u128(
+                   <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
+               );
+           <b>let</b> denominator =
+               <b>if</b> (denominator_0 &gt; <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
+                   <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>
+               } <b>else</b> {
+                   denominator_0
+               };
+           denominator
+       }
+   } <b>else</b> {
+       config.rewards_rate_denominator
+   }
+}
 </code></pre>
 <h3 id="resource-validatorset-1"><a class="header" href="#resource-validatorset-1">Resource <code>ValidatorSet</code> <a id="@Specification_1_ValidatorSet"></a></a></h3>
 <pre><code><b>struct</b> <a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a> <b>has</b> <b>copy</b>, drop, store, key
@@ -80536,108 +80970,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
        == <a href="aptos-framework/stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>()
 }
 </code></pre>
-<p><a id="0x1_stake_spec_validator_index_upper_bound"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_validator_index_upper_bound">spec_validator_index_upper_bound</a>(): u64 {
-   len(<b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework).validators)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_has_stake_pool"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_has_stake_pool">spec_has_stake_pool</a>(a: <b>address</b>): bool {
-   <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_StakePool">StakePool</a>&gt;(a)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_has_validator_config"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_has_validator_config">spec_has_validator_config</a>(a: <b>address</b>): bool {
-   <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(a)
-}
-</code></pre>
-<p><a id="0x1_stake_spec_rewards_amount"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_rewards_amount">spec_rewards_amount</a>(
-   stake_amount: u64,
-   num_successful_proposals: u64,
-   num_total_proposals: u64,
-   rewards_rate: u64,
-   rewards_rate_denominator: u64
-): u64;
-</code></pre>
-<p><a id="0x1_stake_spec_contains"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validators: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a>&gt;, addr: <b>address</b>): bool {
-   <b>exists</b> i in 0..len(validators): validators[i].addr == addr
-}
-</code></pre>
-<p><a id="0x1_stake_spec_is_current_epoch_validator"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(pool_address: <b>address</b>): bool {
-   <b>let</b> validator_set = <b>global</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
-   !<a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
-       && (
-           <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
-               || <a href="aptos-framework/stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address)
-       )
-}
-</code></pre>
-<p><a id="0x1_stake_ResourceRequirement"></a></p>
-<pre><code><b>schema</b> <a href="aptos-framework/stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a> {
-    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_AptosCoinCapabilities">AptosCoinCapabilities</a>&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">ValidatorPerformance</a>&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;StakingConfig&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;StakingRewardsConfig&gt;(@aptos_framework)
-        || !<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
-    <b>requires</b> <b>exists</b>&lt;<a href="aptos-framework/timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
-}
-</code></pre>
-<p><a id="0x1_stake_spec_get_reward_rate_1"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_get_reward_rate_1">spec_get_reward_rate_1</a>(config: StakingConfig): num {
-   <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
-       <b>let</b> epoch_rewards_rate =
-           <b>global</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
-       <b>if</b> (epoch_rewards_rate.value == 0) { 0 }
-       <b>else</b> {
-           <b>let</b> denominator_0 =
-               aptos_std::fixed_point64::spec_divide_u128(
-                   <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
-               );
-           <b>let</b> denominator =
-               <b>if</b> (denominator_0 &gt; <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
-                   <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>
-               } <b>else</b> {
-                   denominator_0
-               };
-           <b>let</b> nominator =
-               aptos_std::fixed_point64::spec_multiply_u128(
-                   denominator, epoch_rewards_rate
-               );
-           nominator
-       }
-   } <b>else</b> {
-       config.rewards_rate
-   }
-}
-</code></pre>
-<p><a id="0x1_stake_spec_get_reward_rate_2"></a></p>
-<pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_spec_get_reward_rate_2">spec_get_reward_rate_2</a>(config: StakingConfig): num {
-   <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>()) {
-       <b>let</b> epoch_rewards_rate =
-           <b>global</b>&lt;<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
-       <b>if</b> (epoch_rewards_rate.value == 0) { 1 }
-       <b>else</b> {
-           <b>let</b> denominator_0 =
-               aptos_std::fixed_point64::spec_divide_u128(
-                   <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_REWARDS_RATE">staking_config::MAX_REWARDS_RATE</a>, epoch_rewards_rate
-               );
-           <b>let</b> denominator =
-               <b>if</b> (denominator_0 &gt; <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>) {
-                   <a href="aptos-framework/stake.html#0x1_stake_MAX_U64">MAX_U64</a>
-               } <b>else</b> {
-                   denominator_0
-               };
-           denominator
-       }
-   } <b>else</b> {
-       config.rewards_rate_denominator
-   }
-}
-</code></pre>
 <h3 id="function-update_stake_pool-1"><a class="header" href="#function-update_stake_pool-1">Function <code>update_stake_pool</code> <a id="@Specification_1_update_stake_pool"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/stake.html#0x1_stake_update_stake_pool">update_stake_pool</a>(validator_perf: &<a href="aptos-framework/stake.html#0x1_stake_ValidatorPerformance">stake::ValidatorPerformance</a>, pool_address: <b>address</b>, <a href="aptos-framework/staking_config.html#0x1_staking_config">staking_config</a>: &<a href="aptos-framework/staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>)
 </code></pre>
@@ -81020,7 +81352,7 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 </dd>
 </dl>
 </details>
-<h2 id="constants-111"><a class="header" href="#constants-111">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-112"><a class="header" href="#constants-112">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_staking_config_MAX_U64"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/staking_config.html#0x1_staking_config_MAX_U64">MAX_U64</a>: u128 = 18446744073709551615;
 </code></pre>
@@ -81495,7 +81827,7 @@ Can only be called as part of the Aptos governance proposal process established 
 }
 </code></pre>
 </details>
-<h2 id="specification-104"><a class="header" href="#specification-104">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-105"><a class="header" href="#specification-105">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-28"><a class="header" href="#high-level-requirements-28">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -82733,7 +83065,7 @@ pool.</li>
 </dd>
 </dl>
 </details>
-<h2 id="constants-112"><a class="header" href="#constants-112">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-113"><a class="header" href="#constants-113">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_staking_contract_EINVALID_COMMISSION_PERCENTAGE"></a></p>
 <p>Commission percentage has to be between 0 and 100.</p>
 <pre><code><b>const</b> <a href="aptos-framework/staking_contract.html#0x1_staking_contract_EINVALID_COMMISSION_PERCENTAGE">EINVALID_COMMISSION_PERCENTAGE</a>: u64 = 2;
@@ -83774,7 +84106,7 @@ not need to be restricted to just the staker or operator.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-105"><a class="header" href="#specification-105">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-106"><a class="header" href="#specification-106">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-29"><a class="header" href="#high-level-requirements-29">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -84255,7 +84587,7 @@ The guid_creation_num of the account resource is up to MAX_U64.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-113"><a class="header" href="#constants-113">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-114"><a class="header" href="#constants-114">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_staking_proxy_EPERMISSIONED_SIGNER_REMOVED"></a></p>
 <p>The permissioned signer feature has been removed.</p>
 <pre><code><b>const</b> <a href="aptos-framework/staking_proxy.html#0x1_staking_proxy_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 29;
@@ -84382,7 +84714,7 @@ The guid_creation_num of the account resource is up to MAX_U64.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-106"><a class="header" href="#specification-106">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-107"><a class="header" href="#specification-107">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-30"><a class="header" href="#high-level-requirements-30">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -84441,7 +84773,8 @@ The guid_creation_num of the account resource is up to MAX_U64.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos-framework/staking_proxy.html#0x1_staking_proxy_set_voter">set_voter</a>(owner: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
 </code></pre>
 <p>Aborts if conditions of SetStackingContractVoter and SetStackPoolVoterAbortsIf are not met</p>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>pragma</b> aborts_if_is_partial;
 <b>include</b> <a href="aptos-framework/staking_proxy.html#0x1_staking_proxy_SetStakingContractVoter">SetStakingContractVoter</a>;
 <b>include</b> <a href="aptos-framework/staking_proxy.html#0x1_staking_proxy_SetStakePoolVoterAbortsIf">SetStakePoolVoterAbortsIf</a>;
 </code></pre>
@@ -84628,7 +84961,7 @@ usage after the last txn of the previous epoch is committed.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-114"><a class="header" href="#constants-114">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-115"><a class="header" href="#constants-115">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_state_storage_ESTATE_STORAGE_USAGE"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/state_storage.html#0x1_state_storage_ESTATE_STORAGE_USAGE">ESTATE_STORAGE_USAGE</a>: u64 = 0;
 </code></pre>
@@ -84708,7 +85041,7 @@ guarantees a fresh state view then.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-107"><a class="header" href="#specification-107">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-108"><a class="header" href="#specification-108">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-31"><a class="header" href="#high-level-requirements-31">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -85176,7 +85509,7 @@ them.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-115"><a class="header" href="#constants-115">Constants <a id="@Constants_12"></a></a></h2>
+<h2 id="constants-116"><a class="header" href="#constants-116">Constants <a id="@Constants_12"></a></a></h2>
 <p><a id="0x1_storage_gas_MAX_U64"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/storage_gas.html#0x1_storage_gas_MAX_U64">MAX_U64</a>: u64 = 18446744073709551615;
 </code></pre>
@@ -85552,7 +85885,7 @@ target utilization.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-108"><a class="header" href="#specification-108">Specification <a id="@Specification_16"></a></a></h2>
+<h2 id="specification-109"><a class="header" href="#specification-109">Specification <a id="@Specification_16"></a></a></h2>
 <h3 id="struct-point-1"><a class="header" href="#struct-point-1">Struct <code>Point</code> <a id="@Specification_16_Point"></a></a></h3>
 <pre><code><b>struct</b> <a href="aptos-framework/storage_gas.html#0x1_storage_gas_Point">Point</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
@@ -85836,7 +86169,7 @@ and exists after the function is executed.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-116"><a class="header" href="#constants-116">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-117"><a class="header" href="#constants-117">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_storage_slot_ESTORAGE_SLOT_NATIVES_NOT_ENABLED"></a></p>
 <p>Storage slot natives are not enabled.</p>
 <pre><code><b>const</b> <a href="aptos-framework/storage_slot.html#0x1_storage_slot_ESTORAGE_SLOT_NATIVES_NOT_ENABLED">ESTORAGE_SLOT_NATIVES_NOT_ENABLED</a>: u64 = 1;
@@ -85918,7 +86251,7 @@ Emitted by native functions.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-109"><a class="header" href="#specification-109">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-110"><a class="header" href="#specification-110">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-new-27"><a class="header" href="#function-new-27">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>
@@ -86020,7 +86353,7 @@ Emitted by native functions.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-117"><a class="header" href="#constants-117">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-118"><a class="header" href="#constants-118">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_storage_slot_or_inline_ESTORAGE_SLOT_INCORRECTLY_IN_TRANSIENT_STATE"></a></p>
 <p>StorageSlotOrInline found in inconsistent (transient) state, should never happen.</p>
 <pre><code><b>const</b> <a href="aptos-framework/storage_slot_or_inline.html#0x1_storage_slot_or_inline_ESTORAGE_SLOT_INCORRECTLY_IN_TRANSIENT_STATE">ESTORAGE_SLOT_INCORRECTLY_IN_TRANSIENT_STATE</a>: u64 = 1;
@@ -86121,7 +86454,7 @@ Emitted by native functions.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-110"><a class="header" href="#specification-110">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-111"><a class="header" href="#specification-111">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x1sui_derivable_account"><a class="header" href="#module-0x1sui_derivable_account">Module <code>0x1::sui_derivable_account</code> <a id="0x1_sui_derivable_account"></a></a></h1>
@@ -86391,7 +86724,7 @@ https://github.com/MystenLabs/sui/blob/main/crates/shared-crypto/src/intent.rs#L
 </details>
 </details>
 </details>
-<h2 id="constants-118"><a class="header" href="#constants-118">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-119"><a class="header" href="#constants-119">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_sui_derivable_account_EMALFORMED_DATA"></a></p>
 <p>Malformed data with trailing bytes.</p>
 <pre><code><b>const</b> <a href="aptos-framework/sui_derivable_account.html#0x1_sui_derivable_account_EMALFORMED_DATA">EMALFORMED_DATA</a>: u64 = 8;
@@ -86625,7 +86958,7 @@ to a tuple of (signing_scheme, signature, public_key)</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-111"><a class="header" href="#specification-111">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-112"><a class="header" href="#specification-112">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-derive_account_address_from_public_key-1"><a class="header" href="#function-derive_account_address_from_public_key-1">Function <code>derive_account_address_from_public_key</code> <a id="@Specification_1_derive_account_address_from_public_key"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/sui_derivable_account.html#0x1_sui_derivable_account_derive_account_address_from_public_key">derive_account_address_from_public_key</a>(signing_scheme: u8, public_key_bytes: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 </code></pre>
@@ -86683,7 +87016,7 @@ to a tuple of (signing_scheme, signature, public_key)</p>
 <pre><code><b>use</b> <a href="aptos-framework/../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 </code></pre>
-<h2 id="constants-119"><a class="header" href="#constants-119">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-120"><a class="header" href="#constants-120">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_system_addresses_ENOT_APTOS_FRAMEWORK_ADDRESS"></a></p>
 <p>The address/account did not correspond to the core framework address</p>
 <pre><code><b>const</b> <a href="aptos-framework/system_addresses.html#0x1_system_addresses_ENOT_APTOS_FRAMEWORK_ADDRESS">ENOT_APTOS_FRAMEWORK_ADDRESS</a>: u64 = 3;
@@ -86841,7 +87174,7 @@ to a tuple of (signing_scheme, signature, public_key)</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-112"><a class="header" href="#specification-112">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-113"><a class="header" href="#specification-113">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-33"><a class="header" href="#high-level-requirements-33">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -87013,7 +87346,7 @@ It interacts with the other modules in the following ways:</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-120"><a class="header" href="#constants-120">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-121"><a class="header" href="#constants-121">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_timestamp_ENOT_OPERATING"></a></p>
 <p>The blockchain is not in an operating state yet</p>
 <pre><code><b>const</b> <a href="aptos-framework/timestamp.html#0x1_timestamp_ENOT_OPERATING">ENOT_OPERATING</a>: u64 = 1;
@@ -87090,7 +87423,7 @@ It interacts with the other modules in the following ways:</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-113"><a class="header" href="#specification-113">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-114"><a class="header" href="#specification-114">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-34"><a class="header" href="#high-level-requirements-34">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -87328,7 +87661,7 @@ for storing an address</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-121"><a class="header" href="#constants-121">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-122"><a class="header" href="#constants-122">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_transaction_context_EMONOTONICALLY_INCREASING_COUNTER_OVERFLOW"></a></p>
 <p>The monotonically increasing counter has overflowed (too many calls in a single session).</p>
 <pre><code><b>const</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_EMONOTONICALLY_INCREASING_COUNTER_OVERFLOW">EMONOTONICALLY_INCREASING_COUNTER_OVERFLOW</a>: u64 = 4;
@@ -87742,7 +88075,7 @@ the monotonically increasing behavior.</p>
 <pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only">monotonically_increasing_counter_internal_for_test_only</a>(): u128;
 </code></pre>
 </details>
-<h2 id="specification-114"><a class="header" href="#specification-114">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-115"><a class="header" href="#specification-115">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-get_txn_hash-1"><a class="header" href="#function-get_txn_hash-1">Function <code>get_txn_hash</code> <a id="@Specification_1_get_txn_hash"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_get_txn_hash">get_txn_hash</a>(): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 </code></pre>
@@ -88093,7 +88426,7 @@ collected when executing the block.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-122"><a class="header" href="#constants-122">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-123"><a class="header" href="#constants-123">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_transaction_fee_EALREADY_COLLECTING_FEES"></a></p>
 <p>Gas fees are already being collected and the struct holding
 information about collected amounts is already published.</p>
@@ -88267,7 +88600,7 @@ touching the legacy coin supply aggregator. Gated by the aptos_framework signer 
 }
 </code></pre>
 </details>
-<h2 id="specification-115"><a class="header" href="#specification-115">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-116"><a class="header" href="#specification-116">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-36"><a class="header" href="#high-level-requirements-36">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -88612,7 +88945,7 @@ the proof that the sender has enough stake.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-123"><a class="header" href="#constants-123">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-124"><a class="header" href="#constants-124">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_transaction_limits_ENOT_DELEGATED_VOTER"></a></p>
 <p>Fee payer is not the delegated voter of the specified stake pool.</p>
 <pre><code><b>const</b> <a href="aptos-framework/transaction_limits.html#0x1_transaction_limits_ENOT_DELEGATED_VOTER">ENOT_DELEGATED_VOTER</a>: u64 = 3;
@@ -88922,7 +89255,7 @@ for the requested limit multipliers.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-116"><a class="header" href="#specification-116">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-117"><a class="header" href="#specification-117">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x1transaction_validation"><a class="header" href="#module-0x1transaction_validation">Module <code>0x1::transaction_validation</code> <a id="0x1_transaction_validation"></a></a></h1>
@@ -89227,7 +89560,7 @@ against the framework version that shipped them and are not reached from this co
 </details>
 </details>
 </details>
-<h2 id="constants-124"><a class="header" href="#constants-124">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-125"><a class="header" href="#constants-125">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_transaction_validation_MAX_U64"></a></p>
 <p>MSB is used to indicate a gas payer tx</p>
 <pre><code><b>const</b> <a href="aptos-framework/transaction_validation.html#0x1_transaction_validation_MAX_U64">MAX_U64</a>: u128 = 18446744073709551615;
@@ -90271,7 +90604,7 @@ Called by the Adapter</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-117"><a class="header" href="#specification-117">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-118"><a class="header" href="#specification-118">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-37"><a class="header" href="#high-level-requirements-37">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -90596,7 +90929,7 @@ owned.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-118"><a class="header" href="#specification-118">Specification <a id="@Specification_0"></a></a></h2>
+<h2 id="specification-119"><a class="header" href="#specification-119">Specification <a id="@Specification_0"></a></a></h2>
 <h3 id="function-from_bytes-3"><a class="header" href="#function-from_bytes-3">Function <code>from_bytes</code> <a id="@Specification_0_from_bytes"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/util.html#0x1_util_from_bytes">from_bytes</a>&lt;T&gt;(bytes: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): T
 </code></pre>
@@ -90726,7 +91059,7 @@ owned.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-119"><a class="header" href="#specification-119">Specification <a id="@Specification_0"></a></a></h2>
+<h2 id="specification-120"><a class="header" href="#specification-120">Specification <a id="@Specification_0"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x1version"><a class="header" href="#module-0x1version">Module <code>0x1::version</code> <a id="0x1_version"></a></a></h1>
@@ -90785,7 +91118,7 @@ owned.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-125"><a class="header" href="#constants-125">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-126"><a class="header" href="#constants-126">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_version_EINVALID_MAJOR_VERSION_NUMBER"></a></p>
 <p>Specified major version number must be greater than current version number.</p>
 <pre><code><b>const</b> <a href="aptos-framework/version.html#0x1_version_EINVALID_MAJOR_VERSION_NUMBER">EINVALID_MAJOR_VERSION_NUMBER</a>: u64 = 1;
@@ -90885,7 +91218,7 @@ to update the version.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-120"><a class="header" href="#specification-120">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-121"><a class="header" href="#specification-121">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-39"><a class="header" href="#high-level-requirements-39">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -91956,7 +92289,7 @@ withdrawable, admin can call admin_withdraw to withdraw all funds to the vesting
 </dd>
 </dl>
 </details>
-<h2 id="constants-126"><a class="header" href="#constants-126">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-127"><a class="header" href="#constants-127">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_vesting_EPERMISSIONED_SIGNER_REMOVED"></a></p>
 <p>The permissioned signer feature has been removed.</p>
 <pre><code><b>const</b> <a href="aptos-framework/vesting.html#0x1_vesting_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 18;
@@ -93053,7 +93386,7 @@ This address should be deterministic for the same admin and vesting contract cre
 }
 </code></pre>
 </details>
-<h2 id="specification-121"><a class="header" href="#specification-121">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-122"><a class="header" href="#specification-122">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-40"><a class="header" href="#high-level-requirements-40">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -94076,7 +94409,7 @@ the resolution process.</li>
 </dd>
 </dl>
 </details>
-<h2 id="constants-127"><a class="header" href="#constants-127">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-128"><a class="header" href="#constants-128">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x1_voting_EPERMISSIONED_SIGNER_REMOVED"></a></p>
 <p>The permissioned signer feature has been removed.</p>
 <pre><code><b>const</b> <a href="aptos-framework/voting.html#0x1_voting_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 14;
@@ -94818,7 +95151,7 @@ there are more yes votes than no. If either of these conditions is not met, this
 }
 </code></pre>
 </details>
-<h2 id="specification-122"><a class="header" href="#specification-122">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-123"><a class="header" href="#specification-123">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="high-level-requirements-41"><a class="header" href="#high-level-requirements-41">High-level Requirements <a id="high-level-req"></a></a></h3>
 <table>
 <tr>
@@ -94990,7 +95323,8 @@ there are more yes votes than no. If either of these conditions is not met, this
 <h3 id="function-resolve_proposal_v2-1"><a class="header" href="#function-resolve_proposal_v2-1">Function <code>resolve_proposal_v2</code> <a id="@Specification_1_resolve_proposal_v2"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/voting.html#0x1_voting_resolve_proposal_v2">resolve_proposal_v2</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64, next_execution_hash: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>requires</b> <a href="aptos-framework/chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>requires</b> <a href="aptos-framework/chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
 <b>include</b> <a href="aptos-framework/voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
 <b>let</b> voting_forum = <b>global</b>&lt;<a href="aptos-framework/voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
 <b>let</b> proposal = <a href="aptos-framework/../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
@@ -95410,7 +95744,7 @@ The key features are:</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-128"><a class="header" href="#constants-128">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-129"><a class="header" href="#constants-129">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x4_aptos_token_ECOLLECTION_DOES_NOT_EXIST"></a></p>
 <p>The collection does not exist</p>
 <pre><code><b>const</b> <a href="aptos-token-objects/aptos_token.html#0x4_aptos_token_ECOLLECTION_DOES_NOT_EXIST">ECOLLECTION_DOES_NOT_EXIST</a>: u64 = 1;
@@ -96713,7 +97047,7 @@ If max_value is not set to U64_MAX, this ensures that a limited number of tokens
 </dd>
 </dl>
 </details>
-<h2 id="constants-129"><a class="header" href="#constants-129">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-130"><a class="header" href="#constants-130">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x4_collection_MAX_U64"></a></p>
 <pre><code><b>const</b> <a href="aptos-token-objects/collection.html#0x4_collection_MAX_U64">MAX_U64</a>: u64 = 18446744073709551615;
 </code></pre>
@@ -97396,7 +97730,7 @@ Once the collection has been created, the collection address should be saved for
 }
 </code></pre>
 </details>
-<h2 id="specification-123"><a class="header" href="#specification-123">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-124"><a class="header" href="#specification-124">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-increment_supply-1"><a class="header" href="#function-increment_supply-1">Function <code>increment_supply</code> <a id="@Specification_1_increment_supply"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-token-objects/collection.html#0x4_collection_increment_supply">increment_supply</a>(<a href="aptos-token-objects/collection.html#0x4_collection">collection</a>: &<a href="aptos-token-objects/../aptos-framework/object.html#0x1_object_Object">object::Object</a>&lt;<a href="aptos-token-objects/collection.html#0x4_collection_Collection">collection::Collection</a>&gt;, <a href="aptos-token-objects/token.html#0x4_token">token</a>: <b>address</b>): <a href="aptos-token-objects/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-token-objects/../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;&gt;
 </code></pre>
@@ -97519,7 +97853,7 @@ should keep track of what keys are what types, and parse them accordingly.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-130"><a class="header" href="#constants-130">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-131"><a class="header" href="#constants-131">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x4_property_map_ETYPE_MISMATCH"></a></p>
 <p>Property value does not match expected type</p>
 <pre><code><b>const</b> <a href="aptos-token-objects/property_map.html#0x4_property_map_ETYPE_MISMATCH">ETYPE_MISMATCH</a>: u64 = 6;
@@ -97591,11 +97925,11 @@ should keep track of what keys are what types, and parse them accordingly.</p>
 <pre><code><b>const</b> <a href="aptos-token-objects/property_map.html#0x4_property_map_U8">U8</a>: u8 = 1;
 </code></pre>
 <h2 id="function-init"><a class="header" href="#function-init">Function <code>init</code> <a id="0x4_property_map_init"></a></a></h2>
-<pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/property_map.html#0x4_property_map_init">init</a>(ref: &<a href="aptos-token-objects/../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, container: <a href="aptos-token-objects/property_map.html#0x4_property_map_PropertyMap">property_map::PropertyMap</a>)
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/../aptos-framework/init.html#0x1_init">init</a>(ref: &<a href="aptos-token-objects/../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, container: <a href="aptos-token-objects/property_map.html#0x4_property_map_PropertyMap">property_map::PropertyMap</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/property_map.html#0x4_property_map_init">init</a>(ref: &ConstructorRef, container: <a href="aptos-token-objects/property_map.html#0x4_property_map_PropertyMap">PropertyMap</a>) {
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/../aptos-framework/init.html#0x1_init">init</a>(ref: &ConstructorRef, container: <a href="aptos-token-objects/property_map.html#0x4_property_map_PropertyMap">PropertyMap</a>) {
     <b>let</b> <a href="aptos-token-objects/../move-stdlib/signer.html#0x1_signer">signer</a> = ref.generate_signer();
     <b>move_to</b>(&<a href="aptos-token-objects/../move-stdlib/signer.html#0x1_signer">signer</a>, container);
 }
@@ -98140,7 +98474,7 @@ by (numerator / denominator) * 100%</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-131"><a class="header" href="#constants-131">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-132"><a class="header" href="#constants-132">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x4_royalty_EROYALTY_DENOMINATOR_IS_ZERO"></a></p>
 <p>The royalty denominator cannot be 0</p>
 <pre><code><b>const</b> <a href="aptos-token-objects/royalty.html#0x4_royalty_EROYALTY_DENOMINATOR_IS_ZERO">EROYALTY_DENOMINATOR_IS_ZERO</a>: u64 = 3;
@@ -98155,11 +98489,11 @@ by (numerator / denominator) * 100%</p>
 </code></pre>
 <h2 id="function-init-1"><a class="header" href="#function-init-1">Function <code>init</code> <a id="0x4_royalty_init"></a></a></h2>
 <p>Add a royalty, given a ConstructorRef.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/royalty.html#0x4_royalty_init">init</a>(ref: &<a href="aptos-token-objects/../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, <a href="aptos-token-objects/royalty.html#0x4_royalty">royalty</a>: <a href="aptos-token-objects/royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>)
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/../aptos-framework/init.html#0x1_init">init</a>(ref: &<a href="aptos-token-objects/../aptos-framework/object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, <a href="aptos-token-objects/royalty.html#0x4_royalty">royalty</a>: <a href="aptos-token-objects/royalty.html#0x4_royalty_Royalty">royalty::Royalty</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/royalty.html#0x4_royalty_init">init</a>(ref: &ConstructorRef, <a href="aptos-token-objects/royalty.html#0x4_royalty">royalty</a>: <a href="aptos-token-objects/royalty.html#0x4_royalty_Royalty">Royalty</a>) {
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-token-objects/../aptos-framework/init.html#0x1_init">init</a>(ref: &ConstructorRef, <a href="aptos-token-objects/royalty.html#0x4_royalty">royalty</a>: <a href="aptos-token-objects/royalty.html#0x4_royalty_Royalty">Royalty</a>) {
     <b>let</b> <a href="aptos-token-objects/../move-stdlib/signer.html#0x1_signer">signer</a> = ref.generate_signer();
     <b>move_to</b>(&<a href="aptos-token-objects/../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="aptos-token-objects/royalty.html#0x4_royalty">royalty</a>);
 }
@@ -98524,7 +98858,7 @@ directly understand the behavior in a writeset.</p>
 </dd>
 </dl>
 </details>
-<h2 id="constants-132"><a class="header" href="#constants-132">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-133"><a class="header" href="#constants-133">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x4_token_EURI_TOO_LONG"></a></p>
 <p>The URI is over the maximum length</p>
 <pre><code><b>const</b> <a href="aptos-token-objects/token.html#0x4_token_EURI_TOO_LONG">EURI_TOO_LONG</a>: u64 = 5;
@@ -100474,7 +100808,7 @@ while preserving the order ID for potential reuse.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-133"><a class="header" href="#constants-133">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-134"><a class="header" href="#constants-134">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x5_order_book_types_BULK_ORDER_TYPE"></a></p>
 <pre><code><b>const</b> <a href="aptos-trading/order_book_types.html#0x5_order_book_types_BULK_ORDER_TYPE">BULK_ORDER_TYPE</a>: u16 = 1;
 </code></pre>
@@ -100924,7 +101258,7 @@ particular match operation.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-134"><a class="header" href="#constants-134">Constants <a id="@Constants_2"></a></a></h2>
+<h2 id="constants-135"><a class="header" href="#constants-135">Constants <a id="@Constants_2"></a></a></h2>
 <p><a id="0x5_order_match_types_E_REINSERT_ORDER_MISMATCH"></a></p>
 <pre><code><b>const</b> <a href="aptos-trading/order_match_types.html#0x5_order_match_types_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>: u64 = 8;
 </code></pre>
@@ -101532,7 +101866,7 @@ particular match operation.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-135"><a class="header" href="#constants-135">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-136"><a class="header" href="#constants-136">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x5_single_order_types_EINVALID_ORDER_SIZE_DECREASE"></a></p>
 <pre><code><b>const</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_EINVALID_ORDER_SIZE_DECREASE">EINVALID_ORDER_SIZE_DECREASE</a>: u64 = 1;
 </code></pre>
@@ -101957,7 +102291,7 @@ particular match operation.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-124"><a class="header" href="#specification-124">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-125"><a class="header" href="#specification-125">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-increase_remaining_size_from_state-1"><a class="header" href="#function-increase_remaining_size_from_state-1">Function <code>increase_remaining_size_from_state</code> <a id="@Specification_1_increase_remaining_size_from_state"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_increase_remaining_size_from_state">increase_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, size: u64)
 </code></pre>
@@ -102224,7 +102558,7 @@ sophisticated order matching, cancellation, and reinsertion capabilities.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-136"><a class="header" href="#constants-136">Constants <a id="@Constants_8"></a></a></h2>
+<h2 id="constants-137"><a class="header" href="#constants-137">Constants <a id="@Constants_8"></a></a></h2>
 <p><a id="0x7_bulk_order_book_E_REINSERT_ORDER_MISMATCH"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/bulk_order_book.html#0x7_bulk_order_book_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>: u64 = 8;
 </code></pre>
@@ -102779,7 +103113,7 @@ The first price levels of both bid and ask sides will be activated in the active
 <b>use</b> <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
 <b>use</b> <a href="aptos-experimental/../aptos-trading/order_match_types.html#0x5_order_match_types">0x5::order_match_types</a>;
 </code></pre>
-<h2 id="constants-137"><a class="header" href="#constants-137">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-138"><a class="header" href="#constants-138">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_bulk_order_utils_EPRICE_CROSSING"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/bulk_order_utils.html#0x7_bulk_order_utils_EPRICE_CROSSING">EPRICE_CROSSING</a>: u64 = 1;
 </code></pre>
@@ -103184,7 +103518,7 @@ It includes functions for cleaning up expired orders based on keep-alive timeout
 <b>use</b> <a href="aptos-experimental/order_book.html#0x7_order_book">0x7::order_book</a>;
 <b>use</b> <a href="aptos-experimental/order_operations.html#0x7_order_operations">0x7::order_operations</a>;
 </code></pre>
-<h2 id="constants-138"><a class="header" href="#constants-138">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-139"><a class="header" href="#constants-139">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_dead_mans_switch_operations_E_DEAD_MANS_SWITCH_NOT_ENABLED"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/dead_mans_switch_operations.html#0x7_dead_mans_switch_operations_E_DEAD_MANS_SWITCH_NOT_ENABLED">E_DEAD_MANS_SWITCH_NOT_ENABLED</a>: u64 = 0;
 </code></pre>
@@ -103660,7 +103994,7 @@ enum <a href="aptos-experimental/dead_mans_switch_tracker.html#0x7_dead_mans_swi
 </dd>
 </dl>
 </details>
-<h2 id="constants-139"><a class="header" href="#constants-139">Constants <a id="@Constants_7"></a></a></h2>
+<h2 id="constants-140"><a class="header" href="#constants-140">Constants <a id="@Constants_7"></a></a></h2>
 <p><a id="0x7_dead_mans_switch_tracker_E_KEEP_ALIVE_TIMEOUT_TOO_SHORT"></a></p>
 <p>Error code when the provided keep-alive timeout is shorter than the minimum allowed</p>
 <pre><code><b>const</b> <a href="aptos-experimental/dead_mans_switch_tracker.html#0x7_dead_mans_switch_tracker_E_KEEP_ALIVE_TIMEOUT_TOO_SHORT">E_KEEP_ALIVE_TIMEOUT_TOO_SHORT</a>: u64 = 0;
@@ -104016,7 +104350,7 @@ from <code>code_indices</code>, and <code>assemble_module_code</code> will looku
 </dd>
 </dl>
 </details>
-<h2 id="constants-140"><a class="header" href="#constants-140">Constants <a id="@Constants_3"></a></a></h2>
+<h2 id="constants-141"><a class="header" href="#constants-141">Constants <a id="@Constants_3"></a></a></h2>
 <p><a id="0x7_large_packages_ECODE_MISMATCH"></a></p>
 <p>code_indices and code_chunks should be the same length.</p>
 <pre><code><b>const</b> <a href="aptos-experimental/large_packages.html#0x7_large_packages_ECODE_MISMATCH">ECODE_MISMATCH</a>: u64 = 1;
@@ -104265,7 +104599,7 @@ in a single transaction, improving efficiency for market makers.</p>
 <b>use</b> <a href="aptos-experimental/market_types.html#0x7_market_types">0x7::market_types</a>;
 <b>use</b> <a href="aptos-experimental/order_book.html#0x7_order_book">0x7::order_book</a>;
 </code></pre>
-<h2 id="constants-141"><a class="header" href="#constants-141">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-142"><a class="header" href="#constants-142">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_market_bulk_order_E_CLEARINGHOUSE_VALIDATION_FAILED"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/market_bulk_order.html#0x7_market_bulk_order_E_CLEARINGHOUSE_VALIDATION_FAILED">E_CLEARINGHOUSE_VALIDATION_FAILED</a>: u64 = 1;
 </code></pre>
@@ -105653,7 +105987,7 @@ enum <a href="aptos-experimental/market_types.html#0x7_market_types_BulkOrderRej
 </details>
 </details>
 </details>
-<h2 id="constants-142"><a class="header" href="#constants-142">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-143"><a class="header" href="#constants-143">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_market_types_EINVALID_TIME_IN_FORCE"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/market_types.html#0x7_market_types_EINVALID_TIME_IN_FORCE">EINVALID_TIME_IN_FORCE</a>: u64 = 3;
 </code></pre>
@@ -107244,7 +107578,7 @@ is precision-agnostic.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-143"><a class="header" href="#constants-143">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-144"><a class="header" href="#constants-144">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_order_book_E_REINSERT_ORDER_MISMATCH"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/order_book.html#0x7_order_book_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>: u64 = 8;
 </code></pre>
@@ -107608,7 +107942,7 @@ is precision-agnostic.</p>
 </ul>
 <pre><code><b>use</b> <a href="aptos-experimental/../aptos-framework/big_ordered_map.html#0x1_big_ordered_map">0x1::big_ordered_map</a>;
 </code></pre>
-<h2 id="constants-144"><a class="header" href="#constants-144">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-145"><a class="header" href="#constants-145">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_order_book_utils_BIG_MAP_INNER_DEGREE"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/order_book_utils.html#0x7_order_book_utils_BIG_MAP_INNER_DEGREE">BIG_MAP_INNER_DEGREE</a>: u16 = 64;
 </code></pre>
@@ -107720,7 +108054,7 @@ and reducing the size of existing orders.</p>
 <b>use</b> <a href="aptos-experimental/order_placement.html#0x7_order_placement">0x7::order_placement</a>;
 <b>use</b> <a href="aptos-experimental/pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">0x7::pre_cancellation_tracker</a>;
 </code></pre>
-<h2 id="constants-145"><a class="header" href="#constants-145">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-146"><a class="header" href="#constants-146">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_order_operations_EORDER_DOES_NOT_EXIST"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/order_operations.html#0x7_order_operations_EORDER_DOES_NOT_EXIST">EORDER_DOES_NOT_EXIST</a>: u64 = 6;
 </code></pre>
@@ -108140,7 +108474,7 @@ TimeBased(time): The order is triggered when the current time is greater than or
 </details>
 </details>
 </details>
-<h2 id="constants-146"><a class="header" href="#constants-146">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-147"><a class="header" href="#constants-147">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_order_placement_U64_MAX"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/order_placement.html#0x7_order_placement_U64_MAX">U64_MAX</a>: u64 = 18446744073709551615;
 </code></pre>
@@ -109864,7 +110198,7 @@ This reduces the latency to submit a cancellation transaction from 500 ms to 0.<
 </dd>
 </dl>
 </details>
-<h2 id="constants-147"><a class="header" href="#constants-147">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-148"><a class="header" href="#constants-148">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_pre_cancellation_tracker_DUPLICATE_ORDER_PLACEMENT"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/pre_cancellation_tracker.html#0x7_pre_cancellation_tracker_DUPLICATE_ORDER_PLACEMENT">DUPLICATE_ORDER_PLACEMENT</a>: u64 = 1;
 </code></pre>
@@ -110103,7 +110437,7 @@ that is taken first, is the one inserted first, amongst those with same bid pric
 </details>
 </details>
 </details>
-<h2 id="constants-148"><a class="header" href="#constants-148">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-149"><a class="header" href="#constants-149">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_price_time_index_EINTERNAL_INVARIANT_BROKEN"></a></p>
 <p>There is a code bug that breaks internal invariant</p>
 <pre><code><b>const</b> <a href="aptos-experimental/price_time_index.html#0x7_price_time_index_EINTERNAL_INVARIANT_BROKEN">EINTERNAL_INVARIANT_BROKEN</a>: u64 = 2;
@@ -110574,7 +110908,7 @@ types of pending orders are supported.</li>
 </details>
 </details>
 </details>
-<h2 id="constants-149"><a class="header" href="#constants-149">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-150"><a class="header" href="#constants-150">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_single_order_book_E_REINSERT_ORDER_MISMATCH"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/single_order_book.html#0x7_single_order_book_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>: u64 = 8;
 </code></pre>
@@ -111208,7 +111542,7 @@ account_identity is raw public_key.</p>
 <b>use</b> <a href="aptos-experimental/../move-stdlib/string.html#0x1_string">0x1::string</a>;
 <b>use</b> <a href="aptos-experimental/../aptos-stdlib/string_utils.html#0x1_string_utils">0x1::string_utils</a>;
 </code></pre>
-<h2 id="constants-150"><a class="header" href="#constants-150">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-151"><a class="header" href="#constants-151">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_test_derivable_account_abstraction_ed25519_hex_EINVALID_SIGNATURE"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/test_derivable_account_abstraction_ed25519_hex.html#0x7_test_derivable_account_abstraction_ed25519_hex_EINVALID_SIGNATURE">EINVALID_SIGNATURE</a>: u64 = 1;
 </code></pre>
@@ -111356,7 +111690,7 @@ so writes to distinct addresses don't contend under block-STM.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-151"><a class="header" href="#constants-151">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-152"><a class="header" href="#constants-152">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_trading_native_capability_EEXCHANGE_DENIED"></a></p>
 <p>This exchange address has been disabled by governance.</p>
 <pre><code><b>const</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_DENIED">EEXCHANGE_DENIED</a>: u64 = 3;
