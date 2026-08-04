@@ -206,6 +206,7 @@ fungible asset to it. This emits an deposit event.</li>
 <li><a href="#0x1_primary_fungible_store_withdraw_with_ref">Function <code>withdraw_with_ref</code></a></li>
 <li><a href="#0x1_primary_fungible_store_deposit_with_ref">Function <code>deposit_with_ref</code></a></li>
 <li><a href="#0x1_primary_fungible_store_transfer_with_ref">Function <code>transfer_with_ref</code></a></li>
+<li><a href="#0x1_primary_fungible_store_upgrade_to_concurrent">Function <code>upgrade_to_concurrent</code></a></li>
 <li><a href="#0x1_primary_fungible_store_may_be_unburn">Function <code>may_be_unburn</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
@@ -641,6 +642,17 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
     <b>let</b> from_primary_store = <a href="primary_fungible_store.html#0x1_primary_fungible_store_primary_store">primary_store</a>(from, transfer_ref.transfer_ref_metadata());
     <b>let</b> to_primary_store = <a href="primary_fungible_store.html#0x1_primary_fungible_store_ensure_primary_store_exists">ensure_primary_store_exists</a>(<b>to</b>, transfer_ref.transfer_ref_metadata());
     transfer_ref.<a href="primary_fungible_store.html#0x1_primary_fungible_store_transfer_with_ref">transfer_with_ref</a>(from_primary_store, to_primary_store, amount);
+}
+</code></pre>
+</details>
+<h2 id="function-upgrade_to_concurrent"><a class="header" href="#function-upgrade_to_concurrent">Function <code>upgrade_to_concurrent</code> <a id="0x1_primary_fungible_store_upgrade_to_concurrent"></a></a></h2>
+<pre><code><b>public</b> entry <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_upgrade_to_concurrent">upgrade_to_concurrent</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> entry <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_upgrade_to_concurrent">upgrade_to_concurrent</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata: Object&lt;Metadata&gt;) <b>acquires</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a> {
+    <b>let</b> store = <a href="primary_fungible_store.html#0x1_primary_fungible_store_ensure_primary_store_exists">ensure_primary_store_exists</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner), metadata);
+    <a href="fungible_asset.html#0x1_fungible_asset_upgrade_store_to_concurrent">fungible_asset::upgrade_store_to_concurrent</a>(owner, store);
 }
 </code></pre>
 </details>

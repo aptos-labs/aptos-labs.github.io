@@ -187,6 +187,7 @@ and is safe for non-dispatchable (aka vanilla) fungible assets as well.</p>
 <li><a href="#0x1_dispatchable_fungible_asset_transfer">Function <code>transfer</code></a></li>
 <li><a href="#0x1_dispatchable_fungible_asset_transfer_assert_minimum_deposit">Function <code>transfer_assert_minimum_deposit</code></a></li>
 <li><a href="#0x1_dispatchable_fungible_asset_derived_balance">Function <code>derived_balance</code></a></li>
+<li><a href="#0x1_dispatchable_fungible_asset_derived_balance_snapshot">Function <code>derived_balance_snapshot</code></a></li>
 <li><a href="#0x1_dispatchable_fungible_asset_is_derived_balance_at_least">Function <code>is_derived_balance_at_least</code></a></li>
 <li><a href="#0x1_dispatchable_fungible_asset_dispatched_derived_balance">Function <code>dispatched_derived_balance</code></a></li>
 <li><a href="#0x1_dispatchable_fungible_asset_derived_supply">Function <code>derived_supply</code></a></li>
@@ -214,7 +215,8 @@ and is safe for non-dispatchable (aka vanilla) fungible assets as well.</p>
 </ul>
 </li>
 </ul>
-<pre><code><b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
+<pre><code><b>use</b> <a href="aggregator_v2.html#0x1_aggregator_v2">0x1::aggregator_v2</a>;
+<b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
 <b>use</b> <a href="function_info.html#0x1_function_info">0x1::function_info</a>;
 <b>use</b> <a href="fungible_asset.html#0x1_fungible_asset">0x1::fungible_asset</a>;
@@ -408,6 +410,26 @@ Note: it does not move the underlying object.</p>
         <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatched_derived_balance">dispatched_derived_balance</a>(store, func_opt.borrow())
     } <b>else</b> {
         <a href="fungible_asset.html#0x1_fungible_asset_balance">fungible_asset::balance</a>(store)
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-derived_balance_snapshot"><a class="header" href="#function-derived_balance_snapshot">Function <code>derived_balance_snapshot</code> <a id="0x1_dispatchable_fungible_asset_derived_balance_snapshot"></a></a></h2>
+<p>Get the derived value of store using the overloaded hook, as AggregatorSnapshot.
+Allows us to obtain a balance object, without issuing a read - which would reduce parallelism,
+if the dispatchable asset doesn't have a derived balance hook. If it has a derived balance hook,
+full read is performed, without parallelism.</p>
+<p>The semantics of value will be governed by the function specified in DispatchFunctionStore.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_balance_snapshot">derived_balance_snapshot</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_balance_snapshot">derived_balance_snapshot</a>&lt;T: key&gt;(store: Object&lt;T&gt;): AggregatorSnapshot&lt;u64&gt; {
+    <b>let</b> func_opt = <a href="fungible_asset.html#0x1_fungible_asset_derived_balance_dispatch_function">fungible_asset::derived_balance_dispatch_function</a>(store);
+    <b>if</b> (func_opt.is_some()) {
+        <a href="aggregator_v2.html#0x1_aggregator_v2_create_snapshot">aggregator_v2::create_snapshot</a>(<a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_dispatched_derived_balance">dispatched_derived_balance</a>(store, func_opt.borrow()))
+    } <b>else</b> {
+        <a href="fungible_asset.html#0x1_fungible_asset_balance_snapshot">fungible_asset::balance_snapshot</a>(store)
     }
 }
 </code></pre>

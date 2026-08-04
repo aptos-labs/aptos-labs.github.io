@@ -225,6 +225,7 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_store_metadata">Function <code>store_metadata</code></a></li>
 <li><a href="#0x1_fungible_asset_balance">Function <code>balance</code></a></li>
 <li><a href="#0x1_fungible_asset_balance_impl">Function <code>balance_impl</code></a></li>
+<li><a href="#0x1_fungible_asset_balance_snapshot">Function <code>balance_snapshot</code></a></li>
 <li><a href="#0x1_fungible_asset_is_balance_at_least">Function <code>is_balance_at_least</code></a></li>
 <li><a href="#0x1_fungible_asset_is_address_balance_at_least">Function <code>is_address_balance_at_least</code></a></li>
 <li><a href="#0x1_fungible_asset_is_frozen">Function <code>is_frozen</code></a></li>
@@ -283,6 +284,7 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_borrow_fungible_metadata_mut">Function <code>borrow_fungible_metadata_mut</code></a></li>
 <li><a href="#0x1_fungible_asset_borrow_store_resource">Function <code>borrow_store_resource</code></a></li>
 <li><a href="#0x1_fungible_asset_upgrade_to_concurrent">Function <code>upgrade_to_concurrent</code></a></li>
+<li><a href="#0x1_fungible_asset_is_concurrent">Function <code>is_concurrent</code></a></li>
 <li><a href="#0x1_fungible_asset_upgrade_store_to_concurrent">Function <code>upgrade_store_to_concurrent</code></a></li>
 <li><a href="#0x1_fungible_asset_ensure_store_upgraded_to_concurrent_internal">Function <code>ensure_store_upgraded_to_concurrent_internal</code></a></li>
 <li><a href="#0x1_fungible_asset_grant_permission_by_store">Function <code>grant_permission_by_store</code></a></li>
@@ -1591,34 +1593,67 @@ Use <code>dispatchable_fungible_asset::balance</code> instead if you intend to w
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance">balance</a>&lt;T: key&gt;(
     store: Object&lt;T&gt;
-): u64 <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>, <a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a> {
-    <b>let</b> fa_store = <a href="fungible_asset.html#0x1_fungible_asset_borrow_store_resource">borrow_store_resource</a>(&store);
-    <b>assert</b>!(
-        !<a href="fungible_asset.html#0x1_fungible_asset_has_balance_dispatch_function">has_balance_dispatch_function</a>(fa_store.metadata),
-        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_EINVALID_DISPATCHABLE_OPERATIONS">EINVALID_DISPATCHABLE_OPERATIONS</a>)
-    );
-    <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>(store)
+): u64 {
+    <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>(
+        store,
+        |store| {
+            <b>assert</b>!(
+                !<a href="fungible_asset.html#0x1_fungible_asset_has_balance_dispatch_function">has_balance_dispatch_function</a>(store.metadata),
+                <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_EINVALID_DISPATCHABLE_OPERATIONS">EINVALID_DISPATCHABLE_OPERATIONS</a>)
+            );
+        }
+    )
 }
 </code></pre>
 </details>
 <h2 id="function-balance_impl"><a class="header" href="#function-balance_impl">Function <code>balance_impl</code> <a id="0x1_fungible_asset_balance_impl"></a></a></h2>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): u64
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, check: |&<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>|): u64
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>&lt;T: key&gt;(store: Object&lt;T&gt;): u64 <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> {
+<pre><code>inline <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>&lt;T: key&gt;(store: Object&lt;T&gt;, check: |&<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>|): u64 {
     <b>let</b> store_addr = store.object_address();
     <b>if</b> (<a href="fungible_asset.html#0x1_fungible_asset_store_exists_inline">store_exists_inline</a>(store_addr)) {
-        <b>let</b> store_balance = <a href="fungible_asset.html#0x1_fungible_asset_borrow_store_resource">borrow_store_resource</a>(&store).balance;
+        <b>let</b> store = &<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>[store_addr];
+        check(store);
+        <b>let</b> store_balance = store.balance;
         <b>if</b> (store_balance == 0
             && <a href="fungible_asset.html#0x1_fungible_asset_concurrent_fungible_balance_exists_inline">concurrent_fungible_balance_exists_inline</a>(store_addr)) {
-            <b>let</b> balance_resource =
-                <b>borrow_global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr);
-            balance_resource.balance.read()
+            <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>[store_addr].balance.read()
         } <b>else</b> {
             store_balance
         }
     } <b>else</b> { 0 }
+}
+</code></pre>
+</details>
+<h2 id="function-balance_snapshot"><a class="header" href="#function-balance_snapshot">Function <code>balance_snapshot</code> <a id="0x1_fungible_asset_balance_snapshot"></a></a></h2>
+<p>Get the balance of a given store, as AggregatorSnapshot.
+Allows us to obtain a balance object, without issuing a read - which would reduce parallelism.</p>
+<p>Note: This function will abort on FAs with <code>derived_balance</code> hook set up.
+Use <code><a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_balance_snapshot">dispatchable_fungible_asset::derived_balance_snapshot</a></code> instead if you intend to work with those FAs.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_snapshot">balance_snapshot</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_snapshot">balance_snapshot</a>&lt;T: key&gt;(store: Object&lt;T&gt;): AggregatorSnapshot&lt;u64&gt; {
+    <b>let</b> store_addr = <a href="object.html#0x1_object_object_address">object::object_address</a>(&store);
+    <b>if</b> (<a href="fungible_asset.html#0x1_fungible_asset_store_exists_inline">store_exists_inline</a>(store_addr)) {
+        <b>let</b> fa_store = &<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>[store_addr];
+        <b>assert</b>!(
+            !<a href="fungible_asset.html#0x1_fungible_asset_has_balance_dispatch_function">has_balance_dispatch_function</a>(fa_store.metadata),
+            <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_EINVALID_DISPATCHABLE_OPERATIONS">EINVALID_DISPATCHABLE_OPERATIONS</a>)
+        );
+
+        <b>let</b> store_balance = fa_store.balance;
+        <b>if</b> (store_balance == 0 && <a href="fungible_asset.html#0x1_fungible_asset_concurrent_fungible_balance_exists_inline">concurrent_fungible_balance_exists_inline</a>(store_addr)) {
+            <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>[store_addr].balance.snapshot()
+        } <b>else</b> {
+            <a href="aggregator_v2.html#0x1_aggregator_v2_create_snapshot">aggregator_v2::create_snapshot</a>(store_balance)
+        }
+    } <b>else</b> {
+        <a href="aggregator_v2.html#0x1_aggregator_v2_create_snapshot">aggregator_v2::create_snapshot</a>(0)
+    }
 }
 </code></pre>
 </details>
@@ -2285,11 +2320,15 @@ that function unless you DO NOT want to support fungible assets with dispatchabl
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_with_ref">balance_with_ref</a>&lt;T: key&gt;(
     self: &<a href="fungible_asset.html#0x1_fungible_asset_RawBalanceRef">RawBalanceRef</a>, store: Object&lt;T&gt;
 ): u64 <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> {
-    <b>assert</b>!(
-        self.metadata == <a href="fungible_asset.html#0x1_fungible_asset_store_metadata">store_metadata</a>(store),
-        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_ERAW_BALANCE_REF_AND_FUNGIBLE_ASSET_MISMATCH">ERAW_BALANCE_REF_AND_FUNGIBLE_ASSET_MISMATCH</a>)
-    );
-    <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>(store)
+    <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>(
+        store,
+        |store| {
+            <b>assert</b>!(
+                self.metadata == store.metadata,
+                <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_ERAW_BALANCE_REF_AND_FUNGIBLE_ASSET_MISMATCH">ERAW_BALANCE_REF_AND_FUNGIBLE_ASSET_MISMATCH</a>)
+            );
+        }
+    )
 }
 </code></pre>
 </details>
@@ -2675,7 +2714,21 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 }
 </code></pre>
 </details>
+<h2 id="function-is_concurrent"><a class="header" href="#function-is_concurrent">Function <code>is_concurrent</code> <a id="0x1_fungible_asset_is_concurrent"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_is_concurrent">is_concurrent</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_is_concurrent">is_concurrent</a>&lt;T: key&gt;(store: Object&lt;T&gt;): bool {
+    <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(&store))
+}
+</code></pre>
+</details>
 <h2 id="function-upgrade_store_to_concurrent"><a class="header" href="#function-upgrade_store_to_concurrent">Function <code>upgrade_store_to_concurrent</code> <a id="0x1_fungible_asset_upgrade_store_to_concurrent"></a></a></h2>
+<p>Opts-in the given store into tracking balance in a concurrent manner (through Aggregators),
+This allows witdraw, deposit, transfer, is_balance_at_least and balance_snapshot to
+not create conflicts and maintain parallelism.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_upgrade_store_to_concurrent">upgrade_store_to_concurrent</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;)
 </code></pre>
 <details>
@@ -2683,14 +2736,18 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 <pre><code><b>public</b> entry <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_upgrade_store_to_concurrent">upgrade_store_to_concurrent</a>&lt;T: key&gt;(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: Object&lt;T&gt;
 ) <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a> {
+    <b>let</b> fungible_store_address = store.object_address();
+    // be graceful <b>if</b> <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> already <b>exists</b>, but flag is off
+    <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(fungible_store_address)) {
+        // skip checks, <b>to</b> make opt-in efficient <b>if</b> done before operation.
+        <b>return</b>;
+    };
+
     <b>assert</b>!(
         <a href="object.html#0x1_object_owns">object::owns</a>(store, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner)),
         <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="fungible_asset.html#0x1_fungible_asset_ENOT_STORE_OWNER">ENOT_STORE_OWNER</a>)
     );
     <b>assert</b>!(!<a href="fungible_asset.html#0x1_fungible_asset_is_frozen">is_frozen</a>(store), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_ESTORE_IS_FROZEN">ESTORE_IS_FROZEN</a>));
-    <b>let</b> fungible_store_address = store.object_address();
-    // be graceful <b>if</b> <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> already <b>exists</b>, but flag is off
-    <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(fungible_store_address)) { <b>return</b> };
     <b>assert</b>!(
         <a href="fungible_asset.html#0x1_fungible_asset_allow_upgrade_to_concurrent_fungible_balance">allow_upgrade_to_concurrent_fungible_balance</a>(),
         <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_ECONCURRENT_BALANCE_NOT_ENABLED">ECONCURRENT_BALANCE_NOT_ENABLED</a>)
