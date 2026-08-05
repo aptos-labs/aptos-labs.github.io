@@ -184,6 +184,7 @@
 <li><a href="#0x1_account_AccountPermission">Enum <code>AccountPermission</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
 <li><a href="#0x1_account_grant_key_rotation_permission">Function <code>grant_key_rotation_permission</code></a></li>
+<li><a href="#0x1_account_assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code></a></li>
 <li><a href="#0x1_account_grant_key_offering_permission">Function <code>grant_key_offering_permission</code></a></li>
 <li><a href="#0x1_account_initialize">Function <code>initialize</code></a></li>
 <li><a href="#0x1_account_create_account_if_does_not_exist">Function <code>create_account_if_does_not_exist</code></a></li>
@@ -301,6 +302,7 @@
 <b>use</b> <a href="../aptos-stdlib/single_key.html#0x1_single_key">0x1::single_key</a>;
 <b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
 <b>use</b> <a href="../aptos-stdlib/table.html#0x1_table">0x1::table</a>;
+<b>use</b> <a href="transaction_context.html#0x1_transaction_context">0x1::transaction_context</a>;
 <b>use</b> <a href="../aptos-stdlib/type_info.html#0x1_type_info">0x1::type_info</a>;
 <b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
 </code></pre>
@@ -812,6 +814,11 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p>Sequence number exceeds the maximum value for a u64</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ESEQUENCE_NUMBER_TOO_BIG">ESEQUENCE_NUMBER_TOO_BIG</a>: u64 = 3;
 </code></pre>
+<p><a id="0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT"></a></p>
+<p>Sequence-number-based proof challenges cannot be used when the proof-bearing account's
+sequence number will not advance, since the signed proof would remain replayable.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>: u64 = 31;
+</code></pre>
 <p><a id="0x1_account_ESET_ORIGINATING_ADDRESS_DISABLED"></a></p>
 <p>The set_originating_address is disabled due to potential poisoning from account abstraction</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ESET_ORIGINATING_ADDRESS_DISABLED">ESET_ORIGINATING_ADDRESS_DISABLED</a>: u64 = 27;
@@ -856,6 +863,25 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
     <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="account.html#0x1_account_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-assert_seq_num_proof_replay_protected"><a class="header" href="#function-assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code> <a id="0x1_account_assert_seq_num_proof_replay_protected"></a></a></h2>
+<p>Proof challenges that embed an account's sequence number rely on the sequence number
+advancing with the submitting transaction to prevent the signed proof from being accepted
+twice. Orderless transactions do not increment the sender's sequence number, and multisig
+payload execution increments only the outer submitter's sequence number. Functions verifying
+a sequence-number-based proof must call this first.</p>
+<pre><code><b>fun</b> <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>()
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>() {
+    <b>assert</b>!(
+        !<a href="transaction_context.html#0x1_transaction_context_is_orderless_txn">transaction_context::is_orderless_txn</a>()
+            && !<a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">transaction_context::is_multisig_payload_txn</a>(),
+        <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="account.html#0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>),
+    );
 }
 </code></pre>
 </details>
@@ -1220,6 +1246,8 @@ is the original public key of the account and the new backup key has been valida
 <details>
 <summary>Implementation</summary>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_on_keyless_account">upsert_ed25519_backup_key_on_keyless_account</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
+    // The backup key proof is replay-protected by the <a href="account.html#0x1_account">account</a>'s sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     // Check that the provided <b>public</b> key is a <a href="../aptos-stdlib/keyless.html#0x1_keyless">keyless</a> <b>public</b> key
     <b>let</b> keyless_single_key = <a href="../aptos-stdlib/single_key.html#0x1_single_key_new_public_key_from_bytes">single_key::new_public_key_from_bytes</a>(keyless_public_key);
     <b>assert</b>!(<a href="../aptos-stdlib/single_key.html#0x1_single_key_is_keyless_or_federated_keyless_public_key">single_key::is_keyless_or_federated_keyless_public_key</a>(&keyless_single_key), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="account.html#0x1_account_ENOT_A_KEYLESS_PUBLIC_KEY">ENOT_A_KEYLESS_PUBLIC_KEY</a>));
@@ -1391,6 +1419,8 @@ to rotate his address to Alice's address in the first place.</p>
     cap_rotate_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a>, <a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a> {
+    // The rotation proofs are replay-protected by the <a href="account.html#0x1_account">account</a>'s sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[addr];
@@ -1473,6 +1503,8 @@ to rotate his address to Alice's address in the first place.</p>
     new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a>, <a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a> {
+    // The rotation proof is replay-protected by the delegate's sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>assert</b>!(<a href="account.html#0x1_account_resource_exists_at">resource_exists_at</a>(rotation_cap_offerer_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EOFFERER_ADDRESS_DOES_NOT_EXIST">EOFFERER_ADDRESS_DOES_NOT_EXIST</a>));
 
     // Check that there <b>exists</b> a rotation capability offer at the offerer's <a href="account.html#0x1_account">account</a> resource for the delegate.
@@ -1557,6 +1589,8 @@ offer, calling this function will replace the previous <code>recipient_address</
     account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     recipient_address: <b>address</b>,
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
+    // The capability offer proof is replay-protected by the <a href="account.html#0x1_account">account</a>'s sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr);
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(recipient_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
@@ -1733,6 +1767,8 @@ to the account owner's signer capability).</p>
     account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     recipient_address: <b>address</b>
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
+    // The capability offer proof is replay-protected by the <a href="account.html#0x1_account">account</a>'s sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(source_address);
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(recipient_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
@@ -2522,7 +2558,8 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-rotate_authentication_key_with_rotation_capability-1"><a class="header" href="#function-rotate_authentication_key_with_rotation_capability-1">Function <code>rotate_authentication_key_with_rotation_capability</code> <a id="@Specification_4_rotate_authentication_key_with_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_with_rotation_capability">rotate_authentication_key_with_rotation_capability</a>(delegate_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rotation_cap_offerer_address: <b>address</b>, new_scheme: u8, new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>let</b> delegate_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(delegate_signer);
 <b>let</b> offerer_account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(offerer_account_resource.authentication_key);

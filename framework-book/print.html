@@ -28451,6 +28451,7 @@ analysis of vector size dynamism.</p>
 <li><a href="aptos-framework/account.html#0x1_account_AccountPermission">Enum <code>AccountPermission</code></a></li>
 <li><a href="aptos-framework/account.html#@Constants_0">Constants</a></li>
 <li><a href="aptos-framework/account.html#0x1_account_grant_key_rotation_permission">Function <code>grant_key_rotation_permission</code></a></li>
+<li><a href="aptos-framework/account.html#0x1_account_assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code></a></li>
 <li><a href="aptos-framework/account.html#0x1_account_grant_key_offering_permission">Function <code>grant_key_offering_permission</code></a></li>
 <li><a href="aptos-framework/account.html#0x1_account_initialize">Function <code>initialize</code></a></li>
 <li><a href="aptos-framework/account.html#0x1_account_create_account_if_does_not_exist">Function <code>create_account_if_does_not_exist</code></a></li>
@@ -28568,6 +28569,7 @@ analysis of vector size dynamism.</p>
 <b>use</b> <a href="aptos-framework/../aptos-stdlib/single_key.html#0x1_single_key">0x1::single_key</a>;
 <b>use</b> <a href="aptos-framework/system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
 <b>use</b> <a href="aptos-framework/../aptos-stdlib/table.html#0x1_table">0x1::table</a>;
+<b>use</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context">0x1::transaction_context</a>;
 <b>use</b> <a href="aptos-framework/../aptos-stdlib/type_info.html#0x1_type_info">0x1::type_info</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
 </code></pre>
@@ -29079,6 +29081,11 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p>Sequence number exceeds the maximum value for a u64</p>
 <pre><code><b>const</b> <a href="aptos-framework/account.html#0x1_account_ESEQUENCE_NUMBER_TOO_BIG">ESEQUENCE_NUMBER_TOO_BIG</a>: u64 = 3;
 </code></pre>
+<p><a id="0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT"></a></p>
+<p>Sequence-number-based proof challenges cannot be used when the proof-bearing account's
+sequence number will not advance, since the signed proof would remain replayable.</p>
+<pre><code><b>const</b> <a href="aptos-framework/account.html#0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>: u64 = 31;
+</code></pre>
 <p><a id="0x1_account_ESET_ORIGINATING_ADDRESS_DISABLED"></a></p>
 <p>The set_originating_address is disabled due to potential poisoning from account abstraction</p>
 <pre><code><b>const</b> <a href="aptos-framework/account.html#0x1_account_ESET_ORIGINATING_ADDRESS_DISABLED">ESET_ORIGINATING_ADDRESS_DISABLED</a>: u64 = 27;
@@ -29123,6 +29130,25 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(_master: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>) {
     <b>abort</b> <a href="aptos-framework/../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="aptos-framework/account.html#0x1_account_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-assert_seq_num_proof_replay_protected"><a class="header" href="#function-assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code> <a id="0x1_account_assert_seq_num_proof_replay_protected"></a></a></h2>
+<p>Proof challenges that embed an account's sequence number rely on the sequence number
+advancing with the submitting transaction to prevent the signed proof from being accepted
+twice. Orderless transactions do not increment the sender's sequence number, and multisig
+payload execution increments only the outer submitter's sequence number. Functions verifying
+a sequence-number-based proof must call this first.</p>
+<pre><code><b>fun</b> <a href="aptos-framework/account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>()
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos-framework/account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>() {
+    <b>assert</b>!(
+        !<a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn">transaction_context::is_orderless_txn</a>()
+            && !<a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">transaction_context::is_multisig_payload_txn</a>(),
+        <a href="aptos-framework/../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="aptos-framework/account.html#0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>),
+    );
 }
 </code></pre>
 </details>
@@ -29487,6 +29513,8 @@ is the original public key of the account and the new backup key has been valida
 <details>
 <summary>Implementation</summary>
 <pre><code>entry <b>fun</b> <a href="aptos-framework/account.html#0x1_account_upsert_ed25519_backup_key_on_keyless_account">upsert_ed25519_backup_key_on_keyless_account</a>(<a href="aptos-framework/account.html#0x1_account">account</a>: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) <b>acquires</b> <a href="aptos-framework/account.html#0x1_account_Account">Account</a> {
+    // The backup key proof is replay-protected by the <a href="aptos-framework/account.html#0x1_account">account</a>'s sequence number.
+    <a href="aptos-framework/account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     // Check that the provided <b>public</b> key is a <a href="aptos-framework/../aptos-stdlib/keyless.html#0x1_keyless">keyless</a> <b>public</b> key
     <b>let</b> keyless_single_key = <a href="aptos-framework/../aptos-stdlib/single_key.html#0x1_single_key_new_public_key_from_bytes">single_key::new_public_key_from_bytes</a>(keyless_public_key);
     <b>assert</b>!(<a href="aptos-framework/../aptos-stdlib/single_key.html#0x1_single_key_is_keyless_or_federated_keyless_public_key">single_key::is_keyless_or_federated_keyless_public_key</a>(&keyless_single_key), <a href="aptos-framework/../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="aptos-framework/account.html#0x1_account_ENOT_A_KEYLESS_PUBLIC_KEY">ENOT_A_KEYLESS_PUBLIC_KEY</a>));
@@ -29658,6 +29686,8 @@ to rotate his address to Alice's address in the first place.</p>
     cap_rotate_key: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     cap_update_table: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
 ) <b>acquires</b> <a href="aptos-framework/account.html#0x1_account_Account">Account</a>, <a href="aptos-framework/account.html#0x1_account_OriginatingAddress">OriginatingAddress</a> {
+    // The rotation proofs are replay-protected by the <a href="aptos-framework/account.html#0x1_account">account</a>'s sequence number.
+    <a href="aptos-framework/account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="aptos-framework/account.html#0x1_account">account</a>);
     <a href="aptos-framework/account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr);
     <b>let</b> account_resource = &<b>mut</b> <a href="aptos-framework/account.html#0x1_account_Account">Account</a>[addr];
@@ -29740,6 +29770,8 @@ to rotate his address to Alice's address in the first place.</p>
     new_public_key_bytes: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     cap_update_table: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 ) <b>acquires</b> <a href="aptos-framework/account.html#0x1_account_Account">Account</a>, <a href="aptos-framework/account.html#0x1_account_OriginatingAddress">OriginatingAddress</a> {
+    // The rotation proof is replay-protected by the delegate's sequence number.
+    <a href="aptos-framework/account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>assert</b>!(<a href="aptos-framework/account.html#0x1_account_resource_exists_at">resource_exists_at</a>(rotation_cap_offerer_address), <a href="aptos-framework/../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos-framework/account.html#0x1_account_EOFFERER_ADDRESS_DOES_NOT_EXIST">EOFFERER_ADDRESS_DOES_NOT_EXIST</a>));
 
     // Check that there <b>exists</b> a rotation capability offer at the offerer's <a href="aptos-framework/account.html#0x1_account">account</a> resource for the delegate.
@@ -29824,6 +29856,8 @@ offer, calling this function will replace the previous <code>recipient_address</
     account_public_key_bytes: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     recipient_address: <b>address</b>,
 ) <b>acquires</b> <a href="aptos-framework/account.html#0x1_account_Account">Account</a> {
+    // The capability offer proof is replay-protected by the <a href="aptos-framework/account.html#0x1_account">account</a>'s sequence number.
+    <a href="aptos-framework/account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="aptos-framework/account.html#0x1_account">account</a>);
     <a href="aptos-framework/account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr);
     <b>assert</b>!(<a href="aptos-framework/account.html#0x1_account_exists_at">exists_at</a>(recipient_address), <a href="aptos-framework/../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos-framework/account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
@@ -30000,6 +30034,8 @@ to the account owner's signer capability).</p>
     account_public_key_bytes: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     recipient_address: <b>address</b>
 ) <b>acquires</b> <a href="aptos-framework/account.html#0x1_account_Account">Account</a> {
+    // The capability offer proof is replay-protected by the <a href="aptos-framework/account.html#0x1_account">account</a>'s sequence number.
+    <a href="aptos-framework/account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> source_address = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="aptos-framework/account.html#0x1_account">account</a>);
     <a href="aptos-framework/account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(source_address);
     <b>assert</b>!(<a href="aptos-framework/account.html#0x1_account_exists_at">exists_at</a>(recipient_address), <a href="aptos-framework/../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos-framework/account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
@@ -30789,7 +30825,8 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-rotate_authentication_key_with_rotation_capability-1"><a class="header" href="#function-rotate_authentication_key_with_rotation_capability-1">Function <code>rotate_authentication_key_with_rotation_capability</code> <a id="@Specification_4_rotate_authentication_key_with_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos-framework/account.html#0x1_account_rotate_authentication_key_with_rotation_capability">rotate_authentication_key_with_rotation_capability</a>(delegate_signer: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, rotation_cap_offerer_address: <b>address</b>, new_scheme: u8, new_public_key_bytes: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_update_table: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos-framework/account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos-framework/account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>let</b> delegate_address = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(delegate_signer);
 <b>let</b> offerer_account_resource = <b>global</b>&lt;<a href="aptos-framework/account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>aborts_if</b> !<a href="aptos-framework/../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(offerer_account_resource.authentication_key);
@@ -60674,7 +60711,8 @@ Maintains the sorted-by-issuer invariant in <code><a href="aptos-framework/jwks.
 <h3 id="function-upsert_oidc_provider_for_next_epoch-1"><a class="header" href="#function-upsert_oidc_provider_for_next_epoch-1">Function <code>upsert_oidc_provider_for_next_epoch</code> <a id="@Specification_1_upsert_oidc_provider_for_next_epoch"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/jwks.html#0x1_jwks_upsert_oidc_provider_for_next_epoch">upsert_oidc_provider_for_next_epoch</a>(fx: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, config_url: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="aptos-framework/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>pragma</b> opaque;
 <b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> std::signer::address_of(fx) != @aptos_framework;
 <b>modifies</b> <b>global</b>&lt;<a href="aptos-framework/config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework);
@@ -61855,6 +61893,7 @@ and implement the governance voting logic on top.</p>
 <li><a href="aptos-framework/multisig_account.html#0x1_multisig_account_add_transaction">Function <code>add_transaction</code></a></li>
 <li><a href="aptos-framework/multisig_account.html#0x1_multisig_account_create_multisig_account">Function <code>create_multisig_account</code></a></li>
 <li><a href="aptos-framework/multisig_account.html#0x1_multisig_account_create_multisig_account_seed">Function <code>create_multisig_account_seed</code></a></li>
+<li><a href="aptos-framework/multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code></a></li>
 <li><a href="aptos-framework/multisig_account.html#0x1_multisig_account_validate_owners">Function <code>validate_owners</code></a></li>
 <li><a href="aptos-framework/multisig_account.html#0x1_multisig_account_assert_is_owner_internal">Function <code>assert_is_owner_internal</code></a></li>
 <li><a href="aptos-framework/multisig_account.html#0x1_multisig_account_assert_is_owner">Function <code>assert_is_owner</code></a></li>
@@ -61918,6 +61957,7 @@ and implement the governance voting logic on top.</p>
 <b>use</b> <a href="aptos-framework/../move-stdlib/string.html#0x1_string">0x1::string</a>;
 <b>use</b> <a href="aptos-framework/../aptos-stdlib/table.html#0x1_table">0x1::table</a>;
 <b>use</b> <a href="aptos-framework/timestamp.html#0x1_timestamp">0x1::timestamp</a>;
+<b>use</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context">0x1::transaction_context</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
 </code></pre>
 <h2 id="resource-multisigaccount"><a class="header" href="#resource-multisigaccount">Resource <code>MultisigAccount</code> <a id="0x1_multisig_account_MultisigAccount"></a></a></h2>
@@ -62658,6 +62698,11 @@ number of signatures required.</p>
 </dl>
 </details>
 <h2 id="constants-86"><a class="header" href="#constants-86">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_multisig_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT"></a></p>
+<p>Sequence-number-based creation proofs cannot be used when the proof-bearing account's
+sequence number will not advance, since the signed proof would remain replayable.</p>
+<pre><code><b>const</b> <a href="aptos-framework/multisig_account.html#0x1_multisig_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>: u64 = 26;
+</code></pre>
 <p><a id="0x1_multisig_account_ZERO_AUTH_KEY"></a></p>
 <pre><code><b>const</b> <a href="aptos-framework/multisig_account.html#0x1_multisig_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 </code></pre>
@@ -63148,6 +63193,10 @@ create_with_existing_account_and_revoke_auth_key instead.</p>
     metadata_keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
     metadata_values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
 ) {
+    // The creation message embeds the existing <a href="aptos-framework/account.html#0x1_account">account</a>'s sequence number so that outstanding
+    // signed messages can be invalidated by advancing it. Reject execution contexts <b>where</b> the
+    // proof-bearing <a href="aptos-framework/account.html#0x1_account">account</a>'s sequence number does not advance.
+    <a href="aptos-framework/multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     // Verify that the `<a href="aptos-framework/multisig_account.html#0x1_multisig_account_MultisigAccountCreationMessage">MultisigAccountCreationMessage</a>` <b>has</b> the right information and is signed by the <a href="aptos-framework/account.html#0x1_account">account</a>
     // owner's key.
     <b>let</b> proof_challenge = <a href="aptos-framework/multisig_account.html#0x1_multisig_account_MultisigAccountCreationMessage">MultisigAccountCreationMessage</a> {
@@ -63239,6 +63288,10 @@ account.</p>
     metadata_keys: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
     metadata_values: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
 ) {
+    // The creation message embeds the existing <a href="aptos-framework/account.html#0x1_account">account</a>'s sequence number so that outstanding
+    // signed messages can be invalidated by advancing it. Reject execution contexts <b>where</b> the
+    // proof-bearing <a href="aptos-framework/account.html#0x1_account">account</a>'s sequence number does not advance.
+    <a href="aptos-framework/multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     // Verify that the `<a href="aptos-framework/multisig_account.html#0x1_multisig_account_MultisigAccountCreationMessage">MultisigAccountCreationMessage</a>` <b>has</b> the right information and is signed by the <a href="aptos-framework/account.html#0x1_account">account</a>
     // owner's key.
     <b>let</b> proof_challenge = <a href="aptos-framework/multisig_account.html#0x1_multisig_account_MultisigAccountCreationWithAuthKeyRevocationMessage">MultisigAccountCreationWithAuthKeyRevocationMessage</a> {
@@ -64232,6 +64285,24 @@ This function is private so no other code can call this beside the VM itself as 
     multisig_account_seed.append(seed);
 
     multisig_account_seed
+}
+</code></pre>
+</details>
+<h2 id="function-assert_seq_num_proof_replay_protected-1"><a class="header" href="#function-assert_seq_num_proof_replay_protected-1">Function <code>assert_seq_num_proof_replay_protected</code> <a id="0x1_multisig_account_assert_seq_num_proof_replay_protected"></a></a></h2>
+<p>Creation proofs embed the existing account's sequence number to allow invalidating
+outstanding signed messages by advancing it. Orderless transactions do not interact with
+sequence numbers, and multisig payload execution increments only the outer submitter's
+sequence number. Functions verifying such a proof must reject them.</p>
+<pre><code><b>fun</b> <a href="aptos-framework/multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>()
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="aptos-framework/multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>() {
+    <b>assert</b>!(
+        !<a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn">transaction_context::is_orderless_txn</a>()
+            && !<a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">transaction_context::is_multisig_payload_txn</a>(),
+        <a href="aptos-framework/../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="aptos-framework/multisig_account.html#0x1_multisig_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>),
+    );
 }
 </code></pre>
 </details>
@@ -87649,6 +87720,12 @@ It interacts with the other modules in the following ways:</p>
 <li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_inner_entry_function_payload">Function <code>inner_entry_function_payload</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_encrypted_txn">Function <code>is_encrypted_txn</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_encrypted_txn_internal">Function <code>is_encrypted_txn_internal</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn">Function <code>is_orderless_txn</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">Function <code>is_orderless_txn_internal</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">Function <code>is_orderless_txn_internal_for_test_only</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">Function <code>is_multisig_payload_txn</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">Function <code>is_multisig_payload_txn_internal</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">Function <code>is_multisig_payload_txn_internal_for_test_only</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_monotonically_increasing_counter">Function <code>monotonically_increasing_counter</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal">Function <code>monotonically_increasing_counter_internal</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only">Function <code>monotonically_increasing_counter_internal_for_test_only</code></a></li>
@@ -87672,6 +87749,10 @@ It interacts with the other modules in the following ways:</p>
 <li><a href="aptos-framework/transaction_context.html#@Specification_1_entry_function_payload_internal">Function <code>entry_function_payload_internal</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#@Specification_1_multisig_payload_internal">Function <code>multisig_payload_internal</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#@Specification_1_is_encrypted_txn_internal">Function <code>is_encrypted_txn_internal</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#@Specification_1_is_orderless_txn_internal">Function <code>is_orderless_txn_internal</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#@Specification_1_is_orderless_txn_internal_for_test_only">Function <code>is_orderless_txn_internal_for_test_only</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#@Specification_1_is_multisig_payload_txn_internal">Function <code>is_multisig_payload_txn_internal</code></a></li>
+<li><a href="aptos-framework/transaction_context.html#@Specification_1_is_multisig_payload_txn_internal_for_test_only">Function <code>is_multisig_payload_txn_internal_for_test_only</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#@Specification_1_monotonically_increasing_counter">Function <code>monotonically_increasing_counter</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#@Specification_1_monotonically_increasing_counter_internal">Function <code>monotonically_increasing_counter_internal</code></a></li>
 <li><a href="aptos-framework/transaction_context.html#@Specification_1_monotonically_increasing_counter_internal_for_test_only">Function <code>monotonically_increasing_counter_internal_for_test_only</code></a></li>
@@ -88128,6 +88209,86 @@ This function aborts if called outside of the transaction prologue, execution, o
 <pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_encrypted_txn_internal">is_encrypted_txn_internal</a>(): bool;
 </code></pre>
 </details>
+<h2 id="function-is_orderless_txn"><a class="header" href="#function-is_orderless_txn">Function <code>is_orderless_txn</code> <a id="0x1_transaction_context_is_orderless_txn"></a></a></h2>
+<p>Returns whether the current transaction is an orderless transaction, i.e. it uses a
+replay-protection nonce instead of a sequence number. Use this to guard logic that
+relies on the sender's sequence number (e.g. sequence-number-based proofs), which is
+only meaningful for non-orderless transactions.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.
+When compiled for testing, this function returns false instead of aborting when no
+transaction context is available, so unit tests can exercise callers of this function.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn">is_orderless_txn</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn">is_orderless_txn</a>(): bool {
+    <b>if</b> (__COMPILE_FOR_TESTING__) {
+        <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">is_orderless_txn_internal_for_test_only</a>()
+    } <b>else</b> {
+        <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">is_orderless_txn_internal</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-is_orderless_txn_internal"><a class="header" href="#function-is_orderless_txn_internal">Function <code>is_orderless_txn_internal</code> <a id="0x1_transaction_context_is_orderless_txn_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">is_orderless_txn_internal</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">is_orderless_txn_internal</a>(): bool;
+</code></pre>
+</details>
+<h2 id="function-is_orderless_txn_internal_for_test_only"><a class="header" href="#function-is_orderless_txn_internal_for_test_only">Function <code>is_orderless_txn_internal_for_test_only</code> <a id="0x1_transaction_context_is_orderless_txn_internal_for_test_only"></a></a></h2>
+<p>Test-only version of <code>is_orderless_txn</code> that returns false when no user transaction
+context is available instead of aborting, so unit tests can call functions guarded by
+<code>is_orderless_txn</code> (e.g. sequence-number-based proof checks).</p>
+<pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">is_orderless_txn_internal_for_test_only</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">is_orderless_txn_internal_for_test_only</a>(): bool;
+</code></pre>
+</details>
+<h2 id="function-is_multisig_payload_txn"><a class="header" href="#function-is_multisig_payload_txn">Function <code>is_multisig_payload_txn</code> <a id="0x1_transaction_context_is_multisig_payload_txn"></a></a></h2>
+<p>Returns whether the transaction is a multisig transaction (or, equivalently, whether the
+current execution is running the inner payload of a multisig transaction). In this case
+the executing account's sequence number does not advance, so sequence-number-based proof
+challenges are replayable.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.
+When compiled for testing, this function returns false instead of aborting when no
+transaction context is available, so unit tests can exercise callers of this function.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">is_multisig_payload_txn</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">is_multisig_payload_txn</a>(): bool {
+    <b>if</b> (__COMPILE_FOR_TESTING__) {
+        <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">is_multisig_payload_txn_internal_for_test_only</a>()
+    } <b>else</b> {
+        <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">is_multisig_payload_txn_internal</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-is_multisig_payload_txn_internal"><a class="header" href="#function-is_multisig_payload_txn_internal">Function <code>is_multisig_payload_txn_internal</code> <a id="0x1_transaction_context_is_multisig_payload_txn_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">is_multisig_payload_txn_internal</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">is_multisig_payload_txn_internal</a>(): bool;
+</code></pre>
+</details>
+<h2 id="function-is_multisig_payload_txn_internal_for_test_only"><a class="header" href="#function-is_multisig_payload_txn_internal_for_test_only">Function <code>is_multisig_payload_txn_internal_for_test_only</code> <a id="0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only"></a></a></h2>
+<p>Test-only version of <code>is_multisig_payload_txn</code> that returns false when no user transaction
+context is available instead of aborting, so unit tests can call functions guarded by
+<code>is_multisig_payload_txn</code>.</p>
+<pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">is_multisig_payload_txn_internal_for_test_only</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">is_multisig_payload_txn_internal_for_test_only</a>(): bool;
+</code></pre>
+</details>
 <h2 id="function-monotonically_increasing_counter"><a class="header" href="#function-monotonically_increasing_counter">Function <code>monotonically_increasing_counter</code> <a id="0x1_transaction_context_monotonically_increasing_counter"></a></a></h2>
 <p>Returns a monotonically increasing counter value that combines timestamp, transaction index,
 session counter, and local counter into a 128-bit value.
@@ -88310,6 +88471,28 @@ the monotonically increasing behavior.</p>
 <pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_encrypted_txn_internal">is_encrypted_txn_internal</a>(): bool
 </code></pre>
 <pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-is_orderless_txn_internal-1"><a class="header" href="#function-is_orderless_txn_internal-1">Function <code>is_orderless_txn_internal</code> <a id="@Specification_1_is_orderless_txn_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">is_orderless_txn_internal</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-is_orderless_txn_internal_for_test_only-1"><a class="header" href="#function-is_orderless_txn_internal_for_test_only-1">Function <code>is_orderless_txn_internal_for_test_only</code> <a id="@Specification_1_is_orderless_txn_internal_for_test_only"></a></a></h3>
+<pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">is_orderless_txn_internal_for_test_only</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+</code></pre>
+<h3 id="function-is_multisig_payload_txn_internal-1"><a class="header" href="#function-is_multisig_payload_txn_internal-1">Function <code>is_multisig_payload_txn_internal</code> <a id="@Specification_1_is_multisig_payload_txn_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">is_multisig_payload_txn_internal</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-is_multisig_payload_txn_internal_for_test_only-1"><a class="header" href="#function-is_multisig_payload_txn_internal_for_test_only-1">Function <code>is_multisig_payload_txn_internal_for_test_only</code> <a id="@Specification_1_is_multisig_payload_txn_internal_for_test_only"></a></a></h3>
+<pre><code><b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">is_multisig_payload_txn_internal_for_test_only</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
 </code></pre>
 <h3 id="function-monotonically_increasing_counter-1"><a class="header" href="#function-monotonically_increasing_counter-1">Function <code>monotonically_increasing_counter</code> <a id="@Specification_1_monotonically_increasing_counter"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/transaction_context.html#0x1_transaction_context_monotonically_increasing_counter">monotonically_increasing_counter</a>(): u128

@@ -201,6 +201,12 @@
 <li><a href="#0x1_transaction_context_inner_entry_function_payload">Function <code>inner_entry_function_payload</code></a></li>
 <li><a href="#0x1_transaction_context_is_encrypted_txn">Function <code>is_encrypted_txn</code></a></li>
 <li><a href="#0x1_transaction_context_is_encrypted_txn_internal">Function <code>is_encrypted_txn_internal</code></a></li>
+<li><a href="#0x1_transaction_context_is_orderless_txn">Function <code>is_orderless_txn</code></a></li>
+<li><a href="#0x1_transaction_context_is_orderless_txn_internal">Function <code>is_orderless_txn_internal</code></a></li>
+<li><a href="#0x1_transaction_context_is_orderless_txn_internal_for_test_only">Function <code>is_orderless_txn_internal_for_test_only</code></a></li>
+<li><a href="#0x1_transaction_context_is_multisig_payload_txn">Function <code>is_multisig_payload_txn</code></a></li>
+<li><a href="#0x1_transaction_context_is_multisig_payload_txn_internal">Function <code>is_multisig_payload_txn_internal</code></a></li>
+<li><a href="#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">Function <code>is_multisig_payload_txn_internal_for_test_only</code></a></li>
 <li><a href="#0x1_transaction_context_monotonically_increasing_counter">Function <code>monotonically_increasing_counter</code></a></li>
 <li><a href="#0x1_transaction_context_monotonically_increasing_counter_internal">Function <code>monotonically_increasing_counter_internal</code></a></li>
 <li><a href="#0x1_transaction_context_monotonically_increasing_counter_internal_for_test_only">Function <code>monotonically_increasing_counter_internal_for_test_only</code></a></li>
@@ -224,6 +230,10 @@
 <li><a href="#@Specification_1_entry_function_payload_internal">Function <code>entry_function_payload_internal</code></a></li>
 <li><a href="#@Specification_1_multisig_payload_internal">Function <code>multisig_payload_internal</code></a></li>
 <li><a href="#@Specification_1_is_encrypted_txn_internal">Function <code>is_encrypted_txn_internal</code></a></li>
+<li><a href="#@Specification_1_is_orderless_txn_internal">Function <code>is_orderless_txn_internal</code></a></li>
+<li><a href="#@Specification_1_is_orderless_txn_internal_for_test_only">Function <code>is_orderless_txn_internal_for_test_only</code></a></li>
+<li><a href="#@Specification_1_is_multisig_payload_txn_internal">Function <code>is_multisig_payload_txn_internal</code></a></li>
+<li><a href="#@Specification_1_is_multisig_payload_txn_internal_for_test_only">Function <code>is_multisig_payload_txn_internal_for_test_only</code></a></li>
 <li><a href="#@Specification_1_monotonically_increasing_counter">Function <code>monotonically_increasing_counter</code></a></li>
 <li><a href="#@Specification_1_monotonically_increasing_counter_internal">Function <code>monotonically_increasing_counter_internal</code></a></li>
 <li><a href="#@Specification_1_monotonically_increasing_counter_internal_for_test_only">Function <code>monotonically_increasing_counter_internal_for_test_only</code></a></li>
@@ -680,6 +690,86 @@ This function aborts if called outside of the transaction prologue, execution, o
 <pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_encrypted_txn_internal">is_encrypted_txn_internal</a>(): bool;
 </code></pre>
 </details>
+<h2 id="function-is_orderless_txn"><a class="header" href="#function-is_orderless_txn">Function <code>is_orderless_txn</code> <a id="0x1_transaction_context_is_orderless_txn"></a></a></h2>
+<p>Returns whether the current transaction is an orderless transaction, i.e. it uses a
+replay-protection nonce instead of a sequence number. Use this to guard logic that
+relies on the sender's sequence number (e.g. sequence-number-based proofs), which is
+only meaningful for non-orderless transactions.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.
+When compiled for testing, this function returns false instead of aborting when no
+transaction context is available, so unit tests can exercise callers of this function.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn">is_orderless_txn</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn">is_orderless_txn</a>(): bool {
+    <b>if</b> (__COMPILE_FOR_TESTING__) {
+        <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">is_orderless_txn_internal_for_test_only</a>()
+    } <b>else</b> {
+        <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">is_orderless_txn_internal</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-is_orderless_txn_internal"><a class="header" href="#function-is_orderless_txn_internal">Function <code>is_orderless_txn_internal</code> <a id="0x1_transaction_context_is_orderless_txn_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">is_orderless_txn_internal</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">is_orderless_txn_internal</a>(): bool;
+</code></pre>
+</details>
+<h2 id="function-is_orderless_txn_internal_for_test_only"><a class="header" href="#function-is_orderless_txn_internal_for_test_only">Function <code>is_orderless_txn_internal_for_test_only</code> <a id="0x1_transaction_context_is_orderless_txn_internal_for_test_only"></a></a></h2>
+<p>Test-only version of <code>is_orderless_txn</code> that returns false when no user transaction
+context is available instead of aborting, so unit tests can call functions guarded by
+<code>is_orderless_txn</code> (e.g. sequence-number-based proof checks).</p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">is_orderless_txn_internal_for_test_only</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">is_orderless_txn_internal_for_test_only</a>(): bool;
+</code></pre>
+</details>
+<h2 id="function-is_multisig_payload_txn"><a class="header" href="#function-is_multisig_payload_txn">Function <code>is_multisig_payload_txn</code> <a id="0x1_transaction_context_is_multisig_payload_txn"></a></a></h2>
+<p>Returns whether the transaction is a multisig transaction (or, equivalently, whether the
+current execution is running the inner payload of a multisig transaction). In this case
+the executing account's sequence number does not advance, so sequence-number-based proof
+challenges are replayable.
+This function aborts if called outside of the transaction prologue, execution, or epilogue phases.
+When compiled for testing, this function returns false instead of aborting when no
+transaction context is available, so unit tests can exercise callers of this function.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">is_multisig_payload_txn</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">is_multisig_payload_txn</a>(): bool {
+    <b>if</b> (__COMPILE_FOR_TESTING__) {
+        <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">is_multisig_payload_txn_internal_for_test_only</a>()
+    } <b>else</b> {
+        <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">is_multisig_payload_txn_internal</a>()
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-is_multisig_payload_txn_internal"><a class="header" href="#function-is_multisig_payload_txn_internal">Function <code>is_multisig_payload_txn_internal</code> <a id="0x1_transaction_context_is_multisig_payload_txn_internal"></a></a></h2>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">is_multisig_payload_txn_internal</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">is_multisig_payload_txn_internal</a>(): bool;
+</code></pre>
+</details>
+<h2 id="function-is_multisig_payload_txn_internal_for_test_only"><a class="header" href="#function-is_multisig_payload_txn_internal_for_test_only">Function <code>is_multisig_payload_txn_internal_for_test_only</code> <a id="0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only"></a></a></h2>
+<p>Test-only version of <code>is_multisig_payload_txn</code> that returns false when no user transaction
+context is available instead of aborting, so unit tests can call functions guarded by
+<code>is_multisig_payload_txn</code>.</p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">is_multisig_payload_txn_internal_for_test_only</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">is_multisig_payload_txn_internal_for_test_only</a>(): bool;
+</code></pre>
+</details>
 <h2 id="function-monotonically_increasing_counter"><a class="header" href="#function-monotonically_increasing_counter">Function <code>monotonically_increasing_counter</code> <a id="0x1_transaction_context_monotonically_increasing_counter"></a></a></h2>
 <p>Returns a monotonically increasing counter value that combines timestamp, transaction index,
 session counter, and local counter into a 128-bit value.
@@ -862,6 +952,28 @@ the monotonically increasing behavior.</p>
 <pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_encrypted_txn_internal">is_encrypted_txn_internal</a>(): bool
 </code></pre>
 <pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-is_orderless_txn_internal-1"><a class="header" href="#function-is_orderless_txn_internal-1">Function <code>is_orderless_txn_internal</code> <a id="@Specification_1_is_orderless_txn_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn_internal">is_orderless_txn_internal</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-is_orderless_txn_internal_for_test_only-1"><a class="header" href="#function-is_orderless_txn_internal_for_test_only-1">Function <code>is_orderless_txn_internal_for_test_only</code> <a id="@Specification_1_is_orderless_txn_internal_for_test_only"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_orderless_txn_internal_for_test_only">is_orderless_txn_internal_for_test_only</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+</code></pre>
+<h3 id="function-is_multisig_payload_txn_internal-1"><a class="header" href="#function-is_multisig_payload_txn_internal-1">Function <code>is_multisig_payload_txn_internal</code> <a id="@Specification_1_is_multisig_payload_txn_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal">is_multisig_payload_txn_internal</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-is_multisig_payload_txn_internal_for_test_only-1"><a class="header" href="#function-is_multisig_payload_txn_internal_for_test_only-1">Function <code>is_multisig_payload_txn_internal_for_test_only</code> <a id="@Specification_1_is_multisig_payload_txn_internal_for_test_only"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn_internal_for_test_only">is_multisig_payload_txn_internal_for_test_only</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
 </code></pre>
 <h3 id="function-monotonically_increasing_counter-1"><a class="header" href="#function-monotonically_increasing_counter-1">Function <code>monotonically_increasing_counter</code> <a id="@Specification_1_monotonically_increasing_counter"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter">monotonically_increasing_counter</a>(): u128
