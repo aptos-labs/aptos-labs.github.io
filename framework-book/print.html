@@ -38685,6 +38685,8 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
     map_add_all = add_all,
     map_borrow = borrow,
     map_borrow_mut = borrow_mut,
+    map_iter_borrow_mut = iter_borrow_mut,
+    map_spec_aborts_iter_borrow_mut = spec_aborts_iter_borrow_mut,
     map_spec_get = spec_get,
     map_spec_set = spec_set,
     map_spec_del = spec_remove,
@@ -38774,7 +38776,15 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 <b>pragma</b> opaque;
-<b>aborts_if</b> <b>false</b>;
+<b>aborts_if</b> avg_key_bytes &gt; max_key_bytes;
+<b>aborts_if</b> avg_value_bytes &gt; max_value_bytes;
+<b>aborts_if</b> avg_key_bytes == 0;
+<b>aborts_if</b> max_key_bytes &gt; 0
+    && <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_HINT_MAX_NODE_BYTES">HINT_MAX_NODE_BYTES</a> / max_key_bytes &lt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_INNER_MIN_DEGREE">INNER_MIN_DEGREE</a>;
+<b>aborts_if</b> avg_key_bytes + avg_value_bytes &gt; MAX_U64;
+<b>aborts_if</b> max_key_bytes + max_value_bytes &gt; MAX_U64;
+<b>aborts_if</b> max_key_bytes + max_value_bytes &gt; 0
+    && <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_HINT_MAX_NODE_BYTES">HINT_MAX_NODE_BYTES</a> / (max_key_bytes + max_value_bytes) &lt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_LEAF_MIN_DEGREE">LEAF_MIN_DEGREE</a>;
 <b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(result) == 0;
 <b>ensures</b> <b>forall</b> k: K: !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(result, k);
 </code></pre>
@@ -39011,10 +39021,12 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <h3 id="function-iter_borrow_mut-1"><a class="header" href="#function-iter_borrow_mut-1">Function <code>iter_borrow_mut</code> <a id="@Specification_1_iter_borrow_mut"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_borrow_mut">iter_borrow_mut</a>&lt;K: drop, store, V: store&gt;(self: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;, map: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): &<b>mut</b> V
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map);
-<b>ensures</b> result == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key);
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_aborts_iter_borrow_mut"></a></p>
+<pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_aborts_iter_borrow_mut">spec_aborts_iter_borrow_mut</a>&lt;K, V&gt;(self: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">IteratorPtr</a>&lt;K&gt;, map: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool {
+   (self is IteratorPtr::End&lt;K&gt;) || !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, self.key)
+}
 </code></pre>
 <p><a id="0x1_big_ordered_map_spec_iter_is_begin"></a></p>
 <pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_iter_is_begin">spec_iter_is_begin</a>&lt;K, V&gt;(self: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">IteratorPtr</a>&lt;K&gt;, map: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool {
@@ -39032,10 +39044,13 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>requires</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map) || requires_of&lt;f&gt;(<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key));
 <b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map);
+<b>aborts_if</b> aborts_of&lt;f&gt;(<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key));
 <b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, self.key);
 <b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(map) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(map));
 <b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(map, self.key);
+<b>ensures</b> ensures_of&lt;f&gt;(<b>old</b>(<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key)), result, <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key));
 </code></pre>
 <h3 id="function-iter_remove-1"><a class="header" href="#function-iter_remove-1">Function <code>iter_remove</code> <a id="@Specification_1_iter_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_remove">iter_remove</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtrWithPath">big_ordered_map::IteratorPtrWithPath</a>&lt;K&gt;, map: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): V
@@ -39054,6 +39069,16 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map);
+<b>ensures</b> (result is IteratorPtr::End&lt;K&gt;) &lt;==&gt;
+    (<b>forall</b> k: K <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k):
+        std::cmp::compare(k, self.key) != std::cmp::Ordering::Greater);
+<b>ensures</b> !(result is IteratorPtr::End&lt;K&gt;) ==&gt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, result.key);
+<b>ensures</b> !(result is IteratorPtr::End&lt;K&gt;) ==&gt;
+    std::cmp::compare(result.key, self.key) == std::cmp::Ordering::Greater;
+<b>ensures</b> !(result is IteratorPtr::End&lt;K&gt;) ==&gt;
+    (<b>forall</b> k: K <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k)
+        && std::cmp::compare(k, self.key) == std::cmp::Ordering::Greater:
+        std::cmp::compare(result.key, k) != std::cmp::Ordering::Greater);
 </code></pre>
 <h3 id="function-iter_prev-1"><a class="header" href="#function-iter_prev-1">Function <code>iter_prev</code> <a id="@Specification_1_iter_prev"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_prev">iter_prev</a>&lt;K: <b>copy</b>, drop, store, V: store&gt;(self: <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;, map: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;
@@ -39061,6 +39086,17 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_iter_is_begin">spec_iter_is_begin</a>(self, map);
+<b>ensures</b> !(result is IteratorPtr::End&lt;K&gt;);
+<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, result.key);
+<b>ensures</b> (self is IteratorPtr::End&lt;K&gt;) ==&gt;
+    (<b>forall</b> k: K <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k) && k != result.key:
+        std::cmp::compare(k, result.key) == std::cmp::Ordering::Less);
+<b>ensures</b> !(self is IteratorPtr::End&lt;K&gt;) ==&gt;
+    std::cmp::compare(result.key, self.key) == std::cmp::Ordering::Less;
+<b>ensures</b> !(self is IteratorPtr::End&lt;K&gt;) ==&gt;
+    (<b>forall</b> k: K <b>where</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k)
+        && std::cmp::compare(k, self.key) == std::cmp::Ordering::Less:
+        std::cmp::compare(k, result.key) != std::cmp::Ordering::Greater);
 </code></pre>
 <h3 id="function-internal_leaf_new_begin_iter-1"><a class="header" href="#function-internal_leaf_new_begin_iter-1">Function <code>internal_leaf_new_begin_iter</code> <a id="@Specification_1_internal_leaf_new_begin_iter"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_leaf_new_begin_iter">internal_leaf_new_begin_iter</a>&lt;K: store, V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_LeafNodeIteratorPtr">big_ordered_map::LeafNodeIteratorPtr</a>
@@ -39068,13 +39104,14 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> !<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_leaf_iter_is_end">internal_leaf_iter_is_end</a>(result);
 </code></pre>
 <h3 id="function-internal_leaf_iter_is_end-1"><a class="header" href="#function-internal_leaf_iter_is_end-1">Function <code>internal_leaf_iter_is_end</code> <a id="@Specification_1_internal_leaf_iter_is_end"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_leaf_iter_is_end">internal_leaf_iter_is_end</a>(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_LeafNodeIteratorPtr">big_ordered_map::LeafNodeIteratorPtr</a>): bool
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (self.node_index == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_NULL_INDEX">NULL_INDEX</a>);
 </code></pre>
 <h3 id="function-internal_leaf_borrow_value-1"><a class="header" href="#function-internal_leaf_borrow_value-1">Function <code>internal_leaf_borrow_value</code> <a id="@Specification_1_internal_leaf_borrow_value"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_leaf_borrow_value">internal_leaf_borrow_value</a>&lt;V: store&gt;(self: &<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_Child">big_ordered_map::Child</a>&lt;V&gt;): &V
@@ -39090,6 +39127,12 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_leaf_iter_is_end">internal_leaf_iter_is_end</a>(self);
+<b>ensures</b> <b>forall</b> k: K <b>where</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(result_1, k):
+    <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k);
+<b>ensures</b> <b>forall</b> k: K <b>where</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(result_1, k):
+    (<a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(result_1, k) is Child::Leaf&lt;V&gt;)
+        && <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(result_1, k).value == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, k);
+<b>ensures</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(map) &gt; 0 ==&gt; <a href="aptos-framework/ordered_map.html#0x1_ordered_map_spec_len">ordered_map::spec_len</a>(result_1) &gt; 0;
 </code></pre>
 <h3 id="function-validate_dynamic_size_and_init_max_degrees-1"><a class="header" href="#function-validate_dynamic_size_and_init_max_degrees-1">Function <code>validate_dynamic_size_and_init_max_degrees</code> <a id="@Specification_1_validate_dynamic_size_and_init_max_degrees"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_validate_dynamic_size_and_init_max_degrees">validate_dynamic_size_and_init_max_degrees</a>&lt;K: store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;, key: &K, value: &V)
