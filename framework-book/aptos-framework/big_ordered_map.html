@@ -1398,6 +1398,10 @@ to O(n).</p>
         <b>let</b> child_iter2 = children2.<a href="big_ordered_map.html#0x1_big_ordered_map_internal_new_begin_iter">internal_new_begin_iter</a>();
 
         <b>loop</b> {
+            <b>spec</b> {
+                <b>invariant</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_leaf_iter_valid">spec_leaf_iter_valid</a>(iter1, self);
+                <b>invariant</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_leaf_iter_valid">spec_leaf_iter_valid</a>(iter2, other);
+            };
             <b>let</b> key1 = child_iter1.<a href="big_ordered_map.html#0x1_big_ordered_map_iter_borrow_key">iter_borrow_key</a>(children1);
             <b>let</b> key2 = child_iter2.<a href="big_ordered_map.html#0x1_big_ordered_map_iter_borrow_key">iter_borrow_key</a>(children2);
             <b>let</b> inc1 = <b>false</b>;
@@ -1448,7 +1452,12 @@ to O(n).</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> inline <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_for_each_mut">for_each_mut</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(self: &<b>mut</b> <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, f: |&K, &<b>mut</b> V|) {
     <b>let</b> iter = self.<a href="big_ordered_map.html#0x1_big_ordered_map_internal_new_begin_iter">internal_new_begin_iter</a>();
-    <b>while</b> (!iter.<a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self)) {
+    <b>while</b> ({
+        <b>spec</b> {
+            <b>invariant</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(iter, self);
+        };
+        !iter.<a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self)
+    }) {
         <b>let</b> key = *iter.<a href="big_ordered_map.html#0x1_big_ordered_map_iter_borrow_key">iter_borrow_key</a>();
         f(&key, iter.<a href="big_ordered_map.html#0x1_big_ordered_map_iter_borrow_mut">iter_borrow_mut</a>(self));
         iter = iter.<a href="big_ordered_map.html#0x1_big_ordered_map_iter_next">iter_next</a>(self);
@@ -1760,7 +1769,12 @@ Requires the map is not changed after the input iterator is generated.</p>
 <pre><code>inline <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_for_each_leaf_node_children_ref">for_each_leaf_node_children_ref</a>&lt;K: store, V: store&gt;(self: &<a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, f: |&OrderedMap&lt;K, <a href="big_ordered_map.html#0x1_big_ordered_map_Child">Child</a>&lt;V&gt;&gt;|) {
     <b>let</b> iter = self.<a href="big_ordered_map.html#0x1_big_ordered_map_internal_leaf_new_begin_iter">internal_leaf_new_begin_iter</a>();
 
-    <b>while</b> (!iter.<a href="big_ordered_map.html#0x1_big_ordered_map_internal_leaf_iter_is_end">internal_leaf_iter_is_end</a>()) {
+    <b>while</b> ({
+        <b>spec</b> {
+            <b>invariant</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_leaf_iter_valid">spec_leaf_iter_valid</a>(iter, self);
+        };
+        !iter.<a href="big_ordered_map.html#0x1_big_ordered_map_internal_leaf_iter_is_end">internal_leaf_iter_is_end</a>()
+    }) {
         <b>let</b> (node, next_iter) = iter.<a href="big_ordered_map.html#0x1_big_ordered_map_internal_leaf_iter_borrow_entries_and_next_leaf_index">internal_leaf_iter_borrow_entries_and_next_leaf_index</a>(self);
         f(node);
         iter = next_iter;
@@ -2637,7 +2651,27 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
     map_spec_aborts_add = spec_aborts_add,
     map_spec_aborts_del = spec_aborts_del,
     map_spec_aborts_borrow = spec_aborts_borrow,
-    map_is_empty = is_empty;
+    map_is_empty = is_empty,
+    map_spec_iter_valid = spec_iter_current,
+    map_spec_leaf_iter_valid = spec_leaf_iter_valid,
+    map_spec_iter_preserved = spec_iter_preserved;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_iter_current"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_current">spec_iter_current</a>&lt;K, V&gt;(it: <a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">IteratorPtr</a>&lt;K&gt;, map: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_leaf_iter_valid"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_leaf_iter_valid">spec_leaf_iter_valid</a>&lt;K, V&gt;(it: <a href="big_ordered_map.html#0x1_big_ordered_map_LeafNodeIteratorPtr">LeafNodeIteratorPtr</a>, map: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p><a id="0x1_big_ordered_map_spec_iter_preserved"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_preserved">spec_iter_preserved</a>&lt;K, V&gt;(m_new: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, m_old: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p>An iterator is valid for <code>map</code> iff it was created from this map object
+and the object has not been structurally mutated since. End iterators
+carry no position and are always valid.</p>
+<p><a id="0x1_big_ordered_map_spec_iter_valid"></a></p>
+<pre><code><b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>&lt;K, V&gt;(it: <a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">IteratorPtr</a>&lt;K&gt;, map: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool {
+   (it is IteratorPtr::End&lt;K&gt;) || <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_current">spec_iter_current</a>(it, map)
+}
 </code></pre>
 <p><a id="0x1_big_ordered_map_spec_len"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>&lt;K, V&gt;(t: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): num;
@@ -2745,6 +2779,8 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 <b>pragma</b> opaque;
+<b>ensures</b> self == <b>old</b>(self);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_preserved">spec_iter_preserved</a>(self, <b>old</b>(self));
 </code></pre>
 <h3 id="function-is_empty-1"><a class="header" href="#function-is_empty-1">Function <code>is_empty</code> <a id="@Specification_1_is_empty"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_is_empty">is_empty</a>&lt;K: store, V: store&gt;(self: &<a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): bool
@@ -2797,6 +2833,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_current">spec_iter_current</a>(result, self);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(result, self) &lt;==&gt;
     (<b>forall</b> k: K <b>where</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, k):
         std::cmp::compare(k, key) == std::cmp::Ordering::Less);
@@ -2813,6 +2850,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_current">spec_iter_current</a>(result, self);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(result, self) &lt;==&gt; !<a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(result, self) ==&gt; result.key == key;
 </code></pre>
@@ -2822,15 +2860,14 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_current">spec_iter_current</a>(result.iterator, self);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(result.iterator, self) &lt;==&gt; !<a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(result.iterator, self) ==&gt; result.iterator.key == key;
 </code></pre>
 <h3 id="function-iter_with_path_get_iter-1"><a class="header" href="#function-iter_with_path_get_iter-1">Function <code>iter_with_path_get_iter</code> <a id="@Specification_1_iter_with_path_get_iter"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_with_path_get_iter">iter_with_path_get_iter</a>&lt;K: <b>copy</b>, drop, store&gt;(self: &<a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtrWithPath">big_ordered_map::IteratorPtrWithPath</a>&lt;K&gt;): <a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == self.iterator;
 </code></pre>
 <h3 id="function-contains-1"><a class="header" href="#function-contains-1">Function <code>contains</code> <a id="@Specification_1_contains"></a></a></h3>
@@ -2909,6 +2946,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_current">spec_iter_current</a>(result, self);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(result, self) &lt;==&gt; <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == 0;
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(result, self) ==&gt; <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, result.key);
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(result, self) ==&gt;
@@ -2928,6 +2966,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(self, map);
 <b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result &lt;==&gt; <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_is_begin">spec_iter_is_begin</a>(self, map);
 </code></pre>
@@ -2952,6 +2991,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(self, map);
 <b>aborts_if</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map);
 <b>ensures</b> result == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key);
 </code></pre>
@@ -2959,6 +2999,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>public</b> <b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_borrow_mut">iter_borrow_mut</a>&lt;K: drop, store, V: store&gt;(self: <a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">big_ordered_map::IteratorPtr</a>&lt;K&gt;, map: &<b>mut</b> <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">big_ordered_map::BigOrderedMap</a>&lt;K, V&gt;): &<b>mut</b> V
 </code></pre>
 <pre><code><b>pragma</b> intrinsic;
+<b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(self, map);
 </code></pre>
 <p><a id="0x1_big_ordered_map_spec_aborts_iter_borrow_mut"></a></p>
 <pre><code><b>fun</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_aborts_iter_borrow_mut">spec_aborts_iter_borrow_mut</a>&lt;K, V&gt;(self: <a href="big_ordered_map.html#0x1_big_ordered_map_IteratorPtr">IteratorPtr</a>&lt;K&gt;, map: <a href="big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;): bool {
@@ -2982,8 +3023,10 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map) || requires_of&lt;f&gt;(<a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key));
+<b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(self, map);
 <b>aborts_if</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map);
 <b>aborts_if</b> aborts_of&lt;f&gt;(<a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(map, self.key));
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_preserved">spec_iter_preserved</a>(map, <b>old</b>(map));
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, self.key);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(map) == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(map));
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_unchanged_except_at">spec_unchanged_except_at</a>(map, self.key);
@@ -2994,6 +3037,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(self.iterator, map);
 <b>aborts_if</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self.iterator, map);
 <b>ensures</b> result == <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">spec_get</a>(<b>old</b>(map), self.iterator.key);
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, self.iterator.key);
@@ -3005,7 +3049,9 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(self, map);
 <b>aborts_if</b> <a href="big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self, map);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_current">spec_iter_current</a>(result, map);
 <b>ensures</b> (result is IteratorPtr::End&lt;K&gt;) &lt;==&gt;
     (<b>forall</b> k: K <b>where</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k):
         std::cmp::compare(k, self.key) != std::cmp::Ordering::Greater);
@@ -3022,7 +3068,9 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(self, map);
 <b>aborts_if</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_is_begin">spec_iter_is_begin</a>(self, map);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_iter_current">spec_iter_current</a>(result, map);
 <b>ensures</b> !(result is IteratorPtr::End&lt;K&gt;);
 <b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, result.key);
 <b>ensures</b> (self is IteratorPtr::End&lt;K&gt;) ==&gt;
@@ -3041,6 +3089,7 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_leaf_iter_valid">spec_leaf_iter_valid</a>(result, self);
 <b>ensures</b> !<a href="big_ordered_map.html#0x1_big_ordered_map_internal_leaf_iter_is_end">internal_leaf_iter_is_end</a>(result);
 </code></pre>
 <h3 id="function-internal_leaf_iter_is_end-1"><a class="header" href="#function-internal_leaf_iter_is_end-1">Function <code>internal_leaf_iter_is_end</code> <a id="@Specification_1_internal_leaf_iter_is_end"></a></a></h3>
@@ -3063,7 +3112,9 @@ If <code>allow_overwrite</code> is not set, function will abort if <code>key</co
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>requires</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_leaf_iter_valid">spec_leaf_iter_valid</a>(self, map);
 <b>aborts_if</b> <a href="big_ordered_map.html#0x1_big_ordered_map_internal_leaf_iter_is_end">internal_leaf_iter_is_end</a>(self);
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_leaf_iter_valid">spec_leaf_iter_valid</a>(result_2, map);
 <b>ensures</b> <b>forall</b> k: K <b>where</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(result_1, k):
     <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(map, k);
 <b>ensures</b> <b>forall</b> k: K <b>where</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(result_1, k):
