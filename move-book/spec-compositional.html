@@ -369,6 +369,255 @@ spec reduce {
     ensures result == spec_reduce(reducer, vec, start, len(vec));
 }
 </code></pre>
+<h3 id="inline-higher-order-functions"><a class="header" href="#inline-higher-order-functions">Inline Higher-Order Functions</a></h3>
+<p>The higher-order functions shown so far take <em>function values</em> as parameters. Move's <code>inline</code> functions offer an alternative: an inline function is expanded at each call site, with lambda arguments beta-reduced into the body. This is the preferred style for iteration functions over vectors (<code>for_each_mut</code>, <code>map</code>, <code>fold</code>, ...), because a lambda passed to an inline function is spliced into the caller's scope and may therefore capture references — including mutable references — from that scope, which function values cannot.</p>
+<p>For specification purposes, inline functions fall into two classes:</p>
+<ul>
+<li>
+<p>An inline function <strong>without function-typed parameters</strong> may carry a regular function spec block. It is verified standalone against its spec like a regular function, and if it is additionally marked <code>pragma opaque</code>, its calls are retained in the verification model and call sites use the spec instead of the expanded body. This gives modular verification for inline functions that behave like regular functions, for example the abstraction of a loop by a closed form.</p>
+</li>
+<li>
+<p>An inline function <strong>with function-typed parameters</strong> (a higher-order inline function) cannot carry a function spec block:</p>
+<pre><code>error: function spec blocks are not supported for inline functions with
+       function-typed parameters; those functions are verified at each
+       application site
+</code></pre>
+<p>Its calls are always expanded, and callers verify through the expansion, guided by in-body <code>spec { .. }</code> blocks — in particular loop invariants — which may constrain the function parameters via behavioral predicates.</p>
+</li>
+</ul>
+<h4 id="predicate-substitution"><a class="header" href="#predicate-substitution">Predicate Substitution</a></h4>
+<p>When a call to an inline function is expanded, each behavioral predicate whose target resolves to a lambda argument is replaced by that lambda's own specification, with the predicate's arguments substituted:</p>
+<div class="table-wrapper"><table><thead><tr><th>Predicate</th><th>Substituted by</th></tr></thead><tbody>
+<tr><td><code>requires_of&lt;f&gt;(x)</code></td><td>conjunction of the lambda's <code>requires</code> clauses (<code>true</code> if none)</td></tr>
+<tr><td><code>aborts_of&lt;f&gt;(x)</code></td><td>disjunction of the lambda's <code>aborts_if</code> clauses</td></tr>
+<tr><td><code>ensures_of&lt;f&gt;(x, r)</code></td><td>conjunction of the lambda's <code>ensures</code> clauses</td></tr>
+<tr><td><code>result_of&lt;f&gt;(x)</code></td><td>the lambda's functional <code>ensures result == E</code>, or the beta-reduced body otherwise</td></tr>
+</tbody></table>
+</div>
+<p>If the lambda has no attached spec, one is <em>derived</em> from its body by a source-level weakest-precondition analysis. The analysis covers imperative bodies (<code>let</code>, assignment, <code>if</code>/<code>match</code>, mutation through <code>&amp;mut</code> parameters), exact abort conditions of primitive operations, modular summaries for calls to other functions, and global state effects. It fails — with an error asking for an explicit spec block on the lambda — for bodies containing loops, escaping lambda values, or writes through references captured from the enclosing scope:</p>
+<pre><code>error: cannot resolve `aborts_of` for this lambda argument: add a spec block
+       to the lambda (e.g. `|x| .. spec { aborts_if ..; ensures ..; }`)
+</code></pre>
+<p>The substituted conditions are only <em>asserted</em>, never assumed: they are proven against the beta-reduced lambda body at each expansion site, so a wrong lambda spec fails at the call site. Note also that behavioral predicates are the only way to refer to a function parameter in a specification — directly applying it, as in <code>assert f(x) == 0</code>, is an error.</p>
+<p>For a lambda parameter of type <code>&amp;mut T</code>, behavioral predicates must use the canonical <em>dual-argument</em> form: <code>ensures_of&lt;f&gt;(pre, post)</code> receives the pre-state and post-state values of the <code>&amp;mut</code> argument explicitly (<code>old(param)</code> in the lambda's spec is substituted by <code>pre</code>, plain <code>param</code> by <code>post</code>), and <code>aborts_of&lt;f&gt;(pre)</code> receives the pre-state value. The single-argument form of the <a href="#mutable-reference-parameters">Mutable Reference Parameters</a> section is not available here.</p>
+<h4 id="element-wise-loops"><a class="header" href="#element-wise-loops">Element-Wise Loops</a></h4>
+<p>A generic loop invariant in a higher-order inline function constrains the function parameter with behavioral predicates, which are then instantiated per expansion site:</p>
+<pre><code class="language-move">inline fun for_each_mut&lt;T&gt;(v: &amp;mut vector&lt;T&gt;, f: |&amp;mut T|) {
+    let i = 0;
+    let n = vector::length(v);
+    while (i &lt; n) {
+        f(vector::borrow_mut(v, i));
+        i = i + 1;
+    } spec {
+        invariant i &lt;= n;
+        invariant len(v) == len(old(v));
+        invariant n == len(v);
+        invariant forall j in 0..i: ensures_of&lt;f&gt;(old(v)[j], v[j]);
+        invariant forall j in 0..i: !aborts_of&lt;f&gt;(old(v)[j]);
+        invariant forall j in i..n: v[j] == old(v)[j];
+    };
+}
+</code></pre>
+<p>A fully symbolic caller verifies directly. In the following example the lambda has no attached spec, so the derived spec <code>aborts_if e == MAX_U64; ensures e == old(e) + 1</code> is used, and the <code>ensures_of</code> invariant instantiates to <code>forall j in 0..i: v[j] == old(v)[j] + 1</code>:</p>
+<pre><code class="language-move">fun increment_all(v: &amp;mut vector&lt;u64&gt;) {
+    for_each_mut(v, |e| *e = *e + 1);
+}
+spec increment_all {
+    requires forall i in 0..len(v): v[i] &lt; MAX_U64;
+    aborts_if false;
+    ensures forall i in 0..len(v): v[i] == old(v)[i] + 1;
+}
+</code></pre>
+<p>Because the invariant is point-wise quantified, its loop-exit fact transfers to the caller's postcondition by plain first-order reasoning — no induction is involved. Symbolic callers of element-wise HOFs (<code>for_each_ref</code>, <code>for_each_mut</code>, <code>map</code>, <code>find</code>) thus need no additional proof effort.</p>
+<h4 id="accumulating-loops-specializing-spec-functions"><a class="header" href="#accumulating-loops-specializing-spec-functions">Accumulating Loops: Specializing Spec Functions</a></h4>
+<p>A fold relates a whole chain of intermediate accumulator values, which is expressed by a <em>recursive spec function taking the function value as a parameter</em>:</p>
+<pre><code class="language-move">spec fun spec_fold&lt;T, Acc&gt;(f: |Acc, &amp;T| Acc, v: vector&lt;T&gt;, init: Acc, end: u64): Acc {
+    if (end == 0) init
+    else result_of&lt;f&gt;(spec_fold(f, v, init, end - 1), v[end - 1])
+}
+
+inline fun fold&lt;T, Acc: copy + drop&gt;(
+    v: &amp;vector&lt;T&gt;,
+    init: Acc,
+    f: |Acc, &amp;T| Acc has copy + drop,
+): Acc {
+    let acc = init;
+    let i = 0;
+    let n = vector::length(v);
+    while (i &lt; n) {
+        acc = f(acc, vector::borrow(v, i));
+        i = i + 1;
+    } spec {
+        invariant i &lt;= n;
+        invariant n == len(v);
+        invariant acc == spec_fold(f, v, init, i);
+        invariant forall j in 0..i: !aborts_of&lt;f&gt;(spec_fold(f, v, init, j), v[j]);
+    };
+    acc
+}
+</code></pre>
+<p>After expansion, <code>f</code> is a beta-reduced lambda rather than a function value, so the <code>spec_fold(f, ..)</code> calls are resolved by <em>specialization</em>: the prover generates a copy of the spec function per lambda in which the function parameter is eliminated — behavioral predicates over it are substituted as described above, and recursive calls are redirected to the specialization. Free variables of the lambda become additional parameters of the copy.</p>
+<p>A caller can name this specialization in its own spec by calling the spec function with a <em>literal lambda</em>. Specializations are unified by <em>spec-equivalence</em> of the lambdas — alpha-equivalence which treats reference operations as transparent and ignores the integer-type instantiation of arithmetic operators — so the literal lambda <code>|acc, e| acc + e</code> below denotes the same specialized function as the beta-reduced <code>|acc, e| acc + *e</code> from the code, and the postcondition is the loop-exit fact verbatim, verified without any further proof:</p>
+<pre><code class="language-move">fun sum(v: &amp;vector&lt;u64&gt;): u64 {
+    fold(v, 0, |acc, e| acc + *e)
+}
+spec sum {
+    pragma aborts_if_is_partial;
+    ensures result == spec_fold&lt;u64, u64&gt;(|acc, e| acc + e, v, 0, len(v));
+}
+</code></pre>
+<p>The explicit type arguments <code>spec_fold&lt;u64, u64&gt;</code> are required: the type instantiation of the call must agree exactly with the code side, and spec-mode number inference would otherwise widen it to <code>num</code>. This style composes upward — callers of <code>sum</code> see a named recursion and can reason about it by bounded unfolding. The <code>pragma aborts_if_is_partial</code> leaves the abort condition unspecified here; stating it exactly requires the lemma-based bridge of the next section.</p>
+<h4 id="bridging-to-a-user-abstraction"><a class="header" href="#bridging-to-a-user-abstraction">Bridging to a User Abstraction</a></h4>
+<p>Relating the fold to an independently defined recursion requires induction, which is beyond plain SMT reasoning. The gap is closed with <a href="spec-proofs.html#proofs-and-lemmas">lemmas</a>: an inductive bridging lemma restates the code's lambda literally — unifying with the expansion — and equates the specialized recursion with the user's abstraction. Such a lemma is stated <em>once</em> per (lambda, abstraction) pair and reused with a one-line <code>apply</code> at any caller. This gives the <code>sum</code> function above an exact abort condition and a postcondition in terms of the user's own <code>spec_sum</code>:</p>
+<pre><code class="language-move">/// The user's own abstraction: sum of the first `n` elements.
+spec fun spec_sum(v: vector&lt;u64&gt;, n: num): num {
+    if (n == 0) 0 else spec_sum(v, n - 1) + v[n - 1]
+}
+
+/// Bridging lemma: the fold with the addition lambda equals `spec_sum`.
+/// Proven by induction; both sides unfold one step.
+spec lemma fold_is_sum(v: vector&lt;u64&gt;, n: u64) {
+    requires n &lt;= len(v);
+    ensures spec_fold&lt;u64, u64&gt;(|acc, e| acc + e, v, 0, n) == spec_sum(v, n);
+} proof {
+    if (n &gt; 0) {
+        apply fold_is_sum(v, n - 1);
+    }
+}
+
+/// A partial sum plus the next element is bounded by any later partial
+/// sum (elements are non-negative). Needed for the abort direction.
+spec lemma sum_step_bound(v: vector&lt;u64&gt;, i: u64, n: u64) {
+    requires i &lt; n &amp;&amp; n &lt;= len(v);
+    ensures spec_sum(v, i) + v[i] &lt;= spec_sum(v, n);
+} proof {
+    if (i + 1 &lt; n) {
+        apply sum_step_bound(v, i, n - 1);
+    }
+}
+
+spec sum {
+    aborts_if spec_sum(v, len(v)) &gt; MAX_U64;
+    ensures result == spec_sum(v, len(v));
+} proof {
+    apply fold_is_sum(v, len(v));
+    forall n: u64 {spec_fold&lt;u64, u64&gt;(|acc, e| acc + e, v, 0, n)}
+        apply fold_is_sum(v, n);
+    forall i: u64 {spec_fold&lt;u64, u64&gt;(|acc, e| acc + e, v, 0, i)}
+        apply sum_step_bound(v, i, len(v));
+}
+</code></pre>
+<p>The <code>forall .. apply</code> instantiations make the bridging facts available at every prefix length, which the abort direction needs: an abort can occur at any iteration, and <code>sum_step_bound</code> lifts an overflowing step to the total sum. See <a href="spec-proofs.html#proofs-and-lemmas">Proofs and Lemmas</a> for <code>proof</code> blocks, <code>apply</code>, and <code>forall .. apply</code>.</p>
+<h4 id="state-modifying-lambdas"><a class="header" href="#state-modifying-lambdas">State-Modifying Lambdas</a></h4>
+<p>A lambda passed to an inline higher-order function may also modify global state. Its spec (attached or derived) is then two-state: the conditions relate the states before and after the lambda's application. Behavioral predicates over such a lambda are resolved as follows:</p>
+<div class="table-wrapper"><table><thead><tr><th>Context</th><th>Resolution</th></tr></thead><tbody>
+<tr><td>Unique application site outside a loop</td><td><code>old(..)</code> in the substituted conditions refers to the state just before the application</td></tr>
+<tr><td>Loop invariant</td><td><code>old(..)</code> refers to <em>function entry</em> (the invariant's own <code>old(..)</code> scope), plain state reads to the <em>current</em> state; the lambda's whole-memory effects become per-element facts like <code>exists&lt;R&gt;(a) &amp;&amp; R[a].v == ..</code></td></tr>
+</tbody></table>
+</div>
+<p>For loops, a fifth behavioral predicate provides the frame — the part of the two-state contract the per-element facts do not carry:</p>
+<div class="table-wrapper"><table><thead><tr><th>Predicate</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>unchanged_of&lt;f&gt;(args)</code></td><td>The memory <code>f</code> may write when applied to <code>args</code> is unchanged relative to the pre-state</td></tr>
+</tbody></table>
+</div>
+<p><code>unchanged_of</code> is built from the lambda's derived write footprint, is <code>true</code> for a lambda that does not write global state, and is currently only supported over lambda arguments of inline functions. Together this yields a canonical invariant pattern which serves value and state lambdas alike:</p>
+<pre><code class="language-move">inline fun for_each_addr(v: &amp;vector&lt;address&gt;, f: |address|) {
+    let i = 0;
+    let n = vector::length(v);
+    while (i &lt; n) {
+        f(*vector::borrow(v, i));
+        i = i + 1;
+    } spec {
+        invariant i &lt;= n;
+        invariant forall j in 0..i: ensures_of&lt;f&gt;(v[j]);   // per-element facts: pre = entry, post = current
+        invariant forall j in 0..i: !aborts_of&lt;f&gt;(v[j]);   // abort conditions read at entry
+        invariant forall j in i..n: unchanged_of&lt;f&gt;(v[j]); // unprocessed suffix untouched
+        invariant forall x: address: (forall j in 0..i: x != v[j]) ==&gt; unchanged_of&lt;f&gt;(x); // everything else untouched
+    };
+}
+</code></pre>
+<p>A caller passing a resource-updating lambda proves an exact contract, provided the addresses are distinct — each element's footprint must be touched at most once for the per-element facts to be inductive:</p>
+<pre><code class="language-move">struct R has key { v: u64 }
+
+fun bump_all(v: &amp;vector&lt;address&gt;) {
+    for_each_addr(v, |a| {
+        let r = &amp;mut R[a];
+        r.v = r.v + 1;
+    });
+}
+spec bump_all {
+    requires forall i in 0..len(v), j in 0..len(v): i != j ==&gt; v[i] != v[j];
+    requires forall i in 0..len(v): exists&lt;R&gt;(v[i]) &amp;&amp; R[v[i]].v &lt; MAX_U64;
+    aborts_if false;
+    ensures forall i in 0..len(v): R[v[i]].v == old(R[v[i]].v) + 1;
+    ensures forall b: address: (forall j in 0..len(v): v[j] != b) ==&gt;
+        (exists&lt;R&gt;(b) == old(exists&lt;R&gt;(b)) &amp;&amp; (old(exists&lt;R&gt;(b)) ==&gt; R[b].v == old(R[b].v)));
+}
+</code></pre>
+<p>The substituted conditions are asserted against the beta-reduced lambda body, never assumed, so this resolution is sound for any lambda; the distinctness precondition is what makes the invariants provable. Some restrictions remain: a lambda with two dependent global effects cannot be constrained in a loop invariant (the intermediate memory state is not expressible), <code>unchanged_of</code> requires the write footprint to be derivable from the lambda's own body (a call to a state-modifying function hides it), and behavioral predicates in the bodies of spec functions cannot be resolved over state-modifying lambdas.</p>
+<h4 id="capture-accumulating-lambdas-folds_of"><a class="header" href="#capture-accumulating-lambdas-folds_of">Capture-Accumulating Lambdas: folds_of</a></h4>
+<p>The most common imperative iteration pattern accumulates into a variable of the enclosing scope:</p>
+<pre><code class="language-move">let sum = 0;
+v.for_each_ref(|e| sum = sum + *e);
+</code></pre>
+<p>The predicates above cannot describe this lambda: its effect lives in the <em>captured</em> variable <code>sum</code>, which a generic invariant in the higher-order function has no way to name, and the capture's value after <code>i</code> applications is defined by recursion over all previous applications. Such a lambda is a <em>fold</em> — the captured variable is its accumulator — and a dedicated predicate exposes it in the generic loop invariant:</p>
+<div class="table-wrapper"><table><thead><tr><th>Predicate</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>folds_of&lt;f&gt;(v, i)</code></td><td>The captured variables written by <code>f</code> hold the fold of <code>f</code>'s per-application effect over <code>v[0..i]</code> from their values at loop entry, and no application in the prefix aborts</td></tr>
+<tr><td><code>folds_of&lt;f&gt;(|j| (..), i)</code></td><td>The same, with iteration <code>j</code>'s arguments given by a literal index lambda (enumerations, zips, reversed orders)</td></tr>
+</tbody></table>
+</div>
+<p><code>folds_of</code> is only meaningful inside a loop invariant. The element form applies to unary <code>f</code> iterated over a vector; the general form describes the argument tuple of iteration <code>j</code> explicitly, e.g. <code>folds_of&lt;f&gt;(|j| (j, v[j]), i)</code> for an enumerating loop or <code>folds_of&lt;f&gt;(|j| (v1[j], v2[j]), i)</code> for a zip. For a lambda that writes no captures, <code>folds_of</code> degenerates to the prefix no-abort condition alone, so it <em>replaces</em> the point-wise <code>forall j in 0..i: !aborts_of&lt;f&gt;(v[j])</code> conjunct in the canonical invariant pattern (which is not resolvable for capture-writing lambdas):</p>
+<pre><code class="language-move">inline fun each_ref&lt;T&gt;(v: &amp;vector&lt;T&gt;, f: |&amp;T|) {
+    let i = 0;
+    let n = vector::length(v);
+    while (i &lt; n) {
+        f(vector::borrow(v, i));
+        i = i + 1;
+    } spec {
+        invariant i &lt;= n;
+        invariant n == len(v);
+        invariant folds_of&lt;f&gt;(v, i);
+    };
+}
+</code></pre>
+<p>At each expansion the prover derives the lambda's accumulator transformer from its body — for <code>|e| sum = sum + *e</code> the transformer <code>|acc, e| acc + e</code> — snapshots the captures at expansion entry, and specializes a generic fold recursion over the transformer. By convention this recursion is <code>std::vector::spec_fold</code>, resolved there when the vector module declares it; otherwise a declaration of the same shape in the current module serves:</p>
+<pre><code class="language-move">spec fun spec_fold&lt;Element, Acc&gt;(f: |Acc, &amp;Element| Acc, v: vector&lt;Element&gt;, init: Acc, end: u64): Acc {
+    if (end == 0) init
+    else result_of&lt;f&gt;(spec_fold(f, v, init, end - 1), v[end - 1])
+}
+</code></pre>
+<p>(The general form analogously specializes <code>spec_fold_idx</code>, resolved by the same convention, with the index lambda's arguments composed into the transformer.) This is the same specialization-and-unification machinery as for <a href="#accumulating-loops-specializing-spec-functions">accumulating loops</a>, so the restatement idiom carries over verbatim: a caller states the fold with a literal lambda that is spec-equivalent to the derived transformer, and the postcondition is the loop-exit fact — here through the <code>each_ref</code> function and the <code>spec_fold</code> declaration above:</p>
+<pre><code class="language-move">fun sum(v: &amp;vector&lt;u64&gt;): u64 {
+    let sum = 0;
+    each_ref(v, |e| sum = sum + *e);
+    sum
+}
+spec sum {
+    pragma aborts_if_is_partial;
+    ensures result == spec_fold&lt;u64, u64&gt;(|acc, e| acc + e, v, 0, len(v));
+}
+</code></pre>
+<p>When the vector module declares the recursion, the restatement names it as <code>vector::spec_fold&lt;u64, u64&gt;(..)</code> instead. In restatements, annotate integer literals with their concrete type (e.g. <code>1u64</code>): unannotated literals in spec context default to the widest integer type, and the restated lambda must match the code lambda's instantiation exactly to unify.</p>
+<p>Exact abort conditions and postconditions in terms of a user abstraction (<code>spec_sum</code>) work exactly as in <a href="#bridging-to-a-user-abstraction">Bridging to a User Abstraction</a>, with the bridging lemma restating the transformer: <code>ensures spec_fold&lt;u64, u64&gt;(|acc, e| acc + e, v, 0, n) == spec_sum(v, n);</code>.</p>
+<p>With a standard vector module that carries <code>folds_of</code> in the loop invariants of its iteration functions (<code>for_each_ref</code>, <code>zip_ref</code>, <code>enumerate_ref</code>) and declares <code>spec_fold</code>/<code>spec_fold_idx</code>, the pattern above applies to <code>v.for_each_ref(..)</code> directly. The <code>ensures_of</code> predicate remains applicable to capture-writing lambdas by dropping the conditions that mention a capture (a sound weakening — the capture facts are carried by <code>folds_of</code>), while <code>aborts_of</code> and <code>result_of</code> report an error pointing to <code>folds_of</code>.</p>
+<p>A lambda may write <em>several</em> captures, or accumulate <em>through a captured <code>&amp;mut</code> reference</em>. Multiple written captures fold as a tuple with a generated (unnameable) recursion, so exact facts are limited to concrete lengths; for symbolic-length facts about coupled state, couple it in a struct behind a single captured <code>&amp;mut</code> reference — the accumulator is then the referenced struct value, folded by the restatable generic <code>spec_fold</code> with functional field updates as the transformer.</p>
+<p>Boundaries: the captures must have <code>copy</code> and <code>drop</code> (their values are snapshotted at loop entry); the lambda's capture writes and abort conditions must not depend on global state (their per-iteration evaluation state is not expressible in an invariant); the per-iteration effect must be derivable from the body (no loops, no callees without a modular summary); a lambda writing a <em>parameter</em> of the enclosing function is rejected — copy the parameter into a local first; the general form's index lambda must be a literal tuple of the target's arguments, not access global state, and not depend on a written capture; and lambdas with <code>&amp;mut</code> parameters are not supported.</p>
+<h4 id="accumulating-through-a-callee"><a class="header" href="#accumulating-through-a-callee">Accumulating Through a Callee</a></h4>
+<p>The accumulating lambda need not perform the update itself; it may pass the capture — or a <code>&amp;mut</code> reference to it — into a function call:</p>
+<pre><code class="language-move">let m = simple_map::new();
+v.for_each_ref(|e| { m.upsert(key_of(e), val_of(e)); });
+</code></pre>
+<p>The per-iteration effect is then taken from the callee, in this order: intrinsic map operations (add/remove and their variants of the intrinsically modeled map types) have built-in exact effects; otherwise a <em>functional</em> <code>ensures</code> for the <code>&amp;mut</code> parameter in the callee's spec — an unconditional conjunct <code>p == E(old(p), ..)</code>, or a complete set of per-field conjuncts — is consumed (including <code>[abstract]</code> conditions of opaque callees, on the same trust as any opaque spec); otherwise the callee's own body is analyzed, transitively. If none of these yields a value — e.g. the callee's spec is relational only, or its body has loops — <code>folds_of</code> reports an error suggesting exactly these remedies.</p>
+<h4 id="wrapper-higher-order-functions"><a class="header" href="#wrapper-higher-order-functions">Wrapper Higher-Order Functions</a></h4>
+<p>An inline HOF of your own may <em>forward</em> its function parameter into a vector HOF through an adapter lambda, as data-structure containers do:</p>
+<pre><code class="language-move">public inline fun for_each_val&lt;K, V&gt;(self: &amp;Table&lt;K, V&gt;, f: |&amp;V|) {
+    self.entries().for_each_ref(|e| f(e.value_ref()));
+}
+</code></pre>
+<p>The vector HOF's invariants then contain predicates over the adapter, whose behavior depends on the wrapper's parameter <code>f</code>. These predicates are <em>deferred</em>: they are rewritten over <code>f</code> at the adapter's composed arguments and resolve at the wrapper's own call site, against the lambda the caller supplies — behavioral predicates are transitive through forwarding wrappers, across any number of levels. For this to work, the adapter must be a <em>pure forwarder</em>: an effect-free prelude (typically reference projections) followed by a single unconditional application of the parameter. <code>folds_of</code> defers likewise, snapshotting the caller lambda's captures at each entry into the wrapper's expansion — for a bucketed container this yields fold facts <em>per bucket</em> (a whole-table index vocabulary is a planned extension).</p>
+<h4 id="further-restrictions"><a class="header" href="#further-restrictions">Further Restrictions</a></h4>
+<p>In the spec of a lambda constrained by a behavioral predicate of an inline function, <code>old(..)</code> may only be applied directly to a lambda parameter.</p>
+<p>In loop invariants and inline <code>spec { .. }</code> blocks, user-written <code>old(..)</code> over global state — <code>old(global&lt;R&gt;(a))</code>, <code>old(exists&lt;R&gt;(a))</code>, and selections thereof, but not over local variables — is allowed and refers to the state at function entry. This is useful for writing frame invariants by hand when <code>unchanged_of</code> is not derivable.</p>
 <h2 id="access-specifiers-and-frame-conditions"><a class="header" href="#access-specifiers-and-frame-conditions">Access Specifiers and Frame Conditions</a></h2>
 <h3 id="the-modifies_of-and-reads_of-declarations"><a class="header" href="#the-modifies_of-and-reads_of-declarations">The <code>modifies_of</code> and <code>reads_of</code> Declarations</a></h3>
 <p>When a higher-order function takes a function parameter, the prover needs to know which global resources the parameter may read or write in order to establish frame conditions (what is unchanged after the call). Without <code>modifies_of</code>/<code>reads_of</code> declarations, the function parameter is treated as <strong>pure</strong>: its behavioral predicates can only reason about data arguments and return values, not global state. This is correct for transparent (non-opaque) higher-order functions, where the closure body is inlined and verified directly. For opaque higher-order functions whose parameters modify global state, <code>modifies_of</code> and/or <code>reads_of</code> declarations are required to make those effects visible to the specification.</p>
