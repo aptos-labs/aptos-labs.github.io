@@ -187,6 +187,8 @@
 <li><a href="#module-level-spec">Module-level Specification</a></li>
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_initialize_aptos_coin">Function <code>initialize_aptos_coin</code></a></li>
+<li><a href="#@Specification_1_create_accounts">Function <code>create_accounts</code></a></li>
+<li><a href="#@Specification_1_create_employee_validators">Function <code>create_employee_validators</code></a></li>
 <li><a href="#@Specification_1_create_initialize_validators_with_commission">Function <code>create_initialize_validators_with_commission</code></a></li>
 <li><a href="#@Specification_1_create_initialize_validators">Function <code>create_initialize_validators</code></a></li>
 <li><a href="#@Specification_1_create_initialize_validator">Function <code>create_initialize_validator</code></a></li>
@@ -797,7 +799,7 @@ encoded in a single BCS byte array.</p>
 <td>3</td>
 <td>The Aptos coin should be initialized during genesis and only the Aptos framework account should own the mint and burn capabilities for the APT token.</td>
 <td>Critical</td>
-<td>Both mint and burn capabilities are wrapped inside the stake::AptosCoinCapabilities and transaction_fee::AptosCoinCapabilities resources which are stored under the aptos framework account.</td>
+<td>The stake and transaction_fee modules store the mint and burn capabilities under the Aptos framework account.</td>
 <td>Formally verified via <a href="#high-level-req-3">initialize_aptos_coin</a>.</td>
 </tr>
 <tr>
@@ -821,7 +823,8 @@ encoded in a single BCS byte array.</p>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_initialize">initialize</a>(<a href="gas_schedule.html#0x1_gas_schedule">gas_schedule</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="chain_id.html#0x1_chain_id">chain_id</a>: u8, initial_version: u64, <a href="consensus_config.html#0x1_consensus_config">consensus_config</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="execution_config.html#0x1_execution_config">execution_config</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, epoch_interval_microsecs: u64, minimum_stake: u64, maximum_stake: u64, recurring_lockup_duration_secs: u64, allow_validator_set_change: bool, rewards_rate: u64, rewards_rate_denominator: u64, voting_power_increase_limit: u64)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
 <b>include</b> <a href="genesis.html#0x1_genesis_InitalizeRequires">InitalizeRequires</a>;
 // This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
 <b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(@0x0);
@@ -864,15 +867,25 @@ encoded in a single BCS byte array.</p>
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(@aptos_framework);
 <b>ensures</b> <b>exists</b>&lt;<a href="version.html#0x1_version_SetVersionCapability">version::SetVersionCapability</a>&gt;(@aptos_framework);
 <b>ensures</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-initialize_aptos_coin-1"><a class="header" href="#function-initialize_aptos_coin-1">Function <code>initialize_aptos_coin</code> <a id="@Specification_1_initialize_aptos_coin"></a></a></h3>
 <pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_initialize_aptos_coin">initialize_aptos_coin</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
 <b>requires</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
 <b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
-<b>requires</b> <b>exists</b>&lt;<a href="transaction_fee.html#0x1_transaction_fee_AptosCoinCapabilities">transaction_fee::AptosCoinCapabilities</a>&gt;(@aptos_framework);
-<b>ensures</b> <b>exists</b>&lt;<a href="transaction_fee.html#0x1_transaction_fee_AptosCoinCapabilities">transaction_fee::AptosCoinCapabilities</a>&gt;(@aptos_framework);
+</code></pre>
+<h3 id="function-create_accounts-1"><a class="header" href="#function-create_accounts-1">Function <code>create_accounts</code> <a id="@Specification_1_create_accounts"></a></a></h3>
+<pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_create_accounts">create_accounts</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, accounts: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="genesis.html#0x1_genesis_AccountMap">genesis::AccountMap</a>&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-create_employee_validators-1"><a class="header" href="#function-create_employee_validators-1">Function <code>create_employee_validators</code> <a id="@Specification_1_create_employee_validators"></a></a></h3>
+<pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_create_employee_validators">create_employee_validators</a>(employee_vesting_start: u64, employee_vesting_period_duration: u64, employees: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="genesis.html#0x1_genesis_EmployeeAccountMap">genesis::EmployeeAccountMap</a>&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
 </code></pre>
 <h3 id="function-create_initialize_validators_with_commission-1"><a class="header" href="#function-create_initialize_validators_with_commission-1">Function <code>create_initialize_validators_with_commission</code> <a id="@Specification_1_create_initialize_validators_with_commission"></a></a></h3>
 <pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_create_initialize_validators_with_commission">create_initialize_validators_with_commission</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, use_staking_contract: bool, validators: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="genesis.html#0x1_genesis_ValidatorConfigurationWithCommission">genesis::ValidatorConfigurationWithCommission</a>&gt;)

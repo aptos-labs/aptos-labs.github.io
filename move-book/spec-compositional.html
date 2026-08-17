@@ -647,11 +647,16 @@ modifies_of&lt;param_name&gt;(formal_params) Resource1[addr], Resource2[addr], .
     modifies R[addr];
 }
 </code></pre>
-<p>Both declarations are enforced. The prover checks that opaque functions have <code>modifies</code> clauses covering all resources they actually modify. If a function declares <code>reads</code>, the prover checks that every resource the function accesses is covered by either the <code>reads</code> or <code>modifies</code> declaration:</p>
+<p>Both declarations are enforced. An opaque function may omit <code>modifies</code>, but
+the resulting summary is coarse: the prover warns and havocs every address of
+each unframed resource type the implementation can modify. A precise
+<code>modifies</code> clause preserves all other addresses. If a function declares
+<code>reads</code>, the prover checks that every resource the function accesses is
+covered by either the <code>reads</code> or <code>modifies</code> declaration:</p>
 <pre><code>error: function `my_fun` accesses resource `S`
        which is not covered by its `reads` or `modifies` declaration
 </code></pre>
-<p>If no <code>reads</code> declaration is present, no read checking is performed — the prover only checks <code>modifies</code> for opaque functions.</p>
+<p>If no <code>reads</code> declaration is present, no read checking is performed.</p>
 <h3 id="read-access"><a class="header" href="#read-access">Read Access</a></h3>
 <p>When a resource is declared with <code>reads_of</code>, the prover becomes aware that the function parameter's behavior depends on these resources, making it sensitive to their current values. As a secondary effect, <code>reads_of</code> resources are guaranteed unchanged after the function parameter executes, enabling frame conditions at the call site:</p>
 <pre><code class="language-move">fun apply_reads(f: |address| u64, x: address): u64 {
