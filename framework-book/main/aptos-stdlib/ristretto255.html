@@ -937,7 +937,13 @@ Each point is compressed and then converted to bytes.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="ristretto255.html#0x1_ristretto255_points_to_bytes">points_to_bytes</a>(points: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="ristretto255.html#0x1_ristretto255_RistrettoPoint">RistrettoPoint</a>&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt; {
-    points.map_ref(|p| <a href="ristretto255.html#0x1_ristretto255_point_compress_internal">point_compress_internal</a>(p))
+    <b>let</b> result = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+    // `map_ref` is not supported in verification since the <b>native</b> result
+    // depends on hidden `PointStore` state (TODO(#20382)).
+    for (i in 0..points.length()) {
+        result.push_back(<a href="ristretto255.html#0x1_ristretto255_point_compress_internal">point_compress_internal</a>(points.borrow(i)));
+    };
+    result
 }
 </code></pre>
 </details>

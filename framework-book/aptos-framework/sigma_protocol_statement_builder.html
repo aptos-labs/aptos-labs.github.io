@@ -268,13 +268,15 @@ Useful when the caller needs the decompressed points for other purposes (e.g., r
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="sigma_protocol_statement_builder.html#0x1_sigma_protocol_statement_builder_add_points_cloned">add_points_cloned</a>&lt;P&gt;(self: &<b>mut</b> <a href="sigma_protocol_statement_builder.html#0x1_sigma_protocol_statement_builder_StatementBuilder">StatementBuilder</a>&lt;P&gt;, v: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;CompressedRistretto&gt;): (u64, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;RistrettoPoint&gt;) {
     <b>let</b> start = self.points.length();
     <b>let</b> cloned = <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
-    v.for_each_ref(|p| {
-        <b>let</b> p_val = *p;
+    // `for_each_ref` is not supported in verification since
+    // `point_clone` lacks a functional result <b>spec</b> (TODO(#20376)).
+    for (i in 0..v.length()) {
+        <b>let</b> p_val = v[i];
         <b>let</b> decompressed = p_val.point_decompress();
         cloned.push_back(decompressed.point_clone());
         self.points.push_back(decompressed);
         self.compressed_points.push_back(p_val);
-    });
+    };
     (start, cloned)
 }
 </code></pre>

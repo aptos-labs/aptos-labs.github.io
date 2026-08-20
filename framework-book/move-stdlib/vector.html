@@ -776,6 +776,16 @@ Aborts if <code>i</code> is out of bounds.</p>
     <b>while</b> (len &gt; 0) {
         f(self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>());
         len -= 1;
+    } <b>spec</b> {
+        <b>invariant</b> len &lt;= <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> len == <a href="vector.html#0x1_vector_length">length</a>(self);
+        <b>invariant</b> <b>forall</b> j in 0..len: self[j] == <b>old</b>(self)[j];
+        <b>invariant</b> <b>forall</b> j in len..<a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self)):
+            ensures_of&lt;f&gt;(<b>old</b>(self)[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(
+            |j| <b>old</b>(self)[<a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) - 1 - j],
+            <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) - len
+        );
     };
     self.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>()
 }
@@ -793,7 +803,13 @@ Aborts if <code>i</code> is out of bounds.</p>
     <b>while</b> (i &lt; len) {
         f(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i));
         i += 1
-    }
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(self[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(self, i);
+        <b>invariant</b> <b>forall</b> j in i..len: unchanged_of&lt;f&gt;(self[j]);
+        <b>invariant</b> <b>forall</b> x: Element: (<b>forall</b> j in 0..i: x != self[j]) ==&gt; unchanged_of&lt;f&gt;(x);
+    };
 }
 </code></pre>
 </details>
@@ -830,6 +846,22 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (len &gt; 0) {
         f(self.<a href="vector.html#0x1_vector_pop_back">pop_back</a>(), v2.<a href="vector.html#0x1_vector_pop_back">pop_back</a>());
         len -= 1;
+    } <b>spec</b> {
+        <b>invariant</b> len &lt;= <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> len == <a href="vector.html#0x1_vector_length">length</a>(self);
+        <b>invariant</b> len == <a href="vector.html#0x1_vector_length">length</a>(v2);
+        <b>invariant</b> <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) == <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(v2));
+        <b>invariant</b> <b>forall</b> j in 0..len: self[j] == <b>old</b>(self)[j];
+        <b>invariant</b> <b>forall</b> j in 0..len: v2[j] == <b>old</b>(v2)[j];
+        <b>invariant</b> <b>forall</b> j in len..<a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self)):
+            ensures_of&lt;f&gt;(<b>old</b>(self)[j], <b>old</b>(v2)[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(
+            |j| (
+                <b>old</b>(self)[<a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) - 1 - j],
+                <b>old</b>(v2)[<a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(v2)) - 1 - j]
+            ),
+            <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) - len
+        );
     };
     self.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
     v2.<a href="vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
@@ -856,7 +888,14 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i), v2.<a href="vector.html#0x1_vector_borrow">borrow</a>(i));
         i += 1
-    }
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(self[j], v2[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(|j| (self[j], v2[j]), i);
+        <b>invariant</b> <b>forall</b> j in i..len: unchanged_of&lt;f&gt;(self[j], v2[j]);
+        <b>invariant</b> <b>forall</b> x: Element1, y: Element2:
+            (<b>forall</b> j in 0..i: !(x == self[j] && y == v2[j])) ==&gt; unchanged_of&lt;f&gt;(x, y);
+    };
 }
 </code></pre>
 </details>
@@ -872,6 +911,13 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(i, self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i));
         i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(j, self[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(|j| (j, self[j]), i);
+        <b>invariant</b> <b>forall</b> j in i..len: unchanged_of&lt;f&gt;(j, self[j]);
+        <b>invariant</b> <b>forall</b> k: u64, x: Element:
+            (<b>forall</b> j in 0..i: !(k == j && x == self[j])) ==&gt; unchanged_of&lt;f&gt;(k, x);
     };
 }
 </code></pre>
@@ -888,7 +934,14 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(self.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
         i += 1
-    }
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="vector.html#0x1_vector_length">length</a>(self) == <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> len == <a href="vector.html#0x1_vector_length">length</a>(self);
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(<b>old</b>(self)[j], self[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(<b>old</b>(self)[j]);
+        <b>invariant</b> <b>forall</b> j in i..len: self[j] == <b>old</b>(self)[j];
+    };
 }
 </code></pre>
 </details>
@@ -912,7 +965,16 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(self.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i), v2.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
         i += 1
-    }
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="vector.html#0x1_vector_length">length</a>(self) == <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> <a href="vector.html#0x1_vector_length">length</a>(v2) == <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(v2));
+        <b>invariant</b> len == <a href="vector.html#0x1_vector_length">length</a>(self) && len == <a href="vector.html#0x1_vector_length">length</a>(v2);
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(<b>old</b>(self)[j], <b>old</b>(v2)[j], self[j], v2[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(<b>old</b>(self)[j], <b>old</b>(v2)[j]);
+        <b>invariant</b> <b>forall</b> j in i..len: self[j] == <b>old</b>(self)[j];
+        <b>invariant</b> <b>forall</b> j in i..len: v2[j] == <b>old</b>(v2)[j];
+    };
 }
 </code></pre>
 </details>
@@ -928,6 +990,13 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(i, self.<a href="vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
         i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="vector.html#0x1_vector_length">length</a>(self) == <a href="vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> len == <a href="vector.html#0x1_vector_length">length</a>(self);
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(j, <b>old</b>(self)[j], self[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(j, <b>old</b>(self)[j]);
+        <b>invariant</b> <b>forall</b> j in i..len: self[j] == <b>old</b>(self)[j];
     };
 }
 </code></pre>
@@ -980,7 +1049,19 @@ original vector.</p>
     f: |&Element|NewElement
 ): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt; {
     <b>let</b> result = <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;[];
-    self.<a href="vector.html#0x1_vector_for_each_ref">for_each_ref</a>(|elem| result.<a href="vector.html#0x1_vector_push_back">push_back</a>(f(elem)));
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        result.<a href="vector.html#0x1_vector_push_back">push_back</a>(f(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i)));
+        i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="vector.html#0x1_vector_length">length</a>(result) == i;
+        <b>invariant</b> result == <a href="vector.html#0x1_vector_spec_map_ref">spec_map_ref</a>(f, self, i);
+        <b>invariant</b> !<a href="vector.html#0x1_vector_spec_map_ref_aborts">spec_map_ref_aborts</a>(f, self, i);
+        <b>invariant</b> <b>forall</b> j in 0..i: result[j] == result_of&lt;f&gt;(self[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(self[j]);
+    };
     result
 }
 </code></pre>
@@ -1002,7 +1083,17 @@ values without modifying the original vectors.</p>
     <b>assert</b>!(self.<a href="vector.html#0x1_vector_length">length</a>() == v2.<a href="vector.html#0x1_vector_length">length</a>(), 0x20002);
 
     <b>let</b> result = <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt;[];
-    self.<a href="vector.html#0x1_vector_zip_ref">zip_ref</a>(v2, |e1, e2| result.<a href="vector.html#0x1_vector_push_back">push_back</a>(f(e1, e2)));
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        result.<a href="vector.html#0x1_vector_push_back">push_back</a>(f(self.<a href="vector.html#0x1_vector_borrow">borrow</a>(i), v2.<a href="vector.html#0x1_vector_borrow">borrow</a>(i)));
+        i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="vector.html#0x1_vector_length">length</a>(result) == i;
+        <b>invariant</b> <b>forall</b> j in 0..i: result[j] == result_of&lt;f&gt;(self[j], v2[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(self[j], v2[j]);
+    };
     result
 }
 </code></pre>
@@ -1177,6 +1268,13 @@ preserves the relative order of the elements in the two partitions.</p>
             <b>break</b>
         };
         i += 1
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len(self);
+        <b>invariant</b> !result;
+        <b>invariant</b> <b>forall</b> j in 0..i: !result_of&lt;p&gt;(self[j]);
+    };
+    <b>spec</b> {
+        <b>assert</b> result &lt;==&gt; (<b>exists</b> j in 0..len(self): result_of&lt;p&gt;(self[j]));
     };
     result
 }
@@ -1200,6 +1298,13 @@ preserves the relative order of the elements in the two partitions.</p>
             <b>break</b>
         };
         i += 1
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len(self);
+        <b>invariant</b> result;
+        <b>invariant</b> <b>forall</b> j in 0..i: result_of&lt;p&gt;(self[j]);
+    };
+    <b>spec</b> {
+        <b>assert</b> result &lt;==&gt; (<b>forall</b> j in 0..len(self): result_of&lt;p&gt;(self[j]));
     };
     result
 }
@@ -1305,6 +1410,40 @@ when used in the context of destroying a vector.</p>
 <p><a id="0x1_vector_spec_contains"></a></p>
 <pre><code><b>fun</b> <a href="vector.html#0x1_vector_spec_contains">spec_contains</a>&lt;Element&gt;(self: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: Element): bool {
     <b>exists</b> x in self: x == e
+}
+<a id="0x1_vector_spec_fold"></a>
+// This enforces <a id="0..end" href="#high-level-req">high-level requirement </a>:
+<b>fun</b> <a href="vector.html#0x1_vector_spec_fold">spec_fold</a>&lt;Element, Acc&gt;(f: |Acc, &Element| Acc, v: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, init: Acc, end: u64): Acc {
+    <b>if</b> (end == 0) init
+    <b>else</b> result_of&lt;f&gt;(<a href="vector.html#0x1_vector_spec_fold">spec_fold</a>(f, v, init, end - 1), v[end - 1])
+}
+</code></pre>
+<p><code>t</code> folded over indices <code>0..end</code>, starting from <code>init</code>.</p>
+<p><a id="0x1_vector_spec_fold_idx"></a></p>
+<pre><code><b>fun</b> <a href="vector.html#0x1_vector_spec_fold_idx">spec_fold_idx</a>&lt;Acc&gt;(t: |Acc, u64| Acc, init: Acc, end: u64): Acc {
+    <b>if</b> (end == 0) init
+    <b>else</b> result_of&lt;t&gt;(<a href="vector.html#0x1_vector_spec_fold_idx">spec_fold_idx</a>(t, init, end - 1), end - 1)
+}
+<a id="0x1_vector_spec_map_ref"></a>
+// This enforces <a id="0..end" href="#high-level-req">high-level requirement </a>:
+<b>fun</b> <a href="vector.html#0x1_vector_spec_map_ref">spec_map_ref</a>&lt;Element, NewElement&gt;(
+    f: |&Element| NewElement, v: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, end: u64
+): <a href="vector.html#0x1_vector">vector</a>&lt;NewElement&gt; {
+    <b>if</b> (end == 0) vec()
+    <b>else</b> concat(
+        <a href="vector.html#0x1_vector_spec_map_ref">spec_map_ref</a>(f, v, end - 1),
+        vec(result_of&lt;f&gt;(v[end - 1]))
+    )
+}
+<a id="0x1_vector_spec_map_ref_aborts"></a>
+// This enforces <a id="0..end" href="#high-level-req">high-level requirement </a>:
+<b>fun</b> <a href="vector.html#0x1_vector_spec_map_ref_aborts">spec_map_ref_aborts</a>&lt;Element, NewElement&gt;(
+    f: |&Element| NewElement, v: <a href="vector.html#0x1_vector">vector</a>&lt;Element&gt;, end: u64
+): bool {
+    end &gt; 0 && (
+        <a href="vector.html#0x1_vector_spec_map_ref_aborts">spec_map_ref_aborts</a>(f, v, end - 1)
+            || aborts_of&lt;f&gt;(v[end - 1])
+    )
 }
 </code></pre>
 <h3 id="function-singleton-1"><a class="header" href="#function-singleton-1">Function <code>singleton</code> <a id="@Specification_1_singleton"></a></a></h3>

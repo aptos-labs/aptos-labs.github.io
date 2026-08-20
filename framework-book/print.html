@@ -3371,12 +3371,14 @@ Lifetime: transient</p>
         <b>move_to</b>&lt;<a href="move-stdlib/features.html#0x1_features_Features">Features</a>&gt;(framework, <a href="move-stdlib/features.html#0x1_features_Features">Features</a> { <a href="move-stdlib/features.html#0x1_features">features</a>: <a href="move-stdlib/vector.html#0x1_vector">vector</a>[] })
     };
     <b>let</b> <a href="move-stdlib/features.html#0x1_features">features</a> = &<b>mut</b> <a href="move-stdlib/features.html#0x1_features_Features">Features</a>[@std].<a href="move-stdlib/features.html#0x1_features">features</a>;
-    enable.for_each_ref(|feature| {
-        <a href="move-stdlib/features.html#0x1_features_set">set</a>(<a href="move-stdlib/features.html#0x1_features">features</a>, *feature, <b>true</b>);
-    });
-    disable.for_each_ref(|feature| {
-        <a href="move-stdlib/features.html#0x1_features_set">set</a>(<a href="move-stdlib/features.html#0x1_features">features</a>, *feature, <b>false</b>);
-    });
+    // `for_each_ref` is not supported in verification since
+    // bit-<a href="move-stdlib/vector.html#0x1_vector">vector</a> integer mutation is unsupported (TODO(#20375)).
+    for (i in 0..enable.length()) {
+        <a href="move-stdlib/features.html#0x1_features_set">set</a>(<a href="move-stdlib/features.html#0x1_features">features</a>, enable[i], <b>true</b>);
+    };
+    for (i in 0..disable.length()) {
+        <a href="move-stdlib/features.html#0x1_features_set">set</a>(<a href="move-stdlib/features.html#0x1_features">features</a>, disable[i], <b>false</b>);
+    };
 }
 </code></pre>
 </details>
@@ -4722,8 +4724,11 @@ The <code><a href="move-stdlib/option.html#0x1_option_Option">Option</a></code> 
 
     /// Utility function <b>to</b> destroy an <a href="move-stdlib/option.html#0x1_option">option</a> that is not droppable.
     <b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-        <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-        vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+        <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+            d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+        } <b>else</b> {
+            self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+        }
     }
 
     <b>spec</b> <b>module</b> {} // switch documentation context back <b>to</b> <b>module</b> level
@@ -5124,8 +5129,11 @@ The <code><a href="move-stdlib/option.html#0x1_option_Option">Option</a></code> 
 
     /// Utility function <b>to</b> destroy an <a href="move-stdlib/option.html#0x1_option">option</a> that is not droppable.
     <b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-        <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-        vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+        <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+            d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+        } <b>else</b> {
+            self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+        }
     }
 
     <b>spec</b> <b>module</b> {} // switch documentation context back <b>to</b> <b>module</b> level
@@ -5526,8 +5534,11 @@ The <code><a href="move-stdlib/option.html#0x1_option_Option">Option</a></code> 
 
     /// Utility function <b>to</b> destroy an <a href="move-stdlib/option.html#0x1_option">option</a> that is not droppable.
     <b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-        <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-        vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+        <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+            d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+        } <b>else</b> {
+            self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+        }
     }
 
     <b>spec</b> <b>module</b> {} // switch documentation context back <b>to</b> <b>module</b> level
@@ -5928,8 +5939,11 @@ The <code><a href="move-stdlib/option.html#0x1_option_Option">Option</a></code> 
 
     /// Utility function <b>to</b> destroy an <a href="move-stdlib/option.html#0x1_option">option</a> that is not droppable.
     <b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-        <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-        vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+        <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+            d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+        } <b>else</b> {
+            self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+        }
     }
 
     <b>spec</b> <b>module</b> {} // switch documentation context back <b>to</b> <b>module</b> level
@@ -6330,8 +6344,11 @@ The <code><a href="move-stdlib/option.html#0x1_option_Option">Option</a></code> 
 
     /// Utility function <b>to</b> destroy an <a href="move-stdlib/option.html#0x1_option">option</a> that is not droppable.
     <b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-        <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-        vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+        <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+            d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+        } <b>else</b> {
+            self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+        }
     }
 
     <b>spec</b> <b>module</b> {} // switch documentation context back <b>to</b> <b>module</b> level
@@ -6732,8 +6749,11 @@ The <code><a href="move-stdlib/option.html#0x1_option_Option">Option</a></code> 
 
     /// Utility function <b>to</b> destroy an <a href="move-stdlib/option.html#0x1_option">option</a> that is not droppable.
     <b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-        <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-        vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+        <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+            d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+        } <b>else</b> {
+            self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+        }
     }
 
     <b>spec</b> <b>module</b> {} // switch documentation context back <b>to</b> <b>module</b> level
@@ -7134,8 +7154,11 @@ The <code><a href="move-stdlib/option.html#0x1_option_Option">Option</a></code> 
 
     /// Utility function <b>to</b> destroy an <a href="move-stdlib/option.html#0x1_option">option</a> that is not droppable.
     <b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-        <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-        vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+        <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+            d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+        } <b>else</b> {
+            self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+        }
     }
 
     <b>spec</b> <b>module</b> {} // switch documentation context back <b>to</b> <b>module</b> level
@@ -7536,8 +7559,11 @@ The <code><a href="move-stdlib/option.html#0x1_option_Option">Option</a></code> 
 
     /// Utility function <b>to</b> destroy an <a href="move-stdlib/option.html#0x1_option">option</a> that is not droppable.
     <b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-        <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-        vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+        <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+            d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+        } <b>else</b> {
+            self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+        }
     }
 
     <b>spec</b> <b>module</b> {} // switch documentation context back <b>to</b> <b>module</b> level
@@ -7956,8 +7982,11 @@ and an empty vector otherwise</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> inline <b>fun</b> <a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>&lt;Element&gt;(self: <a href="move-stdlib/option.html#0x1_option_Option">Option</a>&lt;Element&gt;, d: |Element|) {
-    <b>let</b> vec = self.<a href="move-stdlib/option.html#0x1_option_to_vec">to_vec</a>();
-    vec.<a href="move-stdlib/option.html#0x1_option_destroy">destroy</a>(|e| d(e));
+    <b>if</b> (self.<a href="move-stdlib/option.html#0x1_option_is_some">is_some</a>()) {
+        d(self.<a href="move-stdlib/option.html#0x1_option_destroy_some">destroy_some</a>())
+    } <b>else</b> {
+        self.<a href="move-stdlib/option.html#0x1_option_destroy_none">destroy_none</a>()
+    }
 }
 </code></pre>
 </details>
@@ -10201,6 +10230,16 @@ Aborts if <code>i</code> is out of bounds.</p>
     <b>while</b> (len &gt; 0) {
         f(self.<a href="move-stdlib/vector.html#0x1_vector_pop_back">pop_back</a>());
         len -= 1;
+    } <b>spec</b> {
+        <b>invariant</b> len &lt;= <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> len == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(self);
+        <b>invariant</b> <b>forall</b> j in 0..len: self[j] == <b>old</b>(self)[j];
+        <b>invariant</b> <b>forall</b> j in len..<a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self)):
+            ensures_of&lt;f&gt;(<b>old</b>(self)[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(
+            |j| <b>old</b>(self)[<a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) - 1 - j],
+            <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) - len
+        );
     };
     self.<a href="move-stdlib/vector.html#0x1_vector_destroy_empty">destroy_empty</a>()
 }
@@ -10218,7 +10257,13 @@ Aborts if <code>i</code> is out of bounds.</p>
     <b>while</b> (i &lt; len) {
         f(self.<a href="move-stdlib/vector.html#0x1_vector_borrow">borrow</a>(i));
         i += 1
-    }
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(self[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(self, i);
+        <b>invariant</b> <b>forall</b> j in i..len: unchanged_of&lt;f&gt;(self[j]);
+        <b>invariant</b> <b>forall</b> x: Element: (<b>forall</b> j in 0..i: x != self[j]) ==&gt; unchanged_of&lt;f&gt;(x);
+    };
 }
 </code></pre>
 </details>
@@ -10255,6 +10300,22 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (len &gt; 0) {
         f(self.<a href="move-stdlib/vector.html#0x1_vector_pop_back">pop_back</a>(), v2.<a href="move-stdlib/vector.html#0x1_vector_pop_back">pop_back</a>());
         len -= 1;
+    } <b>spec</b> {
+        <b>invariant</b> len &lt;= <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> len == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(self);
+        <b>invariant</b> len == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(v2);
+        <b>invariant</b> <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(v2));
+        <b>invariant</b> <b>forall</b> j in 0..len: self[j] == <b>old</b>(self)[j];
+        <b>invariant</b> <b>forall</b> j in 0..len: v2[j] == <b>old</b>(v2)[j];
+        <b>invariant</b> <b>forall</b> j in len..<a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self)):
+            ensures_of&lt;f&gt;(<b>old</b>(self)[j], <b>old</b>(v2)[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(
+            |j| (
+                <b>old</b>(self)[<a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) - 1 - j],
+                <b>old</b>(v2)[<a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(v2)) - 1 - j]
+            ),
+            <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self)) - len
+        );
     };
     self.<a href="move-stdlib/vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
     v2.<a href="move-stdlib/vector.html#0x1_vector_destroy_empty">destroy_empty</a>();
@@ -10281,7 +10342,14 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(self.<a href="move-stdlib/vector.html#0x1_vector_borrow">borrow</a>(i), v2.<a href="move-stdlib/vector.html#0x1_vector_borrow">borrow</a>(i));
         i += 1
-    }
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(self[j], v2[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(|j| (self[j], v2[j]), i);
+        <b>invariant</b> <b>forall</b> j in i..len: unchanged_of&lt;f&gt;(self[j], v2[j]);
+        <b>invariant</b> <b>forall</b> x: Element1, y: Element2:
+            (<b>forall</b> j in 0..i: !(x == self[j] && y == v2[j])) ==&gt; unchanged_of&lt;f&gt;(x, y);
+    };
 }
 </code></pre>
 </details>
@@ -10297,6 +10365,13 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(i, self.<a href="move-stdlib/vector.html#0x1_vector_borrow">borrow</a>(i));
         i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(j, self[j]);
+        <b>invariant</b> folds_of&lt;f&gt;(|j| (j, self[j]), i);
+        <b>invariant</b> <b>forall</b> j in i..len: unchanged_of&lt;f&gt;(j, self[j]);
+        <b>invariant</b> <b>forall</b> k: u64, x: Element:
+            (<b>forall</b> j in 0..i: !(k == j && x == self[j])) ==&gt; unchanged_of&lt;f&gt;(k, x);
     };
 }
 </code></pre>
@@ -10313,7 +10388,14 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(self.<a href="move-stdlib/vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
         i += 1
-    }
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(self) == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> len == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(self);
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(<b>old</b>(self)[j], self[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(<b>old</b>(self)[j]);
+        <b>invariant</b> <b>forall</b> j in i..len: self[j] == <b>old</b>(self)[j];
+    };
 }
 </code></pre>
 </details>
@@ -10337,7 +10419,16 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(self.<a href="move-stdlib/vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i), v2.<a href="move-stdlib/vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
         i += 1
-    }
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(self) == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(v2) == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(v2));
+        <b>invariant</b> len == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(self) && len == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(v2);
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(<b>old</b>(self)[j], <b>old</b>(v2)[j], self[j], v2[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(<b>old</b>(self)[j], <b>old</b>(v2)[j]);
+        <b>invariant</b> <b>forall</b> j in i..len: self[j] == <b>old</b>(self)[j];
+        <b>invariant</b> <b>forall</b> j in i..len: v2[j] == <b>old</b>(v2)[j];
+    };
 }
 </code></pre>
 </details>
@@ -10353,6 +10444,13 @@ This errors out if the vectors are not of the same length.</p>
     <b>while</b> (i &lt; len) {
         f(i, self.<a href="move-stdlib/vector.html#0x1_vector_borrow_mut">borrow_mut</a>(i));
         i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(self) == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(<b>old</b>(self));
+        <b>invariant</b> len == <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(self);
+        <b>invariant</b> <b>forall</b> j in 0..i: ensures_of&lt;f&gt;(j, <b>old</b>(self)[j], self[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(j, <b>old</b>(self)[j]);
+        <b>invariant</b> <b>forall</b> j in i..len: self[j] == <b>old</b>(self)[j];
     };
 }
 </code></pre>
@@ -10405,7 +10503,19 @@ original vector.</p>
     f: |&Element|NewElement
 ): <a href="move-stdlib/vector.html#0x1_vector">vector</a>&lt;NewElement&gt; {
     <b>let</b> result = <a href="move-stdlib/vector.html#0x1_vector">vector</a>&lt;NewElement&gt;[];
-    self.<a href="move-stdlib/vector.html#0x1_vector_for_each_ref">for_each_ref</a>(|elem| result.<a href="move-stdlib/vector.html#0x1_vector_push_back">push_back</a>(f(elem)));
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="move-stdlib/vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        result.<a href="move-stdlib/vector.html#0x1_vector_push_back">push_back</a>(f(self.<a href="move-stdlib/vector.html#0x1_vector_borrow">borrow</a>(i)));
+        i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(result) == i;
+        <b>invariant</b> result == <a href="move-stdlib/vector.html#0x1_vector_spec_map_ref">spec_map_ref</a>(f, self, i);
+        <b>invariant</b> !<a href="move-stdlib/vector.html#0x1_vector_spec_map_ref_aborts">spec_map_ref_aborts</a>(f, self, i);
+        <b>invariant</b> <b>forall</b> j in 0..i: result[j] == result_of&lt;f&gt;(self[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(self[j]);
+    };
     result
 }
 </code></pre>
@@ -10427,7 +10537,17 @@ values without modifying the original vectors.</p>
     <b>assert</b>!(self.<a href="move-stdlib/vector.html#0x1_vector_length">length</a>() == v2.<a href="move-stdlib/vector.html#0x1_vector_length">length</a>(), 0x20002);
 
     <b>let</b> result = <a href="move-stdlib/vector.html#0x1_vector">vector</a>&lt;NewElement&gt;[];
-    self.<a href="move-stdlib/vector.html#0x1_vector_zip_ref">zip_ref</a>(v2, |e1, e2| result.<a href="move-stdlib/vector.html#0x1_vector_push_back">push_back</a>(f(e1, e2)));
+    <b>let</b> i = 0;
+    <b>let</b> len = self.<a href="move-stdlib/vector.html#0x1_vector_length">length</a>();
+    <b>while</b> (i &lt; len) {
+        result.<a href="move-stdlib/vector.html#0x1_vector_push_back">push_back</a>(f(self.<a href="move-stdlib/vector.html#0x1_vector_borrow">borrow</a>(i), v2.<a href="move-stdlib/vector.html#0x1_vector_borrow">borrow</a>(i)));
+        i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> <a href="move-stdlib/vector.html#0x1_vector_length">length</a>(result) == i;
+        <b>invariant</b> <b>forall</b> j in 0..i: result[j] == result_of&lt;f&gt;(self[j], v2[j]);
+        <b>invariant</b> <b>forall</b> j in 0..i: !aborts_of&lt;f&gt;(self[j], v2[j]);
+    };
     result
 }
 </code></pre>
@@ -10602,6 +10722,13 @@ preserves the relative order of the elements in the two partitions.</p>
             <b>break</b>
         };
         i += 1
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len(self);
+        <b>invariant</b> !result;
+        <b>invariant</b> <b>forall</b> j in 0..i: !result_of&lt;p&gt;(self[j]);
+    };
+    <b>spec</b> {
+        <b>assert</b> result &lt;==&gt; (<b>exists</b> j in 0..len(self): result_of&lt;p&gt;(self[j]));
     };
     result
 }
@@ -10625,6 +10752,13 @@ preserves the relative order of the elements in the two partitions.</p>
             <b>break</b>
         };
         i += 1
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len(self);
+        <b>invariant</b> result;
+        <b>invariant</b> <b>forall</b> j in 0..i: result_of&lt;p&gt;(self[j]);
+    };
+    <b>spec</b> {
+        <b>assert</b> result &lt;==&gt; (<b>forall</b> j in 0..len(self): result_of&lt;p&gt;(self[j]));
     };
     result
 }
@@ -10730,6 +10864,40 @@ when used in the context of destroying a vector.</p>
 <p><a id="0x1_vector_spec_contains"></a></p>
 <pre><code><b>fun</b> <a href="move-stdlib/vector.html#0x1_vector_spec_contains">spec_contains</a>&lt;Element&gt;(self: <a href="move-stdlib/vector.html#0x1_vector">vector</a>&lt;Element&gt;, e: Element): bool {
     <b>exists</b> x in self: x == e
+}
+<a id="0x1_vector_spec_fold"></a>
+// This enforces <a id="0..end" href="move-stdlib/vector.html#high-level-req">high-level requirement </a>:
+<b>fun</b> <a href="move-stdlib/vector.html#0x1_vector_spec_fold">spec_fold</a>&lt;Element, Acc&gt;(f: |Acc, &Element| Acc, v: <a href="move-stdlib/vector.html#0x1_vector">vector</a>&lt;Element&gt;, init: Acc, end: u64): Acc {
+    <b>if</b> (end == 0) init
+    <b>else</b> result_of&lt;f&gt;(<a href="move-stdlib/vector.html#0x1_vector_spec_fold">spec_fold</a>(f, v, init, end - 1), v[end - 1])
+}
+</code></pre>
+<p><code>t</code> folded over indices <code>0..end</code>, starting from <code>init</code>.</p>
+<p><a id="0x1_vector_spec_fold_idx"></a></p>
+<pre><code><b>fun</b> <a href="move-stdlib/vector.html#0x1_vector_spec_fold_idx">spec_fold_idx</a>&lt;Acc&gt;(t: |Acc, u64| Acc, init: Acc, end: u64): Acc {
+    <b>if</b> (end == 0) init
+    <b>else</b> result_of&lt;t&gt;(<a href="move-stdlib/vector.html#0x1_vector_spec_fold_idx">spec_fold_idx</a>(t, init, end - 1), end - 1)
+}
+<a id="0x1_vector_spec_map_ref"></a>
+// This enforces <a id="0..end" href="move-stdlib/vector.html#high-level-req">high-level requirement </a>:
+<b>fun</b> <a href="move-stdlib/vector.html#0x1_vector_spec_map_ref">spec_map_ref</a>&lt;Element, NewElement&gt;(
+    f: |&Element| NewElement, v: <a href="move-stdlib/vector.html#0x1_vector">vector</a>&lt;Element&gt;, end: u64
+): <a href="move-stdlib/vector.html#0x1_vector">vector</a>&lt;NewElement&gt; {
+    <b>if</b> (end == 0) vec()
+    <b>else</b> concat(
+        <a href="move-stdlib/vector.html#0x1_vector_spec_map_ref">spec_map_ref</a>(f, v, end - 1),
+        vec(result_of&lt;f&gt;(v[end - 1]))
+    )
+}
+<a id="0x1_vector_spec_map_ref_aborts"></a>
+// This enforces <a id="0..end" href="move-stdlib/vector.html#high-level-req">high-level requirement </a>:
+<b>fun</b> <a href="move-stdlib/vector.html#0x1_vector_spec_map_ref_aborts">spec_map_ref_aborts</a>&lt;Element, NewElement&gt;(
+    f: |&Element| NewElement, v: <a href="move-stdlib/vector.html#0x1_vector">vector</a>&lt;Element&gt;, end: u64
+): bool {
+    end &gt; 0 && (
+        <a href="move-stdlib/vector.html#0x1_vector_spec_map_ref_aborts">spec_map_ref_aborts</a>(f, v, end - 1)
+            || aborts_of&lt;f&gt;(v[end - 1])
+    )
 }
 </code></pre>
 <h3 id="function-singleton-1"><a class="header" href="#function-singleton-1">Function <code>singleton</code> <a id="@Specification_1_singleton"></a></a></h3>
@@ -21503,7 +21671,13 @@ Each point is compressed and then converted to bytes.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-stdlib/ristretto255.html#0x1_ristretto255_points_to_bytes">points_to_bytes</a>(points: &<a href="aptos-stdlib/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-stdlib/ristretto255.html#0x1_ristretto255_RistrettoPoint">RistrettoPoint</a>&gt;): <a href="aptos-stdlib/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-stdlib/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt; {
-    points.map_ref(|p| <a href="aptos-stdlib/ristretto255.html#0x1_ristretto255_point_compress_internal">point_compress_internal</a>(p))
+    <b>let</b> result = <a href="aptos-stdlib/../move-stdlib/vector.html#0x1_vector">vector</a>[];
+    // `map_ref` is not supported in verification since the <b>native</b> result
+    // depends on hidden `PointStore` state (TODO(#20382)).
+    for (i in 0..points.length()) {
+        result.push_back(<a href="aptos-stdlib/ristretto255.html#0x1_ristretto255_point_compress_internal">point_compress_internal</a>(points.borrow(i)));
+    };
+    result
 }
 </code></pre>
 </details>
@@ -24154,6 +24328,18 @@ using lambdas to destroy the individual keys and values.</p>
 </code></pre>
 </details>
 <h2 id="specification-40"><a class="header" href="#specification-40">Specification <a id="@Specification_1"></a></a></h2>
+<p><a id="0x1_simple_map_spec_aborts_destroy_empty"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_aborts_destroy_empty">spec_aborts_destroy_empty</a>&lt;K, V&gt;(m: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p><a id="0x1_simple_map_spec_aborts_add"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_aborts_add">spec_aborts_add</a>&lt;K, V&gt;(m: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K, v: V): bool;
+</code></pre>
+<p><a id="0x1_simple_map_spec_aborts_del"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_aborts_del">spec_aborts_del</a>&lt;K, V&gt;(m: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_simple_map_spec_aborts_borrow"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_aborts_borrow">spec_aborts_borrow</a>&lt;K, V&gt;(m: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
 <h3 id="struct-simplemap-1"><a class="header" href="#struct-simplemap-1">Struct <code>SimpleMap</code> <a id="@Specification_1_SimpleMap"></a></a></h3>
 <pre><code><b>struct</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt; <b>has</b> <b>copy</b>, drop, store
 </code></pre>
@@ -24251,6 +24437,7 @@ using lambdas to destroy the individual keys and values.</p>
 <pre><code><b>pragma</b> intrinsic;
 <b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] self == <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_set">spec_set</a>(<b>old</b>(self), key, value);
 <b>ensures</b> [abstract] !<a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="aptos-stdlib/../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result_1);
 <b>ensures</b> [abstract] !<a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="aptos-stdlib/../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result_2);
 <b>ensures</b> [abstract] <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(self, key);
@@ -24277,18 +24464,6 @@ using lambdas to destroy the individual keys and values.</p>
 </code></pre>
 <p><a id="0x1_simple_map_spec_get"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): V;
-</code></pre>
-<p><a id="0x1_simple_map_spec_aborts_destroy_empty"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_aborts_destroy_empty">spec_aborts_destroy_empty</a>&lt;K, V&gt;(m: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;): bool;
-</code></pre>
-<p><a id="0x1_simple_map_spec_aborts_add"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_aborts_add">spec_aborts_add</a>&lt;K, V&gt;(m: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K, v: V): bool;
-</code></pre>
-<p><a id="0x1_simple_map_spec_aborts_del"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_aborts_del">spec_aborts_del</a>&lt;K, V&gt;(m: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
-</code></pre>
-<p><a id="0x1_simple_map_spec_aborts_borrow"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_spec_aborts_borrow">spec_aborts_borrow</a>&lt;K, V&gt;(m: <a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
 </code></pre>
 <h3 id="function-keys-1"><a class="header" href="#function-keys-1">Function <code>keys</code> <a id="@Specification_1_keys"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-stdlib/simple_map.html#0x1_simple_map_keys">keys</a>&lt;Key: <b>copy</b>, Value&gt;(self: &<a href="aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): <a href="aptos-stdlib/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;
@@ -25286,7 +25461,15 @@ update the value of the entry for <code>key</code> to <code>value</code> otherwi
     f: |&V1|V2
 ): <a href="aptos-stdlib/smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V2&gt; {
     <b>let</b> new_table = <a href="aptos-stdlib/smart_table.html#0x1_smart_table_new">new</a>&lt;K, V2&gt;();
-    self.<a href="aptos-stdlib/smart_table.html#0x1_smart_table_for_each_ref">for_each_ref</a>(|key, value| new_table.<a href="aptos-stdlib/smart_table.html#0x1_smart_table_add">add</a>(*key, f(value)));
+    // `for_each_ref` is not supported in verification since capture
+    // updates cannot depend on a forwarded HOF (TODO(#20383)).
+    for (i in 0..self.<a href="aptos-stdlib/smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>()) {
+        <b>let</b> bucket = self.<a href="aptos-stdlib/smart_table.html#0x1_smart_table_borrow_buckets">borrow_buckets</a>().<a href="aptos-stdlib/smart_table.html#0x1_smart_table_borrow">borrow</a>(i);
+        for (j in 0..bucket.<a href="aptos-stdlib/smart_table.html#0x1_smart_table_length">length</a>()) {
+            <b>let</b> (key, value) = bucket.<a href="aptos-stdlib/smart_table.html#0x1_smart_table_borrow">borrow</a>(j).<a href="aptos-stdlib/smart_table.html#0x1_smart_table_borrow_kv">borrow_kv</a>();
+            new_table.<a href="aptos-stdlib/smart_table.html#0x1_smart_table_add">add</a>(*key, f(value));
+        };
+    };
     new_table
 }
 </code></pre>
@@ -41867,18 +42050,28 @@ package.</p>
     );
 
     <b>let</b> registry = <b>borrow_global_mut</b>&lt;<a href="aptos-framework/code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(code_object_addr);
-    registry.packages.for_each_mut(|pack| {
-        <b>let</b> <b>package</b>: &<b>mut</b> <a href="aptos-framework/code.html#0x1_code_PackageMetadata">PackageMetadata</a> = pack;
+    // `for_each_mut` is not used because effectful HOF verification
+    // does not scale yet (TODO(#20391)).
+    <b>let</b> i = 0;
+    <b>let</b> len = registry.packages.length();
+    <b>while</b> (i &lt; len) {
+        <b>let</b> <b>package</b>: &<b>mut</b> <a href="aptos-framework/code.html#0x1_code_PackageMetadata">PackageMetadata</a> = registry.packages.borrow_mut(i);
         <b>package</b>.upgrade_policy = <a href="aptos-framework/code.html#0x1_code_upgrade_policy_immutable">upgrade_policy_immutable</a>();
-    });
+        i += 1;
+    };
 
     // We unfortunately have <b>to</b> make a <b>copy</b> of each <b>package</b> <b>to</b> avoid borrow checker issues <b>as</b> check_dependencies
     // needs <b>to</b> borrow <a href="aptos-framework/code.html#0x1_code_PackageRegistry">PackageRegistry</a> from the dependency packages.
     // This would increase the amount of gas used, but this is a rare operation and it's rare <b>to</b> have many packages
     // in a single <a href="aptos-framework/code.html#0x1_code">code</a> <a href="aptos-framework/object.html#0x1_object">object</a>.
-    registry.packages.for_each(|pack| {
-        <a href="aptos-framework/code.html#0x1_code_check_dependencies">check_dependencies</a>(code_object_addr, &pack);
-    });
+    <b>let</b> packages = registry.packages;
+    // `for_each` is not used because effectful HOF verification
+    // does not scale yet (TODO(#20391)).
+    <b>let</b> i = 0;
+    <b>while</b> (i &lt; len) {
+        <a href="aptos-framework/code.html#0x1_code_check_dependencies">check_dependencies</a>(code_object_addr, packages.borrow(i));
+        i += 1;
+    };
 }
 </code></pre>
 </details>
@@ -41928,12 +42121,7 @@ of current restrictions for txn parameters, the metadata needs to be passed in s
     // The modules introduced by each <b>package</b> must not overlap <b>with</b> `names`.
     old_pack.modules.for_each_ref(|old_mod| {
         <b>let</b> old_mod: &<a href="aptos-framework/code.html#0x1_code_ModuleMetadata">ModuleMetadata</a> = old_mod;
-        <b>let</b> j = 0;
-        <b>while</b> (j &lt; <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_modules)) {
-            <b>let</b> name = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_borrow">vector::borrow</a>(new_modules, j);
-            <b>assert</b>!(&old_mod.name != name, <a href="aptos-framework/../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="aptos-framework/code.html#0x1_code_EMODULE_NAME_CLASH">EMODULE_NAME_CLASH</a>));
-            j += 1;
-        };
+        <b>assert</b>!(!new_modules.contains(&old_mod.name), <a href="aptos-framework/../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="aptos-framework/code.html#0x1_code_EMODULE_NAME_CLASH">EMODULE_NAME_CLASH</a>));
     });
 }
 </code></pre>
@@ -41987,6 +42175,9 @@ is passed on to the native layer to verify that bytecode dependencies are actual
                 } <b>else</b> {
                     <b>false</b>
                 }
+            } <b>spec</b> {
+                // State the result because the lambda mutates its capture.
+                <b>ensures</b> result == (dep_pack.name == dep.package_name);
             });
             <b>assert</b>!(found, <a href="aptos-framework/../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="aptos-framework/code.html#0x1_code_EPACKAGE_DEP_MISSING">EPACKAGE_DEP_MISSING</a>));
         };
@@ -45002,6 +45193,7 @@ together with their shared P components.</p>
 <li><a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_get_compressed_R_volun_auds">Function <code>get_compressed_R_volun_auds</code></a></li>
 <li><a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_num_volun_auditors_compressed">Function <code>num_volun_auditors_compressed</code></a></li>
 <li><a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_has_effective_auditor_compressed">Function <code>has_effective_auditor_compressed</code></a></li>
+<li><a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_compress_points">Function <code>compress_points</code></a></li>
 <li><a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_compress">Function <code>compress</code></a></li>
 </ul>
 <pre><code><b>use</b> <a href="aptos-framework/confidential_balance.html#0x1_confidential_balance">0x1::confidential_balance</a>;
@@ -45237,6 +45429,16 @@ together with their shared P components.</p>
 }
 </code></pre>
 </details>
+<h2 id="function-compress_points"><a class="header" href="#function-compress_points">Function <code>compress_points</code> <a id="0x1_confidential_amount_compress_points"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_compress_points">compress_points</a>(points: &<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../aptos-stdlib/ristretto255.html#0x1_ristretto255_RistrettoPoint">ristretto255::RistrettoPoint</a>&gt;): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../aptos-stdlib/ristretto255.html#0x1_ristretto255_CompressedRistretto">ristretto255::CompressedRistretto</a>&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_compress_points">compress_points</a>(points: &<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;RistrettoPoint&gt;): <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;CompressedRistretto&gt; {
+    points.map_ref(|point| point.point_compress())
+}
+</code></pre>
+</details>
 <h2 id="function-compress"><a class="header" href="#function-compress">Function <code>compress</code> <a id="0x1_confidential_amount_compress"></a></a></h2>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_compress">compress</a>(self: &<a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_Amount">confidential_amount::Amount</a>): <a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_CompressedAmount">confidential_amount::CompressedAmount</a>
 </code></pre>
@@ -45248,9 +45450,7 @@ together with their shared P components.</p>
         compressed_R_sender: self.R_sender.map_ref(|r| r.point_compress()),
         compressed_R_recip: self.R_recip.map_ref(|r| r.point_compress()),
         compressed_R_eff_aud: self.R_eff_aud.map_ref(|r| r.point_compress()),
-        compressed_R_volun_auds: self.R_volun_auds.map_ref(|rs| {
-            rs.map_ref(|r: &RistrettoPoint| r.point_compress())
-        }),
+        compressed_R_volun_auds: self.R_volun_auds.map_ref(|rs| <a href="aptos-framework/confidential_amount.html#0x1_confidential_amount_compress_points">compress_points</a>(rs)),
     }
 }
 </code></pre>
@@ -58416,9 +58616,11 @@ If it exists, it just returns the signer.</p>
 ) {
     <b>let</b> unique_accounts = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>();
 
-    employees.for_each_ref(|employee_group| {
+    // TODO(#20391): restore `for_each_ref` when effectful HOF verification
+    // supports efficient caller-provided induction invariants.
+    for (i in 0..employees.length()) {
         <b>let</b> j = 0;
-        <b>let</b> employee_group: &<a href="aptos-framework/genesis.html#0x1_genesis_EmployeeAccountMap">EmployeeAccountMap</a> = employee_group;
+        <b>let</b> employee_group = employees.borrow(i);
         <b>let</b> num_employees_in_group = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(&employee_group.accounts);
 
         <b>let</b> buy_ins = <a href="aptos-framework/../aptos-stdlib/simple_map.html#0x1_simple_map_create">simple_map::create</a>();
@@ -58494,7 +58696,7 @@ If it exists, it just returns the signer.</p>
         <b>if</b> (employee_group.validator.join_during_genesis) {
             <a href="aptos-framework/genesis.html#0x1_genesis_initialize_validator">initialize_validator</a>(pool_address, validator);
         };
-    });
+    };
 }
 </code></pre>
 </details>
@@ -75488,13 +75690,15 @@ Useful when the caller needs the decompressed points for other purposes (e.g., r
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/sigma_protocol_statement_builder.html#0x1_sigma_protocol_statement_builder_add_points_cloned">add_points_cloned</a>&lt;P&gt;(self: &<b>mut</b> <a href="aptos-framework/sigma_protocol_statement_builder.html#0x1_sigma_protocol_statement_builder_StatementBuilder">StatementBuilder</a>&lt;P&gt;, v: &<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;CompressedRistretto&gt;): (u64, <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;RistrettoPoint&gt;) {
     <b>let</b> start = self.points.length();
     <b>let</b> cloned = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>[];
-    v.for_each_ref(|p| {
-        <b>let</b> p_val = *p;
+    // `for_each_ref` is not supported in verification since
+    // `point_clone` lacks a functional result <b>spec</b> (TODO(#20376)).
+    for (i in 0..v.length()) {
+        <b>let</b> p_val = v[i];
         <b>let</b> decompressed = p_val.point_decompress();
         cloned.push_back(decompressed.point_clone());
         self.points.push_back(decompressed);
         self.compressed_points.push_back(p_val);
-    });
+    };
     (start, cloned)
 }
 </code></pre>
@@ -80093,51 +80297,49 @@ Should only be called when reconfiguration starts.</p>
         );
     };
 
-    validator_set.active_validators.for_each_ref(
-        |obj| {
-            <b>let</b> vi: &<a href="aptos-framework/stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a> = obj;
-            <b>spec</b> {
-                <b>assume</b> len(validator_consensus_infos)
-                    == len(validator_set.active_validators)
-                        + len(validator_set.pending_inactive);
-                <b>assert</b> vi.config.validator_index &lt; len(validator_consensus_infos);
-            };
-            <b>let</b> vci = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_borrow_mut">vector::borrow_mut</a>(
-                &<b>mut</b> validator_consensus_infos, vi.config.validator_index
-            );
-            *vci = <a href="aptos-framework/validator_consensus_info.html#0x1_validator_consensus_info_new">validator_consensus_info::new</a>(
-                vi.addr, vi.config.consensus_pubkey, vi.voting_power
-            );
-            <b>spec</b> {
-                <b>assert</b> len(validator_consensus_infos)
-                    == len(validator_set.active_validators)
-                        + len(validator_set.pending_inactive);
-            };
-        }
-    );
+    // TODO(#20391): restore `for_each_ref` when effectful HOF verification
+    // supports efficient caller-provided induction invariants.
+    for (i in 0..validator_set.active_validators.length()) {
+        <b>let</b> vi = validator_set.active_validators.borrow(i);
+        <b>spec</b> {
+            <b>assume</b> len(validator_consensus_infos)
+                == len(validator_set.active_validators)
+                    + len(validator_set.pending_inactive);
+            <b>assert</b> vi.config.validator_index &lt; len(validator_consensus_infos);
+        };
+        <b>let</b> vci = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_borrow_mut">vector::borrow_mut</a>(
+            &<b>mut</b> validator_consensus_infos, vi.config.validator_index
+        );
+        *vci = <a href="aptos-framework/validator_consensus_info.html#0x1_validator_consensus_info_new">validator_consensus_info::new</a>(
+            vi.addr, vi.config.consensus_pubkey, vi.voting_power
+        );
+        <b>spec</b> {
+            <b>assert</b> len(validator_consensus_infos)
+                == len(validator_set.active_validators)
+                    + len(validator_set.pending_inactive);
+        };
+    };
 
-    validator_set.pending_inactive.for_each_ref(
-        |obj| {
-            <b>let</b> vi: &<a href="aptos-framework/stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a> = obj;
-            <b>spec</b> {
-                <b>assume</b> len(validator_consensus_infos)
-                    == len(validator_set.active_validators)
-                        + len(validator_set.pending_inactive);
-                <b>assert</b> vi.config.validator_index &lt; len(validator_consensus_infos);
-            };
-            <b>let</b> vci = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_borrow_mut">vector::borrow_mut</a>(
-                &<b>mut</b> validator_consensus_infos, vi.config.validator_index
-            );
-            *vci = <a href="aptos-framework/validator_consensus_info.html#0x1_validator_consensus_info_new">validator_consensus_info::new</a>(
-                vi.addr, vi.config.consensus_pubkey, vi.voting_power
-            );
-            <b>spec</b> {
-                <b>assert</b> len(validator_consensus_infos)
-                    == len(validator_set.active_validators)
-                        + len(validator_set.pending_inactive);
-            };
-        }
-    );
+    for (i in 0..validator_set.pending_inactive.length()) {
+        <b>let</b> vi = validator_set.pending_inactive.borrow(i);
+        <b>spec</b> {
+            <b>assume</b> len(validator_consensus_infos)
+                == len(validator_set.active_validators)
+                    + len(validator_set.pending_inactive);
+            <b>assert</b> vi.config.validator_index &lt; len(validator_consensus_infos);
+        };
+        <b>let</b> vci = <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector_borrow_mut">vector::borrow_mut</a>(
+            &<b>mut</b> validator_consensus_infos, vi.config.validator_index
+        );
+        *vci = <a href="aptos-framework/validator_consensus_info.html#0x1_validator_consensus_info_new">validator_consensus_info::new</a>(
+            vi.addr, vi.config.consensus_pubkey, vi.voting_power
+        );
+        <b>spec</b> {
+            <b>assert</b> len(validator_consensus_infos)
+                == len(validator_set.active_validators)
+                    + len(validator_set.pending_inactive);
+        };
+    };
 
     validator_consensus_infos
 }
@@ -84433,6 +84635,8 @@ not need to be restricted to just the staker or operator.</p>
     // Charge all stakeholders (<b>except</b> for the operator themselves) commission on <a href="aptos-framework/../aptos-stdlib/any.html#0x1_any">any</a> rewards earnt relatively <b>to</b> the
     // previous value of the distribution pool.
     <b>let</b> shareholders = &distribution_pool.shareholders();
+    // TODO(#20373): add exact functional specs for pool mutations so
+    // verification need not weaken this HOF's fold.
     shareholders.for_each_ref(
         |shareholder| {
             <b>let</b> shareholder: <b>address</b> = *shareholder;
@@ -93209,6 +93413,8 @@ address is actually a shareholder address, just return the address back.</p>
     <b>let</b> grant = <a href="aptos-framework/coin.html#0x1_coin_zero">coin::zero</a>&lt;AptosCoin&gt;();
     <b>let</b> grant_amount = 0;
     <b>let</b> grant_pool = <a href="aptos-framework/../aptos-stdlib/pool_u64.html#0x1_pool_u64_create">pool_u64::create</a>(<a href="aptos-framework/vesting.html#0x1_vesting_MAXIMUM_SHAREHOLDERS">MAXIMUM_SHAREHOLDERS</a>);
+    // TODO(#20373): add exact functional specs for pool mutations so
+    // verification need not weaken this HOF's fold.
     shareholders.for_each_ref(|shareholder| {
         <b>let</b> shareholder: <b>address</b> = *shareholder;
         <b>let</b> (_, buy_in) = <a href="aptos-framework/../aptos-stdlib/simple_map.html#0x1_simple_map_remove">simple_map::remove</a>(&<b>mut</b> buy_ins, &shareholder);

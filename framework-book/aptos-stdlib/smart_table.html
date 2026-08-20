@@ -874,7 +874,15 @@ update the value of the entry for <code>key</code> to <code>value</code> otherwi
     f: |&V1|V2
 ): <a href="smart_table.html#0x1_smart_table_SmartTable">SmartTable</a>&lt;K, V2&gt; {
     <b>let</b> new_table = <a href="smart_table.html#0x1_smart_table_new">new</a>&lt;K, V2&gt;();
-    self.<a href="smart_table.html#0x1_smart_table_for_each_ref">for_each_ref</a>(|key, value| new_table.<a href="smart_table.html#0x1_smart_table_add">add</a>(*key, f(value)));
+    // `for_each_ref` is not supported in verification since capture
+    // updates cannot depend on a forwarded HOF (TODO(#20383)).
+    for (i in 0..self.<a href="smart_table.html#0x1_smart_table_num_buckets">num_buckets</a>()) {
+        <b>let</b> bucket = self.<a href="smart_table.html#0x1_smart_table_borrow_buckets">borrow_buckets</a>().<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(i);
+        for (j in 0..bucket.<a href="smart_table.html#0x1_smart_table_length">length</a>()) {
+            <b>let</b> (key, value) = bucket.<a href="smart_table.html#0x1_smart_table_borrow">borrow</a>(j).<a href="smart_table.html#0x1_smart_table_borrow_kv">borrow_kv</a>();
+            new_table.<a href="smart_table.html#0x1_smart_table_add">add</a>(*key, f(value));
+        };
+    };
     new_table
 }
 </code></pre>

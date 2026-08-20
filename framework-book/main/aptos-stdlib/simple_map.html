@@ -538,6 +538,18 @@ using lambdas to destroy the individual keys and values.</p>
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<p><a id="0x1_simple_map_spec_aborts_destroy_empty"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_aborts_destroy_empty">spec_aborts_destroy_empty</a>&lt;K, V&gt;(m: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p><a id="0x1_simple_map_spec_aborts_add"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_aborts_add">spec_aborts_add</a>&lt;K, V&gt;(m: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K, v: V): bool;
+</code></pre>
+<p><a id="0x1_simple_map_spec_aborts_del"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_aborts_del">spec_aborts_del</a>&lt;K, V&gt;(m: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_simple_map_spec_aborts_borrow"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_aborts_borrow">spec_aborts_borrow</a>&lt;K, V&gt;(m: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
 <h3 id="struct-simplemap-1"><a class="header" href="#struct-simplemap-1">Struct <code>SimpleMap</code> <a id="@Specification_1_SimpleMap"></a></a></h3>
 <pre><code><b>struct</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt; <b>has</b> <b>copy</b>, drop, store
 </code></pre>
@@ -635,6 +647,7 @@ using lambdas to destroy the individual keys and values.</p>
 <pre><code><b>pragma</b> intrinsic;
 <b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] self == <a href="simple_map.html#0x1_simple_map_spec_set">spec_set</a>(<b>old</b>(self), key, value);
 <b>ensures</b> [abstract] !<a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result_1);
 <b>ensures</b> [abstract] !<a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result_2);
 <b>ensures</b> [abstract] <a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(self, key);
@@ -661,18 +674,6 @@ using lambdas to destroy the individual keys and values.</p>
 </code></pre>
 <p><a id="0x1_simple_map_spec_get"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): V;
-</code></pre>
-<p><a id="0x1_simple_map_spec_aborts_destroy_empty"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_aborts_destroy_empty">spec_aborts_destroy_empty</a>&lt;K, V&gt;(m: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;): bool;
-</code></pre>
-<p><a id="0x1_simple_map_spec_aborts_add"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_aborts_add">spec_aborts_add</a>&lt;K, V&gt;(m: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K, v: V): bool;
-</code></pre>
-<p><a id="0x1_simple_map_spec_aborts_del"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_aborts_del">spec_aborts_del</a>&lt;K, V&gt;(m: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
-</code></pre>
-<p><a id="0x1_simple_map_spec_aborts_borrow"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_aborts_borrow">spec_aborts_borrow</a>&lt;K, V&gt;(m: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): bool;
 </code></pre>
 <h3 id="function-keys-1"><a class="header" href="#function-keys-1">Function <code>keys</code> <a id="@Specification_1_keys"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_keys">keys</a>&lt;Key: <b>copy</b>, Value&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;Key&gt;
