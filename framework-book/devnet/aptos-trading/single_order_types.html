@@ -198,6 +198,11 @@
 <li><a href="#0x5_single_order_types_destroy_single_order">Function <code>destroy_single_order</code></a></li>
 <li><a href="#0x5_single_order_types_destroy_single_order_request">Function <code>destroy_single_order_request</code></a></li>
 <li><a href="#0x5_single_order_types_new_single_order_request">Function <code>new_single_order_request</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_increase_remaining_size_from_state">Function <code>increase_remaining_size_from_state</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
@@ -747,6 +752,14 @@
 }
 </code></pre>
 </details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-increase_remaining_size_from_state-1"><a class="header" href="#function-increase_remaining_size_from_state-1">Function <code>increase_remaining_size_from_state</code> <a id="@Specification_1_increase_remaining_size_from_state"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_order_types.html#0x5_single_order_types_increase_remaining_size_from_state">increase_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, size: u64)
+</code></pre>
+<pre><code><b>aborts_if</b> self.order.order_request.remaining_size + size &gt; MAX_U64;
+<b>ensures</b> self.order.order_request.remaining_size
+    == <b>old</b>(self.order.order_request.remaining_size) + size;
+</code></pre>
 
                     </main>
 

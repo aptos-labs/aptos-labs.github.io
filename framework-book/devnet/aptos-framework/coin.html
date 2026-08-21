@@ -1930,14 +1930,30 @@ a <code><a href="coin.html#0x1_coin_BurnCapability">BurnCapability</a></code> fo
 </code></pre>
 </details>
 <h2 id="function-upgrade_supply"><a class="header" href="#function-upgrade_supply">Function <code>upgrade_supply</code> <a id="0x1_coin_upgrade_supply"></a></a></h2>
-<p>Upgrade total supply to use a parallelizable implementation if it is
-available.</p>
-<pre><code><b>public</b> entry <b>fun</b> <a href="coin.html#0x1_coin_upgrade_supply">upgrade_supply</a>&lt;CoinType&gt;(_account: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<p>Upgrade total supply to use a non-parallelizable implementation.</p>
+<pre><code><b>public</b> entry <b>fun</b> <a href="coin.html#0x1_coin_upgrade_supply">upgrade_supply</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> entry <b>fun</b> <a href="coin.html#0x1_coin_upgrade_supply">upgrade_supply</a>&lt;CoinType&gt;(_account: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="coin.html#0x1_coin_ECOIN_SUPPLY_UPGRADE_NOT_SUPPORTED">ECOIN_SUPPLY_UPGRADE_NOT_SUPPORTED</a>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="coin.html#0x1_coin_upgrade_supply">upgrade_supply</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(<a href="account.html#0x1_account">account</a>);
+    <b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+
+    // Only <a href="coin.html#0x1_coin">coin</a> creators can upgrade total <a href="coin.html#0x1_coin_supply">supply</a>.
+    <b>assert</b>!(
+        <a href="coin.html#0x1_coin_coin_address">coin_address</a>&lt;CoinType&gt;() == account_addr,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="coin.html#0x1_coin_ECOIN_INFO_ADDRESS_MISMATCH">ECOIN_INFO_ADDRESS_MISMATCH</a>),
+    );
+
+    <b>let</b> maybe_supply = &<b>mut</b> <b>borrow_global_mut</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(account_addr).<a href="coin.html#0x1_coin_supply">supply</a>;
+    <b>if</b> (maybe_supply.is_some()) {
+        <b>let</b> <a href="coin.html#0x1_coin_supply">supply</a> = maybe_supply.borrow_mut();
+        <b>if</b> (<a href="optional_aggregator.html#0x1_optional_aggregator_is_parallelizable">optional_aggregator::is_parallelizable</a>(<a href="coin.html#0x1_coin_supply">supply</a>)) {
+            <a href="optional_aggregator.html#0x1_optional_aggregator_switch">optional_aggregator::switch</a>(<a href="coin.html#0x1_coin_supply">supply</a>);
+        }
+    }
+
+    // <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="coin.html#0x1_coin_ECOIN_SUPPLY_UPGRADE_NOT_SUPPORTED">ECOIN_SUPPLY_UPGRADE_NOT_SUPPORTED</a>)
 }
 </code></pre>
 </details>
@@ -2340,7 +2356,7 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <b>global</b> <a href="coin.html#0x1_coin_supply">supply</a>&lt;CoinType&gt;: num;
 <a id="0x1_coin_aggregate_supply"></a>
 <b>global</b> <a href="coin.html#0x1_coin_aggregate_supply">aggregate_supply</a>&lt;CoinType&gt;: num;
-<b>apply</b> <a href="coin.html#0x1_coin_TotalSupplyTracked">TotalSupplyTracked</a>&lt;CoinType&gt; <b>to</b> *&lt;CoinType&gt; <b>except</b> initialize, initialize_internal, initialize_with_parallelizable_supply;
+<b>apply</b> <a href="coin.html#0x1_coin_TotalSupplyTracked">TotalSupplyTracked</a>&lt;CoinType&gt; <b>to</b> *&lt;CoinType&gt; <b>except</b> initialize, initialize_internal, initialize_with_parallelizable_supply, migrate_coin_store_to_fungible_store;
 </code></pre>
 <p><a id="0x1_coin_spec_fun_supply_tracked"></a></p>
 <pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_fun_supply_tracked">spec_fun_supply_tracked</a>&lt;CoinType&gt;(val: u64, <a href="coin.html#0x1_coin_supply">supply</a>: Option&lt;OptionalAggregator&gt;): bool {
@@ -2667,11 +2683,11 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <b>ensures</b> !coin_store.frozen;
 </code></pre>
 <h3 id="function-upgrade_supply-1"><a class="header" href="#function-upgrade_supply-1">Function <code>upgrade_supply</code> <a id="@Specification_1_upgrade_supply"></a></a></h3>
-<pre><code><b>public</b> entry <b>fun</b> <a href="coin.html#0x1_coin_upgrade_supply">upgrade_supply</a>&lt;CoinType&gt;(_account: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="coin.html#0x1_coin_upgrade_supply">upgrade_supply</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <p>The creator of <code>CoinType</code> must be <code>@aptos_framework</code>.
 <code><a href="coin.html#0x1_coin_SupplyConfig">SupplyConfig</a></code> allow upgrade.</p>
-<pre><code><b>aborts_if</b> <b>true</b>;
+<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_initialize">initialize</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, monitor_supply: bool): (<a href="coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_FreezeCapability">coin::FreezeCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;)
@@ -2696,6 +2712,21 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
     symbol: symbol.bytes
 };
 <b>ensures</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(addr);
+</code></pre>
+<p>Make sure <code>name</code> and <code>symbol</code> are legal length.
+Only the creator of <code>CoinType</code> can initialize.</p>
+<p><a id="0x1_coin_InitializeInternalSchema"></a></p>
+<pre><code><b>schema</b> <a href="coin.html#0x1_coin_InitializeInternalSchema">InitializeInternalSchema</a>&lt;CoinType&gt; {
+    <a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
+    name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+    symbol: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+    <b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+    <b>let</b> coin_address = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
+    <b>aborts_if</b> coin_address != account_addr;
+    <b>aborts_if</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(account_addr);
+    <b>aborts_if</b> len(name) &gt; <a href="coin.html#0x1_coin_MAX_COIN_NAME_LENGTH">MAX_COIN_NAME_LENGTH</a>;
+    <b>aborts_if</b> len(symbol) &gt; <a href="coin.html#0x1_coin_MAX_COIN_SYMBOL_LENGTH">MAX_COIN_SYMBOL_LENGTH</a>;
+}
 </code></pre>
 <h3 id="function-initialize_internal-1"><a class="header" href="#function-initialize_internal-1">Function <code>initialize_internal</code> <a id="@Specification_1_initialize_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="coin.html#0x1_coin_initialize_internal">initialize_internal</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, monitor_supply: bool, parallelizable: bool): (<a href="coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_FreezeCapability">coin::FreezeCapability</a>&lt;CoinType&gt;, <a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;CoinType&gt;)

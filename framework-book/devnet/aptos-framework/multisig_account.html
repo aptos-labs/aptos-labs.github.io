@@ -285,6 +285,7 @@ and implement the governance voting logic on top.</p>
 <li><a href="#0x1_multisig_account_add_transaction">Function <code>add_transaction</code></a></li>
 <li><a href="#0x1_multisig_account_create_multisig_account">Function <code>create_multisig_account</code></a></li>
 <li><a href="#0x1_multisig_account_create_multisig_account_seed">Function <code>create_multisig_account_seed</code></a></li>
+<li><a href="#0x1_multisig_account_assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code></a></li>
 <li><a href="#0x1_multisig_account_validate_owners">Function <code>validate_owners</code></a></li>
 <li><a href="#0x1_multisig_account_assert_is_owner_internal">Function <code>assert_is_owner_internal</code></a></li>
 <li><a href="#0x1_multisig_account_assert_is_owner">Function <code>assert_is_owner</code></a></li>
@@ -348,6 +349,7 @@ and implement the governance voting logic on top.</p>
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
 <b>use</b> <a href="../aptos-stdlib/table.html#0x1_table">0x1::table</a>;
 <b>use</b> <a href="timestamp.html#0x1_timestamp">0x1::timestamp</a>;
+<b>use</b> <a href="transaction_context.html#0x1_transaction_context">0x1::transaction_context</a>;
 <b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
 </code></pre>
 <h2 id="resource-multisigaccount"><a class="header" href="#resource-multisigaccount">Resource <code>MultisigAccount</code> <a id="0x1_multisig_account_MultisigAccount"></a></a></h2>
@@ -1088,6 +1090,11 @@ number of signatures required.</p>
 </dl>
 </details>
 <h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_multisig_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT"></a></p>
+<p>Sequence-number-based creation proofs cannot be used when the proof-bearing account's
+sequence number will not advance, since the signed proof would remain replayable.</p>
+<pre><code><b>const</b> <a href="multisig_account.html#0x1_multisig_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>: u64 = 26;
+</code></pre>
 <p><a id="0x1_multisig_account_ZERO_AUTH_KEY"></a></p>
 <pre><code><b>const</b> <a href="multisig_account.html#0x1_multisig_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 </code></pre>
@@ -1578,6 +1585,10 @@ create_with_existing_account_and_revoke_auth_key instead.</p>
     metadata_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
     metadata_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
 ) {
+    // The creation message embeds the existing <a href="account.html#0x1_account">account</a>'s sequence number so that outstanding
+    // signed messages can be invalidated by advancing it. Reject execution contexts <b>where</b> the
+    // proof-bearing <a href="account.html#0x1_account">account</a>'s sequence number does not advance.
+    <a href="multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     // Verify that the `<a href="multisig_account.html#0x1_multisig_account_MultisigAccountCreationMessage">MultisigAccountCreationMessage</a>` <b>has</b> the right information and is signed by the <a href="account.html#0x1_account">account</a>
     // owner's key.
     <b>let</b> proof_challenge = <a href="multisig_account.html#0x1_multisig_account_MultisigAccountCreationMessage">MultisigAccountCreationMessage</a> {
@@ -1669,6 +1680,10 @@ account.</p>
     metadata_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;String&gt;,
     metadata_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
 ) {
+    // The creation message embeds the existing <a href="account.html#0x1_account">account</a>'s sequence number so that outstanding
+    // signed messages can be invalidated by advancing it. Reject execution contexts <b>where</b> the
+    // proof-bearing <a href="account.html#0x1_account">account</a>'s sequence number does not advance.
+    <a href="multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     // Verify that the `<a href="multisig_account.html#0x1_multisig_account_MultisigAccountCreationMessage">MultisigAccountCreationMessage</a>` <b>has</b> the right information and is signed by the <a href="account.html#0x1_account">account</a>
     // owner's key.
     <b>let</b> proof_challenge = <a href="multisig_account.html#0x1_multisig_account_MultisigAccountCreationWithAuthKeyRevocationMessage">MultisigAccountCreationWithAuthKeyRevocationMessage</a> {
@@ -2662,6 +2677,24 @@ This function is private so no other code can call this beside the VM itself as 
     multisig_account_seed.append(seed);
 
     multisig_account_seed
+}
+</code></pre>
+</details>
+<h2 id="function-assert_seq_num_proof_replay_protected"><a class="header" href="#function-assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code> <a id="0x1_multisig_account_assert_seq_num_proof_replay_protected"></a></a></h2>
+<p>Creation proofs embed the existing account's sequence number to allow invalidating
+outstanding signed messages by advancing it. Orderless transactions do not interact with
+sequence numbers, and multisig payload execution increments only the outer submitter's
+sequence number. Functions verifying such a proof must reject them.</p>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>()
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>() {
+    <b>assert</b>!(
+        !<a href="transaction_context.html#0x1_transaction_context_is_orderless_txn">transaction_context::is_orderless_txn</a>()
+            && !<a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">transaction_context::is_multisig_payload_txn</a>(),
+        <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="multisig_account.html#0x1_multisig_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>),
+    );
 }
 </code></pre>
 </details>

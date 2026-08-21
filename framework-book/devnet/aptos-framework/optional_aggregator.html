@@ -346,7 +346,7 @@ aggregator (parallelizable) or via normal integers.</p>
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_new">new</a>(parallelizable: bool): <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">OptionalAggregator</a> {
+<pre><code><b>friend</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_new">new</a>(parallelizable: bool): <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">OptionalAggregator</a> {
     <b>if</b> (parallelizable) {
         <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">OptionalAggregator</a> {
             <a href="aggregator.html#0x1_aggregator">aggregator</a>: <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="aggregator_factory.html#0x1_aggregator_factory_create_aggregator_internal">aggregator_factory::create_aggregator_internal</a>()),
@@ -362,12 +362,24 @@ aggregator (parallelizable) or via normal integers.</p>
 </code></pre>
 </details>
 <h2 id="function-switch"><a class="header" href="#function-switch">Function <code>switch</code> <a id="0x1_optional_aggregator_switch"></a></a></h2>
-<p>Switches between parallelizable and non-parallelizable implementations.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_switch">switch</a>(_optional_aggregator: &<b>mut</b> <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">optional_aggregator::OptionalAggregator</a>)
+<p>Switches from parallelizable to non-parallelizable implementation.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_switch">switch</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>: &<b>mut</b> <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">optional_aggregator::OptionalAggregator</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_switch">switch</a>(_optional_aggregator: &<b>mut</b> <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">OptionalAggregator</a>) {
+<pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_switch">switch</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>: &<b>mut</b> <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">OptionalAggregator</a>) {
+    <b>if</b> (<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>.<a href="aggregator.html#0x1_aggregator">aggregator</a>.is_some()) {
+        <b>let</b> <a href="aggregator.html#0x1_aggregator">aggregator</a> = <a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>.<a href="aggregator.html#0x1_aggregator">aggregator</a>.extract();
+        <b>let</b> limit = <a href="aggregator.html#0x1_aggregator_limit">aggregator::limit</a>(&<a href="aggregator.html#0x1_aggregator">aggregator</a>);
+        <b>let</b> value = <a href="aggregator.html#0x1_aggregator_read">aggregator::read</a>(&<a href="aggregator.html#0x1_aggregator">aggregator</a>);
+        <a href="aggregator.html#0x1_aggregator_destroy">aggregator::destroy</a>(<a href="aggregator.html#0x1_aggregator">aggregator</a>);
+        <a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>.integer.fill(<a href="optional_aggregator.html#0x1_optional_aggregator_Integer">Integer</a> {
+            value, limit
+        });
+        <b>return</b>;
+    }
+
+    // Do not allow upgrades <b>to</b> parallelizable.
     <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="optional_aggregator.html#0x1_optional_aggregator_ESWITCH_DEPRECATED">ESWITCH_DEPRECATED</a>)
 }
 </code></pre>
@@ -595,9 +607,9 @@ aggregator (parallelizable) or via normal integers.</p>
 <b>ensures</b> <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_limit">optional_aggregator_limit</a>(result) == <a href="optional_aggregator.html#0x1_optional_aggregator_MAX_U128">MAX_U128</a>;
 </code></pre>
 <h3 id="function-switch-1"><a class="header" href="#function-switch-1">Function <code>switch</code> <a id="@Specification_1_switch"></a></a></h3>
-<pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_switch">switch</a>(_optional_aggregator: &<b>mut</b> <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">optional_aggregator::OptionalAggregator</a>)
+<pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_switch">switch</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>: &<b>mut</b> <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">optional_aggregator::OptionalAggregator</a>)
 </code></pre>
-<pre><code><b>aborts_if</b> <b>true</b>;
+<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-destroy-1"><a class="header" href="#function-destroy-1">Function <code>destroy</code> <a id="@Specification_1_destroy"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_destroy">destroy</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>: <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">optional_aggregator::OptionalAggregator</a>)
