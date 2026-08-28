@@ -323,9 +323,25 @@ return true.</p>
 <li><a href="#0x1_features_slh_dsa_sha2_128s_signature_enabled">Function <code>slh_dsa_sha2_128s_signature_enabled</code></a></li>
 <li><a href="#0x1_features_get_encrypted_transactions_feature">Function <code>get_encrypted_transactions_feature</code></a></li>
 <li><a href="#0x1_features_is_encrypted_transactions_enabled">Function <code>is_encrypted_transactions_enabled</code></a></li>
+<li><a href="#0x1_features_get_multisig_script_feature">Function <code>get_multisig_script_feature</code></a></li>
+<li><a href="#0x1_features_is_multisig_script_enabled">Function <code>is_multisig_script_enabled</code></a></li>
 <li><a href="#0x1_features_get_transaction_limits_feature">Function <code>get_transaction_limits_feature</code></a></li>
 <li><a href="#0x1_features_is_transaction_limits_enabled">Function <code>is_transaction_limits_enabled</code></a></li>
 <li><a href="#0x1_features_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
+<li><a href="#0x1_features_get_multisig_timelock_feature">Function <code>get_multisig_timelock_feature</code></a></li>
+<li><a href="#0x1_features_is_multisig_timelock_enabled">Function <code>is_multisig_timelock_enabled</code></a></li>
+<li><a href="#0x1_features_get_trading_native_feature">Function <code>get_trading_native_feature</code></a></li>
+<li><a href="#0x1_features_is_trading_native_enabled">Function <code>is_trading_native_enabled</code></a></li>
+<li><a href="#0x1_features_get_native_position_feature">Function <code>get_native_position_feature</code></a></li>
+<li><a href="#0x1_features_is_native_position_enabled">Function <code>is_native_position_enabled</code></a></li>
+<li><a href="#0x1_features_get_native_orderbook_feature">Function <code>get_native_orderbook_feature</code></a></li>
+<li><a href="#0x1_features_is_native_orderbook_enabled">Function <code>is_native_orderbook_enabled</code></a></li>
+<li><a href="#0x1_features_get_native_collateral_feature">Function <code>get_native_collateral_feature</code></a></li>
+<li><a href="#0x1_features_is_native_collateral_enabled">Function <code>is_native_collateral_enabled</code></a></li>
+<li><a href="#0x1_features_gas_refund_fa_mint_enabled">Function <code>gas_refund_fa_mint_enabled</code></a></li>
+<li><a href="#0x1_features_get_function_value_dispatch_feature">Function <code>get_function_value_dispatch_feature</code></a></li>
+<li><a href="#0x1_features_is_function_value_dispatch_enabled">Function <code>is_function_value_dispatch_enabled</code></a></li>
+<li><a href="#0x1_features_is_lazy_module_initialization_enabled">Function <code>is_lazy_module_initialization_enabled</code></a></li>
 <li><a href="#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -345,6 +361,7 @@ return true.</p>
 <li><a href="#@Specification_1_abort_if_multisig_payload_mismatch_enabled">Function <code>abort_if_multisig_payload_mismatch_enabled</code></a></li>
 <li><a href="#@Specification_1_is_default_account_resource_enabled">Function <code>is_default_account_resource_enabled</code></a></li>
 <li><a href="#@Specification_1_is_storage_slot_natives_enabled">Function <code>is_storage_slot_natives_enabled</code></a></li>
+<li><a href="#@Specification_1_is_multisig_timelock_enabled">Function <code>is_multisig_timelock_enabled</code></a></li>
 <li><a href="#@Specification_1_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="#@Specification_1_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
@@ -466,6 +483,15 @@ Lifetime: transient</p>
 Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_COMMISSION_CHANGE_DELEGATION_POOL">COMMISSION_CHANGE_DELEGATION_POOL</a>: u64 = 42;
 </code></pre>
+<p><a id="0x1_features_COMPUTE_TRADING_NATIVE_STATE_ROOTS"></a></p>
+<p>When enabled, execution computes the trading-native state roots and commits them to
+<code>TransactionInfoV1</code>, so they are consensus-verified. Requires <code><a href="features.html#0x1_features_TRANSACTION_INFO_V1">TRANSACTION_INFO_V1</a></code>.
+Covers the native-position tree today and is intended to cover the other trading-native
+trees as they are added. Enabling it first commits the (empty-tree) roots to transaction
+info; the actual Move-side writes to those trees are gated by separate flags.
+Lifetime: permanent</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_COMPUTE_TRADING_NATIVE_STATE_ROOTS">COMPUTE_TRADING_NATIVE_STATE_ROOTS</a>: u64 = 122;
+</code></pre>
 <p><a id="0x1_features_CONCURRENT_FUNGIBLE_ASSETS"></a></p>
 <p>Whether enable Fungible Asset creation
 to create higher throughput concurrent variants.
@@ -551,6 +577,37 @@ Lifetime: transient</p>
 <p>Whether function reflection is enabled.</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>: u64 = 105;
 </code></pre>
+<p><a id="0x1_features_FUNCTION_VALUE_DISPATCH"></a></p>
+<p>Whether <code>FunctionInfo</code>-based dispatch (dispatchable fungible assets and account
+abstraction) runs via function values from <code>std::reflect</code> instead of the legacy
+native dispatch machinery. Requires <code><a href="features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a></code>.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_FUNCTION_VALUE_DISPATCH">FUNCTION_VALUE_DISPATCH</a>: u64 = 125;
+</code></pre>
+<p><a id="0x1_features_GAS_REFUND_FA_MINT"></a></p>
+<p>When enabled, the gas refund in the epilogue mints APT directly as a fungible asset
+via the paired <code>MintRef</code> (stored in <code>transaction_fee::AptosFAMintCapabilities</code>), instead
+of minting a coin and converting it. This avoids touching the legacy coin supply
+aggregator (v1), reducing Block-STM contention on refund transactions.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_GAS_REFUND_FA_MINT">GAS_REFUND_FA_MINT</a>: u64 = 124;
+</code></pre>
+<p><a id="0x1_features_HOTNESS_IN_EPILOGUE"></a></p>
+<p>When enabled, per-block hot-state promotions are persisted through the block
+epilogue: the promotion set is embedded into the block epilogue transaction
+payload (<code>BlockEpiloguePayload::V2</code>), and every transaction output in the block
+uses the V1 write-set format, which encodes hot-state changes in its serialized
+writes.
+Lifetime: permanent</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_HOTNESS_IN_EPILOGUE">HOTNESS_IN_EPILOGUE</a>: u64 = 116;
+</code></pre>
+<p><a id="0x1_features_HOT_STATE_ROOT_IN_TXN_INFO"></a></p>
+<p>When enabled together with <code><a href="features.html#0x1_features_TRANSACTION_INFO_V1">TRANSACTION_INFO_V1</a></code>, execution populates
+<code>TransactionInfoV1</code>'s hot state root hash, so it is committed to the ledger
+accumulator. Requires <code><a href="features.html#0x1_features_TRANSACTION_INFO_V1">TRANSACTION_INFO_V1</a></code>.
+Lifetime: permanent</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_HOT_STATE_ROOT_IN_TXN_INFO">HOT_STATE_ROOT_IN_TXN_INFO</a>: u64 = 123;
+</code></pre>
 <p><a id="0x1_features_JWK_CONSENSUS"></a></p>
 <p>Deprecated by <code>aptos_framework::jwk_consensus_config::JWKConsensusConfig</code>.</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_JWK_CONSENSUS">JWK_CONSENSUS</a>: u64 = 49;
@@ -582,6 +639,12 @@ in JWK Consensus messages, in validator transactions, and in Move.</li>
 <p>Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_KEYLESS_BUT_ZKLESS_ACCOUNTS">KEYLESS_BUT_ZKLESS_ACCOUNTS</a>: u64 = 47;
 </code></pre>
+<p><a id="0x1_features_LAZY_MODULE_INITIALIZATION"></a></p>
+<p>Whether lazy module initialization via <code>aptos_framework::init::internal_maybe_initialize</code>
+is enabled. While disabled, that entry point aborts.
+Lifetime: transient</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_LAZY_MODULE_INITIALIZATION">LAZY_MODULE_INITIALIZATION</a>: u64 = 127;
+</code></pre>
 <p><a id="0x1_features_MAX_OBJECT_NESTING_CHECK"></a></p>
 <p>Whether checking the maximum object nesting is enabled.</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_MAX_OBJECT_NESTING_CHECK">MAX_OBJECT_NESTING_CHECK</a>: u64 = 53;
@@ -600,6 +663,15 @@ in JWK Consensus messages, in validator transactions, and in Move.</li>
 <p>Whether multisig accounts (different from accounts with multi-ed25519 auth keys) are enabled.</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_MULTISIG_ACCOUNTS">MULTISIG_ACCOUNTS</a>: u64 = 10;
 </code></pre>
+<p><a id="0x1_features_MULTISIG_SCRIPT"></a></p>
+<p>Whether multisig script payloads are enabled. Allows multisig accounts to
+propose and execute Move script payloads, not just entry functions.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MULTISIG_SCRIPT">MULTISIG_SCRIPT</a>: u64 = 110;
+</code></pre>
+<p><a id="0x1_features_MULTISIG_TIMELOCK"></a></p>
+<p>Whether the multisig timelock feature is enabled.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>: u64 = 115;
+</code></pre>
 <p><a id="0x1_features_MULTISIG_V2_ENHANCEMENT"></a></p>
 <p>Whether the Multisig V2 enhancement feature is enabled.</p>
 <p>Lifetime: transient</p>
@@ -611,8 +683,20 @@ This is needed because of the introduction of a new native function.
 Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_MULTI_ED25519_PK_VALIDATE_V2_NATIVES">MULTI_ED25519_PK_VALIDATE_V2_NATIVES</a>: u64 = 7;
 </code></pre>
+<p><a id="0x1_features_NATIVE_COLLATERAL"></a></p>
+<p>Gates native-collateral writes.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>: u64 = 121;
+</code></pre>
 <p><a id="0x1_features_NATIVE_MEMORY_OPERATIONS"></a></p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_MEMORY_OPERATIONS">NATIVE_MEMORY_OPERATIONS</a>: u64 = 80;
+</code></pre>
+<p><a id="0x1_features_NATIVE_ORDERBOOK"></a></p>
+<p>Gates native-orderbook writes.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>: u64 = 120;
+</code></pre>
+<p><a id="0x1_features_NATIVE_POSITION"></a></p>
+<p>Gates native-position writes.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>: u64 = 119;
 </code></pre>
 <p><a id="0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE"></a></p>
 <p>Whether new accounts default to the Fungible Asset store.
@@ -638,9 +722,6 @@ Lifetime: transient</p>
 <p>Whether reward rate decreases periodically.
 Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_PERIODICAL_REWARD_RATE_DECREASE">PERIODICAL_REWARD_RATE_DECREASE</a>: u64 = 16;
-</code></pre>
-<p><a id="0x1_features_PERMISSIONED_SIGNER"></a></p>
-<pre><code><b>const</b> <a href="features.html#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a>: u64 = 84;
 </code></pre>
 <p><a id="0x1_features_RECONFIGURE_WITH_DKG"></a></p>
 <p>Deprecated by <code>aptos_framework::randomness_config::RandomnessConfig</code>.</p>
@@ -686,11 +767,21 @@ Lifetime: transient</p>
 <p>Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_STRUCT_CONSTRUCTORS">STRUCT_CONSTRUCTORS</a>: u64 = 15;
 </code></pre>
+<p><a id="0x1_features_TRADING_NATIVE"></a></p>
+<p>Umbrella auth flag for the native-trading subsystem; the per-store
+flags below gate the actual writes. Both must be on to write.</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>: u64 = 118;
+</code></pre>
 <p><a id="0x1_features_TRANSACTION_CONTEXT_EXTENSION"></a></p>
 <p>Whether the transaction context extension is enabled. This feature allows the module
 <code>transaction_context</code> to provide contextual information about the user transaction.</p>
 <p>Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_TRANSACTION_CONTEXT_EXTENSION">TRANSACTION_CONTEXT_EXTENSION</a>: u64 = 59;
+</code></pre>
+<p><a id="0x1_features_TRANSACTION_INFO_V1"></a></p>
+<p>When enabled, execution assembles <code>TransactionInfoV1</code> instead of <code>TransactionInfoV0</code>.
+Lifetime: permanent</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_TRANSACTION_INFO_V1">TRANSACTION_INFO_V1</a>: u64 = 117;
 </code></pre>
 <p><a id="0x1_features_TRANSACTION_LIMITS"></a></p>
 <p>Whether the transaction limits feature is enabled. Allows transactions
@@ -1771,22 +1862,24 @@ Lifetime: transient</p>
 </code></pre>
 </details>
 <h2 id="function-get_permissioned_signer_feature"><a class="header" href="#function-get_permissioned_signer_feature">Function <code>get_permissioned_signer_feature</code> <a id="0x1_features_get_permissioned_signer_feature"></a></a></h2>
-<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_permissioned_signer_feature">get_permissioned_signer_feature</a>(): u64
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_permissioned_signer_feature">get_permissioned_signer_feature</a>(): u64
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_permissioned_signer_feature">get_permissioned_signer_feature</a>(): u64 {
-    <a href="features.html#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a>
+    <b>abort</b> <a href="error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.html#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
 }
 </code></pre>
 </details>
 <h2 id="function-is_permissioned_signer_enabled"><a class="header" href="#function-is_permissioned_signer_enabled">Function <code>is_permissioned_signer_enabled</code> <a id="0x1_features_is_permissioned_signer_enabled"></a></a></h2>
-<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_permissioned_signer_enabled">is_permissioned_signer_enabled</a>(): bool
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_permissioned_signer_enabled">is_permissioned_signer_enabled</a>(): bool
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_permissioned_signer_enabled">is_permissioned_signer_enabled</a>(): bool {
-    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a>)
+    <b>false</b>
 }
 </code></pre>
 </details>
@@ -2055,6 +2148,26 @@ Lifetime: transient</p>
 }
 </code></pre>
 </details>
+<h2 id="function-get_multisig_script_feature"><a class="header" href="#function-get_multisig_script_feature">Function <code>get_multisig_script_feature</code> <a id="0x1_features_get_multisig_script_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_script_feature">get_multisig_script_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_script_feature">get_multisig_script_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MULTISIG_SCRIPT">MULTISIG_SCRIPT</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_multisig_script_enabled"><a class="header" href="#function-is_multisig_script_enabled">Function <code>is_multisig_script_enabled</code> <a id="0x1_features_is_multisig_script_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_script_enabled">is_multisig_script_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_script_enabled">is_multisig_script_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MULTISIG_SCRIPT">MULTISIG_SCRIPT</a>)
+}
+</code></pre>
+</details>
 <h2 id="function-get_transaction_limits_feature"><a class="header" href="#function-get_transaction_limits_feature">Function <code>get_transaction_limits_feature</code> <a id="0x1_features_get_transaction_limits_feature"></a></a></h2>
 <pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_transaction_limits_feature">get_transaction_limits_feature</a>(): u64
 </code></pre>
@@ -2082,6 +2195,147 @@ Lifetime: transient</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_storage_slot_natives_enabled">is_storage_slot_natives_enabled</a>(): bool {
     <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_multisig_timelock_feature"><a class="header" href="#function-get_multisig_timelock_feature">Function <code>get_multisig_timelock_feature</code> <a id="0x1_features_get_multisig_timelock_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_timelock_feature">get_multisig_timelock_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_multisig_timelock_feature">get_multisig_timelock_feature</a>(): u64 {
+    <a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_multisig_timelock_enabled"><a class="header" href="#function-is_multisig_timelock_enabled">Function <code>is_multisig_timelock_enabled</code> <a id="0x1_features_is_multisig_timelock_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_timelock_enabled">is_multisig_timelock_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_timelock_enabled">is_multisig_timelock_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_trading_native_feature"><a class="header" href="#function-get_trading_native_feature">Function <code>get_trading_native_feature</code> <a id="0x1_features_get_trading_native_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_trading_native_feature">get_trading_native_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_trading_native_feature">get_trading_native_feature</a>(): u64 {
+    <a href="features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_trading_native_enabled"><a class="header" href="#function-is_trading_native_enabled">Function <code>is_trading_native_enabled</code> <a id="0x1_features_is_trading_native_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_trading_native_enabled">is_trading_native_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_trading_native_enabled">is_trading_native_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_TRADING_NATIVE">TRADING_NATIVE</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_position_feature"><a class="header" href="#function-get_native_position_feature">Function <code>get_native_position_feature</code> <a id="0x1_features_get_native_position_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_position_feature">get_native_position_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_position_feature">get_native_position_feature</a>(): u64 {
+    <a href="features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_position_enabled"><a class="header" href="#function-is_native_position_enabled">Function <code>is_native_position_enabled</code> <a id="0x1_features_is_native_position_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_position_enabled">is_native_position_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_position_enabled">is_native_position_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_NATIVE_POSITION">NATIVE_POSITION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_orderbook_feature"><a class="header" href="#function-get_native_orderbook_feature">Function <code>get_native_orderbook_feature</code> <a id="0x1_features_get_native_orderbook_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_orderbook_feature">get_native_orderbook_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_orderbook_feature">get_native_orderbook_feature</a>(): u64 {
+    <a href="features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_orderbook_enabled"><a class="header" href="#function-is_native_orderbook_enabled">Function <code>is_native_orderbook_enabled</code> <a id="0x1_features_is_native_orderbook_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_orderbook_enabled">is_native_orderbook_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_orderbook_enabled">is_native_orderbook_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_NATIVE_ORDERBOOK">NATIVE_ORDERBOOK</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_native_collateral_feature"><a class="header" href="#function-get_native_collateral_feature">Function <code>get_native_collateral_feature</code> <a id="0x1_features_get_native_collateral_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_collateral_feature">get_native_collateral_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_native_collateral_feature">get_native_collateral_feature</a>(): u64 {
+    <a href="features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_native_collateral_enabled"><a class="header" href="#function-is_native_collateral_enabled">Function <code>is_native_collateral_enabled</code> <a id="0x1_features_is_native_collateral_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_collateral_enabled">is_native_collateral_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_native_collateral_enabled">is_native_collateral_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_NATIVE_COLLATERAL">NATIVE_COLLATERAL</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-gas_refund_fa_mint_enabled"><a class="header" href="#function-gas_refund_fa_mint_enabled">Function <code>gas_refund_fa_mint_enabled</code> <a id="0x1_features_gas_refund_fa_mint_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_gas_refund_fa_mint_enabled">gas_refund_fa_mint_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_gas_refund_fa_mint_enabled">gas_refund_fa_mint_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_GAS_REFUND_FA_MINT">GAS_REFUND_FA_MINT</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-get_function_value_dispatch_feature"><a class="header" href="#function-get_function_value_dispatch_feature">Function <code>get_function_value_dispatch_feature</code> <a id="0x1_features_get_function_value_dispatch_feature"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_function_value_dispatch_feature">get_function_value_dispatch_feature</a>(): u64
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_get_function_value_dispatch_feature">get_function_value_dispatch_feature</a>(): u64 {
+    <a href="features.html#0x1_features_FUNCTION_VALUE_DISPATCH">FUNCTION_VALUE_DISPATCH</a>
+}
+</code></pre>
+</details>
+<h2 id="function-is_function_value_dispatch_enabled"><a class="header" href="#function-is_function_value_dispatch_enabled">Function <code>is_function_value_dispatch_enabled</code> <a id="0x1_features_is_function_value_dispatch_enabled"></a></a></h2>
+<p>Requires function reflection, without which function-value dispatch stays disabled.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_function_value_dispatch_enabled">is_function_value_dispatch_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_function_value_dispatch_enabled">is_function_value_dispatch_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_FUNCTION_VALUE_DISPATCH">FUNCTION_VALUE_DISPATCH</a>) && <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_FUNCTION_REFLECTION">FUNCTION_REFLECTION</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-is_lazy_module_initialization_enabled"><a class="header" href="#function-is_lazy_module_initialization_enabled">Function <code>is_lazy_module_initialization_enabled</code> <a id="0x1_features_is_lazy_module_initialization_enabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_lazy_module_initialization_enabled">is_lazy_module_initialization_enabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_lazy_module_initialization_enabled">is_lazy_module_initialization_enabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_LAZY_MODULE_INITIALIZATION">LAZY_MODULE_INITIALIZATION</a>)
 }
 </code></pre>
 </details>
@@ -2306,14 +2560,9 @@ who have permission to set the flag that's checked in <code>extract()</code>.</p
    <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH">ABORT_IF_MULTISIG_PAYLOAD_MISMATCH</a>)
 }
 </code></pre>
-<p><a id="0x1_features_spec_new_accounts_default_to_fa_store_enabled"></a></p>
-<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_new_accounts_default_to_fa_store_enabled">spec_new_accounts_default_to_fa_store_enabled</a>(): bool {
-   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_STORE</a>)
-}
-</code></pre>
-<p><a id="0x1_features_spec_simulation_enhancement_enabled"></a></p>
-<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_simulation_enhancement_enabled">spec_simulation_enhancement_enabled</a>(): bool {
-   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT">TRANSACTION_SIMULATION_ENHANCEMENT</a>)
+<p><a id="0x1_features_spec_multisig_timelock_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_multisig_timelock_enabled">spec_multisig_timelock_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_MULTISIG_TIMELOCK">MULTISIG_TIMELOCK</a>)
 }
 </code></pre>
 <h3 id="function-abort_if_multisig_payload_mismatch_enabled-1"><a class="header" href="#function-abort_if_multisig_payload_mismatch_enabled-1">Function <code>abort_if_multisig_payload_mismatch_enabled</code> <a id="@Specification_1_abort_if_multisig_payload_mismatch_enabled"></a></a></h3>
@@ -2336,6 +2585,23 @@ who have permission to set the flag that's checked in <code>extract()</code>.</p
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_STORAGE_SLOT_NATIVES">STORAGE_SLOT_NATIVES</a>);
+</code></pre>
+<h3 id="function-is_multisig_timelock_enabled-1"><a class="header" href="#function-is_multisig_timelock_enabled-1">Function <code>is_multisig_timelock_enabled</code> <a id="@Specification_1_is_multisig_timelock_enabled"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_multisig_timelock_enabled">is_multisig_timelock_enabled</a>(): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="features.html#0x1_features_spec_multisig_timelock_enabled">spec_multisig_timelock_enabled</a>();
+</code></pre>
+<p><a id="0x1_features_spec_new_accounts_default_to_fa_store_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_new_accounts_default_to_fa_store_enabled">spec_new_accounts_default_to_fa_store_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_STORE</a>)
+}
+</code></pre>
+<p><a id="0x1_features_spec_simulation_enhancement_enabled"></a></p>
+<pre><code><b>fun</b> <a href="features.html#0x1_features_spec_simulation_enhancement_enabled">spec_simulation_enhancement_enabled</a>(): bool {
+   <a href="features.html#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.html#0x1_features_TRANSACTION_SIMULATION_ENHANCEMENT">TRANSACTION_SIMULATION_ENHANCEMENT</a>)
+}
 </code></pre>
 <h3 id="function-change_feature_flags_internal-1"><a class="header" href="#function-change_feature_flags_internal-1">Function <code>change_feature_flags_internal</code> <a id="@Specification_1_change_feature_flags_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>(framework: &<a href="signer.html#0x1_signer">signer</a>, enable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.html#0x1_vector">vector</a>&lt;u64&gt;)

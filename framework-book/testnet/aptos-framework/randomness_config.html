@@ -181,7 +181,12 @@
 <li><a href="#0x1_randomness_config_current">Function <code>current</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_1_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#@Specification_1_new_off">Function <code>new_off</code></a></li>
+<li><a href="#@Specification_1_new_v1">Function <code>new_v1</code></a></li>
+<li><a href="#@Specification_1_new_v2">Function <code>new_v2</code></a></li>
 <li><a href="#@Specification_1_current">Function <code>current</code></a></li>
 </ul>
 </li>
@@ -406,17 +411,61 @@ The feature works if and only if <code><a href="consensus_config.html#0x1_consen
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_config.html#0x1_randomness_config_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">randomness_config::RandomnessConfig</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_InitializeResource">config_buffer::InitializeResource</a>&lt;<a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a>&gt;;
+</code></pre>
+<h3 id="function-set_for_next_epoch-1"><a class="header" href="#function-set_for_next_epoch-1">Function <code>set_for_next_epoch</code> <a id="@Specification_1_set_for_next_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_config.html#0x1_randomness_config_set_for_next_epoch">set_for_next_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_config: <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">randomness_config::RandomnessConfig</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpoch">config_buffer::SetForNextEpoch</a>&lt;<a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a>&gt;;
+</code></pre>
 <h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="randomness_config.html#0x1_randomness_config_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>requires</b> @aptos_framework == std::signer::address_of(framework);
-<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochRequirement">config_buffer::OnNewEpochRequirement</a>&lt;<a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a>&gt;;
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a>&gt;;
+</code></pre>
+<h3 id="function-new_off-1"><a class="header" href="#function-new_off-1">Function <code>new_off</code> <a id="@Specification_1_new_off"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_config.html#0x1_randomness_config_new_off">new_off</a>(): <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">randomness_config::RandomnessConfig</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a> { variant: <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_pack">copyable_any::pack</a>(<a href="randomness_config.html#0x1_randomness_config_ConfigOff">ConfigOff</a> {}) };
+</code></pre>
+<h3 id="function-new_v1-1"><a class="header" href="#function-new_v1-1">Function <code>new_v1</code> <a id="@Specification_1_new_v1"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_config.html#0x1_randomness_config_new_v1">new_v1</a>(secrecy_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, reconstruction_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>): <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">randomness_config::RandomnessConfig</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a> {
+    variant: <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_pack">copyable_any::pack</a>(<a href="randomness_config.html#0x1_randomness_config_ConfigV1">ConfigV1</a> { secrecy_threshold, reconstruction_threshold })
+};
+</code></pre>
+<h3 id="function-new_v2-1"><a class="header" href="#function-new_v2-1">Function <code>new_v2</code> <a id="@Specification_1_new_v2"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_config.html#0x1_randomness_config_new_v2">new_v2</a>(secrecy_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, reconstruction_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>, fast_path_secrecy_threshold: <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>): <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">randomness_config::RandomnessConfig</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a> {
+    variant: <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_pack">copyable_any::pack</a>(<a href="randomness_config.html#0x1_randomness_config_ConfigV2">ConfigV2</a> {
+        secrecy_threshold,
+        reconstruction_threshold,
+        fast_path_secrecy_threshold,
+    })
+};
 </code></pre>
 <h3 id="function-current-1"><a class="header" href="#function-current-1">Function <code>current</code> <a id="@Specification_1_current"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness_config.html#0x1_randomness_config_current">current</a>(): <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">randomness_config::RandomnessConfig</a>
 </code></pre>
 <pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <b>exists</b>&lt;<a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a>&gt;(@aptos_framework) ==&gt;
+    result == <b>global</b>&lt;<a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> !<b>exists</b>&lt;<a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a>&gt;(@aptos_framework) ==&gt;
+    result == <a href="randomness_config.html#0x1_randomness_config_RandomnessConfig">RandomnessConfig</a> { variant: <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_pack">copyable_any::pack</a>(<a href="randomness_config.html#0x1_randomness_config_ConfigOff">ConfigOff</a> {}) };
 </code></pre>
 
                     </main>

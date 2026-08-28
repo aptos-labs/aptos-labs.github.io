@@ -1313,6 +1313,77 @@ using lambdas to destroy the individual keys and values.</p>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
+<p><a id="0x1_ordered_map_spec_key_at"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, i: num): K;
+</code></pre>
+<p>Witness-test support: sum of the values at the first <code>n</code> keys.</p>
+<p><a id="0x1_ordered_map_spec_om_sum_upto"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_om_sum_upto">spec_om_sum_upto</a>(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;u64, u64&gt;, n: num): num {
+   <b>if</b> (n &lt;= 0) { 0 } <b>else</b> { <a href="ordered_map.html#0x1_ordered_map_spec_om_sum_upto">spec_om_sum_upto</a>(m, n - 1) + <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(m, <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(m, n - 1)) }
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_rank"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_rank">spec_rank</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): num;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_set"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_set">spec_set</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K, v: V): <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_remove"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_remove">spec_remove</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_get"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): V;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_destroy_empty"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_destroy_empty">spec_aborts_destroy_empty</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_add"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_add">spec_aborts_add</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K, v: V): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_del"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_del">spec_aborts_del</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_borrow"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_borrow">spec_aborts_borrow</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): bool;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_empty"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_empty">spec_aborts_empty</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
+   <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(t) == 0
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_add_all"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_add_all">spec_aborts_add_all</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+       || (<b>exists</b> i in 0..len(keys): <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, keys[i]))
+       || (<b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j: keys[i] == keys[j])
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_new_from"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_new_from">spec_aborts_new_from</a>&lt;K, V&gt;(keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+       || (<b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j: keys[i] == keys[j])
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_append_disjoint"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_append_disjoint">spec_aborts_append_disjoint</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, other: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): bool {
+   <b>exists</b> k: K: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, k) && <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(other, k)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_trim"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_trim">spec_aborts_trim</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, at: u64): bool {
+   at &gt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(m)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_upsert_all"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_upsert_all">spec_aborts_upsert_all</a>&lt;K, V&gt;(_m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): bool {
+   len(keys) != len(values)
+}
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_replace_key_inplace"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_replace_key_inplace">spec_aborts_replace_key_inplace</a>&lt;K, V&gt;(m: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, old_key: K, new_key: K): bool {
+   !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(m, old_key) || old_key != new_key
+}
+</code></pre>
 <h3 id="enum-orderedmap-1"><a class="header" href="#enum-orderedmap-1">Enum <code>OrderedMap</code> <a id="@Specification_1_OrderedMap"></a></a></h3>
 <pre><code>enum <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt; <b>has</b> <b>copy</b>, drop, store
 </code></pre>
@@ -1338,13 +1409,48 @@ using lambdas to destroy the individual keys and values.</p>
     map_destroy_empty = destroy_empty,
     map_has_key = contains,
     map_add_no_override = add,
+    map_upsert = upsert,
+    map_del_must_exist = remove,
+    map_remove_or_none = remove_or_none,
+    map_get = get,
+    map_borrow_front = borrow_front,
+    map_borrow_back = borrow_back,
+    map_pop_front = pop_front,
+    map_pop_back = pop_back,
+    map_prev_key = prev_key,
+    map_next_key = next_key,
+    map_keys = keys,
+    map_values = values,
+    map_to_vec_pair = to_vec_pair,
+    map_new_from = new_from,
+    map_add_all = add_all,
+    map_upsert_all = upsert_all,
+    map_append = append,
+    map_append_disjoint = append_disjoint,
+    map_trim = trim,
+    map_replace_key_inplace = replace_key_inplace,
     map_borrow = borrow,
     map_borrow_mut = borrow_mut,
+    map_iter_borrow_mut = iter_borrow_mut,
+    map_spec_aborts_iter_borrow_mut = spec_aborts_iter_borrow_mut,
     map_spec_get = spec_get,
     map_spec_set = spec_set,
     map_spec_del = spec_remove,
     map_spec_len = spec_len,
     map_spec_has_key = spec_contains_key,
+    map_spec_key_at = spec_key_at,
+    map_spec_rank = spec_rank,
+    map_spec_aborts_empty = spec_aborts_empty,
+    map_spec_aborts_add_all = spec_aborts_add_all,
+    map_spec_aborts_new_from = spec_aborts_new_from,
+    map_spec_aborts_append_disjoint = spec_aborts_append_disjoint,
+    map_spec_aborts_trim = spec_aborts_trim,
+    map_spec_aborts_upsert_all = spec_aborts_upsert_all,
+    map_spec_aborts_replace_key_inplace = spec_aborts_replace_key_inplace,
+    map_spec_aborts_destroy_empty = spec_aborts_destroy_empty,
+    map_spec_aborts_add = spec_aborts_add,
+    map_spec_aborts_del = spec_aborts_del,
+    map_spec_aborts_borrow = spec_aborts_borrow,
     map_is_empty = is_empty;
 </code></pre>
 <p><a id="0x1_ordered_map_spec_len"></a></p>
@@ -1352,15 +1458,6 @@ using lambdas to destroy the individual keys and values.</p>
 </code></pre>
 <p><a id="0x1_ordered_map_spec_contains_key"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): bool;
-</code></pre>
-<p><a id="0x1_ordered_map_spec_set"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_set">spec_set</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K, v: V): <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;;
-</code></pre>
-<p><a id="0x1_ordered_map_spec_remove"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_remove">spec_remove</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;;
-</code></pre>
-<p><a id="0x1_ordered_map_spec_get"></a></p>
-<pre><code><b>native</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>&lt;K, V&gt;(t: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;, k: K): V;
 </code></pre>
 <h3 id="function-new-1"><a class="header" href="#function-new-1">Function <code>new</code> <a id="@Specification_1_new"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_new">new</a>&lt;K, V&gt;(): <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;
@@ -1370,13 +1467,7 @@ using lambdas to destroy the individual keys and values.</p>
 <h3 id="function-new_from-1"><a class="header" href="#function-new_from-1">Function <code>new_from</code> <a id="@Specification_1_new_from"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_new_from">new_from</a>&lt;K, V&gt;(keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;): <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> [abstract] <b>exists</b> i in 0..len(keys), j in 0..len(keys) <b>where</b> i != j : keys[i] == keys[j];
-<b>aborts_if</b> [abstract] len(keys) != len(values);
-<b>ensures</b> [abstract] <b>forall</b> k: K {<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(result, k)} : <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(keys,k) &lt;==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(result, k);
-<b>ensures</b> [abstract] <b>forall</b> i in 0..len(keys) : <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(result, keys[i]) == values[i];
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(result) == len(keys);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-length-1"><a class="header" href="#function-length-1">Function <code>length</code> <a id="@Specification_1_length"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_length">length</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): u64
@@ -1388,6 +1479,11 @@ using lambdas to destroy the individual keys and values.</p>
 </code></pre>
 <pre><code><b>pragma</b> intrinsic;
 </code></pre>
+<p><a id="0x1_ordered_map_spec_iter_add_index"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_iter_add_index">spec_iter_add_index</a>&lt;K, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">IteratorPtr</a>, map: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;): num {
+   <b>if</b> (self is IteratorPtr::End) <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map) <b>else</b> self.index
+}
+</code></pre>
 <h3 id="function-add-1"><a class="header" href="#function-add-1">Function <code>add</code> <a id="@Specification_1_add"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_add">add</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: K, value: V)
 </code></pre>
@@ -1396,43 +1492,17 @@ using lambdas to destroy the individual keys and values.</p>
 <h3 id="function-upsert-1"><a class="header" href="#function-upsert-1">Function <code>upsert</code> <a id="@Specification_1_upsert"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_upsert">upsert</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: K, value: V): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result);
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, key) == value;
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; ((<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result)) && (<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result) == <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(
-    self), key)));
-<b>ensures</b> [abstract] !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) + 1 == <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self);
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self);
-<b>ensures</b> [abstract] <b>forall</b> k: K: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) && k != key ==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k) == <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, k);
-<b>ensures</b> [abstract] <b>forall</b> k: K: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) ==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-remove-1"><a class="header" href="#function-remove-1">Function <code>remove</code> <a id="@Specification_1_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_remove">remove</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): V
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> [abstract] !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> [abstract] !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), key) == result;
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self) + 1;
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != key: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, k) == <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k);
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != key: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) == <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-remove_or_none-1"><a class="header" href="#function-remove_or_none-1">Function <code>remove_or_none</code> <a id="@Specification_1_remove_or_none"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_remove_or_none">remove_or_none</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> [abstract] <b>false</b>;
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; result == <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(<a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), key));
-<b>ensures</b> [abstract] !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; result == <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>();
-<b>ensures</b> [abstract] !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
-<b>ensures</b> [abstract] <a href="../move-stdlib/option.html#0x1_option_spec_is_none">option::spec_is_none</a>(result) ==&gt; self == <b>old</b>(self);
-<b>ensures</b> [abstract] <a href="../move-stdlib/option.html#0x1_option_spec_is_some">option::spec_is_some</a>(result) ==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(self)) == <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self) + 1;
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != key: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, k) == <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(<b>old</b>(self), k);
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != key: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), k) == <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-contains-1"><a class="header" href="#function-contains-1">Function <code>contains</code> <a id="@Specification_1_contains"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_contains">contains</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): bool
@@ -1452,38 +1522,32 @@ using lambdas to destroy the individual keys and values.</p>
 <h3 id="function-get-1"><a class="header" href="#function-get-1">Function <code>get</code> <a id="@Specification_1_get"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_get">get</a>&lt;K: <b>copy</b>, drop, store, V: <b>copy</b>, store&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-replace_key_inplace-1"><a class="header" href="#function-replace_key_inplace-1">Function <code>replace_key_inplace</code> <a id="@Specification_1_replace_key_inplace"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_replace_key_inplace">replace_key_inplace</a>&lt;K: drop, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, old_key: &K, new_key: K)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-add_all-1"><a class="header" href="#function-add_all-1">Function <code>add_all</code> <a id="@Specification_1_add_all"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_add_all">add_all</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-upsert_all-1"><a class="header" href="#function-upsert_all-1">Function <code>upsert_all</code> <a id="@Specification_1_upsert_all"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_upsert_all">upsert_all</a>&lt;K: drop, V: drop&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-append-1"><a class="header" href="#function-append-1">Function <code>append</code> <a id="@Specification_1_append"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_append">append</a>&lt;K: drop, V: drop&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, other: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-append_disjoint-1"><a class="header" href="#function-append_disjoint-1">Function <code>append_disjoint</code> <a id="@Specification_1_append_disjoint"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_append_disjoint">append_disjoint</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, other: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-append_impl-1"><a class="header" href="#function-append_impl-1">Function <code>append_impl</code> <a id="@Specification_1_append_impl"></a></a></h3>
 <pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_append_impl">append_impl</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, other: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="ordered_map.html#0x1_ordered_map_Entry">ordered_map::Entry</a>&lt;K, V&gt;&gt;
@@ -1494,112 +1558,107 @@ using lambdas to destroy the individual keys and values.</p>
 <h3 id="function-trim-1"><a class="header" href="#function-trim-1">Function <code>trim</code> <a id="@Specification_1_trim"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_trim">trim</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, at: u64): <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-borrow_front-1"><a class="header" href="#function-borrow_front-1">Function <code>borrow_front</code> <a id="@Specification_1_borrow_front"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_borrow_front">borrow_front</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (&K, &V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, result_1) == result_2;
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != result_1: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt;
-std::cmp::compare(result_1, k) == std::cmp::Ordering::Less;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-borrow_back-1"><a class="header" href="#function-borrow_back-1">Function <code>borrow_back</code> <a id="@Specification_1_borrow_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_borrow_back">borrow_back</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (&K, &V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, result_1);
-<b>ensures</b> [abstract] <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(self, result_1) == result_2;
-<b>ensures</b> [abstract] <b>forall</b> k: K <b>where</b> k != result_1: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) ==&gt;
-std::cmp::compare(result_1, k) == std::cmp::Ordering::Greater;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-pop_front-1"><a class="header" href="#function-pop_front-1">Function <code>pop_front</code> <a id="@Specification_1_pop_front"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_pop_front">pop_front</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (K, V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-pop_back-1"><a class="header" href="#function-pop_back-1">Function <code>pop_back</code> <a id="@Specification_1_pop_back"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_pop_back">pop_back</a>&lt;K, V&gt;(self: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (K, V)
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-prev_key-1"><a class="header" href="#function-prev_key-1">Function <code>prev_key</code> <a id="@Specification_1_prev_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_prev_key">prev_key</a>&lt;K: <b>copy</b>, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] result == std::option::spec_none() &lt;==&gt;
-(<b>forall</b> k: K {<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)
-&& k != key: std::cmp::compare(key, k) == std::cmp::Ordering::Less);
-<b>ensures</b> [abstract] result.is_some() &lt;==&gt;
-    <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result)) &&
-    (std::cmp::compare(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), key) == std::cmp::Ordering::Less)
-    && (<b>forall</b> k: K {<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k), std::cmp::compare(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), k), std::cmp::compare(key, k)} <b>where</b> k != <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result): ((<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) &&
-    std::cmp::compare(k, key) == std::cmp::Ordering::Less)) ==&gt;
-    std::cmp::compare(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), k) == std::cmp::Ordering::Greater);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-next_key-1"><a class="header" href="#function-next_key-1">Function <code>next_key</code> <a id="@Specification_1_next_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_next_key">next_key</a>&lt;K: <b>copy</b>, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
-<b>ensures</b> [abstract] result == std::option::spec_none() &lt;==&gt;
-(<b>forall</b> k: K {<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) && k != key:
-std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
-<b>ensures</b> [abstract] result.is_some() &lt;==&gt;
-    <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result)) &&
-    (std::cmp::compare(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), key) == std::cmp::Ordering::Greater)
-    && (<b>forall</b> k: K {<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k)} <b>where</b> k != <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result): ((<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k) &&
-    std::cmp::compare(k, key) == std::cmp::Ordering::Greater)) ==&gt;
-    std::cmp::compare(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result), k) == std::cmp::Ordering::Less);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-internal_lower_bound-1"><a class="header" href="#function-internal_lower_bound-1">Function <code>internal_lower_bound</code> <a id="@Specification_1_internal_lower_bound"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_internal_lower_bound">internal_lower_bound</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> (result is IteratorPtr::End) &lt;==&gt;
+    (<b>forall</b> i in 0..<a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self):
+        <a href="../move-stdlib/cmp.html#0x1_cmp_compare">cmp::compare</a>(<a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(self, i), key) == cmp::Ordering::Less);
+<b>ensures</b> !(result is IteratorPtr::End) ==&gt; result.index &lt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self);
+<b>ensures</b> !(result is IteratorPtr::End) ==&gt;
+    <a href="../move-stdlib/cmp.html#0x1_cmp_compare">cmp::compare</a>(<a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(self, result.index), key) != cmp::Ordering::Less;
+<b>ensures</b> !(result is IteratorPtr::End) ==&gt;
+    (<b>forall</b> i in 0..result.index:
+        <a href="../move-stdlib/cmp.html#0x1_cmp_compare">cmp::compare</a>(<a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(self, i), key) == cmp::Ordering::Less);
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key) ==&gt; !(result is IteratorPtr::End);
 </code></pre>
 <h3 id="function-internal_find-1"><a class="header" href="#function-internal_find-1">Function <code>internal_find</code> <a id="@Specification_1_internal_find"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_internal_find">internal_find</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: &K): <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> (result is IteratorPtr::End) &lt;==&gt; !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, key);
+<b>ensures</b> !(result is IteratorPtr::End) ==&gt; result.index == <a href="ordered_map.html#0x1_ordered_map_spec_rank">spec_rank</a>(self, key);
 </code></pre>
 <h3 id="function-internal_new_begin_iter-1"><a class="header" href="#function-internal_new_begin_iter-1">Function <code>internal_new_begin_iter</code> <a id="@Specification_1_internal_new_begin_iter"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_internal_new_begin_iter">internal_new_begin_iter</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> (result is IteratorPtr::End) &lt;==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(self) == 0;
+<b>ensures</b> !(result is IteratorPtr::End) ==&gt; result.index == 0;
 </code></pre>
 <h3 id="function-internal_new_end_iter-1"><a class="header" href="#function-internal_new_end_iter-1">Function <code>internal_new_end_iter</code> <a id="@Specification_1_internal_new_end_iter"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_internal_new_end_iter">internal_new_end_iter</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result is IteratorPtr::End;
 </code></pre>
 <h3 id="function-iter_next-1"><a class="header" href="#function-iter_next-1">Function <code>iter_next</code> <a id="@Specification_1_iter_next"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_next">iter_next</a>&lt;K, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> self is IteratorPtr::End;
+<b>ensures</b> (result is IteratorPtr::End) &lt;==&gt; self.index + 1 &gt;= <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map);
+<b>ensures</b> !(result is IteratorPtr::End) ==&gt; result.index == self.index + 1;
 </code></pre>
 <h3 id="function-iter_prev-1"><a class="header" href="#function-iter_prev-1">Function <code>iter_prev</code> <a id="@Specification_1_iter_prev"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_prev">iter_prev</a>&lt;K, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <b>if</b> (self is IteratorPtr::End) <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map) == 0 <b>else</b> self.index == 0;
+<b>ensures</b> !(result is IteratorPtr::End);
+<b>ensures</b> (self is IteratorPtr::End) ==&gt; result.index == <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map) - 1;
+<b>ensures</b> !(self is IteratorPtr::End) ==&gt; result.index == self.index - 1;
 </code></pre>
 <h3 id="function-iter_is_begin-1"><a class="header" href="#function-iter_is_begin-1">Function <code>iter_is_begin</code> <a id="@Specification_1_iter_is_begin"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_is_begin">iter_is_begin</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): bool
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result &lt;==&gt; (<b>if</b> (self is IteratorPtr::End) <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map) == 0 <b>else</b> self.index == 0);
 </code></pre>
 <h3 id="function-iter_is_begin_from_non_empty-1"><a class="header" href="#function-iter_is_begin_from_non_empty-1">Function <code>iter_is_begin_from_non_empty</code> <a id="@Specification_1_iter_is_begin_from_non_empty"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_is_begin_from_non_empty">iter_is_begin_from_non_empty</a>(self: &<a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>): bool
@@ -1612,42 +1671,89 @@ std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result &lt;==&gt; (self is IteratorPtr::End);
 </code></pre>
 <h3 id="function-iter_borrow_key-1"><a class="header" href="#function-iter_borrow_key-1">Function <code>iter_borrow_key</code> <a id="@Specification_1_iter_borrow_key"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_borrow_key">iter_borrow_key</a>&lt;K, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): &K
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> (self is IteratorPtr::End) || self.index &gt;= <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map);
+<b>ensures</b> result == <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, self.index);
 </code></pre>
 <h3 id="function-iter_borrow-1"><a class="header" href="#function-iter_borrow-1">Function <code>iter_borrow</code> <a id="@Specification_1_iter_borrow"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_borrow">iter_borrow</a>&lt;K, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): &V
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> (self is IteratorPtr::End) || self.index &gt;= <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map);
+<b>ensures</b> result == <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, self.index));
 </code></pre>
 <h3 id="function-iter_borrow_mut-1"><a class="header" href="#function-iter_borrow_mut-1">Function <code>iter_borrow_mut</code> <a id="@Specification_1_iter_borrow_mut"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_borrow_mut">iter_borrow_mut</a>&lt;K, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): &<b>mut</b> V
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
+</code></pre>
+<p><a id="0x1_ordered_map_spec_aborts_iter_borrow_mut"></a></p>
+<pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_spec_aborts_iter_borrow_mut">spec_aborts_iter_borrow_mut</a>&lt;K, V&gt;(
+   self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">IteratorPtr</a>, map: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">OrderedMap</a>&lt;K, V&gt;
+): bool {
+   (self is IteratorPtr::End) || self.index &gt;= <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map)
+}
 </code></pre>
 <h3 id="function-iter_remove-1"><a class="header" href="#function-iter_remove-1">Function <code>iter_remove</code> <a id="@Specification_1_iter_remove"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_remove">iter_remove</a>&lt;K: drop, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): V
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> (self is IteratorPtr::End) || self.index &gt;= <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map);
+<b>ensures</b> result == <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, self.index)));
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map) == <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(map)) - 1;
+<b>ensures</b> !<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, self.index)));
+<b>ensures</b> <b>forall</b> i in 0..self.index: <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, i) == <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(<b>old</b>(map), i);
+<b>ensures</b> <b>forall</b> i in self.index..<a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map):
+    <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, i) == <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(<b>old</b>(map), i + 1);
+<b>ensures</b> <b>forall</b> k: K <b>where</b> k != <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, self.index))
+    && <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, k)):
+    <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, k) && <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, k) == <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, k));
 </code></pre>
 <h3 id="function-iter_replace-1"><a class="header" href="#function-iter_replace-1">Function <code>iter_replace</code> <a id="@Specification_1_iter_replace"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_replace">iter_replace</a>&lt;K: <b>copy</b>, drop, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, value: V): V
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> (self is IteratorPtr::End) || self.index &gt;= <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map);
+<b>ensures</b> result == <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, self.index)));
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, self.index))) == value;
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map) == <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(map));
+<b>ensures</b> <b>forall</b> i in 0..<a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map): <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, i) == <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(<b>old</b>(map), i);
+<b>ensures</b> <b>forall</b> k: K: <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, k) == <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, k));
+<b>ensures</b> <b>forall</b> k: K <b>where</b> k != <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, self.index))
+    && <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, k)):
+    <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, k) == <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, k));
 </code></pre>
 <h3 id="function-iter_add-1"><a class="header" href="#function-iter_add-1">Function <code>iter_add</code> <a id="@Specification_1_iter_add"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_iter_add">iter_add</a>&lt;K, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_IteratorPtr">ordered_map::IteratorPtr</a>, map: &<b>mut</b> <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;, key: K, value: V)
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> !(self is IteratorPtr::End) && self.index &gt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map);
+<b>aborts_if</b> <a href="ordered_map.html#0x1_ordered_map_spec_iter_add_index">spec_iter_add_index</a>(self, map) &gt; 0
+    && <a href="../move-stdlib/cmp.html#0x1_cmp_compare">cmp::compare</a>(<a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, <a href="ordered_map.html#0x1_ordered_map_spec_iter_add_index">spec_iter_add_index</a>(self, map) - 1), key)
+        != cmp::Ordering::Less;
+<b>aborts_if</b> <a href="ordered_map.html#0x1_ordered_map_spec_iter_add_index">spec_iter_add_index</a>(self, map) &lt; <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map)
+    && <a href="../move-stdlib/cmp.html#0x1_cmp_compare">cmp::compare</a>(key, <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, <a href="ordered_map.html#0x1_ordered_map_spec_iter_add_index">spec_iter_add_index</a>(self, map)))
+        != cmp::Ordering::Less;
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map) == <a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(<b>old</b>(map)) + 1;
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, key) && <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, key) == value;
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_rank">spec_rank</a>(map, key) == <a href="ordered_map.html#0x1_ordered_map_spec_iter_add_index">spec_iter_add_index</a>(self, <b>old</b>(map));
+<b>ensures</b> <b>forall</b> i in 0..<a href="ordered_map.html#0x1_ordered_map_spec_iter_add_index">spec_iter_add_index</a>(self, <b>old</b>(map)):
+    <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, i) == <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(<b>old</b>(map), i);
+<b>ensures</b> <b>forall</b> i in (<a href="ordered_map.html#0x1_ordered_map_spec_iter_add_index">spec_iter_add_index</a>(self, <b>old</b>(map)) + 1)..<a href="ordered_map.html#0x1_ordered_map_spec_len">spec_len</a>(map):
+    <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(map, i) == <a href="ordered_map.html#0x1_ordered_map_spec_key_at">spec_key_at</a>(<b>old</b>(map), i - 1);
+<b>ensures</b> <b>forall</b> k: K <b>where</b> k != key && <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, k)):
+    <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(map, k) && <a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, k) == <b>old</b>(<a href="ordered_map.html#0x1_ordered_map_spec_get">spec_get</a>(map, k));
 </code></pre>
 <h3 id="function-destroy_empty-1"><a class="header" href="#function-destroy_empty-1">Function <code>destroy_empty</code> <a id="@Specification_1_destroy_empty"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_destroy_empty">destroy_empty</a>&lt;K, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;)
@@ -1657,21 +1763,17 @@ std::cmp::compare(key, k) == std::cmp::Ordering::Greater);
 <h3 id="function-keys-1"><a class="header" href="#function-keys-1">Function <code>keys</code> <a id="@Specification_1_keys"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_keys">keys</a>&lt;K: <b>copy</b>, V&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> opaque;
-<b>ensures</b> [abstract] <b>forall</b> k: K: <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(result, k) &lt;==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">spec_contains_key</a>(self, k);
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-values-1"><a class="header" href="#function-values-1">Function <code>values</code> <a id="@Specification_1_values"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_values">values</a>&lt;K, V: <b>copy</b>&gt;(self: &<a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-to_vec_pair-1"><a class="header" href="#function-to_vec_pair-1">Function <code>to_vec_pair</code> <a id="@Specification_1_to_vec_pair"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="ordered_map.html#0x1_ordered_map_to_vec_pair">to_vec_pair</a>&lt;K, V&gt;(self: <a href="ordered_map.html#0x1_ordered_map_OrderedMap">ordered_map::OrderedMap</a>&lt;K, V&gt;): (<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;K&gt;, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;V&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> intrinsic;
 </code></pre>
 <h3 id="function-binary_search-1"><a class="header" href="#function-binary_search-1">Function <code>binary_search</code> <a id="@Specification_1_binary_search"></a></a></h3>
 <pre><code><b>fun</b> <a href="ordered_map.html#0x1_ordered_map_binary_search">binary_search</a>&lt;K, V&gt;(key: &K, entries: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="ordered_map.html#0x1_ordered_map_Entry">ordered_map::Entry</a>&lt;K, V&gt;&gt;, start: u64, end: u64): u64

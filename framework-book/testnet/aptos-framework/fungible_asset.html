@@ -205,6 +205,7 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_generate_mint_ref">Function <code>generate_mint_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_burn_ref">Function <code>generate_burn_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_burn_copy_ref">Function <code>generate_burn_copy_ref</code></a></li>
+<li><a href="#0x1_fungible_asset_generate_mint_copy_ref">Function <code>generate_mint_copy_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_transfer_ref">Function <code>generate_transfer_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_raw_balance_ref">Function <code>generate_raw_balance_ref</code></a></li>
 <li><a href="#0x1_fungible_asset_generate_raw_supply_ref">Function <code>generate_raw_supply_ref</code></a></li>
@@ -224,6 +225,7 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_store_metadata">Function <code>store_metadata</code></a></li>
 <li><a href="#0x1_fungible_asset_balance">Function <code>balance</code></a></li>
 <li><a href="#0x1_fungible_asset_balance_impl">Function <code>balance_impl</code></a></li>
+<li><a href="#0x1_fungible_asset_balance_snapshot">Function <code>balance_snapshot</code></a></li>
 <li><a href="#0x1_fungible_asset_is_balance_at_least">Function <code>is_balance_at_least</code></a></li>
 <li><a href="#0x1_fungible_asset_is_address_balance_at_least">Function <code>is_address_balance_at_least</code></a></li>
 <li><a href="#0x1_fungible_asset_is_frozen">Function <code>is_frozen</code></a></li>
@@ -248,8 +250,6 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_create_store">Function <code>create_store</code></a></li>
 <li><a href="#0x1_fungible_asset_remove_store">Function <code>remove_store</code></a></li>
 <li><a href="#0x1_fungible_asset_withdraw">Function <code>withdraw</code></a></li>
-<li><a href="#0x1_fungible_asset_withdraw_permission_check">Function <code>withdraw_permission_check</code></a></li>
-<li><a href="#0x1_fungible_asset_withdraw_permission_check_by_address">Function <code>withdraw_permission_check_by_address</code></a></li>
 <li><a href="#0x1_fungible_asset_withdraw_sanity_check">Function <code>withdraw_sanity_check</code></a></li>
 <li><a href="#0x1_fungible_asset_withdraw_sanity_check_impl">Function <code>withdraw_sanity_check_impl</code></a></li>
 <li><a href="#0x1_fungible_asset_deposit_sanity_check">Function <code>deposit_sanity_check</code></a></li>
@@ -284,18 +284,39 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#0x1_fungible_asset_borrow_fungible_metadata_mut">Function <code>borrow_fungible_metadata_mut</code></a></li>
 <li><a href="#0x1_fungible_asset_borrow_store_resource">Function <code>borrow_store_resource</code></a></li>
 <li><a href="#0x1_fungible_asset_upgrade_to_concurrent">Function <code>upgrade_to_concurrent</code></a></li>
+<li><a href="#0x1_fungible_asset_is_concurrent">Function <code>is_concurrent</code></a></li>
 <li><a href="#0x1_fungible_asset_upgrade_store_to_concurrent">Function <code>upgrade_store_to_concurrent</code></a></li>
 <li><a href="#0x1_fungible_asset_ensure_store_upgraded_to_concurrent_internal">Function <code>ensure_store_upgraded_to_concurrent_internal</code></a></li>
 <li><a href="#0x1_fungible_asset_grant_permission_by_store">Function <code>grant_permission_by_store</code></a></li>
-<li><a href="#0x1_fungible_asset_grant_permission_by_address">Function <code>grant_permission_by_address</code></a></li>
-<li><a href="#0x1_fungible_asset_refill_permission">Function <code>refill_permission</code></a></li>
 <li><a href="#0x1_fungible_asset_revoke_permission">Function <code>revoke_permission</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
-<li><a href="#@Specification_1_withdraw_permission_check">Function <code>withdraw_permission_check</code></a></li>
+<li><a href="#@Specification_1_add_fungibility">Function <code>add_fungibility</code></a></li>
+<li><a href="#@Specification_1_is_untransferable">Function <code>is_untransferable</code></a></li>
+<li><a href="#@Specification_1_name">Function <code>name</code></a></li>
+<li><a href="#@Specification_1_symbol">Function <code>symbol</code></a></li>
+<li><a href="#@Specification_1_decimals">Function <code>decimals</code></a></li>
+<li><a href="#@Specification_1_icon_uri">Function <code>icon_uri</code></a></li>
+<li><a href="#@Specification_1_project_uri">Function <code>project_uri</code></a></li>
+<li><a href="#@Specification_1_metadata">Function <code>metadata</code></a></li>
+<li><a href="#@Specification_1_store_exists">Function <code>store_exists</code></a></li>
+<li><a href="#@Specification_1_store_metadata">Function <code>store_metadata</code></a></li>
+<li><a href="#@Specification_1_is_frozen">Function <code>is_frozen</code></a></li>
+<li><a href="#@Specification_1_amount">Function <code>amount</code></a></li>
+<li><a href="#@Specification_1_metadata_from_asset">Function <code>metadata_from_asset</code></a></li>
+<li><a href="#@Specification_1_asset_metadata">Function <code>asset_metadata</code></a></li>
+<li><a href="#@Specification_1_mint_ref_metadata">Function <code>mint_ref_metadata</code></a></li>
+<li><a href="#@Specification_1_transfer_ref_metadata">Function <code>transfer_ref_metadata</code></a></li>
+<li><a href="#@Specification_1_burn_ref_metadata">Function <code>burn_ref_metadata</code></a></li>
+<li><a href="#@Specification_1_object_from_metadata_ref">Function <code>object_from_metadata_ref</code></a></li>
+<li><a href="#@Specification_1_create_store">Function <code>create_store</code></a></li>
+<li><a href="#@Specification_1_remove_store">Function <code>remove_store</code></a></li>
 <li><a href="#@Specification_1_deposit">Function <code>deposit</code></a></li>
+<li><a href="#@Specification_1_extract">Function <code>extract</code></a></li>
+<li><a href="#@Specification_1_merge">Function <code>merge</code></a></li>
+<li><a href="#@Specification_1_destroy_zero">Function <code>destroy_zero</code></a></li>
 <li><a href="#@Specification_1_unchecked_deposit">Function <code>unchecked_deposit</code></a></li>
 <li><a href="#@Specification_1_unchecked_withdraw">Function <code>unchecked_withdraw</code></a></li>
 </ul>
@@ -309,7 +330,6 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <b>use</b> <a href="function_info.html#0x1_function_info">0x1::function_info</a>;
 <b>use</b> <a href="object.html#0x1_object">0x1::object</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
 </code></pre>
@@ -594,7 +614,8 @@ and allow the holder of TransferRef to transfer fungible assets from any account
 </dl>
 </details>
 <h2 id="enum-withdrawpermission"><a class="header" href="#enum-withdrawpermission">Enum <code>WithdrawPermission</code> <a id="0x1_fungible_asset_WithdrawPermission"></a></a></h2>
-<pre><code>enum <a href="fungible_asset.html#0x1_fungible_asset_WithdrawPermission">WithdrawPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+enum <a href="fungible_asset.html#0x1_fungible_asset_WithdrawPermission">WithdrawPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Variants</summary>
@@ -814,6 +835,10 @@ and allow the holder of TransferRef to transfer fungible assets from any account
 <p>Maximum possible coin supply.</p>
 <pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_MAX_U128">MAX_U128</a>: u128 = 340282366920938463463374607431768211455;
 </code></pre>
+<p><a id="0x1_fungible_asset_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 37;
+</code></pre>
 <p><a id="0x1_fungible_asset_EALREADY_REGISTERED"></a></p>
 <p>Trying to re-register dispatch hook on a fungible asset.</p>
 <pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_EALREADY_REGISTERED">EALREADY_REGISTERED</a>: u64 = 29;
@@ -954,10 +979,6 @@ Need to invoke dispatchable_fungible_asset::withdraw/deposit to perform transfer
 <p><a id="0x1_fungible_asset_EWITHDRAW_FUNCTION_SIGNATURE_MISMATCH"></a></p>
 <p>Provided withdraw function type doesn't meet the signature requirement.</p>
 <pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_EWITHDRAW_FUNCTION_SIGNATURE_MISMATCH">EWITHDRAW_FUNCTION_SIGNATURE_MISMATCH</a>: u64 = 25;
-</code></pre>
-<p><a id="0x1_fungible_asset_EWITHDRAW_PERMISSION_DENIED"></a></p>
-<p>signer don't have the permission to perform withdraw operation</p>
-<pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_EWITHDRAW_PERMISSION_DENIED">EWITHDRAW_PERMISSION_DENIED</a>: u64 = 36;
 </code></pre>
 <p><a id="0x1_fungible_asset_MAX_DECIMALS"></a></p>
 <pre><code><b>const</b> <a href="fungible_asset.html#0x1_fungible_asset_MAX_DECIMALS">MAX_DECIMALS</a>: u8 = 32;
@@ -1309,6 +1330,17 @@ This can only be called at object creation time as constructor_ref is only avail
 }
 </code></pre>
 </details>
+<h2 id="function-generate_mint_copy_ref"><a class="header" href="#function-generate_mint_copy_ref">Function <code>generate_mint_copy_ref</code> <a id="0x1_fungible_asset_generate_mint_copy_ref"></a></a></h2>
+<p>Creates a mint copy ref that can be used to mint fungible assets from the given mint ref.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_generate_mint_copy_ref">generate_mint_copy_ref</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>): <a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_generate_mint_copy_ref">generate_mint_copy_ref</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a>): <a href="fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a> {
+    <a href="fungible_asset.html#0x1_fungible_asset_MintRef">MintRef</a> { metadata: self.metadata }
+}
+</code></pre>
+</details>
 <h2 id="function-generate_transfer_ref"><a class="header" href="#function-generate_transfer_ref">Function <code>generate_transfer_ref</code> <a id="0x1_fungible_asset_generate_transfer_ref"></a></a></h2>
 <p>Creates a transfer ref that can be used to freeze/unfreeze/transfer fungible assets from the given fungible
 object's constructor ref.
@@ -1561,34 +1593,67 @@ Use <code>dispatchable_fungible_asset::balance</code> instead if you intend to w
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance">balance</a>&lt;T: key&gt;(
     store: Object&lt;T&gt;
-): u64 <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>, <a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a> {
-    <b>let</b> fa_store = <a href="fungible_asset.html#0x1_fungible_asset_borrow_store_resource">borrow_store_resource</a>(&store);
-    <b>assert</b>!(
-        !<a href="fungible_asset.html#0x1_fungible_asset_has_balance_dispatch_function">has_balance_dispatch_function</a>(fa_store.metadata),
-        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_EINVALID_DISPATCHABLE_OPERATIONS">EINVALID_DISPATCHABLE_OPERATIONS</a>)
-    );
-    <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>(store)
+): u64 {
+    <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>(
+        store,
+        |store| {
+            <b>assert</b>!(
+                !<a href="fungible_asset.html#0x1_fungible_asset_has_balance_dispatch_function">has_balance_dispatch_function</a>(store.metadata),
+                <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_EINVALID_DISPATCHABLE_OPERATIONS">EINVALID_DISPATCHABLE_OPERATIONS</a>)
+            );
+        }
+    )
 }
 </code></pre>
 </details>
 <h2 id="function-balance_impl"><a class="header" href="#function-balance_impl">Function <code>balance_impl</code> <a id="0x1_fungible_asset_balance_impl"></a></a></h2>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): u64
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, check: |&<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>|): u64
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>&lt;T: key&gt;(store: Object&lt;T&gt;): u64 <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> {
+<pre><code>inline <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>&lt;T: key&gt;(store: Object&lt;T&gt;, check: |&<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>|): u64 {
     <b>let</b> store_addr = store.object_address();
     <b>if</b> (<a href="fungible_asset.html#0x1_fungible_asset_store_exists_inline">store_exists_inline</a>(store_addr)) {
-        <b>let</b> store_balance = <a href="fungible_asset.html#0x1_fungible_asset_borrow_store_resource">borrow_store_resource</a>(&store).balance;
+        <b>let</b> store = &<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>[store_addr];
+        check(store);
+        <b>let</b> store_balance = store.balance;
         <b>if</b> (store_balance == 0
             && <a href="fungible_asset.html#0x1_fungible_asset_concurrent_fungible_balance_exists_inline">concurrent_fungible_balance_exists_inline</a>(store_addr)) {
-            <b>let</b> balance_resource =
-                <b>borrow_global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr);
-            balance_resource.balance.read()
+            <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>[store_addr].balance.read()
         } <b>else</b> {
             store_balance
         }
     } <b>else</b> { 0 }
+}
+</code></pre>
+</details>
+<h2 id="function-balance_snapshot"><a class="header" href="#function-balance_snapshot">Function <code>balance_snapshot</code> <a id="0x1_fungible_asset_balance_snapshot"></a></a></h2>
+<p>Get the balance of a given store, as AggregatorSnapshot.
+Allows us to obtain a balance object, without issuing a read - which would reduce parallelism.</p>
+<p>Note: This function will abort on FAs with <code>derived_balance</code> hook set up.
+Use <code><a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_balance_snapshot">dispatchable_fungible_asset::derived_balance_snapshot</a></code> instead if you intend to work with those FAs.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_snapshot">balance_snapshot</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_snapshot">balance_snapshot</a>&lt;T: key&gt;(store: Object&lt;T&gt;): AggregatorSnapshot&lt;u64&gt; {
+    <b>let</b> store_addr = <a href="object.html#0x1_object_object_address">object::object_address</a>(&store);
+    <b>if</b> (<a href="fungible_asset.html#0x1_fungible_asset_store_exists_inline">store_exists_inline</a>(store_addr)) {
+        <b>let</b> fa_store = &<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>[store_addr];
+        <b>assert</b>!(
+            !<a href="fungible_asset.html#0x1_fungible_asset_has_balance_dispatch_function">has_balance_dispatch_function</a>(fa_store.metadata),
+            <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_EINVALID_DISPATCHABLE_OPERATIONS">EINVALID_DISPATCHABLE_OPERATIONS</a>)
+        );
+
+        <b>let</b> store_balance = fa_store.balance;
+        <b>if</b> (store_balance == 0 && <a href="fungible_asset.html#0x1_fungible_asset_concurrent_fungible_balance_exists_inline">concurrent_fungible_balance_exists_inline</a>(store_addr)) {
+            <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>[store_addr].balance.snapshot()
+        } <b>else</b> {
+            <a href="aggregator_v2.html#0x1_aggregator_v2_create_snapshot">aggregator_v2::create_snapshot</a>(store_balance)
+        }
+    } <b>else</b> {
+        <a href="aggregator_v2.html#0x1_aggregator_v2_create_snapshot">aggregator_v2::create_snapshot</a>(0)
+    }
 }
 </code></pre>
 </details>
@@ -1991,50 +2056,7 @@ that function unless you DO NOT want to support fungible assets with dispatchabl
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: Object&lt;T&gt;, amount: u64
 ): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">FungibleAsset</a> <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> {
     <a href="fungible_asset.html#0x1_fungible_asset_withdraw_sanity_check">withdraw_sanity_check</a>(owner, store, <b>true</b>);
-    <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check">withdraw_permission_check</a>(owner, store, amount);
     <a href="fungible_asset.html#0x1_fungible_asset_unchecked_withdraw">unchecked_withdraw</a>(store.object_address(), amount)
-}
-</code></pre>
-</details>
-<h2 id="function-withdraw_permission_check"><a class="header" href="#function-withdraw_permission_check">Function <code>withdraw_permission_check</code> <a id="0x1_fungible_asset_withdraw_permission_check"></a></a></h2>
-<p>Check the permission for withdraw operation.</p>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check">withdraw_permission_check</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check">withdraw_permission_check</a>&lt;T: key&gt;(
-    owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: Object&lt;T&gt;, amount: u64
-) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_consume">permissioned_signer::check_permission_consume</a>(
-            owner,
-            amount <b>as</b> u256,
-            WithdrawPermission::ByStore {
-                store_address: store.object_address()
-            }
-        ),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="fungible_asset.html#0x1_fungible_asset_EWITHDRAW_PERMISSION_DENIED">EWITHDRAW_PERMISSION_DENIED</a>)
-    );
-}
-</code></pre>
-</details>
-<h2 id="function-withdraw_permission_check_by_address"><a class="header" href="#function-withdraw_permission_check_by_address">Function <code>withdraw_permission_check_by_address</code> <a id="0x1_fungible_asset_withdraw_permission_check_by_address"></a></a></h2>
-<p>Check the permission for withdraw operation.</p>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check_by_address">withdraw_permission_check_by_address</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store_address: <b>address</b>, amount: u64)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check_by_address">withdraw_permission_check_by_address</a>(
-    owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store_address: <b>address</b>, amount: u64
-) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_consume">permissioned_signer::check_permission_consume</a>(
-            owner,
-            amount <b>as</b> u256,
-            WithdrawPermission::ByStore { store_address }
-        ),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="fungible_asset.html#0x1_fungible_asset_EWITHDRAW_PERMISSION_DENIED">EWITHDRAW_PERMISSION_DENIED</a>)
-    );
 }
 </code></pre>
 </details>
@@ -2298,11 +2320,15 @@ that function unless you DO NOT want to support fungible assets with dispatchabl
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance_with_ref">balance_with_ref</a>&lt;T: key&gt;(
     self: &<a href="fungible_asset.html#0x1_fungible_asset_RawBalanceRef">RawBalanceRef</a>, store: Object&lt;T&gt;
 ): u64 <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>, <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> {
-    <b>assert</b>!(
-        self.metadata == <a href="fungible_asset.html#0x1_fungible_asset_store_metadata">store_metadata</a>(store),
-        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_ERAW_BALANCE_REF_AND_FUNGIBLE_ASSET_MISMATCH">ERAW_BALANCE_REF_AND_FUNGIBLE_ASSET_MISMATCH</a>)
-    );
-    <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>(store)
+    <a href="fungible_asset.html#0x1_fungible_asset_balance_impl">balance_impl</a>(
+        store,
+        |store| {
+            <b>assert</b>!(
+                self.metadata == store.metadata,
+                <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_ERAW_BALANCE_REF_AND_FUNGIBLE_ASSET_MISMATCH">ERAW_BALANCE_REF_AND_FUNGIBLE_ASSET_MISMATCH</a>)
+            );
+        }
+    )
 }
 </code></pre>
 </details>
@@ -2688,7 +2714,21 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 }
 </code></pre>
 </details>
+<h2 id="function-is_concurrent"><a class="header" href="#function-is_concurrent">Function <code>is_concurrent</code> <a id="0x1_fungible_asset_is_concurrent"></a></a></h2>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_is_concurrent">is_concurrent</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_is_concurrent">is_concurrent</a>&lt;T: key&gt;(store: Object&lt;T&gt;): bool {
+    <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(&store))
+}
+</code></pre>
+</details>
 <h2 id="function-upgrade_store_to_concurrent"><a class="header" href="#function-upgrade_store_to_concurrent">Function <code>upgrade_store_to_concurrent</code> <a id="0x1_fungible_asset_upgrade_store_to_concurrent"></a></a></h2>
+<p>Opts-in the given store into tracking balance in a concurrent manner (through Aggregators),
+This allows witdraw, deposit, transfer, is_balance_at_least and balance_snapshot to
+not create conflicts and maintain parallelism.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_upgrade_store_to_concurrent">upgrade_store_to_concurrent</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;)
 </code></pre>
 <details>
@@ -2696,14 +2736,18 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 <pre><code><b>public</b> entry <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_upgrade_store_to_concurrent">upgrade_store_to_concurrent</a>&lt;T: key&gt;(
     owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: Object&lt;T&gt;
 ) <b>acquires</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a> {
+    <b>let</b> fungible_store_address = store.object_address();
+    // be graceful <b>if</b> <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> already <b>exists</b>, but flag is off
+    <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(fungible_store_address)) {
+        // skip checks, <b>to</b> make opt-in efficient <b>if</b> done before operation.
+        <b>return</b>;
+    };
+
     <b>assert</b>!(
         <a href="object.html#0x1_object_owns">object::owns</a>(store, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner)),
         <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="fungible_asset.html#0x1_fungible_asset_ENOT_STORE_OWNER">ENOT_STORE_OWNER</a>)
     );
     <b>assert</b>!(!<a href="fungible_asset.html#0x1_fungible_asset_is_frozen">is_frozen</a>(store), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_ESTORE_IS_FROZEN">ESTORE_IS_FROZEN</a>));
-    <b>let</b> fungible_store_address = store.object_address();
-    // be graceful <b>if</b> <a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a> already <b>exists</b>, but flag is off
-    <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(fungible_store_address)) { <b>return</b> };
     <b>assert</b>!(
         <a href="fungible_asset.html#0x1_fungible_asset_allow_upgrade_to_concurrent_fungible_balance">allow_upgrade_to_concurrent_fungible_balance</a>(),
         <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="fungible_asset.html#0x1_fungible_asset_ECONCURRENT_BALANCE_NOT_ENABLED">ECONCURRENT_BALANCE_NOT_ENABLED</a>)
@@ -2732,60 +2776,18 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 </code></pre>
 </details>
 <h2 id="function-grant_permission_by_store"><a class="header" href="#function-grant_permission_by_store">Function <code>grant_permission_by_store</code> <a id="0x1_fungible_asset_grant_permission_by_store"></a></a></h2>
-<p>Permission management</p>
-<p>Master signer grant permissioned signer ability to withdraw a given amount of fungible asset.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_store">grant_permission_by_store</a>&lt;T: key&gt;(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_store">grant_permission_by_store</a>&lt;T: key&gt;(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, _amount: u64)
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_store">grant_permission_by_store</a>&lt;T: key&gt;(
-    master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    store: Object&lt;T&gt;,
-    amount: u64
+    _master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _store: Object&lt;T&gt;,
+    _amount: u64
 ) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_increase">permissioned_signer::authorize_increase</a>(
-        master,
-        permissioned,
-        amount <b>as</b> u256,
-        WithdrawPermission::ByStore { store_address: store.object_address() }
-    )
-}
-</code></pre>
-</details>
-<h2 id="function-grant_permission_by_address"><a class="header" href="#function-grant_permission_by_address">Function <code>grant_permission_by_address</code> <a id="0x1_fungible_asset_grant_permission_by_address"></a></a></h2>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_address">grant_permission_by_address</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store_address: <b>address</b>, amount: u64)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_grant_permission_by_address">grant_permission_by_address</a>(
-    master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    store_address: <b>address</b>,
-    amount: u64
-) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_increase">permissioned_signer::authorize_increase</a>(
-        master,
-        permissioned,
-        amount <b>as</b> u256,
-        WithdrawPermission::ByStore { store_address }
-    )
-}
-</code></pre>
-</details>
-<h2 id="function-refill_permission"><a class="header" href="#function-refill_permission">Function <code>refill_permission</code> <a id="0x1_fungible_asset_refill_permission"></a></a></h2>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_refill_permission">refill_permission</a>(permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64, store_address: <b>address</b>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_refill_permission">refill_permission</a>(
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64, store_address: <b>address</b>
-) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_increase_limit">permissioned_signer::increase_limit</a>(
-        permissioned,
-        amount <b>as</b> u256,
-        WithdrawPermission::ByStore { store_address }
-    )
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="fungible_asset.html#0x1_fungible_asset_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -2814,7 +2816,7 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 <td>The metadata associated with the fungible asset is subject to precise size constraints.</td>
 <td>Medium</td>
 <td>The add_fungibility function has size limitations for the name, symbol, number of decimals, icon_uri, and project_uri field of the Metadata resource.</td>
-<td>This has been audited.</td>
+<td>Formally verified via <a href="#high-level-req-1">add_fungibility</a>.</td>
 </tr>
 <tr>
 <td>2</td>
@@ -2863,21 +2865,21 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 <td>An object should only be allowed to hold one store for fungible assets.</td>
 <td>Medium</td>
 <td>The create_store function initializes a new FungibleStore resource and moves it under the object address.</td>
-<td>Audited that the resource was moved under the object.</td>
+<td>Formally verified via <a href="#high-level-req-8">create_store</a>.</td>
 </tr>
 <tr>
 <td>9</td>
 <td>When a new store is created, the balance should be set by default to the value zero.</td>
 <td>High</td>
 <td>The create_store function initializes a new fungible asset store with zero balance and stores it under the given construtorRef object.</td>
-<td>Audited that the store is properly initialized with zero balance.</td>
+<td>Formally verified via <a href="#high-level-req-9">create_store</a>.</td>
 </tr>
 <tr>
 <td>10</td>
 <td>A store should only be deleted if its balance is zero.</td>
 <td>Medium</td>
 <td>The remove_store function validates the store's balance and removes the store under the object address.</td>
-<td>Audited that aborts if the balance of the store is not zero. Audited that store is removed from the object address.</td>
+<td>Formally verified via <a href="#high-level-req-10">remove_store</a>.</td>
 </tr>
 <tr>
 <td>11</td>
@@ -2905,43 +2907,231 @@ equal to the sum of the two (<code>self</code> and <code>src_fungible_asset</cod
 <td>Extracting a specific amount from the fungible asset should be possible only if the total amount that it holds is greater or equal to the provided amount.</td>
 <td>High</td>
 <td>The extract function validates that the fungible asset has enough balance to extract and then updates it by subtracting the extracted amount.</td>
-<td>Audited that it aborts if the asset didn't have sufficient balance. Audited that the balance of the asset is updated. Audited that the extract function returns the extracted asset.</td>
+<td>Formally verified via <a href="#high-level-req-14">extract</a>.</td>
 </tr>
 <tr>
 <td>15</td>
 <td>Merging two fungible assets should only be possible if both share the same metadata.</td>
 <td>Medium</td>
 <td>The merge function validates the metadata of the src and dst asset.</td>
-<td>Audited that it aborts if the metadata of the src and dst are not the same.</td>
+<td>Formally verified via <a href="#high-level-req-15">merge</a>.</td>
 </tr>
 <tr>
 <td>16</td>
 <td>Post merging two fungible assets, the source asset should have the amount value equal to the sum of the two.</td>
 <td>High</td>
 <td>The merge function increases dst_fungible_asset.amount by src_fungible_asset.amount.</td>
-<td>Audited that the dst_fungible_asset balance is increased by amount.</td>
+<td>Formally verified via <a href="#high-level-req-16">merge</a>.</td>
 </tr>
 <tr>
 <td>17</td>
 <td>Fungible assets with zero balance should be destroyed when the amount reaches value 0.</td>
 <td>Medium</td>
 <td>The destroy_zero ensures that the balance of the asset has the value 0 and destroy the asset.</td>
-<td>Audited that it aborts if the balance of the asset is non zero.</td>
+<td>Formally verified via <a href="#high-level-req-17">destroy_zero</a>.</td>
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
-<h3 id="function-withdraw_permission_check-1"><a class="header" href="#function-withdraw_permission_check-1">Function <code>withdraw_permission_check</code> <a id="@Specification_1_withdraw_permission_check"></a></a></h3>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw_permission_check">withdraw_permission_check</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
+<h3 id="function-add_fungibility-1"><a class="header" href="#function-add_fungibility-1">Function <code>add_fungibility</code> <a id="@Specification_1_add_fungibility"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_add_fungibility">add_fungibility</a>(constructor_ref: &<a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, maximum_supply: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, icon_uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, project_uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
 </code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="permissioned_signer.html#0x1_permissioned_signer_PermissionStorage">permissioned_signer::PermissionStorage</a>&gt;(<a href="permissioned_signer.html#0x1_permissioned_signer_spec_permission_address">permissioned_signer::spec_permission_address</a>(owner));
+<pre><code><b>pragma</b> aborts_if_is_partial;
+// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
+<b>aborts_if</b> std::string::length(name) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_NAME_LENGTH">MAX_NAME_LENGTH</a>;
+<b>aborts_if</b> std::string::length(symbol) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_SYMBOL_LENGTH">MAX_SYMBOL_LENGTH</a>;
+<b>aborts_if</b> decimals &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_DECIMALS">MAX_DECIMALS</a>;
+<b>aborts_if</b> std::string::length(icon_uri) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_URI_LENGTH">MAX_URI_LENGTH</a>;
+<b>aborts_if</b> std::string::length(project_uri) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_URI_LENGTH">MAX_URI_LENGTH</a>;
+</code></pre>
+<h3 id="function-is_untransferable-1"><a class="header" href="#function-is_untransferable-1">Function <code>is_untransferable</code> <a id="@Specification_1_is_untransferable"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_is_untransferable">is_untransferable</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Untransferable">Untransferable</a>&gt;(metadata.inner);
+</code></pre>
+<h3 id="function-name-1"><a class="header" href="#function-name-1">Function <code>name</code> <a id="@Specification_1_name"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_name">name</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner);
+<b>ensures</b> result == <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner).name;
+</code></pre>
+<h3 id="function-symbol-1"><a class="header" href="#function-symbol-1">Function <code>symbol</code> <a id="@Specification_1_symbol"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_symbol">symbol</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner);
+<b>ensures</b> result == <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner).symbol;
+</code></pre>
+<h3 id="function-decimals-1"><a class="header" href="#function-decimals-1">Function <code>decimals</code> <a id="@Specification_1_decimals"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_decimals">decimals</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): u8
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner);
+<b>ensures</b> result == <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner).decimals;
+</code></pre>
+<h3 id="function-icon_uri-1"><a class="header" href="#function-icon_uri-1">Function <code>icon_uri</code> <a id="@Specification_1_icon_uri"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_icon_uri">icon_uri</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner);
+<b>ensures</b> result == <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner).icon_uri;
+</code></pre>
+<h3 id="function-project_uri-1"><a class="header" href="#function-project_uri-1">Function <code>project_uri</code> <a id="@Specification_1_project_uri"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_project_uri">project_uri</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner);
+<b>ensures</b> result == <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner).project_uri;
+</code></pre>
+<h3 id="function-metadata-1"><a class="header" href="#function-metadata-1">Function <code>metadata</code> <a id="@Specification_1_metadata"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_metadata">metadata</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner);
+<b>ensures</b> result == <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner);
+</code></pre>
+<h3 id="function-store_exists-1"><a class="header" href="#function-store_exists-1">Function <code>store_exists</code> <a id="@Specification_1_store_exists"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_store_exists">store_exists</a>(store: <b>address</b>): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store);
+</code></pre>
+<h3 id="function-store_metadata-1"><a class="header" href="#function-store_metadata-1">Function <code>store_metadata</code> <a id="@Specification_1_store_metadata"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_store_metadata">store_metadata</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store.inner);
+<b>ensures</b> result == <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store.inner).metadata;
+</code></pre>
+<h3 id="function-is_frozen-1"><a class="header" href="#function-is_frozen-1">Function <code>is_frozen</code> <a id="@Specification_1_is_frozen"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_is_frozen">is_frozen</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store.inner) && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store.inner).frozen);
+</code></pre>
+<h3 id="function-amount-1"><a class="header" href="#function-amount-1">Function <code>amount</code> <a id="@Specification_1_amount"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_amount">amount</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == self.amount;
+</code></pre>
+<h3 id="function-metadata_from_asset-1"><a class="header" href="#function-metadata_from_asset-1">Function <code>metadata_from_asset</code> <a id="@Specification_1_metadata_from_asset"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_metadata_from_asset">metadata_from_asset</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == self.metadata;
+</code></pre>
+<h3 id="function-asset_metadata-1"><a class="header" href="#function-asset_metadata-1">Function <code>asset_metadata</code> <a id="@Specification_1_asset_metadata"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_asset_metadata">asset_metadata</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == self.metadata;
+</code></pre>
+<h3 id="function-mint_ref_metadata-1"><a class="header" href="#function-mint_ref_metadata-1">Function <code>mint_ref_metadata</code> <a id="@Specification_1_mint_ref_metadata"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_mint_ref_metadata">mint_ref_metadata</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == self.metadata;
+</code></pre>
+<h3 id="function-transfer_ref_metadata-1"><a class="header" href="#function-transfer_ref_metadata-1">Function <code>transfer_ref_metadata</code> <a id="@Specification_1_transfer_ref_metadata"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_transfer_ref_metadata">transfer_ref_metadata</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == self.metadata;
+</code></pre>
+<h3 id="function-burn_ref_metadata-1"><a class="header" href="#function-burn_ref_metadata-1">Function <code>burn_ref_metadata</code> <a id="@Specification_1_burn_ref_metadata"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_burn_ref_metadata">burn_ref_metadata</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_BurnRef">fungible_asset::BurnRef</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == self.metadata;
+</code></pre>
+<h3 id="function-object_from_metadata_ref-1"><a class="header" href="#function-object_from_metadata_ref-1">Function <code>object_from_metadata_ref</code> <a id="@Specification_1_object_from_metadata_ref"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_object_from_metadata_ref">object_from_metadata_ref</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_MutateMetadataRef">fungible_asset::MutateMetadataRef</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == self.metadata;
+</code></pre>
+<h3 id="function-create_store-1"><a class="header" href="#function-create_store-1">Function <code>create_store</code> <a id="@Specification_1_create_store"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_create_store">create_store</a>&lt;T: key&gt;(constructor_ref: &<a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> addr = constructor_ref.self;
+// This enforces <a id="high-level-req-8" href="#high-level-req">high-level requirement 8</a>:
+<b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
+// This enforces <a id="high-level-req-9" href="#high-level-req">high-level requirement 9</a>:
+<b>ensures</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).balance == 0;
+<b>ensures</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).frozen == <b>false</b>;
+<b>ensures</b> result.inner == addr;
+</code></pre>
+<h3 id="function-remove_store-1"><a class="header" href="#function-remove_store-1">Function <code>remove_store</code> <a id="@Specification_1_remove_store"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_remove_store">remove_store</a>(delete_ref: &<a href="object.html#0x1_object_DeleteRef">object::DeleteRef</a>)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> addr = delete_ref.self;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
+// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
+<b>aborts_if</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).balance != 0;
+// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
+<b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr)
+    && <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">aggregator_v2::spec_get_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr).balance) != 0;
+<b>ensures</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
 </code></pre>
 <h3 id="function-deposit-1"><a class="header" href="#function-deposit-1">Function <code>deposit</code> <a id="@Specification_1_deposit"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_deposit">deposit</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
 </code></pre>
 <pre><code><b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(store));
 <b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(store));
+</code></pre>
+<h3 id="function-extract-1"><a class="header" href="#function-extract-1">Function <code>extract</code> <a id="@Specification_1_extract"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_extract">extract</a>(self: &<b>mut</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>, amount: u64): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
+</code></pre>
+<pre><code>// This enforces <a id="high-level-req-14" href="#high-level-req">high-level requirement 14</a>:
+<b>aborts_if</b> self.<a href="fungible_asset.html#0x1_fungible_asset_amount">amount</a> &lt; amount;
+<b>ensures</b> self.amount == <b>old</b>(self).amount - amount;
+<b>ensures</b> self.metadata == <b>old</b>(self).metadata;
+<b>ensures</b> result.amount == amount;
+<b>ensures</b> result.metadata == <b>old</b>(self).metadata;
+</code></pre>
+<h3 id="function-merge-1"><a class="header" href="#function-merge-1">Function <code>merge</code> <a id="@Specification_1_merge"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_merge">merge</a>(self: &<b>mut</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>, src_fungible_asset: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
+</code></pre>
+<pre><code>// This enforces <a id="high-level-req-15" href="#high-level-req">high-level requirement 15</a>:
+<b>aborts_if</b> src_fungible_asset.metadata != self.metadata;
+<b>aborts_if</b> self.amount + src_fungible_asset.amount &gt; MAX_U64;
+// This enforces <a id="high-level-req-16" href="#high-level-req">high-level requirement 16</a>:
+<b>ensures</b> self.amount == <b>old</b>(self).amount + src_fungible_asset.amount;
+<b>ensures</b> self.metadata == <b>old</b>(self).metadata;
+</code></pre>
+<h3 id="function-destroy_zero-1"><a class="header" href="#function-destroy_zero-1">Function <code>destroy_zero</code> <a id="@Specification_1_destroy_zero"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_destroy_zero">destroy_zero</a>(self: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
+</code></pre>
+<pre><code>// This enforces <a id="high-level-req-17" href="#high-level-req">high-level requirement 17</a>:
+<b>aborts_if</b> self.amount != 0;
 </code></pre>
 <h3 id="function-unchecked_deposit-1"><a class="header" href="#function-unchecked_deposit-1">Function <code>unchecked_deposit</code> <a id="@Specification_1_unchecked_deposit"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_unchecked_deposit">unchecked_deposit</a>(store_addr: <b>address</b>, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)

@@ -179,7 +179,11 @@
 <li><a href="#0x1_jwk_consensus_config_new_oidc_provider">Function <code>new_oidc_provider</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_1_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#@Specification_1_new_off">Function <code>new_off</code></a></li>
+<li><a href="#@Specification_1_new_oidc_provider">Function <code>new_oidc_provider</code></a></li>
 </ul>
 </li>
 </ul>
@@ -360,19 +364,44 @@ aptos_governance::reconfigure(&amp;framework_signer);
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">jwk_consensus_config::JWKConsensusConfig</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_InitializeResource">config_buffer::InitializeResource</a>&lt;<a href="jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">JWKConsensusConfig</a>&gt;;
+</code></pre>
+<h3 id="function-set_for_next_epoch-1"><a class="header" href="#function-set_for_next_epoch-1">Function <code>set_for_next_epoch</code> <a id="@Specification_1_set_for_next_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_set_for_next_epoch">set_for_next_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">jwk_consensus_config::JWKConsensusConfig</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpoch">config_buffer::SetForNextEpoch</a>&lt;<a href="jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">JWKConsensusConfig</a>&gt; { new_config: config };
+</code></pre>
 <h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>requires</b> @aptos_framework == std::signer::address_of(framework);
-<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochRequirement">config_buffer::OnNewEpochRequirement</a>&lt;<a href="jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">JWKConsensusConfig</a>&gt;;
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">JWKConsensusConfig</a>&gt;;
+</code></pre>
+<h3 id="function-new_off-1"><a class="header" href="#function-new_off-1">Function <code>new_off</code> <a id="@Specification_1_new_off"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_new_off">new_off</a>(): <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">jwk_consensus_config::JWKConsensusConfig</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_JWKConsensusConfig">JWKConsensusConfig</a> { variant: <a href="../aptos-stdlib/copyable_any.html#0x1_copyable_any_pack">copyable_any::pack</a>(<a href="jwk_consensus_config.html#0x1_jwk_consensus_config_ConfigOff">ConfigOff</a> {}) };
+</code></pre>
+<h3 id="function-new_oidc_provider-1"><a class="header" href="#function-new_oidc_provider-1">Function <code>new_oidc_provider</code> <a id="@Specification_1_new_oidc_provider"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_new_oidc_provider">new_oidc_provider</a>(name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, config_url: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_OIDCProvider">jwk_consensus_config::OIDCProvider</a>
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="jwk_consensus_config.html#0x1_jwk_consensus_config_OIDCProvider">OIDCProvider</a> { name, config_url };
 </code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../aptos-framework/guid.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../aptos-framework/init.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -386,7 +415,7 @@ aptos_governance::reconfigure(&amp;framework_signer);
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../aptos-framework/guid.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../aptos-framework/init.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

@@ -325,7 +325,9 @@ to allow any signer to call.</p>
 </code></pre>
 <p>Make sure the caller is @aptos_framework.
 AggregatorFactory is not under the caller before creating the resource.</p>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="aggregator_factory.html#0x1_aggregator_factory_AggregatorFactory">AggregatorFactory</a>&gt;(@aptos_framework);
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>aborts_if</b> addr != @aptos_framework;
 <b>aborts_if</b> <b>exists</b>&lt;<a href="aggregator_factory.html#0x1_aggregator_factory_AggregatorFactory">AggregatorFactory</a>&gt;(addr);
 // This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
@@ -334,7 +336,9 @@ AggregatorFactory is not under the caller before creating the resource.</p>
 <h3 id="function-create_aggregator_internal-1"><a class="header" href="#function-create_aggregator_internal-1">Function <code>create_aggregator_internal</code> <a id="@Specification_1_create_aggregator_internal"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aggregator_factory.html#0x1_aggregator_factory_create_aggregator_internal">create_aggregator_internal</a>(): <a href="aggregator.html#0x1_aggregator_Aggregator">aggregator::Aggregator</a>
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="aggregator_factory.html#0x1_aggregator_factory_AggregatorFactory">AggregatorFactory</a>&gt;(@aptos_framework);
+// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
 <b>include</b> <a href="aggregator_factory.html#0x1_aggregator_factory_CreateAggregatorInternalAbortsIf">CreateAggregatorInternalAbortsIf</a>;
 <b>ensures</b> <a href="aggregator.html#0x1_aggregator_spec_get_limit">aggregator::spec_get_limit</a>(result) == <a href="aggregator_factory.html#0x1_aggregator_factory_MAX_U128">MAX_U128</a>;
 <b>ensures</b> <a href="aggregator.html#0x1_aggregator_spec_aggregator_get_val">aggregator::spec_aggregator_get_val</a>(result) == 0;
@@ -350,11 +354,15 @@ AggregatorFactory is not under the caller before creating the resource.</p>
 </code></pre>
 <p>Make sure the caller is @aptos_framework.
 AggregatorFactory existed under the @aptos_framework when Creating a new aggregator.</p>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="aggregator_factory.html#0x1_aggregator_factory_AggregatorFactory">AggregatorFactory</a>&gt;(@aptos_framework);
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 // This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
 <b>aborts_if</b> addr != @aptos_framework;
 <b>aborts_if</b> limit != <a href="aggregator_factory.html#0x1_aggregator_factory_MAX_U128">MAX_U128</a>;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aggregator_factory.html#0x1_aggregator_factory_AggregatorFactory">AggregatorFactory</a>&gt;(@aptos_framework);
+<b>ensures</b> <a href="aggregator.html#0x1_aggregator_spec_get_limit">aggregator::spec_get_limit</a>(result) == limit;
+<b>ensures</b> <a href="aggregator.html#0x1_aggregator_spec_aggregator_get_val">aggregator::spec_aggregator_get_val</a>(result) == 0;
 </code></pre>
 <p><a id="0x1_aggregator_factory_spec_new_aggregator"></a></p>
 <pre><code><b>native</b> <b>fun</b> <a href="aggregator_factory.html#0x1_aggregator_factory_spec_new_aggregator">spec_new_aggregator</a>(limit: u128): Aggregator;
