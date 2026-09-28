@@ -101540,6 +101540,11 @@ while preserving the order ID for potential reuse.</p>
 <li><a href="aptos-trading/order_book_types.html#0x5_order_book_types_price_move_up_condition">Function <code>price_move_up_condition</code></a></li>
 <li><a href="aptos-trading/order_book_types.html#0x5_order_book_types_price_move_down_condition">Function <code>price_move_down_condition</code></a></li>
 <li><a href="aptos-trading/order_book_types.html#0x5_order_book_types_get_trigger_condition_indices">Function <code>get_trigger_condition_indices</code></a></li>
+<li><a href="aptos-trading/order_book_types.html#@Specification_1">Specification</a>
+<ul>
+<li><a href="aptos-trading/order_book_types.html#@Specification_1_time_in_force_from_index">Function <code>time_in_force_from_index</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="aptos-trading/../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="aptos-trading/../move-stdlib/string.html#0x1_string">0x1::string</a>;
@@ -101893,6 +101898,12 @@ while preserving the order ID for potential reuse.</p>
 }
 </code></pre>
 </details>
+<h2 id="specification-126"><a class="header" href="#specification-126">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-time_in_force_from_index-1"><a class="header" href="#function-time_in_force_from_index-1">Function <code>time_in_force_from_index</code> <a id="@Specification_1_time_in_force_from_index"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/order_book_types.html#0x5_order_book_types_time_in_force_from_index">time_in_force_from_index</a>(index: u8): <a href="aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>
+</code></pre>
+<pre><code><b>aborts_if</b> index &gt; 2;
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x5order_match_types"><a class="header" href="#module-0x5order_match_types">Module <code>0x5::order_match_types</code> <a id="0x5_order_match_types"></a></a></h1>
 <ul>
 <li><a href="aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">Enum <code>OrderMatchDetails</code></a>
@@ -101934,6 +101945,12 @@ while preserving the order ID for potential reuse.</p>
 <li><a href="aptos-trading/order_match_types.html#0x5_order_match_types_validate_bulk_order_reinsertion_request">Function <code>validate_bulk_order_reinsertion_request</code></a></li>
 <li><a href="aptos-trading/order_match_types.html#0x5_order_match_types_destroy_active_matched_order">Function <code>destroy_active_matched_order</code></a></li>
 <li><a href="aptos-trading/order_match_types.html#0x5_order_match_types_is_active_matched_book_type_single_order">Function <code>is_active_matched_book_type_single_order</code></a></li>
+<li><a href="aptos-trading/order_match_types.html#@Specification_3">Specification</a>
+<ul>
+<li><a href="aptos-trading/order_match_types.html#@Specification_3_validate_single_order_reinsertion_request">Function <code>validate_single_order_reinsertion_request</code></a></li>
+<li><a href="aptos-trading/order_match_types.html#@Specification_3_validate_bulk_order_reinsertion_request">Function <code>validate_bulk_order_reinsertion_request</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="aptos-trading/../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="aptos-trading/../move-stdlib/string.html#0x1_string">0x1::string</a>;
@@ -102585,6 +102602,19 @@ particular match operation.</p>
 }
 </code></pre>
 </details>
+<h2 id="specification-127"><a class="header" href="#specification-127">Specification <a id="@Specification_3"></a></a></h2>
+<h3 id="function-validate_single_order_reinsertion_request-1"><a class="header" href="#function-validate_single_order_reinsertion_request-1">Function <code>validate_single_order_reinsertion_request</code> <a id="@Specification_3_validate_single_order_reinsertion_request"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/order_match_types.html#0x5_order_match_types_validate_single_order_reinsertion_request">validate_single_order_reinsertion_request</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, other: &<a href="aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): bool
+</code></pre>
+<pre><code><b>aborts_if</b> !(self is OrderMatchDetails::SingleOrder);
+<b>aborts_if</b> !(other is OrderMatchDetails::SingleOrder);
+</code></pre>
+<h3 id="function-validate_bulk_order_reinsertion_request-1"><a class="header" href="#function-validate_bulk_order_reinsertion_request-1">Function <code>validate_bulk_order_reinsertion_request</code> <a id="@Specification_3_validate_bulk_order_reinsertion_request"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/order_match_types.html#0x5_order_match_types_validate_bulk_order_reinsertion_request">validate_bulk_order_reinsertion_request</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;, other: &<a href="aptos-trading/order_match_types.html#0x5_order_match_types_OrderMatchDetails">order_match_types::OrderMatchDetails</a>&lt;M&gt;): bool
+</code></pre>
+<pre><code><b>aborts_if</b> !(self is OrderMatchDetails::BulkOrder);
+<b>aborts_if</b> !(other is OrderMatchDetails::BulkOrder);
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x5single_order_types"><a class="header" href="#module-0x5single_order_types">Module <code>0x5::single_order_types</code> <a id="0x5_single_order_types"></a></a></h1>
 <p>Single Order Types Module</p>
 <ul>
@@ -102622,7 +102652,12 @@ particular match operation.</p>
 <li><a href="aptos-trading/single_order_types.html#0x5_single_order_types_new_single_order_request">Function <code>new_single_order_request</code></a></li>
 <li><a href="aptos-trading/single_order_types.html#@Specification_1">Specification</a>
 <ul>
+<li><a href="aptos-trading/single_order_types.html#@Specification_1_get_account">Function <code>get_account</code></a></li>
+<li><a href="aptos-trading/single_order_types.html#@Specification_1_get_order_request">Function <code>get_order_request</code></a></li>
+<li><a href="aptos-trading/single_order_types.html#@Specification_1_get_order_from_state">Function <code>get_order_from_state</code></a></li>
 <li><a href="aptos-trading/single_order_types.html#@Specification_1_increase_remaining_size_from_state">Function <code>increase_remaining_size_from_state</code></a></li>
+<li><a href="aptos-trading/single_order_types.html#@Specification_1_decrease_remaining_size_from_state">Function <code>decrease_remaining_size_from_state</code></a></li>
+<li><a href="aptos-trading/single_order_types.html#@Specification_1_set_remaining_size_from_state">Function <code>set_remaining_size_from_state</code></a></li>
 </ul>
 </li>
 </ul>
@@ -103174,13 +103209,64 @@ particular match operation.</p>
 }
 </code></pre>
 </details>
-<h2 id="specification-126"><a class="header" href="#specification-126">Specification <a id="@Specification_1"></a></a></h2>
+<h2 id="specification-128"><a class="header" href="#specification-128">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-get_account-2"><a class="header" href="#function-get_account-2">Function <code>get_account</code> <a id="@Specification_1_get_account"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_get_account">get_account</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrderRequest">single_order_types::SingleOrderRequest</a>&lt;M&gt;): <b>address</b>
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-get_order_request-2"><a class="header" href="#function-get_order_request-2">Function <code>get_order_request</code> <a id="@Specification_1_get_order_request"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_get_order_request">get_order_request</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;): &<a href="aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrderRequest">single_order_types::SingleOrderRequest</a>&lt;M&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-get_order_from_state-1"><a class="header" href="#function-get_order_from_state-1">Function <code>get_order_from_state</code> <a id="@Specification_1_get_order_from_state"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_get_order_from_state">get_order_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="aptos-trading/single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;): &<a href="aptos-trading/single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+</code></pre>
 <h3 id="function-increase_remaining_size_from_state-1"><a class="header" href="#function-increase_remaining_size_from_state-1">Function <code>increase_remaining_size_from_state</code> <a id="@Specification_1_increase_remaining_size_from_state"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_increase_remaining_size_from_state">increase_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, size: u64)
 </code></pre>
 <pre><code><b>aborts_if</b> self.order.order_request.remaining_size + size &gt; MAX_U64;
 <b>ensures</b> self.order.order_request.remaining_size
     == <b>old</b>(self.order.order_request.remaining_size) + size;
+</code></pre>
+<h3 id="function-decrease_remaining_size_from_state-1"><a class="header" href="#function-decrease_remaining_size_from_state-1">Function <code>decrease_remaining_size_from_state</code> <a id="@Specification_1_decrease_remaining_size_from_state"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_decrease_remaining_size_from_state">decrease_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, size: u64)
+</code></pre>
+<pre><code><b>aborts_if</b> self.order.order_request.remaining_size &lt;= size;
+<b>ensures</b> self.order.order_request.remaining_size
+    == <b>old</b>(self.order.order_request.remaining_size) - size;
+</code></pre>
+<p>The decrease touches only the remaining size. Without this frame a
+caller that reads the order back after the call knows nothing about
+the fields it did not change, so it cannot state what it then does
+with them.</p>
+<pre><code><b>ensures</b> self.is_active == <b>old</b>(self.is_active);
+<b>ensures</b> self.order.unique_priority_idx == <b>old</b>(self.order.unique_priority_idx);
+<b>ensures</b> self.order.order_request.<a href="aptos-trading/../aptos-framework/account.html#0x1_account">account</a> == <b>old</b>(self.order.order_request.<a href="aptos-trading/../aptos-framework/account.html#0x1_account">account</a>);
+<b>ensures</b> self.order.order_request.price == <b>old</b>(self.order.order_request.price);
+<b>ensures</b> self.order.order_request.is_bid == <b>old</b>(self.order.order_request.is_bid);
+<b>ensures</b> self.order.order_request.client_order_id
+    == <b>old</b>(self.order.order_request.client_order_id);
+</code></pre>
+<h3 id="function-set_remaining_size_from_state-1"><a class="header" href="#function-set_remaining_size_from_state-1">Function <code>set_remaining_size_from_state</code> <a id="@Specification_1_set_remaining_size_from_state"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_set_remaining_size_from_state">set_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, remaining_size: u64)
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> self.order.order_request.remaining_size == remaining_size;
+</code></pre>
+<p>Setting the size touches only the size. Without this frame a caller that
+reads the order back — to check it is still active, or to find its key —
+knows nothing about the fields it did not change.</p>
+<pre><code><b>ensures</b> self.is_active == <b>old</b>(self.is_active);
+<b>ensures</b> self.order.unique_priority_idx == <b>old</b>(self.order.unique_priority_idx);
+<b>ensures</b> self.order.order_request.<a href="aptos-trading/../aptos-framework/account.html#0x1_account">account</a> == <b>old</b>(self.order.order_request.<a href="aptos-trading/../aptos-framework/account.html#0x1_account">account</a>);
+<b>ensures</b> self.order.order_request.price == <b>old</b>(self.order.order_request.price);
+<b>ensures</b> self.order.order_request.is_bid == <b>old</b>(self.order.order_request.is_bid);
+<b>ensures</b> self.order.order_request.client_order_id
+    == <b>old</b>(self.order.order_request.client_order_id);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aptos-experimental-framework"><a class="header" href="#aptos-experimental-framework">Aptos Experimental Framework <a id="@Aptos_Experimental_Framework_0"></a></a></h1>
 <p>This is the reference documentation of the Aptos experimental framework.</p>
@@ -105811,7 +105897,7 @@ for the specified user account.</p>
 }
 </code></pre>
 </details>
-<h2 id="function-get_account-2"><a class="header" href="#function-get_account-2">Function <code>get_account</code> <a id="0x7_market_clearinghouse_order_info_get_account"></a></a></h2>
+<h2 id="function-get_account-3"><a class="header" href="#function-get_account-3">Function <code>get_account</code> <a id="0x7_market_clearinghouse_order_info_get_account"></a></a></h2>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_get_account">get_account</a>&lt;M: <b>copy</b>, drop&gt;(self: &<a href="aptos-experimental/market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info_MarketClearinghouseOrderInfo">market_clearinghouse_order_info::MarketClearinghouseOrderInfo</a>&lt;M&gt;): <b>address</b>
 </code></pre>
 <details>

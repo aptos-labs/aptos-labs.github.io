@@ -200,7 +200,12 @@
 <li><a href="#0x5_single_order_types_new_single_order_request">Function <code>new_single_order_request</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_get_account">Function <code>get_account</code></a></li>
+<li><a href="#@Specification_1_get_order_request">Function <code>get_order_request</code></a></li>
+<li><a href="#@Specification_1_get_order_from_state">Function <code>get_order_from_state</code></a></li>
 <li><a href="#@Specification_1_increase_remaining_size_from_state">Function <code>increase_remaining_size_from_state</code></a></li>
+<li><a href="#@Specification_1_decrease_remaining_size_from_state">Function <code>decrease_remaining_size_from_state</code></a></li>
+<li><a href="#@Specification_1_set_remaining_size_from_state">Function <code>set_remaining_size_from_state</code></a></li>
 </ul>
 </li>
 </ul>
@@ -753,12 +758,63 @@
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-get_account-1"><a class="header" href="#function-get_account-1">Function <code>get_account</code> <a id="@Specification_1_get_account"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_order_types.html#0x5_single_order_types_get_account">get_account</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="single_order_types.html#0x5_single_order_types_SingleOrderRequest">single_order_types::SingleOrderRequest</a>&lt;M&gt;): <b>address</b>
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-get_order_request-1"><a class="header" href="#function-get_order_request-1">Function <code>get_order_request</code> <a id="@Specification_1_get_order_request"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_order_types.html#0x5_single_order_types_get_order_request">get_order_request</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;): &<a href="single_order_types.html#0x5_single_order_types_SingleOrderRequest">single_order_types::SingleOrderRequest</a>&lt;M&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+</code></pre>
+<h3 id="function-get_order_from_state-1"><a class="header" href="#function-get_order_from_state-1">Function <code>get_order_from_state</code> <a id="@Specification_1_get_order_from_state"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_order_types.html#0x5_single_order_types_get_order_from_state">get_order_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<a href="single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;): &<a href="single_order_types.html#0x5_single_order_types_SingleOrder">single_order_types::SingleOrder</a>&lt;M&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+</code></pre>
 <h3 id="function-increase_remaining_size_from_state-1"><a class="header" href="#function-increase_remaining_size_from_state-1">Function <code>increase_remaining_size_from_state</code> <a id="@Specification_1_increase_remaining_size_from_state"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="single_order_types.html#0x5_single_order_types_increase_remaining_size_from_state">increase_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, size: u64)
 </code></pre>
 <pre><code><b>aborts_if</b> self.order.order_request.remaining_size + size &gt; MAX_U64;
 <b>ensures</b> self.order.order_request.remaining_size
     == <b>old</b>(self.order.order_request.remaining_size) + size;
+</code></pre>
+<h3 id="function-decrease_remaining_size_from_state-1"><a class="header" href="#function-decrease_remaining_size_from_state-1">Function <code>decrease_remaining_size_from_state</code> <a id="@Specification_1_decrease_remaining_size_from_state"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_order_types.html#0x5_single_order_types_decrease_remaining_size_from_state">decrease_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, size: u64)
+</code></pre>
+<pre><code><b>aborts_if</b> self.order.order_request.remaining_size &lt;= size;
+<b>ensures</b> self.order.order_request.remaining_size
+    == <b>old</b>(self.order.order_request.remaining_size) - size;
+</code></pre>
+<p>The decrease touches only the remaining size. Without this frame a
+caller that reads the order back after the call knows nothing about
+the fields it did not change, so it cannot state what it then does
+with them.</p>
+<pre><code><b>ensures</b> self.is_active == <b>old</b>(self.is_active);
+<b>ensures</b> self.order.unique_priority_idx == <b>old</b>(self.order.unique_priority_idx);
+<b>ensures</b> self.order.order_request.<a href="../aptos-framework/account.html#0x1_account">account</a> == <b>old</b>(self.order.order_request.<a href="../aptos-framework/account.html#0x1_account">account</a>);
+<b>ensures</b> self.order.order_request.price == <b>old</b>(self.order.order_request.price);
+<b>ensures</b> self.order.order_request.is_bid == <b>old</b>(self.order.order_request.is_bid);
+<b>ensures</b> self.order.order_request.client_order_id
+    == <b>old</b>(self.order.order_request.client_order_id);
+</code></pre>
+<h3 id="function-set_remaining_size_from_state-1"><a class="header" href="#function-set_remaining_size_from_state-1">Function <code>set_remaining_size_from_state</code> <a id="@Specification_1_set_remaining_size_from_state"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="single_order_types.html#0x5_single_order_types_set_remaining_size_from_state">set_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, remaining_size: u64)
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> self.order.order_request.remaining_size == remaining_size;
+</code></pre>
+<p>Setting the size touches only the size. Without this frame a caller that
+reads the order back — to check it is still active, or to find its key —
+knows nothing about the fields it did not change.</p>
+<pre><code><b>ensures</b> self.is_active == <b>old</b>(self.is_active);
+<b>ensures</b> self.order.unique_priority_idx == <b>old</b>(self.order.unique_priority_idx);
+<b>ensures</b> self.order.order_request.<a href="../aptos-framework/account.html#0x1_account">account</a> == <b>old</b>(self.order.order_request.<a href="../aptos-framework/account.html#0x1_account">account</a>);
+<b>ensures</b> self.order.order_request.price == <b>old</b>(self.order.order_request.price);
+<b>ensures</b> self.order.order_request.is_bid == <b>old</b>(self.order.order_request.is_bid);
+<b>ensures</b> self.order.order_request.client_order_id
+    == <b>old</b>(self.order.order_request.client_order_id);
 </code></pre>
 
                     </main>
