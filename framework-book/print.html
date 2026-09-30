@@ -8248,8 +8248,8 @@ type.</p>
 work around the languages modular encapsulation guarantees.</p>
 <p>A small set of framework functions are additionally forbidden from being resolved (the call
 returns <code>FunctionNotAccessible</code>), because their rules are enforced by the bytecode verifier at
-the call site and cannot be upheld for a dynamically-resolved function value. Currently this
-is only <code>0x1::event::emit</code>.</p>
+the call site and cannot be upheld for a dynamically-resolved function value. Currently these
+are <code>0x1::event::emit</code> and <code>0x1::init::internal_maybe_initialize</code>.</p>
 <p>The resolved function can be generic, in which case the instantiation must be inferrible
 from the provided <code>FuncType</code>. For example, <code><b>public</b> <b>fun</b> foo&lt;T&gt;(T)</code>, with <code>FunType = |u64|</code>,
 <code>T = u64</code> can be derived. If not all type parameters can be inferred, an error will be
@@ -41618,6 +41618,7 @@ The new <code>seq_num</code> must be strictly greater than the current on-chain 
 <li><a href="aptos-framework/code.html#0x1_code_publish_package">Function <code>publish_package</code></a></li>
 <li><a href="aptos-framework/code.html#0x1_code_freeze_code_object">Function <code>freeze_code_object</code></a></li>
 <li><a href="aptos-framework/code.html#0x1_code_publish_package_txn">Function <code>publish_package_txn</code></a></li>
+<li><a href="aptos-framework/code.html#0x1_code_publish_package_to_object">Function <code>publish_package_to_object</code></a></li>
 <li><a href="aptos-framework/code.html#0x1_code_check_upgradability">Function <code>check_upgradability</code></a></li>
 <li><a href="aptos-framework/code.html#0x1_code_check_coexistence">Function <code>check_coexistence</code></a></li>
 <li><a href="aptos-framework/code.html#0x1_code_check_dependencies">Function <code>check_dependencies</code></a></li>
@@ -41999,16 +42000,6 @@ package.</p>
     // To avoid prover compiler <a href="aptos-framework/../move-stdlib/error.html#0x1_error">error</a> on <b>spec</b>
     // the <b>package</b> need <b>to</b> be an immutable variable
     <b>let</b> module_names = <a href="aptos-framework/code.html#0x1_code_get_module_names">get_module_names</a>(&pack);
-
-    // Record, per <b>module</b> in this <b>package</b>, the <a href="aptos-framework/object.html#0x1_object">object</a>'s transitive root owner at (re)publish, so
-    // lazy self-<a href="aptos-framework/init.html#0x1_init">init</a> can detect a later transfer of the <a href="aptos-framework/object.html#0x1_object">object</a> or an ancestor since that <b>module</b>
-    // was published (see `<a href="aptos-framework/init.html#0x1_init_internal_maybe_initialize">init::internal_maybe_initialize</a>`). Objects only; feature-gated.
-    <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>() && <a href="aptos-framework/object.html#0x1_object_is_object">object::is_object</a>(addr)) {
-        <b>let</b> owner = <a href="aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="aptos-framework/object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(addr).root_owner();
-        module_names.for_each_ref(|name| {
-            <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">init::record_deploy_owner</a>(addr, *name.bytes(), owner);
-        });
-    };
     <b>let</b> package_immutable = &<b>borrow_global</b>&lt;<a href="aptos-framework/code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(addr).packages;
     <b>let</b> len = package_immutable.length();
     <b>let</b> index = len;
@@ -42031,10 +42022,11 @@ package.</p>
     // Update registry
     <b>let</b> policy = pack.upgrade_policy;
     <b>if</b> (index &lt; len) {
-        pack.modules.for_each_ref(|m| {
-            <b>let</b> m: &<a href="aptos-framework/code.html#0x1_code_ModuleMetadata">ModuleMetadata</a> = m;
-            <a href="aptos-framework/init.html#0x1_init_reset_initialized">init::reset_initialized</a>(addr, *m.name.bytes());
-        });
+        // With lazy initialization disabled, <b>old</b> <a href="aptos-framework/code.html#0x1_code">code</a> cannot consume this reset. Preserve
+        // it for a later re-enable; the VM only performs the deferred reset <b>while</b> enabled.
+        <b>if</b> (!<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>()) {
+            <a href="aptos-framework/init.html#0x1_init_reset_initialized">init::reset_initialized</a>(addr, module_names.map_ref(|name| *name.bytes()));
+        };
         *packages.borrow_mut(index) = pack
     } <b>else</b> {
         packages.push_back(pack)
@@ -42104,6 +42096,33 @@ of current restrictions for txn parameters, the metadata needs to be passed in s
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos-framework/code.html#0x1_code_publish_package_txn">publish_package_txn</a>(owner: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, metadata_serialized: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="aptos-framework/code.html#0x1_code">code</a>: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 <b>acquires</b> <a href="aptos-framework/code.html#0x1_code_PackageRegistry">PackageRegistry</a> {
     <a href="aptos-framework/code.html#0x1_code_publish_package">publish_package</a>(owner, <a href="aptos-framework/util.html#0x1_util_from_bytes">util::from_bytes</a>&lt;<a href="aptos-framework/code.html#0x1_code_PackageMetadata">PackageMetadata</a>&gt;(metadata_serialized), <a href="aptos-framework/code.html#0x1_code">code</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-publish_package_to_object"><a class="header" href="#function-publish_package_to_object">Function <code>publish_package_to_object</code> <a id="0x1_code_publish_package_to_object"></a></a></h2>
+<p>Publishes a package to the object <code>code_object</code> signs for, authorized by <code>owner</code>, who must
+currently own that object. The ownership is recorded for the package's modules so that they
+can lazily self-initialize (see <code><a href="aptos-framework/init.html#0x1_init">init</a></code>); modules published to an object via
+<code>publish_package</code> alone cannot.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/code.html#0x1_code_publish_package_to_object">publish_package_to_object</a>(owner: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, code_object: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, metadata_serialized: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="aptos-framework/code.html#0x1_code">code</a>: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>package</b> <b>fun</b> <a href="aptos-framework/code.html#0x1_code_publish_package_to_object">publish_package_to_object</a>(
+    owner: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>,
+    code_object: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>,
+    metadata_serialized: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    <a href="aptos-framework/code.html#0x1_code">code</a>: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+) <b>acquires</b> <a href="aptos-framework/code.html#0x1_code_PackageRegistry">PackageRegistry</a> {
+    <b>let</b> pack = <a href="aptos-framework/util.html#0x1_util_from_bytes">util::from_bytes</a>&lt;<a href="aptos-framework/code.html#0x1_code_PackageMetadata">PackageMetadata</a>&gt;(metadata_serialized);
+    <b>let</b> module_names = <a href="aptos-framework/code.html#0x1_code_get_module_names">get_module_names</a>(&pack);
+    <a href="aptos-framework/code.html#0x1_code_publish_package">publish_package</a>(code_object, pack, <a href="aptos-framework/code.html#0x1_code">code</a>);
+    <b>if</b> (<a href="aptos-framework/../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>()) {
+        <b>let</b> addr = <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(code_object);
+        module_names.for_each_ref(|name| {
+            <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">init::record_deploy_owner</a>(owner, addr, *name.bytes());
+        });
+    }
 }
 </code></pre>
 </details>
@@ -59553,6 +59572,7 @@ encoded in a single BCS byte array.</p>
 <b>use</b> <a href="aptos-framework/object.html#0x1_object">0x1::object</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/option.html#0x1_option">0x1::option</a>;
 <b>use</b> <a href="aptos-framework/ordered_map.html#0x1_ordered_map">0x1::ordered_map</a>;
+<b>use</b> <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
 </code></pre>
 <h2 id="struct-moduleid"><a class="header" href="#struct-moduleid">Struct <code>ModuleId</code> <a id="0x1_init_ModuleId"></a></a></h2>
@@ -59574,7 +59594,8 @@ encoded in a single BCS byte array.</p>
 <p><code>only_once</code> is the flag first passed at initialization: <code>none</code> before init, <code>some(<b>false</b>)</code>
 re-inits after each upgrade (cleared by <code>reset_initialized</code>), <code>some(<b>true</b>)</code> inits only once.
 <code>deploy_owner</code> is the object's transitive root owner recorded at this module's last publish
-and gates object self-init (see <code>assert_may_self_initialize</code>); <code>none</code> for account addresses.</p>
+through <code><a href="aptos-framework/code.html#0x1_code_publish_package_to_object">code::publish_package_to_object</a></code> and gates object self-init (see
+<code>assert_may_self_initialize</code>); <code>none</code> for account addresses.</p>
 <pre><code><b>struct</b> <a href="aptos-framework/init.html#0x1_init_ModuleState">ModuleState</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
@@ -59614,6 +59635,10 @@ its own last publish -- republishing one module does not re-arm a sibling.</p>
 </details>
 </details>
 <h2 id="constants-81"><a class="header" href="#constants-81">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_init_ENOT_OBJECT_OWNER"></a></p>
+<p>Only the current owner of an object can record the deploy owner of its modules.</p>
+<pre><code><b>const</b> <a href="aptos-framework/init.html#0x1_init_ENOT_OBJECT_OWNER">ENOT_OBJECT_OWNER</a>: u64 = 4;
+</code></pre>
 <p><a id="0x1_init_EINVALID_INITIALIZE_CALLER"></a></p>
 <p>Module initialization can only be requested by module code, not by scripts.</p>
 <pre><code><b>const</b> <a href="aptos-framework/init.html#0x1_init_EINVALID_INITIALIZE_CALLER">EINVALID_INITIALIZE_CALLER</a>: u64 = 1;
@@ -59692,37 +59717,49 @@ has no such record (an account module, or an object module never recorded).</p>
 </code></pre>
 </details>
 <h2 id="function-record_deploy_owner"><a class="header" href="#function-record_deploy_owner">Function <code>record_deploy_owner</code> <a id="0x1_init_record_deploy_owner"></a></a></h2>
-<p>Records <code>owner</code> as the object root owner of the module named <code>module_name</code> at (re)publish, to
-gate its later self-init (see <code>assert_may_self_initialize</code>). Called per module by
-<code><a href="aptos-framework/code.html#0x1_code_publish_package">code::publish_package</a></code> for object addresses only.</p>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">record_deploy_owner</a>(addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, owner: <b>address</b>)
+<p>Records the current root owner of the object at <code>addr</code> for the module named <code>module_name</code>,
+to gate its later self-init (see <code>assert_may_self_initialize</code>). <code>owner</code> must own the object
+at this moment: a code object signer obtained before an ownership transfer cannot refresh
+the record. Called per module by <code><a href="aptos-framework/code.html#0x1_code_publish_package_to_object">code::publish_package_to_object</a></code>.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">record_deploy_owner</a>(owner: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>package</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">record_deploy_owner</a>(addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, owner: <b>address</b>) {
+<pre><code><b>package</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_record_deploy_owner">record_deploy_owner</a>(owner: &<a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>, addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) {
+    <b>let</b> <a href="aptos-framework/object.html#0x1_object">object</a> = <a href="aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;ObjectCore&gt;(addr);
+    <b>assert</b>!(
+        <a href="aptos-framework/object.html#0x1_object_is_owner">object::is_owner</a>(<a href="aptos-framework/object.html#0x1_object">object</a>, <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner)),
+        <a href="aptos-framework/../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="aptos-framework/init.html#0x1_init_ENOT_OBJECT_OWNER">ENOT_OBJECT_OWNER</a>),
+    );
     <b>let</b> module_id = <a href="aptos-framework/init.html#0x1_init_module_id_from_name">module_id_from_name</a>(module_name);
     <a href="aptos-framework/init.html#0x1_init_ensure_module_state">ensure_module_state</a>(addr, module_id);
-    <a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>[addr].modules.borrow_mut(&module_id).deploy_owner = <a href="aptos-framework/../move-stdlib/option.html#0x1_option_some">option::some</a>(owner);
+    <a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>[addr].modules.borrow_mut(&module_id).deploy_owner =
+        <a href="aptos-framework/../move-stdlib/option.html#0x1_option_some">option::some</a>(<a href="aptos-framework/object.html#0x1_object">object</a>.root_owner());
 }
 </code></pre>
 </details>
 <h2 id="function-reset_initialized"><a class="header" href="#function-reset_initialized">Function <code>reset_initialized</code> <a id="0x1_init_reset_initialized"></a></a></h2>
-<p>Called on code upgrade to request re-run of initialization for the named module. Skipped for
-modules that used <code>only_once = <b>true</b></code> when first initialized. Keeps the recorded deploy owner.</p>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/init.html#0x1_init_reset_initialized">reset_initialized</a>(addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+<p>Requests re-run of initialization for the named modules after an upgrade. Skipped for modules
+that used <code>only_once = <b>true</b></code> when first initialized. Keeps the recorded deploy owner.</p>
+<p>While enabled, called by the VM once the upgraded code is live, before new modules run
+their legacy initializers; resetting earlier would let the old code consume the reset.
+While disabled, called by <code><a href="aptos-framework/code.html#0x1_code_publish_package">code::publish_package</a></code>, since initialization cannot run then.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-framework/init.html#0x1_init_reset_initialized">reset_initialized</a>(addr: <b>address</b>, module_names: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>package</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_reset_initialized">reset_initialized</a>(addr: <b>address</b>, module_name: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) {
+<pre><code><b>package</b> <b>fun</b> <a href="aptos-framework/init.html#0x1_init_reset_initialized">reset_initialized</a>(addr: <b>address</b>, module_names: <a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-framework/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;) {
     <b>if</b> (<b>exists</b>&lt;<a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)) {
         <b>let</b> modules = &<b>mut</b> <a href="aptos-framework/init.html#0x1_init_InitializationState">InitializationState</a>[addr].modules;
-        <b>let</b> module_id = <a href="aptos-framework/init.html#0x1_init_module_id_from_name">module_id_from_name</a>(module_name);
-        <b>if</b> (modules.contains(&module_id)) {
-            <b>let</b> state = modules.borrow_mut(&module_id);
-            <b>if</b> (state.only_once == <a href="aptos-framework/../move-stdlib/option.html#0x1_option_some">option::some</a>(<b>false</b>)) {
-                state.only_once = <a href="aptos-framework/../move-stdlib/option.html#0x1_option_none">option::none</a>();
+        module_names.for_each_ref(|name| {
+            <b>let</b> module_id = <a href="aptos-framework/init.html#0x1_init_module_id_from_name">module_id_from_name</a>(*name);
+            <b>if</b> (modules.contains(&module_id)) {
+                <b>let</b> state = modules.borrow_mut(&module_id);
+                <b>if</b> (state.only_once == <a href="aptos-framework/../move-stdlib/option.html#0x1_option_some">option::some</a>(<b>false</b>)) {
+                    state.only_once = <a href="aptos-framework/../move-stdlib/option.html#0x1_option_none">option::none</a>();
+                }
             }
-        }
+        });
     }
 }
 </code></pre>
@@ -67904,7 +67941,7 @@ the code to be published via <code><a href="aptos-framework/code.html#0x1_code">
     <b>let</b> object_seed = <a href="aptos-framework/object_code_deployment.html#0x1_object_code_deployment_object_seed">object_seed</a>(publisher_address);
     <b>let</b> constructor_ref = &<a href="aptos-framework/object.html#0x1_object_create_named_object">object::create_named_object</a>(publisher, object_seed);
     <b>let</b> code_signer = &constructor_ref.generate_signer();
-    <a href="aptos-framework/code.html#0x1_code_publish_package_txn">code::publish_package_txn</a>(code_signer, metadata_serialized, <a href="aptos-framework/code.html#0x1_code">code</a>);
+    <a href="aptos-framework/code.html#0x1_code_publish_package_to_object">code::publish_package_to_object</a>(publisher, code_signer, metadata_serialized, <a href="aptos-framework/code.html#0x1_code">code</a>);
 
     <a href="aptos-framework/event.html#0x1_event_emit">event::emit</a>(<a href="aptos-framework/object_code_deployment.html#0x1_object_code_deployment_Publish">Publish</a> { object_address: <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(code_signer), });
 
@@ -67956,7 +67993,7 @@ this <code>upgrade</code> function should be called, rather than <code>publish</
 
     <b>let</b> extend_ref = &<b>borrow_global</b>&lt;<a href="aptos-framework/object_code_deployment.html#0x1_object_code_deployment_ManagingRefs">ManagingRefs</a>&gt;(code_object_address).extend_ref;
     <b>let</b> code_signer = &extend_ref.generate_signer_for_extending();
-    <a href="aptos-framework/code.html#0x1_code_publish_package_txn">code::publish_package_txn</a>(code_signer, metadata_serialized, <a href="aptos-framework/code.html#0x1_code">code</a>);
+    <a href="aptos-framework/code.html#0x1_code_publish_package_to_object">code::publish_package_to_object</a>(publisher, code_signer, metadata_serialized, <a href="aptos-framework/code.html#0x1_code">code</a>);
 
     <a href="aptos-framework/event.html#0x1_event_emit">event::emit</a>(<a href="aptos-framework/object_code_deployment.html#0x1_object_code_deployment_Upgrade">Upgrade</a> { object_address: <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(code_signer), });
 }

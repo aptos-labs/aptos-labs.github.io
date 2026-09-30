@@ -184,6 +184,7 @@
 <li><a href="#0x1_code_publish_package">Function <code>publish_package</code></a></li>
 <li><a href="#0x1_code_freeze_code_object">Function <code>freeze_code_object</code></a></li>
 <li><a href="#0x1_code_publish_package_txn">Function <code>publish_package_txn</code></a></li>
+<li><a href="#0x1_code_publish_package_to_object">Function <code>publish_package_to_object</code></a></li>
 <li><a href="#0x1_code_check_upgradability">Function <code>check_upgradability</code></a></li>
 <li><a href="#0x1_code_check_coexistence">Function <code>check_coexistence</code></a></li>
 <li><a href="#0x1_code_check_dependencies">Function <code>check_dependencies</code></a></li>
@@ -565,16 +566,6 @@ package.</p>
     // To avoid prover compiler <a href="../move-stdlib/error.html#0x1_error">error</a> on <b>spec</b>
     // the <b>package</b> need <b>to</b> be an immutable variable
     <b>let</b> module_names = <a href="code.html#0x1_code_get_module_names">get_module_names</a>(&pack);
-
-    // Record, per <b>module</b> in this <b>package</b>, the <a href="object.html#0x1_object">object</a>'s transitive root owner at (re)publish, so
-    // lazy self-<a href="init.html#0x1_init">init</a> can detect a later transfer of the <a href="object.html#0x1_object">object</a> or an ancestor since that <b>module</b>
-    // was published (see `<a href="init.html#0x1_init_internal_maybe_initialize">init::internal_maybe_initialize</a>`). Objects only; feature-gated.
-    <b>if</b> (<a href="../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>() && <a href="object.html#0x1_object_is_object">object::is_object</a>(addr)) {
-        <b>let</b> owner = <a href="object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(addr).root_owner();
-        module_names.for_each_ref(|name| {
-            <a href="init.html#0x1_init_record_deploy_owner">init::record_deploy_owner</a>(addr, *name.bytes(), owner);
-        });
-    };
     <b>let</b> package_immutable = &<b>borrow_global</b>&lt;<a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(addr).packages;
     <b>let</b> len = package_immutable.length();
     <b>let</b> index = len;
@@ -597,10 +588,11 @@ package.</p>
     // Update registry
     <b>let</b> policy = pack.upgrade_policy;
     <b>if</b> (index &lt; len) {
-        pack.modules.for_each_ref(|m| {
-            <b>let</b> m: &<a href="code.html#0x1_code_ModuleMetadata">ModuleMetadata</a> = m;
-            <a href="init.html#0x1_init_reset_initialized">init::reset_initialized</a>(addr, *m.name.bytes());
-        });
+        // With lazy initialization disabled, <b>old</b> <a href="code.html#0x1_code">code</a> cannot consume this reset. Preserve
+        // it for a later re-enable; the VM only performs the deferred reset <b>while</b> enabled.
+        <b>if</b> (!<a href="../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>()) {
+            <a href="init.html#0x1_init_reset_initialized">init::reset_initialized</a>(addr, module_names.map_ref(|name| *name.bytes()));
+        };
         *packages.borrow_mut(index) = pack
     } <b>else</b> {
         packages.push_back(pack)
@@ -670,6 +662,33 @@ of current restrictions for txn parameters, the metadata needs to be passed in s
 <pre><code><b>public</b> entry <b>fun</b> <a href="code.html#0x1_code_publish_package_txn">publish_package_txn</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata_serialized: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="code.html#0x1_code">code</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 <b>acquires</b> <a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a> {
     <a href="code.html#0x1_code_publish_package">publish_package</a>(owner, <a href="util.html#0x1_util_from_bytes">util::from_bytes</a>&lt;<a href="code.html#0x1_code_PackageMetadata">PackageMetadata</a>&gt;(metadata_serialized), <a href="code.html#0x1_code">code</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-publish_package_to_object"><a class="header" href="#function-publish_package_to_object">Function <code>publish_package_to_object</code> <a id="0x1_code_publish_package_to_object"></a></a></h2>
+<p>Publishes a package to the object <code>code_object</code> signs for, authorized by <code>owner</code>, who must
+currently own that object. The ownership is recorded for the package's modules so that they
+can lazily self-initialize (see <code><a href="init.html#0x1_init">init</a></code>); modules published to an object via
+<code>publish_package</code> alone cannot.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="code.html#0x1_code_publish_package_to_object">publish_package_to_object</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, code_object: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata_serialized: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="code.html#0x1_code">code</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>package</b> <b>fun</b> <a href="code.html#0x1_code_publish_package_to_object">publish_package_to_object</a>(
+    owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    code_object: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    metadata_serialized: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    <a href="code.html#0x1_code">code</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
+) <b>acquires</b> <a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a> {
+    <b>let</b> pack = <a href="util.html#0x1_util_from_bytes">util::from_bytes</a>&lt;<a href="code.html#0x1_code_PackageMetadata">PackageMetadata</a>&gt;(metadata_serialized);
+    <b>let</b> module_names = <a href="code.html#0x1_code_get_module_names">get_module_names</a>(&pack);
+    <a href="code.html#0x1_code_publish_package">publish_package</a>(code_object, pack, <a href="code.html#0x1_code">code</a>);
+    <b>if</b> (<a href="../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>()) {
+        <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(code_object);
+        module_names.for_each_ref(|name| {
+            <a href="init.html#0x1_init_record_deploy_owner">init::record_deploy_owner</a>(owner, addr, *name.bytes());
+        });
+    }
 }
 </code></pre>
 </details>
