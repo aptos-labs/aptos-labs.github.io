@@ -14957,6 +14957,9 @@ nothing.</p>
             <b>return</b> <a href="aptos-stdlib/comparator.html#0x1_comparator_Result">Result</a> { inner: <a href="aptos-stdlib/comparator.html#0x1_comparator_GREATER">GREATER</a> }
         };
         idx += 1;
+    } <b>spec</b> {
+        <b>invariant</b> idx &lt;= left_length && idx &lt;= right_length;
+        <b>invariant</b> <b>forall</b> j: u64 <b>where</b> j &lt; idx: left[j] == right[j];
     };
 
     <b>if</b> (left_length &lt; right_length) {
@@ -15017,8 +15020,7 @@ nothing.</p>
 <h3 id="function-compare_u8_vector-1"><a class="header" href="#function-compare_u8_vector-1">Function <code>compare_u8_vector</code> <a id="@Specification_1_compare_u8_vector"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-stdlib/comparator.html#0x1_comparator_compare_u8_vector">compare_u8_vector</a>(left: <a href="aptos-stdlib/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, right: <a href="aptos-stdlib/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="aptos-stdlib/comparator.html#0x1_comparator_Result">comparator::Result</a>
 </code></pre>
-<pre><code><b>pragma</b> unroll = 5;
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> <b>false</b>;
 <b>let</b> left_length = len(left);
 <b>let</b> right_length = len(right);
@@ -67650,7 +67652,9 @@ to determine the identity of the starting point of ownership.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/object.html#0x1_object_generate_signer_for_extending">generate_signer_for_extending</a>(self: &<a href="aptos-framework/object.html#0x1_object_ExtendRef">object::ExtendRef</a>): <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer">signer</a>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == <a href="aptos-framework/object.html#0x1_object_spec_generate_signer_for_extending">spec_generate_signer_for_extending</a>(self);
+<b>ensures</b> <a href="aptos-framework/../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == self.self;
 </code></pre>
 <h3 id="function-disable_ungated_transfer-1"><a class="header" href="#function-disable_ungated_transfer-1">Function <code>disable_ungated_transfer</code> <a id="@Specification_1_disable_ungated_transfer"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-framework/object.html#0x1_object_disable_ungated_transfer">disable_ungated_transfer</a>(self: &<a href="aptos-framework/object.html#0x1_object_TransferRef">object::TransferRef</a>)
@@ -103304,6 +103308,15 @@ with them.</p>
 <b>ensures</b> self.order.order_request.is_bid == <b>old</b>(self.order.order_request.is_bid);
 <b>ensures</b> self.order.order_request.client_order_id
     == <b>old</b>(self.order.order_request.client_order_id);
+<b>ensures</b> self.order.order_request.order_id == <b>old</b>(self.order.order_request.order_id);
+<b>ensures</b> self.order.order_request.orig_size == <b>old</b>(self.order.order_request.orig_size);
+<b>ensures</b> self.order.order_request.trigger_condition
+    == <b>old</b>(self.order.order_request.trigger_condition);
+<b>ensures</b> self.order.order_request.time_in_force
+    == <b>old</b>(self.order.order_request.time_in_force);
+<b>ensures</b> self.order.order_request.creation_time_micros
+    == <b>old</b>(self.order.order_request.creation_time_micros);
+<b>ensures</b> self.order.order_request.metadata == <b>old</b>(self.order.order_request.metadata);
 </code></pre>
 <h3 id="function-set_remaining_size_from_state-1"><a class="header" href="#function-set_remaining_size_from_state-1">Function <code>set_remaining_size_from_state</code> <a id="@Specification_1_set_remaining_size_from_state"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_set_remaining_size_from_state">set_remaining_size_from_state</a>&lt;M: <b>copy</b>, drop, store&gt;(self: &<b>mut</b> <a href="aptos-trading/single_order_types.html#0x5_single_order_types_OrderWithState">single_order_types::OrderWithState</a>&lt;M&gt;, remaining_size: u64)
@@ -103321,6 +103334,15 @@ knows nothing about the fields it did not change.</p>
 <b>ensures</b> self.order.order_request.is_bid == <b>old</b>(self.order.order_request.is_bid);
 <b>ensures</b> self.order.order_request.client_order_id
     == <b>old</b>(self.order.order_request.client_order_id);
+<b>ensures</b> self.order.order_request.order_id == <b>old</b>(self.order.order_request.order_id);
+<b>ensures</b> self.order.order_request.orig_size == <b>old</b>(self.order.order_request.orig_size);
+<b>ensures</b> self.order.order_request.trigger_condition
+    == <b>old</b>(self.order.order_request.trigger_condition);
+<b>ensures</b> self.order.order_request.time_in_force
+    == <b>old</b>(self.order.order_request.time_in_force);
+<b>ensures</b> self.order.order_request.creation_time_micros
+    == <b>old</b>(self.order.order_request.creation_time_micros);
+<b>ensures</b> self.order.order_request.metadata == <b>old</b>(self.order.order_request.metadata);
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="aptos-experimental-framework"><a class="header" href="#aptos-experimental-framework">Aptos Experimental Framework <a id="@Aptos_Experimental_Framework_0"></a></a></h1>
 <p>This is the reference documentation of the Aptos experimental framework.</p>
