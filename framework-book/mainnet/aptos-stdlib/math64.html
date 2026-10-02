@@ -332,6 +332,9 @@
             res += n;
         };
         n &gt;&gt;= 1;
+    } <b>spec</b> {
+        <b>invariant</b> (res <b>as</b> u64) + 2 * (n <b>as</b> u64) &lt;= 64;
+        <b>invariant</b> n == 0 ==&gt; (res <b>as</b> u64) &lt;= 63;
     };
     res
 }
@@ -411,14 +414,16 @@
 <h3 id="function-max-1"><a class="header" href="#function-max-1">Function <code>max</code> <a id="@Specification_1_max"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_max">max</a>(a: u64, b: u64): u64
 </code></pre>
-<pre><code><b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque = <b>true</b>;
+<b>aborts_if</b> <b>false</b>;
 <b>ensures</b> a &gt;= b ==&gt; result == a;
 <b>ensures</b> a &lt; b ==&gt; result == b;
 </code></pre>
 <h3 id="function-min-1"><a class="header" href="#function-min-1">Function <code>min</code> <a id="@Specification_1_min"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <b>min</b>(a: u64, b: u64): u64
 </code></pre>
-<pre><code><b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque = <b>true</b>;
+<b>aborts_if</b> <b>false</b>;
 <b>ensures</b> a &lt; b ==&gt; result == a;
 <b>ensures</b> a &gt;= b ==&gt; result == b;
 </code></pre>
@@ -432,34 +437,39 @@
 <h3 id="function-clamp-1"><a class="header" href="#function-clamp-1">Function <code>clamp</code> <a id="@Specification_1_clamp"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_clamp">clamp</a>(x: u64, lower: u64, upper: u64): u64
 </code></pre>
-<pre><code><b>requires</b> (lower &lt;= upper);
+<pre><code><b>pragma</b> opaque = <b>true</b>;
+<b>requires</b> lower &lt;= upper;
 <b>aborts_if</b> <b>false</b>;
-<b>ensures</b> (lower &lt;=x && x &lt;= upper) ==&gt; result == x;
-<b>ensures</b> (x &lt; lower) ==&gt; result == lower;
-<b>ensures</b> (upper &lt; x) ==&gt; result == upper;
+<b>ensures</b> lower &lt;= x && x &lt;= upper ==&gt; result == x;
+<b>ensures</b> x &lt; lower ==&gt; result == lower;
+<b>ensures</b> upper &lt; x ==&gt; result == upper;
 </code></pre>
 <h3 id="function-pow-1"><a class="header" href="#function-pow-1">Function <code>pow</code> <a id="@Specification_1_pow"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_pow">pow</a>(n: u64, e: u64): u64
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>aborts_if</b> [abstract] <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n, e) &gt; MAX_U64;
-<b>ensures</b> [abstract] result == <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n, e);
+<b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n, e) &gt; MAX_U64;
+<b>ensures</b> result == <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n, e);
 </code></pre>
 <h3 id="function-floor_log2-1"><a class="header" href="#function-floor_log2-1">Function <code>floor_log2</code> <a id="@Specification_1_floor_log2"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_floor_log2">floor_log2</a>(x: u64): u8
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>aborts_if</b> [abstract] x == 0;
-<b>ensures</b> [abstract] <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(2, result) &lt;= x;
-<b>ensures</b> [abstract] x &lt; <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(2, result+1);
+<b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> x == 0;
+<b>ensures</b> <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(2, result) &lt;= x;
+<b>ensures</b> x &lt; <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(2, result+1);
 </code></pre>
 <h3 id="function-sqrt-1"><a class="header" href="#function-sqrt-1">Function <code>sqrt</code> <a id="@Specification_1_sqrt"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="math64.html#0x1_math64_sqrt">sqrt</a>(x: u64): u64
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>aborts_if</b> [abstract] <b>false</b>;
-<b>ensures</b> [abstract] x &gt; 0 ==&gt; result * result &lt;= x;
-<b>ensures</b> [abstract] x &gt; 0 ==&gt; x &lt; (result+1) * (result+1);
+<b>pragma</b> verify = <b>false</b>;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> x &gt; 0 ==&gt; result * result &lt;= x;
+<b>ensures</b> x &gt; 0 ==&gt; x &lt; (result+1) * (result+1);
+<b>ensures</b> x == 0 ==&gt; result == 0;
 </code></pre>
 <p><a id="0x1_math64_spec_pow"></a></p>
 <pre><code><b>fun</b> <a href="math64.html#0x1_math64_spec_pow">spec_pow</a>(n: u64, e: u64): u64 {

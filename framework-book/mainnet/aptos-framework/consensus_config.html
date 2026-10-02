@@ -352,8 +352,7 @@ Aborts if StateStorageUsage already exists.</p>
 </code></pre>
 <p>Ensure the caller is admin and <code><a href="consensus_config.html#0x1_consensus_config_ConsensusConfig">ConsensusConfig</a></code> should be existed.
 When setting now time must be later than last_reconfiguration_time.</p>
-<pre><code><b>pragma</b> verify_duration_estimate = 600;
-<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">staking_config::StakingRewardsConfigRequirement</a>;
+<pre><code><b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">staking_config::StakingRewardsConfigRequirement</a>;
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 // This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
 <b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(addr);
@@ -368,14 +367,19 @@ When setting now time must be later than last_reconfiguration_time.</p>
 <h3 id="function-set_for_next_epoch-1"><a class="header" href="#function-set_for_next_epoch-1">Function <code>set_for_next_epoch</code> <a id="@Specification_1_set_for_next_epoch"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="consensus_config.html#0x1_consensus_config_set_for_next_epoch">set_for_next_epoch</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpochAbortsIf">config_buffer::SetForNextEpochAbortsIf</a>;
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework);
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpochAbortsIf">config_buffer::SetForNextEpochAbortsIf</a>;
+<b>let</b> key = std::type_info::type_name&lt;<a href="consensus_config.html#0x1_consensus_config_ConsensusConfig">ConsensusConfig</a>&gt;();
+<b>let</b> <b>post</b> configs_post = <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework).configs;
+<b>ensures</b> std::simple_map::spec_contains_key(configs_post, key);
+<b>ensures</b> std::simple_map::spec_get(configs_post, key) == std::any::pack(<a href="consensus_config.html#0x1_consensus_config_ConsensusConfig">ConsensusConfig</a> { config });
 </code></pre>
 <h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="consensus_config.html#0x1_consensus_config_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>requires</b> @aptos_framework == std::signer::address_of(framework);
-<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochRequirement">config_buffer::OnNewEpochRequirement</a>&lt;<a href="consensus_config.html#0x1_consensus_config_ConsensusConfig">ConsensusConfig</a>&gt;;
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="consensus_config.html#0x1_consensus_config_ConsensusConfig">ConsensusConfig</a>&gt;;
 </code></pre>
 <h3 id="function-validator_txn_enabled-1"><a class="header" href="#function-validator_txn_enabled-1">Function <code>validator_txn_enabled</code> <a id="@Specification_1_validator_txn_enabled"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="consensus_config.html#0x1_consensus_config_validator_txn_enabled">validator_txn_enabled</a>(): bool

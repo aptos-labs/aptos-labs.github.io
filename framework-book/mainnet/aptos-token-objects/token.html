@@ -1202,11 +1202,8 @@ as that would prohibit transactions to be executed in parallel.</p>
     <b>if</b> (<a href="royalty.html#0x4_royalty">royalty</a>.is_some()) {
         <a href="royalty.html#0x4_royalty">royalty</a>
     } <b>else</b> {
-        <b>let</b> creator = <a href="token.html#0x4_token_creator">creator</a>(<a href="token.html#0x4_token">token</a>);
-        <b>let</b> collection_name = <a href="token.html#0x4_token_collection_name">collection_name</a>(<a href="token.html#0x4_token">token</a>);
-        <b>let</b> collection_address = <a href="collection.html#0x4_collection_create_collection_address">collection::create_collection_address</a>(&creator, &collection_name);
-        <b>let</b> <a href="collection.html#0x4_collection">collection</a> = <a href="../aptos-framework/object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="collection.html#0x4_collection_Collection">collection::Collection</a>&gt;(collection_address);
-        <a href="royalty.html#0x4_royalty_get">royalty::get</a>(<a href="collection.html#0x4_collection">collection</a>)
+        // Use the canonical <a href="collection.html#0x4_collection">collection</a> <a href="../aptos-framework/object.html#0x1_object">object</a> stored in the <a href="token.html#0x4_token">token</a>, not re-derived from name
+        <a href="royalty.html#0x4_royalty_get">royalty::get</a>(<a href="token.html#0x4_token_borrow">borrow</a>(&<a href="token.html#0x4_token">token</a>).<a href="collection.html#0x4_collection">collection</a>)
     }
 }
 </code></pre>

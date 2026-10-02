@@ -372,9 +372,9 @@ guarantees a fresh state view then.</p>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="state_storage.html#0x1_state_storage_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<p>ensure caller is admin.
-aborts if StateStorageUsage already exists.</p>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="state_storage.html#0x1_state_storage_StateStorageUsage">StateStorageUsage</a>&gt;(@aptos_framework);
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 // This enforces <a id="high-level-req-4" href="#high-level-req">high-level requirement 4</a>:
 <b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(addr);
 // This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
@@ -387,16 +387,25 @@ aborts if StateStorageUsage already exists.</p>
 <h3 id="function-on_new_block-1"><a class="header" href="#function-on_new_block-1">Function <code>on_new_block</code> <a id="@Specification_1_on_new_block"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="state_storage.html#0x1_state_storage_on_new_block">on_new_block</a>(epoch: u64)
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-5.2" href="#high-level-req">high-level requirement 5</a>:
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-5.2" href="#high-level-req">high-level requirement 5</a>:
 <b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
+<b>modifies</b> <b>global</b>&lt;<a href="state_storage.html#0x1_state_storage_StateStorageUsage">StateStorageUsage</a>&gt;(@aptos_framework);
 <b>aborts_if</b> <b>false</b>;
-<b>ensures</b> epoch == <b>global</b>&lt;<a href="state_storage.html#0x1_state_storage_StateStorageUsage">StateStorageUsage</a>&gt;(@aptos_framework).epoch;
+<b>let</b> <b>post</b> state_usage = <b>global</b>&lt;<a href="state_storage.html#0x1_state_storage_StateStorageUsage">StateStorageUsage</a>&gt;(@aptos_framework);
+<b>ensures</b> epoch == state_usage.epoch;
+<b>ensures</b> epoch == <b>old</b>(<b>global</b>&lt;<a href="state_storage.html#0x1_state_storage_StateStorageUsage">StateStorageUsage</a>&gt;(@aptos_framework).epoch) ==&gt;
+    state_usage == <b>old</b>(<b>global</b>&lt;<a href="state_storage.html#0x1_state_storage_StateStorageUsage">StateStorageUsage</a>&gt;(@aptos_framework));
 </code></pre>
 <h3 id="function-current_items_and_bytes-1"><a class="header" href="#function-current_items_and_bytes-1">Function <code>current_items_and_bytes</code> <a id="@Specification_1_current_items_and_bytes"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="state_storage.html#0x1_state_storage_current_items_and_bytes">current_items_and_bytes</a>(): (u64, u64)
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="state_storage.html#0x1_state_storage_StateStorageUsage">StateStorageUsage</a>&gt;(@aptos_framework);
+<b>let</b> usage = <b>global</b>&lt;<a href="state_storage.html#0x1_state_storage_StateStorageUsage">StateStorageUsage</a>&gt;(@aptos_framework).usage;
+<b>ensures</b> result_1 == usage.items;
+<b>ensures</b> result_2 == usage.bytes;
 </code></pre>
 <h3 id="function-get_state_storage_usage_only_at_epoch_beginning-1"><a class="header" href="#function-get_state_storage_usage_only_at_epoch_beginning-1">Function <code>get_state_storage_usage_only_at_epoch_beginning</code> <a id="@Specification_1_get_state_storage_usage_only_at_epoch_beginning"></a></a></h3>
 <pre><code><b>fun</b> <a href="state_storage.html#0x1_state_storage_get_state_storage_usage_only_at_epoch_beginning">get_state_storage_usage_only_at_epoch_beginning</a>(): <a href="state_storage.html#0x1_state_storage_Usage">state_storage::Usage</a>
@@ -406,7 +415,8 @@ aborts if StateStorageUsage already exists.</p>
 <h3 id="function-on_reconfig-1"><a class="header" href="#function-on_reconfig-1">Function <code>on_reconfig</code> <a id="@Specification_1_on_reconfig"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="state_storage.html#0x1_state_storage_on_reconfig">on_reconfig</a>()
 </code></pre>
-<pre><code><b>aborts_if</b> <b>true</b>;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>true</b>;
 </code></pre>
 
                     </main>

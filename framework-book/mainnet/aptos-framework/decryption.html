@@ -170,10 +170,20 @@ decrypt the encrypted transactions in the block.</p>
 <ul>
 <li><a href="#0x1_decryption_PerBlockDecryptionKey">Resource <code>PerBlockDecryptionKey</code></a></li>
 <li><a href="#0x1_decryption_PerEpochEncryptionKey">Resource <code>PerEpochEncryptionKey</code></a></li>
+<li><a href="#0x1_decryption_PerBlockDecryptionKeyV2">Resource <code>PerBlockDecryptionKeyV2</code></a></li>
 <li><a href="#0x1_decryption_initialize">Function <code>initialize</code></a></li>
 <li><a href="#0x1_decryption_on_new_block">Function <code>on_new_block</code></a></li>
+<li><a href="#0x1_decryption_on_new_block_v2">Function <code>on_new_block_v2</code></a></li>
 <li><a href="#0x1_decryption_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
 <li><a href="#0x1_decryption_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#@Specification_0">Specification</a>
+<ul>
+<li><a href="#@Specification_0_PerBlockDecryptionKeyV2">Resource <code>PerBlockDecryptionKeyV2</code></a></li>
+<li><a href="#@Specification_0_on_new_block">Function <code>on_new_block</code></a></li>
+<li><a href="#@Specification_0_on_new_block_v2">Function <code>on_new_block_v2</code></a></li>
+<li><a href="#@Specification_0_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="config_buffer.html#0x1_config_buffer">0x1::config_buffer</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
@@ -182,6 +192,11 @@ decrypt the encrypted transactions in the block.</p>
 <h2 id="resource-perblockdecryptionkey"><a class="header" href="#resource-perblockdecryptionkey">Resource <code>PerBlockDecryptionKey</code> <a id="0x1_decryption_PerBlockDecryptionKey"></a></a></h2>
 <p>Decryption key unique to every block.
 This resource is updated in every block prologue.</p>
+<p>Superseded by <code><a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a></code>: once that resource exists,
+blocks run <code>block_prologue_ext_v3</code> and only V2 is updated, so this
+resource freezes at the last block of the legacy mode. Kept for
+chains that predate the upgrade (testnet has committed blocks
+updating it via <code>block_prologue_ext_v2</code>).</p>
 <pre><code><b>struct</b> <a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a> <b>has</b> drop, key
 </code></pre>
 <details>
@@ -223,6 +238,56 @@ This resource is updated in every block prologue.</p>
 </dd>
 </dl>
 </details>
+<h2 id="resource-perblockdecryptionkeyv2"><a class="header" href="#resource-perblockdecryptionkeyv2">Resource <code>PerBlockDecryptionKeyV2</code> <a id="0x1_decryption_PerBlockDecryptionKeyV2"></a></a></h2>
+<p><code><a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a></code> plus the dense decryption-round tracking that
+decouples trusted-setup capacity from the consensus round.</p>
+<p>Its existence marks that round tracking is active: validators emit
+<code>BlockMetadataExt::V3</code> (updating this resource via
+<code>block_prologue_ext_v3</code>) iff the resource exists at the epoch root.
+Created at genesis on fresh chains and lazily in <code>on_new_epoch</code> on
+upgraded chains.</p>
+<p>Invariant: <code>decryption_key.is_some() == decryption_round.is_some()</code> —
+both describe the current block and arrive paired from the prologue.</p>
+<pre><code><b>struct</b> <a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a> <b>has</b> drop, key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>epoch: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>block_round: u64</code>
+</dt>
+<dd>
+ Current block's consensus round.
+</dd>
+<dt>
+<code>decryption_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+<dd>
+ Current block's decryption key. <code>none()</code> when the block carried
+ no encrypted transactions (or decryption failed).
+</dd>
+<dt>
+<code>decryption_round: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+ Current block's decryption round. <code>none()</code> when the block did not
+ produce a key.
+</dd>
+<dt>
+<code>next_decryption_round: u64</code>
+</dt>
+<dd>
+ Next decryption round any future key-producing block will consume.
+ Bumped by one each time a key block hits <code>on_new_block_v2</code>. Reset
+ to 0 on epoch boundaries.
+</dd>
+</dl>
+</details>
 <h2 id="function-initialize"><a class="header" href="#function-initialize">Function <code>initialize</code> <a id="0x1_decryption_initialize"></a></a></h2>
 <p>Called during genesis initialization.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="decryption.html#0x1_decryption_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
@@ -241,6 +306,18 @@ This resource is updated in every block prologue.</p>
         <b>move_to</b>(
             framework,
             <a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a> { epoch: 0, encryption_key: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>() }
+        );
+    };
+    <b>if</b> (!<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework)) {
+        <b>move_to</b>(
+            framework,
+            <a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a> {
+                epoch: 0,
+                block_round: 0,
+                decryption_key: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+                decryption_round: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+                next_decryption_round: 0
+            }
         );
     }
 }
@@ -269,6 +346,35 @@ This resource is updated in every block prologue.</p>
 }
 </code></pre>
 </details>
+<h2 id="function-on_new_block_v2"><a class="header" href="#function-on_new_block_v2">Function <code>on_new_block_v2</code> <a id="0x1_decryption_on_new_block_v2"></a></a></h2>
+<p>Invoked in <code>block_prologue_ext_v3</code>. <code>block_round</code> advances every
+block; <code>next_decryption_round</code> is sticky and only bumps when the
+pipeline sends a key (paired with the round it consumed).</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_block_v2">on_new_block_v2</a>(vm: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, epoch: u64, round: u64, decryption_key_for_new_block: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, decryption_round: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_block_v2">on_new_block_v2</a>(
+    vm: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    epoch: u64,
+    round: u64,
+    decryption_key_for_new_block: Option&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
+    decryption_round: Option&lt;u64&gt;
+) <b>acquires</b> <a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a> {
+    <a href="system_addresses.html#0x1_system_addresses_assert_vm">system_addresses::assert_vm</a>(vm);
+    <b>if</b> (<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework)) {
+        <b>let</b> r = <b>borrow_global_mut</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework);
+        r.epoch = epoch;
+        r.block_round = round;
+        r.decryption_key = decryption_key_for_new_block;
+        r.decryption_round = decryption_round;
+        <b>if</b> (<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(&decryption_round)) {
+            r.next_decryption_round = *<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(&decryption_round) + 1;
+        }
+    }
+}
+</code></pre>
+</details>
 <h2 id="function-set_for_next_epoch"><a class="header" href="#function-set_for_next_epoch">Function <code>set_for_next_epoch</code> <a id="0x1_decryption_set_for_next_epoch"></a></a></h2>
 <p>Buffer the encryption key for the next epoch.</p>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_set_for_next_epoch">set_for_next_epoch</a>(epoch: u64, encryption_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
@@ -284,12 +390,15 @@ This resource is updated in every block prologue.</p>
 </code></pre>
 </details>
 <h2 id="function-on_new_epoch"><a class="header" href="#function-on_new_epoch">Function <code>on_new_epoch</code> <a id="0x1_decryption_on_new_epoch"></a></a></h2>
-<p>Apply buffered PerEpochEncryptionKey on epoch transition.</p>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<p>Apply buffered PerEpochEncryptionKey and reset PerBlockDecryptionKeyV2,
+creating the latter on chains that predate it.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_epoch: u64)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a> {
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_epoch">on_new_epoch</a>(
+    framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_epoch: u64
+) <b>acquires</b> <a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>, <a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a> {
     <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
     <b>if</b> (<a href="config_buffer.html#0x1_config_buffer_does_exist">config_buffer::does_exist</a>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;()) {
         <b>let</b> new_key = <a href="config_buffer.html#0x1_config_buffer_extract_v2">config_buffer::extract_v2</a>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;();
@@ -298,10 +407,141 @@ This resource is updated in every block prologue.</p>
         } <b>else</b> {
             <b>move_to</b>(framework, new_key);
         }
+    };
+    <b>let</b> fresh = <a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a> {
+        epoch: new_epoch,
+        block_round: 0,
+        decryption_key: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        decryption_round: <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>(),
+        next_decryption_round: 0
+    };
+    <b>if</b> (<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework)) {
+        *<b>borrow_global_mut</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework) = fresh;
+    } <b>else</b> {
+        <b>move_to</b>(framework, fresh);
     }
 }
 </code></pre>
 </details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_0"></a></a></h2>
+<pre><code><b>pragma</b> verify = <b>true</b>;
+</code></pre>
+<h3 id="resource-perblockdecryptionkeyv2-1"><a class="header" href="#resource-perblockdecryptionkeyv2-1">Resource <code>PerBlockDecryptionKeyV2</code> <a id="@Specification_0_PerBlockDecryptionKeyV2"></a></a></h3>
+<pre><code><b>struct</b> <a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a> <b>has</b> drop, key
+</code></pre>
+<dl>
+<dt>
+<code>epoch: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>block_round: u64</code>
+</dt>
+<dd>
+ Current block's consensus round.
+</dd>
+<dt>
+<code>decryption_key: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+<dd>
+ Current block's decryption key. <code>none()</code> when the block carried
+ no encrypted transactions (or decryption failed).
+</dd>
+<dt>
+<code>decryption_round: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+ Current block's decryption round. <code>none()</code> when the block did not
+ produce a key.
+</dd>
+<dt>
+<code>next_decryption_round: u64</code>
+</dt>
+<dd>
+ Next decryption round any future key-producing block will consume.
+ Bumped by one each time a key block hits <code>on_new_block_v2</code>. Reset
+ to 0 on epoch boundaries.
+</dd>
+</dl>
+<pre><code><b>invariant</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(decryption_key) == <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(decryption_round);
+</code></pre>
+<h3 id="function-on_new_block-1"><a class="header" href="#function-on_new_block-1">Function <code>on_new_block</code> <a id="@Specification_0_on_new_block"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_block">on_new_block</a>(vm: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, epoch: u64, round: u64, decryption_key_for_new_block: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(vm) != @vm;
+<b>ensures</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework).decryption_key == decryption_key_for_new_block;
+<b>ensures</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework).epoch == epoch;
+<b>ensures</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework).round == round;
+<b>ensures</b> !<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework) ==&gt;
+    !<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKey">PerBlockDecryptionKey</a>&gt;(@aptos_framework);
+</code></pre>
+<h3 id="function-on_new_block_v2-1"><a class="header" href="#function-on_new_block_v2-1">Function <code>on_new_block_v2</code> <a id="@Specification_0_on_new_block_v2"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_block_v2">on_new_block_v2</a>(vm: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, epoch: u64, round: u64, decryption_key_for_new_block: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, decryption_round: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>requires</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(decryption_key_for_new_block) == <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(decryption_round);
+<b>modifies</b> <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(vm) != @vm;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework)
+    && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(decryption_round)
+    && <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(decryption_round) + 1 &gt; MAX_U64;
+<b>ensures</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework).epoch == epoch;
+<b>ensures</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework).block_round == round;
+<b>ensures</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework).decryption_key == decryption_key_for_new_block;
+<b>ensures</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework).decryption_round == decryption_round;
+<b>ensures</b> (<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework) && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(decryption_round)) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework).next_decryption_round == <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(decryption_round) + 1;
+<b>ensures</b> (<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework) && <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(decryption_round)) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework).next_decryption_round
+        == <b>old</b>(<b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework).next_decryption_round);
+<b>ensures</b> !<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework) ==&gt;
+    !<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework);
+</code></pre>
+<h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_0_on_new_epoch"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="decryption.html#0x1_decryption_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_epoch: u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(framework) != @aptos_framework;
+<b>let</b> key = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;();
+<b>let</b> configs = <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework).configs;
+<b>let</b> stored = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(configs, key);
+<b>let</b> pre_does_exist = <b>exists</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework)
+    && <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(configs, key);
+<b>aborts_if</b> pre_does_exist && key != stored.type_name;
+<b>aborts_if</b> pre_does_exist && !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(stored.data);
+<b>ensures</b> pre_does_exist ==&gt; <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(@aptos_framework);
+<b>ensures</b> pre_does_exist ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(@aptos_framework)
+        == <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(stored.data);
+<b>let</b> <b>post</b> post_configs = <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework).configs;
+<b>ensures</b> pre_does_exist ==&gt; !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(post_configs, key);
+<b>ensures</b> !pre_does_exist ==&gt;
+    (<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(@aptos_framework)
+        == <b>old</b>(<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(@aptos_framework)));
+<b>ensures</b> !pre_does_exist && <b>old</b>(<b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(@aptos_framework)) ==&gt;
+    <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(@aptos_framework)
+        == <b>old</b>(<b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerEpochEncryptionKey">PerEpochEncryptionKey</a>&gt;(@aptos_framework));
+<b>ensures</b> <b>exists</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework);
+<b>let</b> <b>post</b> r = <b>global</b>&lt;<a href="decryption.html#0x1_decryption_PerBlockDecryptionKeyV2">PerBlockDecryptionKeyV2</a>&gt;(@aptos_framework);
+<b>ensures</b> r.epoch == new_epoch;
+<b>ensures</b> r.block_round == 0;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(r.decryption_key);
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(r.decryption_round);
+<b>ensures</b> r.next_decryption_round == 0;
+</code></pre>
 
                     </main>
 

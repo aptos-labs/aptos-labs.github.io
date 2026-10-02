@@ -188,7 +188,12 @@
 <li><a href="#@Specification_1_assert_aptos_framework">Function <code>assert_aptos_framework</code></a></li>
 <li><a href="#@Specification_1_assert_framework_reserved_address">Function <code>assert_framework_reserved_address</code></a></li>
 <li><a href="#@Specification_1_assert_framework_reserved">Function <code>assert_framework_reserved</code></a></li>
+<li><a href="#@Specification_1_is_framework_reserved_address">Function <code>is_framework_reserved_address</code></a></li>
+<li><a href="#@Specification_1_is_aptos_framework_address">Function <code>is_aptos_framework_address</code></a></li>
 <li><a href="#@Specification_1_assert_vm">Function <code>assert_vm</code></a></li>
+<li><a href="#@Specification_1_is_vm">Function <code>is_vm</code></a></li>
+<li><a href="#@Specification_1_is_vm_address">Function <code>is_vm_address</code></a></li>
+<li><a href="#@Specification_1_is_reserved_address">Function <code>is_reserved_address</code></a></li>
 </ul>
 </li>
 </ul>
@@ -413,12 +418,25 @@
 <h3 id="function-assert_framework_reserved_address-1"><a class="header" href="#function-assert_framework_reserved_address-1">Function <code>assert_framework_reserved_address</code> <a id="@Specification_1_assert_framework_reserved_address"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="system_addresses.html#0x1_system_addresses_assert_framework_reserved_address">assert_framework_reserved_address</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_framework_reserved_address">is_framework_reserved_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_framework_reserved_address">is_framework_reserved_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>));
 </code></pre>
 <h3 id="function-assert_framework_reserved-1"><a class="header" href="#function-assert_framework_reserved-1">Function <code>assert_framework_reserved</code> <a id="@Specification_1_assert_framework_reserved"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="system_addresses.html#0x1_system_addresses_assert_framework_reserved">assert_framework_reserved</a>(addr: <b>address</b>)
 </code></pre>
-<pre><code><b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_framework_reserved_address">is_framework_reserved_address</a>(addr);
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_framework_reserved_address">is_framework_reserved_address</a>(addr);
+</code></pre>
+<h3 id="function-is_framework_reserved_address-1"><a class="header" href="#function-is_framework_reserved_address-1">Function <code>is_framework_reserved_address</code> <a id="@Specification_1_is_framework_reserved_address"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="system_addresses.html#0x1_system_addresses_is_framework_reserved_address">is_framework_reserved_address</a>(addr: <b>address</b>): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result ==
+    (addr == @aptos_framework
+     || addr == @0x2 || addr == @0x3 || addr == @0x4 || addr == @0x5
+     || addr == @0x6 || addr == @0x7 || addr == @0x8 || addr == @0x9
+     || addr == @0xa);
 </code></pre>
 <p>Specifies that a function aborts if the account does not have the aptos framework address.</p>
 <p><a id="0x1_system_addresses_AbortsIfNotAptosFramework"></a></p>
@@ -428,11 +446,39 @@
     <b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>) != @aptos_framework <b>with</b> <a href="../move-stdlib/error.html#0x1_error_PERMISSION_DENIED">error::PERMISSION_DENIED</a>;
 }
 </code></pre>
+<h3 id="function-is_aptos_framework_address-1"><a class="header" href="#function-is_aptos_framework_address-1">Function <code>is_aptos_framework_address</code> <a id="@Specification_1_is_aptos_framework_address"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">is_aptos_framework_address</a>(addr: <b>address</b>): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (addr == @aptos_framework);
+</code></pre>
 <h3 id="function-assert_vm-1"><a class="header" href="#function-assert_vm-1">Function <code>assert_vm</code> <a id="@Specification_1_assert_vm"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="system_addresses.html#0x1_system_addresses_assert_vm">assert_vm</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>include</b> <a href="system_addresses.html#0x1_system_addresses_AbortsIfNotVM">AbortsIfNotVM</a>;
+</code></pre>
+<h3 id="function-is_vm-1"><a class="header" href="#function-is_vm-1">Function <code>is_vm</code> <a id="@Specification_1_is_vm"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="system_addresses.html#0x1_system_addresses_is_vm">is_vm</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>) == @vm_reserved);
+</code></pre>
+<h3 id="function-is_vm_address-1"><a class="header" href="#function-is_vm_address-1">Function <code>is_vm_address</code> <a id="@Specification_1_is_vm_address"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="system_addresses.html#0x1_system_addresses_is_vm_address">is_vm_address</a>(addr: <b>address</b>): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (addr == @vm_reserved);
+</code></pre>
+<h3 id="function-is_reserved_address-1"><a class="header" href="#function-is_reserved_address-1">Function <code>is_reserved_address</code> <a id="@Specification_1_is_reserved_address"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="system_addresses.html#0x1_system_addresses_is_reserved_address">is_reserved_address</a>(addr: <b>address</b>): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == (addr == @aptos_framework || addr == @vm_reserved);
 </code></pre>
 <p>Specifies that a function aborts if the account does not have the VM reserved address.</p>
 <p><a id="0x1_system_addresses_AbortsIfNotVM"></a></p>

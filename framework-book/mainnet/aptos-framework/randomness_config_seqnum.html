@@ -203,6 +203,8 @@ a governance proposal is needed to set <code><a href="randomness_config_seqnum.h
 <li><a href="#0x1_randomness_config_seqnum_on_new_epoch">Function <code>on_new_epoch</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
+<li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
 </ul>
 </li>
@@ -282,12 +284,29 @@ The new <code>seq_num</code> must be strictly greater than the current on-chain 
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-set_for_next_epoch-1"><a class="header" href="#function-set_for_next_epoch-1">Function <code>set_for_next_epoch</code> <a id="@Specification_1_set_for_next_epoch"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_set_for_next_epoch">set_for_next_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, seq_num: u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_RandomnessConfigSeqNum">RandomnessConfigSeqNum</a>&gt;(@aptos_framework)
+    && seq_num &lt;= <b>global</b>&lt;<a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_RandomnessConfigSeqNum">RandomnessConfigSeqNum</a>&gt;(@aptos_framework).seq_num;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpoch">config_buffer::SetForNextEpoch</a>&lt;<a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_RandomnessConfigSeqNum">RandomnessConfigSeqNum</a>&gt; {
+    new_config: <a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_RandomnessConfigSeqNum">RandomnessConfigSeqNum</a> { seq_num }
+};
+</code></pre>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_InitializeResource">config_buffer::InitializeResource</a>&lt;<a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_RandomnessConfigSeqNum">RandomnessConfigSeqNum</a>&gt; {
+    config: <a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_RandomnessConfigSeqNum">RandomnessConfigSeqNum</a> { seq_num: 0 }
+};
+</code></pre>
 <h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>requires</b> @aptos_framework == std::signer::address_of(framework);
-<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochRequirement">config_buffer::OnNewEpochRequirement</a>&lt;<a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_RandomnessConfigSeqNum">RandomnessConfigSeqNum</a>&gt;;
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="randomness_config_seqnum.html#0x1_randomness_config_seqnum_RandomnessConfigSeqNum">RandomnessConfigSeqNum</a>&gt;;
 </code></pre>
 
                     </main>

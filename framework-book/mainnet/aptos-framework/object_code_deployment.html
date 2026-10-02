@@ -283,10 +283,6 @@ Once modules are marked as immutable, they cannot be made mutable again.</li>
 <p><code>code_object</code> does not exist.</p>
 <pre><code><b>const</b> <a href="object_code_deployment.html#0x1_object_code_deployment_ECODE_OBJECT_DOES_NOT_EXIST">ECODE_OBJECT_DOES_NOT_EXIST</a>: u64 = 3;
 </code></pre>
-<p><a id="0x1_object_code_deployment_ENO_CODE_PERMISSION"></a></p>
-<p>Current permissioned signer cannot deploy object code.</p>
-<pre><code><b>const</b> <a href="object_code_deployment.html#0x1_object_code_deployment_ENO_CODE_PERMISSION">ENO_CODE_PERMISSION</a>: u64 = 4;
-</code></pre>
 <p><a id="0x1_object_code_deployment_ENOT_CODE_OBJECT_OWNER"></a></p>
 <p>Not the owner of the <code>code_object</code></p>
 <pre><code><b>const</b> <a href="object_code_deployment.html#0x1_object_code_deployment_ENOT_CODE_OBJECT_OWNER">ENOT_CODE_OBJECT_OWNER</a>: u64 = 2;
@@ -312,7 +308,6 @@ the code to be published via <code><a href="code.html#0x1_code">code</a></code>.
     metadata_serialized: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     <a href="code.html#0x1_code">code</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
 ) {
-    <a href="code.html#0x1_code_check_code_publishing_permission">code::check_code_publishing_permission</a>(publisher);
     <b>let</b> publisher_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(publisher);
     <b>let</b> object_seed = <a href="object_code_deployment.html#0x1_object_code_deployment_object_seed">object_seed</a>(publisher_address);
     <b>let</b> constructor_ref = &<a href="object.html#0x1_object_create_named_object">object::create_named_object</a>(publisher, object_seed);
@@ -358,7 +353,6 @@ this <code>upgrade</code> function should be called, rather than <code>publish</
     <a href="code.html#0x1_code">code</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;,
     code_object: Object&lt;PackageRegistry&gt;,
 ) {
-    <a href="code.html#0x1_code_check_code_publishing_permission">code::check_code_publishing_permission</a>(publisher);
     <b>let</b> publisher_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(publisher);
     <b>assert</b>!(
         <a href="object.html#0x1_object_is_owner">object::is_owner</a>(code_object, publisher_address),
@@ -401,7 +395,6 @@ after upgrading a module.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="object_code_deployment.html#0x1_object_code_deployment_get_code_object_signer">get_code_object_signer</a>(publisher: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, code_object: Object&lt;PackageRegistry&gt;): <a href="../move-stdlib/signer.html#0x1_signer">signer</a> {
-    <a href="code.html#0x1_code_check_code_publishing_permission">code::check_code_publishing_permission</a>(publisher);
     <b>let</b> publisher_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(publisher);
     <b>assert</b>!(
         <a href="object.html#0x1_object_is_owner">object::is_owner</a>(code_object, publisher_address),

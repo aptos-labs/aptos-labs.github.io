@@ -241,7 +241,6 @@
 <b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
 <b>use</b> <a href="nonce_validation.html#0x1_nonce_validation">0x1::nonce_validation</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
 <b>use</b> <a href="timestamp.html#0x1_timestamp">0x1::timestamp</a>;
@@ -322,7 +321,8 @@ correct chain-specific prologue and epilogue functions</p>
 </dl>
 </details>
 <h2 id="struct-gaspermission"><a class="header" href="#struct-gaspermission">Struct <code>GasPermission</code> <a id="0x1_transaction_validation_GasPermission"></a></a></h2>
-<pre><code><b>struct</b> <a href="transaction_validation.html#0x1_transaction_validation_GasPermission">GasPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+<b>struct</b> <a href="transaction_validation.html#0x1_transaction_validation_GasPermission">GasPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Fields</summary>
@@ -474,6 +474,10 @@ against the framework version that shipped them and are not reached from this co
 <p>Transaction exceeded its allocated max gas</p>
 <pre><code><b>const</b> <a href="transaction_validation.html#0x1_transaction_validation_EOUT_OF_GAS">EOUT_OF_GAS</a>: u64 = 6;
 </code></pre>
+<p><a id="0x1_transaction_validation_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="transaction_validation.html#0x1_transaction_validation_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 7;
+</code></pre>
 <p><a id="0x1_transaction_validation_MAX_EXP_TIME_SECONDS_FOR_ORDERLESS_TXNS"></a></p>
 <pre><code><b>const</b> <a href="transaction_validation.html#0x1_transaction_validation_MAX_EXP_TIME_SECONDS_FOR_ORDERLESS_TXNS">MAX_EXP_TIME_SECONDS_FOR_ORDERLESS_TXNS</a>: u64 = 100;
 </code></pre>
@@ -516,38 +520,29 @@ important to the semantics of the system.</p>
 <p><a id="0x1_transaction_validation_PROLOGUE_ETRANSACTION_EXPIRED"></a></p>
 <pre><code><b>const</b> <a href="transaction_validation.html#0x1_transaction_validation_PROLOGUE_ETRANSACTION_EXPIRED">PROLOGUE_ETRANSACTION_EXPIRED</a>: u64 = 1006;
 </code></pre>
-<p><a id="0x1_transaction_validation_PROLOGUE_PERMISSIONED_GAS_LIMIT_INSUFFICIENT"></a></p>
-<pre><code><b>const</b> <a href="transaction_validation.html#0x1_transaction_validation_PROLOGUE_PERMISSIONED_GAS_LIMIT_INSUFFICIENT">PROLOGUE_PERMISSIONED_GAS_LIMIT_INSUFFICIENT</a>: u64 = 1011;
-</code></pre>
 <h2 id="function-grant_gas_permission"><a class="header" href="#function-grant_gas_permission">Function <code>grant_gas_permission</code> <a id="0x1_transaction_validation_grant_gas_permission"></a></a></h2>
-<p>Permission management</p>
-<p>Master signer grant permissioned signer ability to consume a given amount of gas in octas.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_grant_gas_permission">grant_gas_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, gas_amount: u64)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_grant_gas_permission">grant_gas_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _gas_amount: u64)
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_grant_gas_permission">grant_gas_permission</a>(
-    master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
-    gas_amount: u64
+    _master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    _gas_amount: u64
 ) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_increase">permissioned_signer::authorize_increase</a>(
-        master,
-        permissioned,
-        (gas_amount <b>as</b> u256),
-        <a href="transaction_validation.html#0x1_transaction_validation_GasPermission">GasPermission</a> {}
-    )
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="transaction_validation.html#0x1_transaction_validation_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
 <h2 id="function-revoke_gas_permission"><a class="header" href="#function-revoke_gas_permission">Function <code>revoke_gas_permission</code> <a id="0x1_transaction_validation_revoke_gas_permission"></a></a></h2>
-<p>Removing permissions from permissioned signer.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_revoke_gas_permission">revoke_gas_permission</a>(permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_revoke_gas_permission">revoke_gas_permission</a>(_permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_revoke_gas_permission">revoke_gas_permission</a>(permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_revoke_permission">permissioned_signer::revoke_permission</a>(permissioned, <a href="transaction_validation.html#0x1_transaction_validation_GasPermission">GasPermission</a> {})
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_revoke_gas_permission">revoke_gas_permission</a>(_permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="transaction_validation.html#0x1_transaction_validation_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -676,14 +671,6 @@ important to the semantics of the system.</p>
         is_simulation,
         gas_payer_address
     )) {
-        <b>assert</b>!(
-            <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_capacity_above">permissioned_signer::check_permission_capacity_above</a>(
-                gas_payer,
-                (max_transaction_fee <b>as</b> u256),
-                <a href="transaction_validation.html#0x1_transaction_validation_GasPermission">GasPermission</a> {}
-            ),
-            <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="transaction_validation.html#0x1_transaction_validation_PROLOGUE_PERMISSIONED_GAS_LIMIT_INSUFFICIENT">PROLOGUE_PERMISSIONED_GAS_LIMIT_INSUFFICIENT</a>)
-        );
         <b>assert</b>!(
             <a href="aptos_account.html#0x1_aptos_account_is_fungible_balance_at_least">aptos_account::is_fungible_balance_at_least</a>(gas_payer_address, max_transaction_fee),
             <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="transaction_validation.html#0x1_transaction_validation_PROLOGUE_ECANT_PAY_GAS_DEPOSIT">PROLOGUE_ECANT_PAY_GAS_DEPOSIT</a>)
@@ -1416,19 +1403,9 @@ Called by the Adapter</p>
         <b>if</b> (transaction_fee_amount &gt; storage_fee_refunded) {
             <b>let</b> burn_amount = transaction_fee_amount - storage_fee_refunded;
             <a href="transaction_fee.html#0x1_transaction_fee_burn_fee">transaction_fee::burn_fee</a>(gas_payer_address, burn_amount);
-            <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_consume">permissioned_signer::check_permission_consume</a>(
-                &gas_payer,
-                (burn_amount <b>as</b> u256),
-                <a href="transaction_validation.html#0x1_transaction_validation_GasPermission">GasPermission</a> {}
-            );
         } <b>else</b> <b>if</b> (transaction_fee_amount &lt; storage_fee_refunded) {
             <b>let</b> mint_amount = storage_fee_refunded - transaction_fee_amount;
             <a href="transaction_fee.html#0x1_transaction_fee_mint_and_refund">transaction_fee::mint_and_refund</a>(gas_payer_address, mint_amount);
-            <a href="permissioned_signer.html#0x1_permissioned_signer_increase_limit">permissioned_signer::increase_limit</a>(
-                &gas_payer,
-                (mint_amount <b>as</b> u256),
-                <a href="transaction_validation.html#0x1_transaction_validation_GasPermission">GasPermission</a> {}
-            );
         };
     };
 
@@ -1565,14 +1542,16 @@ Called by the Adapter</p>
 <b>pragma</b> aborts_if_is_strict;
 </code></pre>
 <h3 id="function-grant_gas_permission-1"><a class="header" href="#function-grant_gas_permission-1">Function <code>grant_gas_permission</code> <a id="@Specification_1_grant_gas_permission"></a></a></h3>
-<pre><code><b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_grant_gas_permission">grant_gas_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, gas_amount: u64)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_grant_gas_permission">grant_gas_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _gas_amount: u64)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>aborts_if</b> <b>true</b>;
 </code></pre>
 <h3 id="function-revoke_gas_permission-1"><a class="header" href="#function-revoke_gas_permission-1">Function <code>revoke_gas_permission</code> <a id="@Specification_1_revoke_gas_permission"></a></a></h3>
-<pre><code><b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_revoke_gas_permission">revoke_gas_permission</a>(permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_revoke_gas_permission">revoke_gas_permission</a>(_permissioned: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>aborts_if</b> <b>true</b>;
 </code></pre>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, script_prologue_name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, module_prologue_name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, multi_agent_prologue_name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, user_epilogue_name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
@@ -1676,8 +1655,7 @@ Give some constraints that may abort according to the conditions.</p>
 </code></pre>
 <p>Aborts if length of public key hashed vector
 not equal the number of singers.</p>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>let</b> gas_payer = sender;
+<pre><code><b>let</b> gas_payer = sender;
 <b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-multi_agent_common_prologue-1"><a class="header" href="#function-multi_agent_common_prologue-1">Function <code>multi_agent_common_prologue</code> <a id="@Specification_1_multi_agent_common_prologue"></a></a></h3>

@@ -175,7 +175,6 @@
 <li><a href="#0x1_code_CodePublishingPermission">Struct <code>CodePublishingPermission</code></a></li>
 <li><a href="#0x1_code_AllowedDep">Struct <code>AllowedDep</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
-<li><a href="#0x1_code_check_code_publishing_permission">Function <code>check_code_publishing_permission</code></a></li>
 <li><a href="#0x1_code_grant_permission">Function <code>grant_permission</code></a></li>
 <li><a href="#0x1_code_upgrade_policy_arbitrary">Function <code>upgrade_policy_arbitrary</code></a></li>
 <li><a href="#0x1_code_upgrade_policy_compat">Function <code>upgrade_policy_compat</code></a></li>
@@ -201,8 +200,6 @@
 <li><a href="#@Specification_1_freeze_code_object">Function <code>freeze_code_object</code></a></li>
 <li><a href="#@Specification_1_publish_package_txn">Function <code>publish_package_txn</code></a></li>
 <li><a href="#@Specification_1_check_upgradability">Function <code>check_upgradability</code></a></li>
-<li><a href="#@Specification_1_check_coexistence">Function <code>check_coexistence</code></a></li>
-<li><a href="#@Specification_1_check_dependencies">Function <code>check_dependencies</code></a></li>
 <li><a href="#@Specification_1_get_module_names">Function <code>get_module_names</code></a></li>
 <li><a href="#@Specification_1_request_publish">Function <code>request_publish</code></a></li>
 <li><a href="#@Specification_1_request_publish_with_allowed_deps">Function <code>request_publish_with_allowed_deps</code></a></li>
@@ -213,9 +210,9 @@
 <b>use</b> <a href="../move-stdlib/error.html#0x1_error">0x1::error</a>;
 <b>use</b> <a href="event.html#0x1_event">0x1::event</a>;
 <b>use</b> <a href="../move-stdlib/features.html#0x1_features">0x1::features</a>;
+<b>use</b> <a href="init.html#0x1_init">0x1::init</a>;
 <b>use</b> <a href="object.html#0x1_object">0x1::object</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
 <b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
@@ -383,7 +380,8 @@
 </dl>
 </details>
 <h2 id="struct-codepublishingpermission"><a class="header" href="#struct-codepublishingpermission">Struct <code>CodePublishingPermission</code> <a id="0x1_code_CodePublishingPermission"></a></a></h2>
-<pre><code><b>struct</b> <a href="code.html#0x1_code_CodePublishingPermission">CodePublishingPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+<b>struct</b> <a href="code.html#0x1_code_CodePublishingPermission">CodePublishingPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Fields</summary>
@@ -419,6 +417,10 @@
 </dl>
 </details>
 <h2 id="constants"><a class="header" href="#constants">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x1_code_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="code.html#0x1_code_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 12;
+</code></pre>
 <p><a id="0x1_code_ECODE_OBJECT_DOES_NOT_EXIST"></a></p>
 <p><code>code_object</code> does not exist.</p>
 <pre><code><b>const</b> <a href="code.html#0x1_code_ECODE_OBJECT_DOES_NOT_EXIST">ECODE_OBJECT_DOES_NOT_EXIST</a>: u64 = 10;
@@ -447,10 +449,6 @@
 <p>Not the owner of the package registry.</p>
 <pre><code><b>const</b> <a href="code.html#0x1_code_ENOT_PACKAGE_OWNER">ENOT_PACKAGE_OWNER</a>: u64 = 9;
 </code></pre>
-<p><a id="0x1_code_ENO_CODE_PERMISSION"></a></p>
-<p>Current permissioned signer cannot publish codes.</p>
-<pre><code><b>const</b> <a href="code.html#0x1_code_ENO_CODE_PERMISSION">ENO_CODE_PERMISSION</a>: u64 = 11;
-</code></pre>
 <p><a id="0x1_code_EPACKAGE_DEP_MISSING"></a></p>
 <p>Dependency could not be resolved to any published package.</p>
 <pre><code><b>const</b> <a href="code.html#0x1_code_EPACKAGE_DEP_MISSING">EPACKAGE_DEP_MISSING</a>: u64 = 5;
@@ -463,28 +461,14 @@
 <p>Cannot downgrade a package's upgradability policy</p>
 <pre><code><b>const</b> <a href="code.html#0x1_code_EUPGRADE_WEAKER_POLICY">EUPGRADE_WEAKER_POLICY</a>: u64 = 3;
 </code></pre>
-<h2 id="function-check_code_publishing_permission"><a class="header" href="#function-check_code_publishing_permission">Function <code>check_code_publishing_permission</code> <a id="0x1_code_check_code_publishing_permission"></a></a></h2>
-<p>Permissions</p>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="code.html#0x1_code_check_code_publishing_permission">check_code_publishing_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="code.html#0x1_code_check_code_publishing_permission">check_code_publishing_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, <a href="code.html#0x1_code_CodePublishingPermission">CodePublishingPermission</a> {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="code.html#0x1_code_ENO_CODE_PERMISSION">ENO_CODE_PERMISSION</a>),
-    );
-}
-</code></pre>
-</details>
 <h2 id="function-grant_permission"><a class="header" href="#function-grant_permission">Function <code>grant_permission</code> <a id="0x1_code_grant_permission"></a></a></h2>
-<p>Grant permission to publish code on behalf of the master signer.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="code.html#0x1_code_grant_permission">grant_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="code.html#0x1_code_grant_permission">grant_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="code.html#0x1_code_grant_permission">grant_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, <a href="code.html#0x1_code_CodePublishingPermission">CodePublishingPermission</a> {})
+<pre><code><b>public</b> <b>fun</b> <a href="code.html#0x1_code_grant_permission">grant_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="code.html#0x1_code_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -563,7 +547,6 @@ package.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="code.html#0x1_code_publish_package">publish_package</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pack: <a href="code.html#0x1_code_PackageMetadata">PackageMetadata</a>, <a href="code.html#0x1_code">code</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;) <b>acquires</b> <a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a> {
-    <a href="code.html#0x1_code_check_code_publishing_permission">check_code_publishing_permission</a>(owner);
     // Disallow incompatible upgrade mode. Governance can decide later <b>if</b> this should be reconsidered.
     <b>assert</b>!(
         pack.upgrade_policy.policy &gt; <a href="code.html#0x1_code_upgrade_policy_arbitrary">upgrade_policy_arbitrary</a>().policy,
@@ -582,6 +565,16 @@ package.</p>
     // To avoid prover compiler <a href="../move-stdlib/error.html#0x1_error">error</a> on <b>spec</b>
     // the <b>package</b> need <b>to</b> be an immutable variable
     <b>let</b> module_names = <a href="code.html#0x1_code_get_module_names">get_module_names</a>(&pack);
+
+    // Record, per <b>module</b> in this <b>package</b>, the <a href="object.html#0x1_object">object</a>'s transitive root owner at (re)publish, so
+    // lazy self-<a href="init.html#0x1_init">init</a> can detect a later transfer of the <a href="object.html#0x1_object">object</a> or an ancestor since that <b>module</b>
+    // was published (see `<a href="init.html#0x1_init_internal_maybe_initialize">init::internal_maybe_initialize</a>`). Objects only; feature-gated.
+    <b>if</b> (<a href="../move-stdlib/features.html#0x1_features_is_lazy_module_initialization_enabled">features::is_lazy_module_initialization_enabled</a>() && <a href="object.html#0x1_object_is_object">object::is_object</a>(addr)) {
+        <b>let</b> owner = <a href="object.html#0x1_object_address_to_object">object::address_to_object</a>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(addr).root_owner();
+        module_names.for_each_ref(|name| {
+            <a href="init.html#0x1_init_record_deploy_owner">init::record_deploy_owner</a>(addr, *name.bytes(), owner);
+        });
+    };
     <b>let</b> package_immutable = &<b>borrow_global</b>&lt;<a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(addr).packages;
     <b>let</b> len = package_immutable.length();
     <b>let</b> index = len;
@@ -604,6 +597,10 @@ package.</p>
     // Update registry
     <b>let</b> policy = pack.upgrade_policy;
     <b>if</b> (index &lt; len) {
+        pack.modules.for_each_ref(|m| {
+            <b>let</b> m: &<a href="code.html#0x1_code_ModuleMetadata">ModuleMetadata</a> = m;
+            <a href="init.html#0x1_init_reset_initialized">init::reset_initialized</a>(addr, *m.name.bytes());
+        });
         *packages.borrow_mut(index) = pack
     } <b>else</b> {
         packages.push_back(pack)
@@ -630,7 +627,6 @@ package.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="code.html#0x1_code_freeze_code_object">freeze_code_object</a>(publisher: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, code_object: Object&lt;<a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;) <b>acquires</b> <a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a> {
-    <a href="code.html#0x1_code_check_code_publishing_permission">check_code_publishing_permission</a>(publisher);
     <b>let</b> code_object_addr = code_object.object_address();
     <b>assert</b>!(<b>exists</b>&lt;<a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(code_object_addr), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="code.html#0x1_code_ECODE_OBJECT_DOES_NOT_EXIST">ECODE_OBJECT_DOES_NOT_EXIST</a>));
     <b>assert</b>!(
@@ -889,8 +885,10 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>fun</b> <a href="code.html#0x1_code_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, package_owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata: <a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>)
 </code></pre>
-<pre><code><b>let</b> aptos_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> aptos_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>let</b> owner_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(package_owner);
+<b>modifies</b> <b>global</b>&lt;<a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(owner_addr);
 <b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(aptos_addr);
 <b>ensures</b> <b>exists</b>&lt;<a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(owner_addr);
 </code></pre>
@@ -915,24 +913,12 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 <h3 id="function-publish_package_txn-1"><a class="header" href="#function-publish_package_txn-1">Function <code>publish_package_txn</code> <a id="@Specification_1_publish_package_txn"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="code.html#0x1_code_publish_package_txn">publish_package_txn</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata_serialized: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="code.html#0x1_code">code</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-</code></pre>
 <h3 id="function-check_upgradability-1"><a class="header" href="#function-check_upgradability-1">Function <code>check_upgradability</code> <a id="@Specification_1_check_upgradability"></a></a></h3>
 <pre><code><b>fun</b> <a href="code.html#0x1_code_check_upgradability">check_upgradability</a>(old_pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>, new_pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>, new_modules: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;)
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> old_pack.upgrade_policy.policy &gt;= <a href="code.html#0x1_code_upgrade_policy_immutable">upgrade_policy_immutable</a>().policy;
 <b>aborts_if</b> !<a href="code.html#0x1_code_can_change_upgrade_policy_to">can_change_upgrade_policy_to</a>(old_pack.upgrade_policy, new_pack.upgrade_policy);
-</code></pre>
-<h3 id="function-check_coexistence-1"><a class="header" href="#function-check_coexistence-1">Function <code>check_coexistence</code> <a id="@Specification_1_check_coexistence"></a></a></h3>
-<pre><code><b>fun</b> <a href="code.html#0x1_code_check_coexistence">check_coexistence</a>(old_pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>, new_modules: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;)
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-</code></pre>
-<h3 id="function-check_dependencies-1"><a class="header" href="#function-check_dependencies-1">Function <code>check_dependencies</code> <a id="@Specification_1_check_dependencies"></a></a></h3>
-<pre><code><b>fun</b> <a href="code.html#0x1_code_check_dependencies">check_dependencies</a>(publish_address: <b>address</b>, pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="code.html#0x1_code_AllowedDep">code::AllowedDep</a>&gt;
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-get_module_names-1"><a class="header" href="#function-get_module_names-1">Function <code>get_module_names</code> <a id="@Specification_1_get_module_names"></a></a></h3>
 <pre><code><b>fun</b> <a href="code.html#0x1_code_get_module_names">get_module_names</a>(pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
@@ -951,13 +937,6 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 <pre><code><b>fun</b> <a href="code.html#0x1_code_request_publish_with_allowed_deps">request_publish_with_allowed_deps</a>(owner: <b>address</b>, expected_modules: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, allowed_deps: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="code.html#0x1_code_AllowedDep">code::AllowedDep</a>&gt;, bundle: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, policy: u8)
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-</code></pre>
-<p><a id="0x1_code_AbortsIfPermissionedSigner"></a></p>
-<pre><code><b>schema</b> <a href="code.html#0x1_code_AbortsIfPermissionedSigner">AbortsIfPermissionedSigner</a> {
-    s: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    <b>let</b> perm = <a href="code.html#0x1_code_CodePublishingPermission">CodePublishingPermission</a> {};
-    <b>aborts_if</b> !<a href="permissioned_signer.html#0x1_permissioned_signer_spec_check_permission_exists">permissioned_signer::spec_check_permission_exists</a>(s, perm);
-}
 </code></pre>
 
                     </main>

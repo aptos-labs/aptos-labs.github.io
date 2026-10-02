@@ -185,6 +185,7 @@ events emitted to a handle and emit events to the event store.</p>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
 <li><a href="#@Specification_1_emit">Function <code>emit</code></a></li>
 <li><a href="#@Specification_1_write_module_event_to_store">Function <code>write_module_event_to_store</code></a></li>
+<li><a href="#@Specification_1_new_event_handle">Function <code>new_event_handle</code></a></li>
 <li><a href="#@Specification_1_emit_event">Function <code>emit_event</code></a></li>
 <li><a href="#@Specification_1_guid">Function <code>guid</code></a></li>
 <li><a href="#@Specification_1_counter">Function <code>counter</code></a></li>
@@ -384,6 +385,15 @@ events emitted to a handle and emit events to the event store.</p>
 <p>Native function use opaque.</p>
 <pre><code><b>pragma</b> opaque;
 </code></pre>
+<h3 id="function-new_event_handle-1"><a class="header" href="#function-new_event_handle-1">Function <code>new_event_handle</code> <a id="@Specification_1_new_event_handle"></a></a></h3>
+<pre><code>#[deprecated]
+<b>public</b>(<b>friend</b>) <b>fun</b> <a href="event.html#0x1_event_new_event_handle">new_event_handle</a>&lt;T: drop, store&gt;(<a href="guid.html#0x1_guid">guid</a>: <a href="guid.html#0x1_guid_GUID">guid::GUID</a>): <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result.counter == 0;
+<b>ensures</b> result.<a href="guid.html#0x1_guid">guid</a> == <a href="guid.html#0x1_guid">guid</a>;
+</code></pre>
 <h3 id="function-emit_event-1"><a class="header" href="#function-emit_event-1">Function <code>emit_event</code> <a id="@Specification_1_emit_event"></a></a></h3>
 <pre><code>#[deprecated]
 <b>public</b> <b>fun</b> <a href="event.html#0x1_event_emit_event">emit_event</a>&lt;T: drop, store&gt;(handle_ref: &<b>mut</b> <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;, msg: T)
@@ -392,20 +402,25 @@ events emitted to a handle and emit events to the event store.</p>
 <b>aborts_if</b> [abstract] <b>false</b>;
 // This enforces <a id="high-level-req-4" href="#high-level-req">high-level requirement 4</a>:
 <b>ensures</b> [concrete] handle_ref.counter == <b>old</b>(handle_ref.counter) + 1;
+<b>ensures</b> [concrete] handle_ref.<a href="guid.html#0x1_guid">guid</a> == <b>old</b>(handle_ref.<a href="guid.html#0x1_guid">guid</a>);
 </code></pre>
 <h3 id="function-guid-1"><a class="header" href="#function-guid-1">Function <code>guid</code> <a id="@Specification_1_guid"></a></a></h3>
 <pre><code>#[deprecated]
 <b>public</b> <b>fun</b> <a href="guid.html#0x1_guid">guid</a>&lt;T: drop, store&gt;(handle_ref: &<a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;): &<a href="guid.html#0x1_guid_GUID">guid::GUID</a>
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == handle_ref.<a href="guid.html#0x1_guid">guid</a>;
 </code></pre>
 <h3 id="function-counter-1"><a class="header" href="#function-counter-1">Function <code>counter</code> <a id="@Specification_1_counter"></a></a></h3>
 <pre><code>#[deprecated]
 <b>public</b> <b>fun</b> <a href="event.html#0x1_event_counter">counter</a>&lt;T: drop, store&gt;(handle_ref: &<a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;): u64
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-5.2" href="#high-level-req">high-level requirement 5</a>:
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-5.2" href="#high-level-req">high-level requirement 5</a>:
 <b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == handle_ref.counter;
 </code></pre>
 <h3 id="function-write_to_event_store-1"><a class="header" href="#function-write_to_event_store-1">Function <code>write_to_event_store</code> <a id="@Specification_1_write_to_event_store"></a></a></h3>
 <pre><code>#[deprecated]
@@ -418,7 +433,8 @@ events emitted to a handle and emit events to the event store.</p>
 <pre><code>#[deprecated]
 <b>public</b> <b>fun</b> <a href="event.html#0x1_event_destroy_handle">destroy_handle</a>&lt;T: drop, store&gt;(handle: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;)
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-5.3" href="#high-level-req">high-level requirement 5</a>:
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-5.3" href="#high-level-req">high-level requirement 5</a>:
 <b>aborts_if</b> <b>false</b>;
 </code></pre>
 

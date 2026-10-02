@@ -175,6 +175,7 @@
 <li><a href="#0x1_account_RotationCapability">Struct <code>RotationCapability</code></a></li>
 <li><a href="#0x1_account_SignerCapability">Struct <code>SignerCapability</code></a></li>
 <li><a href="#0x1_account_OriginatingAddress">Resource <code>OriginatingAddress</code></a></li>
+<li><a href="#0x1_account_EncryptedDK">Enum Resource <code>EncryptedDK</code></a></li>
 <li><a href="#0x1_account_RotationProofChallenge">Struct <code>RotationProofChallenge</code></a></li>
 <li><a href="#0x1_account_RotationCapabilityOfferProofChallenge">Struct <code>RotationCapabilityOfferProofChallenge</code></a></li>
 <li><a href="#0x1_account_SignerCapabilityOfferProofChallenge">Struct <code>SignerCapabilityOfferProofChallenge</code></a></li>
@@ -182,9 +183,8 @@
 <li><a href="#0x1_account_SignerCapabilityOfferProofChallengeV2">Struct <code>SignerCapabilityOfferProofChallengeV2</code></a></li>
 <li><a href="#0x1_account_AccountPermission">Enum <code>AccountPermission</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
-<li><a href="#0x1_account_check_rotation_permission">Function <code>check_rotation_permission</code></a></li>
-<li><a href="#0x1_account_check_offering_permission">Function <code>check_offering_permission</code></a></li>
 <li><a href="#0x1_account_grant_key_rotation_permission">Function <code>grant_key_rotation_permission</code></a></li>
+<li><a href="#0x1_account_assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code></a></li>
 <li><a href="#0x1_account_grant_key_offering_permission">Function <code>grant_key_offering_permission</code></a></li>
 <li><a href="#0x1_account_initialize">Function <code>initialize</code></a></li>
 <li><a href="#0x1_account_create_account_if_does_not_exist">Function <code>create_account_if_does_not_exist</code></a></li>
@@ -208,6 +208,10 @@
 <li><a href="#@Events_3">Events</a></li>
 </ul>
 </li>
+<li><a href="#0x1_account_upsert_ed25519_backup_key_and_encrypt_dk">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code></a></li>
+<li><a href="#0x1_account_upsert_encrypted_dk">Function <code>upsert_encrypted_dk</code></a></li>
+<li><a href="#0x1_account_get_encrypted_dk">Function <code>get_encrypted_dk</code></a></li>
+<li><a href="#0x1_account_encrypted_dk_exists">Function <code>encrypted_dk_exists</code></a></li>
 <li><a href="#0x1_account_rotate_authentication_key">Function <code>rotate_authentication_key</code></a></li>
 <li><a href="#0x1_account_rotate_authentication_key_with_rotation_capability">Function <code>rotate_authentication_key_with_rotation_capability</code></a></li>
 <li><a href="#0x1_account_offer_rotation_capability">Function <code>offer_rotation_capability</code></a></li>
@@ -246,11 +250,14 @@
 <li><a href="#@Specification_4_get_guid_next_creation_num">Function <code>get_guid_next_creation_num</code></a></li>
 <li><a href="#@Specification_4_get_sequence_number">Function <code>get_sequence_number</code></a></li>
 <li><a href="#@Specification_4_originating_address">Function <code>originating_address</code></a></li>
+<li><a href="#@Specification_4_ensure_resource_exists">Function <code>ensure_resource_exists</code></a></li>
 <li><a href="#@Specification_4_increment_sequence_number">Function <code>increment_sequence_number</code></a></li>
 <li><a href="#@Specification_4_get_authentication_key">Function <code>get_authentication_key</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key_internal">Function <code>rotate_authentication_key_internal</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key_call">Function <code>rotate_authentication_key_call</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key_from_public_key">Function <code>rotate_authentication_key_from_public_key</code></a></li>
+<li><a href="#@Specification_4_upsert_ed25519_backup_key_on_keyless_account">Function <code>upsert_ed25519_backup_key_on_keyless_account</code></a></li>
+<li><a href="#@Specification_4_upsert_ed25519_backup_key_and_encrypt_dk">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key">Function <code>rotate_authentication_key</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key_with_rotation_capability">Function <code>rotate_authentication_key_with_rotation_capability</code></a></li>
 <li><a href="#@Specification_4_offer_rotation_capability">Function <code>offer_rotation_capability</code></a></li>
@@ -291,11 +298,11 @@
 <b>use</b> <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519">0x1::multi_ed25519</a>;
 <b>use</b> <a href="../aptos-stdlib/multi_key.html#0x1_multi_key">0x1::multi_key</a>;
 <b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
-<b>use</b> <a href="permissioned_signer.html#0x1_permissioned_signer">0x1::permissioned_signer</a>;
 <b>use</b> <a href="../move-stdlib/signer.html#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="../aptos-stdlib/single_key.html#0x1_single_key">0x1::single_key</a>;
 <b>use</b> <a href="system_addresses.html#0x1_system_addresses">0x1::system_addresses</a>;
 <b>use</b> <a href="../aptos-stdlib/table.html#0x1_table">0x1::table</a>;
+<b>use</b> <a href="transaction_context.html#0x1_transaction_context">0x1::transaction_context</a>;
 <b>use</b> <a href="../aptos-stdlib/type_info.html#0x1_type_info">0x1::type_info</a>;
 <b>use</b> <a href="../move-stdlib/vector.html#0x1_vector">0x1::vector</a>;
 </code></pre>
@@ -516,6 +523,29 @@ This struct solves this problem by mapping the new authentication key <code>b</c
 </dd>
 </dl>
 </details>
+<h2 id="enum-resource-encrypteddk"><a class="header" href="#enum-resource-encrypteddk">Enum Resource <code>EncryptedDK</code> <a id="0x1_account_EncryptedDK"></a></a></h2>
+<p>Per-account encrypted backup of a confidential-asset decryption key (DK). The ciphertext is opaque to the
+chain — clients (e.g. Petra) own encryption/decryption. Writers go through <code>upsert_encrypted_dk</code> (friend-only)
+so the calling module owns the policy (e.g. atomicity with a key rotation); readers can use the
+<code>get_encrypted_dk</code> view. Versioned via the <code>V1</code> variant so the schema can evolve.</p>
+<pre><code>enum <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> <b>has</b> <b>copy</b>, drop, store, key
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
 <h2 id="struct-rotationproofchallenge"><a class="header" href="#struct-rotationproofchallenge">Struct <code>RotationProofChallenge</code> <a id="0x1_account_RotationProofChallenge"></a></a></h2>
 <p>This structs stores the challenge message that should be signed during key rotation. First, this struct is
 signed by the account owner's current public key, which proves possession of a capability to rotate the key.
@@ -642,7 +672,8 @@ This V2 struct adds the <code><a href="chain_id.html#0x1_chain_id">chain_id</a><
 </dl>
 </details>
 <h2 id="enum-accountpermission"><a class="header" href="#enum-accountpermission">Enum <code>AccountPermission</code> <a id="0x1_account_AccountPermission"></a></a></h2>
-<pre><code>enum <a href="account.html#0x1_account_AccountPermission">AccountPermission</a> <b>has</b> <b>copy</b>, drop, store
+<pre><code>#[deprecated]
+enum <a href="account.html#0x1_account_AccountPermission">AccountPermission</a> <b>has</b> <b>copy</b>, drop, store
 </code></pre>
 <details>
 <summary>Variants</summary>
@@ -695,6 +726,14 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p>Scheme identifier for Ed25519 signatures used to derive authentication keys for Ed25519 public keys.</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a>: u8 = 0;
 </code></pre>
+<p><a id="0x1_account_EENCRYPTED_DK_NOT_FOUND"></a></p>
+<p>No <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> resource exists for the queried address.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_EENCRYPTED_DK_NOT_FOUND">EENCRYPTED_DK_NOT_FOUND</a>: u64 = 29;
+</code></pre>
+<p><a id="0x1_account_EENCRYPTED_DK_TOO_LONG"></a></p>
+<p>The ciphertext being written into <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> exceeds <code><a href="account.html#0x1_account_MAX_ENCRYPTED_DK_BYTES">MAX_ENCRYPTED_DK_BYTES</a></code>.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_EENCRYPTED_DK_TOO_LONG">EENCRYPTED_DK_TOO_LONG</a>: u64 = 28;
+</code></pre>
 <p><a id="0x1_account_EEXCEEDED_MAX_GUID_CREATION_NUM"></a></p>
 <p>This account has exceeded the allocated GUIDs it can create. It should be impossible to reach this number for real applications.</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_EEXCEEDED_MAX_GUID_CREATION_NUM">EEXCEEDED_MAX_GUID_CREATION_NUM</a>: u64 = 20;
@@ -735,10 +774,6 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p>The provided public key is not the original public key for the account</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ENOT_THE_ORIGINAL_PUBLIC_KEY">ENOT_THE_ORIGINAL_PUBLIC_KEY</a>: u64 = 26;
 </code></pre>
-<p><a id="0x1_account_ENO_ACCOUNT_PERMISSION"></a></p>
-<p>Current permissioned signer cannot perform the privilaged operations.</p>
-<pre><code><b>const</b> <a href="account.html#0x1_account_ENO_ACCOUNT_PERMISSION">ENO_ACCOUNT_PERMISSION</a>: u64 = 23;
-</code></pre>
 <p><a id="0x1_account_ENO_CAPABILITY"></a></p>
 <p>The caller does not have a digital-signature-based capability to call this function</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ENO_CAPABILITY">ENO_CAPABILITY</a>: u64 = 9;
@@ -767,6 +802,10 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p>Transaction exceeded its allocated max gas</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_EOUT_OF_GAS">EOUT_OF_GAS</a>: u64 = 6;
 </code></pre>
+<p><a id="0x1_account_EPERMISSIONED_SIGNER_REMOVED"></a></p>
+<p>The permissioned signer feature has been removed.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>: u64 = 30;
+</code></pre>
 <p><a id="0x1_account_ERESOURCE_ACCCOUNT_EXISTS"></a></p>
 <p>An attempt to create a resource account on a claimed account</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ERESOURCE_ACCCOUNT_EXISTS">ERESOURCE_ACCCOUNT_EXISTS</a>: u64 = 15;
@@ -774,6 +813,11 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p><a id="0x1_account_ESEQUENCE_NUMBER_TOO_BIG"></a></p>
 <p>Sequence number exceeds the maximum value for a u64</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ESEQUENCE_NUMBER_TOO_BIG">ESEQUENCE_NUMBER_TOO_BIG</a>: u64 = 3;
+</code></pre>
+<p><a id="0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT"></a></p>
+<p>Sequence-number-based proof challenges cannot be used when the proof-bearing account's
+sequence number will not advance, since the signed proof would remain replayable.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>: u64 = 31;
 </code></pre>
 <p><a id="0x1_account_ESET_ORIGINATING_ADDRESS_DISABLED"></a></p>
 <p>The set_originating_address is disabled due to potential poisoning from account abstraction</p>
@@ -786,6 +830,11 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p><a id="0x1_account_EWRONG_CURRENT_PUBLIC_KEY"></a></p>
 <p>Specified current public key is not correct</p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_EWRONG_CURRENT_PUBLIC_KEY">EWRONG_CURRENT_PUBLIC_KEY</a>: u64 = 7;
+</code></pre>
+<p><a id="0x1_account_MAX_ENCRYPTED_DK_BYTES"></a></p>
+<p>Maximum size of the payload stored in <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code>. 128 bytes is generous for the initial use case
+(an encrypted 32-byte confidential-asset DK with nonce + auth tag), while keeping per-account state small.</p>
+<pre><code><b>const</b> <a href="account.html#0x1_account_MAX_ENCRYPTED_DK_BYTES">MAX_ENCRYPTED_DK_BYTES</a>: u64 = 128;
 </code></pre>
 <p><a id="0x1_account_MAX_GUID_CREATION_NUM"></a></p>
 <p>Explicitly separate the GUID space between Object and Account to prevent accidental overlap.</p>
@@ -806,54 +855,44 @@ whose address matches an existing address of a MultiEd25519 wallet.</p>
 <p><a id="0x1_account_ZERO_AUTH_KEY"></a></p>
 <pre><code><b>const</b> <a href="account.html#0x1_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 </code></pre>
-<h2 id="function-check_rotation_permission"><a class="header" href="#function-check_rotation_permission">Function <code>check_rotation_permission</code> <a id="0x1_account_check_rotation_permission"></a></a></h2>
-<p>Permissions</p>
-<pre><code><b>fun</b> <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, AccountPermission::KeyRotation {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="account.html#0x1_account_ENO_ACCOUNT_PERMISSION">ENO_ACCOUNT_PERMISSION</a>),
-    );
-}
-</code></pre>
-</details>
-<h2 id="function-check_offering_permission"><a class="header" href="#function-check_offering_permission">Function <code>check_offering_permission</code> <a id="0x1_account_check_offering_permission"></a></a></h2>
-<pre><code><b>fun</b> <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
-</code></pre>
-<details>
-<summary>Implementation</summary>
-<pre><code>inline <b>fun</b> <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(s: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <b>assert</b>!(
-        <a href="permissioned_signer.html#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, AccountPermission::Offering {}),
-        <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="account.html#0x1_account_ENO_ACCOUNT_PERMISSION">ENO_ACCOUNT_PERMISSION</a>),
-    );
-}
-</code></pre>
-</details>
 <h2 id="function-grant_key_rotation_permission"><a class="header" href="#function-grant_key_rotation_permission">Function <code>grant_key_rotation_permission</code> <a id="0x1_account_grant_key_rotation_permission"></a></a></h2>
-<p>Grant permission to perform key rotations on behalf of the master signer.</p>
-<p>This is <strong>extremely dangerous</strong> and should be granted only when it's absolutely needed.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, AccountPermission::KeyRotation {})
+<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_rotation_permission">grant_key_rotation_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="account.html#0x1_account_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
+}
+</code></pre>
+</details>
+<h2 id="function-assert_seq_num_proof_replay_protected"><a class="header" href="#function-assert_seq_num_proof_replay_protected">Function <code>assert_seq_num_proof_replay_protected</code> <a id="0x1_account_assert_seq_num_proof_replay_protected"></a></a></h2>
+<p>Proof challenges that embed an account's sequence number rely on the sequence number
+advancing with the submitting transaction to prevent the signed proof from being accepted
+twice. Orderless transactions do not increment the sender's sequence number, and multisig
+payload execution increments only the outer submitter's sequence number. Functions verifying
+a sequence-number-based proof must call this first.</p>
+<pre><code><b>fun</b> <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>()
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>inline <b>fun</b> <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>() {
+    <b>assert</b>!(
+        !<a href="transaction_context.html#0x1_transaction_context_is_orderless_txn">transaction_context::is_orderless_txn</a>()
+            && !<a href="transaction_context.html#0x1_transaction_context_is_multisig_payload_txn">transaction_context::is_multisig_payload_txn</a>(),
+        <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="account.html#0x1_account_ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT">ESEQ_NUM_PROOF_REPLAYABLE_CONTEXT</a>),
+    );
 }
 </code></pre>
 </details>
 <h2 id="function-grant_key_offering_permission"><a class="header" href="#function-grant_key_offering_permission">Function <code>grant_key_offering_permission</code> <a id="0x1_account_grant_key_offering_permission"></a></a></h2>
-<p>Grant permission to use offered address's signer on behalf of the master signer.</p>
-<p>This is <strong>extremely dangerous</strong> and should be granted only when it's absolutely needed.</p>
-<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_offering_permission">grant_key_offering_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+<pre><code>#[deprecated]
+<b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_offering_permission">grant_key_offering_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
-<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_offering_permission">grant_key_offering_permission</a>(master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
-    <a href="permissioned_signer.html#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.html#0x1_permissioned_signer">permissioned_signer</a>, AccountPermission::Offering {})
+<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_grant_key_offering_permission">grant_key_offering_permission</a>(_master: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _permissioned_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../move-stdlib/error.html#0x1_error_unavailable">error::unavailable</a>(<a href="account.html#0x1_account_EPERMISSIONED_SIGNER_REMOVED">EPERMISSIONED_SIGNER_REMOVED</a>)
 }
 </code></pre>
 </details>
@@ -1116,7 +1155,6 @@ many contexts:</p>
         new_auth_key.length() == 32,
         <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="account.html#0x1_account_EMALFORMED_AUTHENTICATION_KEY">EMALFORMED_AUTHENTICATION_KEY</a>)
     );
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[addr];
     account_resource.authentication_key = new_auth_key;
 }
@@ -1179,9 +1217,9 @@ This function will abort if the scheme is not recognized or if new_public_key_by
 </code></pre>
 </details>
 <h2 id="function-upsert_ed25519_backup_key_on_keyless_account"><a class="header" href="#function-upsert_ed25519_backup_key_on_keyless_account">Function <code>upsert_ed25519_backup_key_on_keyless_account</code> <a id="0x1_account_upsert_ed25519_backup_key_on_keyless_account"></a></a></h2>
-<p>Upserts an ED25519 backup key to an account that has a keyless public key as its original public key by converting the account's authentication key
+<p>Upserts an Ed25519 backup key to an account that has a keyless public key as its original public key by converting the account's authentication key
 to a multi-key of the original keyless public key and the new backup key that requires 1 signature from either key to authenticate.
-This function takes a the account's original keyless public key and a ED25519 backup public key and rotates the account's authentication key to a multi-key of
+This function takes the account's original keyless public key and a Ed25519 backup public key and rotates the account's authentication key to a multi-key of
 the original keyless public key and the new backup key that requires 1 signature from either key to authenticate.</p>
 <p>Note: This function emits a <code>KeyRotationToMultiPublicKey</code> event marking both keys as verified since the keyless public key
 is the original public key of the account and the new backup key has been validated via verifying the challenge signed by the new backup key.</p>
@@ -1189,7 +1227,7 @@ is the original public key of the account and the new backup key has been valida
 <ul>
 <li><code><a href="account.html#0x1_account">account</a></code> - The signer representing the keyless account</li>
 <li><code>keyless_public_key</code> - The original keyless public key of the account (wrapped in an AnyPublicKey)</li>
-<li><code>backup_public_key</code> - The ED25519 public key to add as a backup</li>
+<li><code>backup_public_key</code> - The Ed25519 public key to add as a backup</li>
 <li><code>backup_key_proof</code> - A signature from the backup key proving ownership</li>
 </ul>
 <h3 id="aborts"><a class="header" href="#aborts">Aborts <a id="@Aborts_2"></a></a></h3>
@@ -1208,6 +1246,8 @@ is the original public key of the account and the new backup key has been valida
 <details>
 <summary>Implementation</summary>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_on_keyless_account">upsert_ed25519_backup_key_on_keyless_account</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
+    // The backup key proof is replay-protected by the <a href="account.html#0x1_account">account</a>'s sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     // Check that the provided <b>public</b> key is a <a href="../aptos-stdlib/keyless.html#0x1_keyless">keyless</a> <b>public</b> key
     <b>let</b> keyless_single_key = <a href="../aptos-stdlib/single_key.html#0x1_single_key_new_public_key_from_bytes">single_key::new_public_key_from_bytes</a>(keyless_public_key);
     <b>assert</b>!(<a href="../aptos-stdlib/single_key.html#0x1_single_key_is_keyless_or_federated_keyless_public_key">single_key::is_keyless_or_federated_keyless_public_key</a>(&keyless_single_key), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="account.html#0x1_account_ENOT_A_KEYLESS_PUBLIC_KEY">ENOT_A_KEYLESS_PUBLIC_KEY</a>));
@@ -1264,6 +1304,81 @@ is the original public key of the account and the new backup key has been valida
 }
 </code></pre>
 </details>
+<h2 id="function-upsert_ed25519_backup_key_and_encrypt_dk"><a class="header" href="#function-upsert_ed25519_backup_key_and_encrypt_dk">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code> <a id="0x1_account_upsert_ed25519_backup_key_and_encrypt_dk"></a></a></h2>
+<p>Atomically performs an <code>upsert_ed25519_backup_key_on_keyless_account</code> and stores <code>dk_ciphertext</code> in the
+account's <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> resource. Currently used for backing up confidential-asset decryption keys on-chain
+in Petra for keyless accounts. The ciphertext is opaque to the chain — see <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code>.</p>
+<p>SECURITY: This function does not verify that <code>dk_ciphertext</code> is a well-formed encryption of the DK corresponding
+to the registered EK on-chain. (It could, in theory, but we've judged the implementation complexity too high.)
+Wallets using this function must be careful to only call this using a <code>dk_ciphertext</code> produced from its own
+keyless Ed25519 backup key flow under the user-controlled <code>backup_public_key</code>.</p>
+<pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_and_encrypt_dk">upsert_ed25519_backup_key_and_encrypt_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, dk_ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_and_encrypt_dk">upsert_ed25519_backup_key_and_encrypt_dk</a>(
+    <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>,
+    keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
+    dk_ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a>, <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> {
+    <a href="account.html#0x1_account_upsert_ed25519_backup_key_on_keyless_account">upsert_ed25519_backup_key_on_keyless_account</a>(<a href="account.html#0x1_account">account</a>, keyless_public_key, backup_public_key, backup_key_proof);
+    <a href="account.html#0x1_account_upsert_encrypted_dk">upsert_encrypted_dk</a>(<a href="account.html#0x1_account">account</a>, dk_ciphertext);
+}
+</code></pre>
+</details>
+<h2 id="function-upsert_encrypted_dk"><a class="header" href="#function-upsert_encrypted_dk">Function <code>upsert_encrypted_dk</code> <a id="0x1_account_upsert_encrypted_dk"></a></a></h2>
+<p>Upserts the opaque per-account <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> for <code><a href="account.html#0x1_account">account</a></code>. Friend-only so that the policy of who can
+write a ciphertext (and the atomicity guarantees that come with it, e.g. coupling with a key rotation) lives
+in the calling module rather than at this layer.</p>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_upsert_encrypted_dk">upsert_encrypted_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_upsert_encrypted_dk">upsert_encrypted_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) <b>acquires</b> <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> {
+    <b>assert</b>!(
+        ciphertext.length() &lt;= <a href="account.html#0x1_account_MAX_ENCRYPTED_DK_BYTES">MAX_ENCRYPTED_DK_BYTES</a>,
+        <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="account.html#0x1_account_EENCRYPTED_DK_TOO_LONG">EENCRYPTED_DK_TOO_LONG</a>)
+    );
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+    <b>if</b> (!<b>exists</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr)) {
+        <b>move_to</b>(<a href="account.html#0x1_account">account</a>, EncryptedDK::V1 { ciphertext: ciphertext });
+    } <b>else</b> {
+        <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>[addr].ciphertext = ciphertext;
+    };
+}
+</code></pre>
+</details>
+<h2 id="function-get_encrypted_dk"><a class="header" href="#function-get_encrypted_dk">Function <code>get_encrypted_dk</code> <a id="0x1_account_get_encrypted_dk"></a></a></h2>
+<p>Returns the <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> stored for <code>addr</code>. Aborts with <code><a href="account.html#0x1_account_EENCRYPTED_DK_NOT_FOUND">EENCRYPTED_DK_NOT_FOUND</a></code> if none exists,
+so callers must check <code><a href="account.html#0x1_account_encrypted_dk_exists">encrypted_dk_exists</a>(addr)</code> first if absence is a valid case.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_encrypted_dk">get_encrypted_dk</a>(addr: <b>address</b>): <a href="account.html#0x1_account_EncryptedDK">account::EncryptedDK</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_encrypted_dk">get_encrypted_dk</a>(addr: <b>address</b>): <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> <b>acquires</b> <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a> {
+    <b>assert</b>!(
+        <b>exists</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr),
+        <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EENCRYPTED_DK_NOT_FOUND">EENCRYPTED_DK_NOT_FOUND</a>)
+    );
+    <a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>[addr]
+}
+</code></pre>
+</details>
+<h2 id="function-encrypted_dk_exists"><a class="header" href="#function-encrypted_dk_exists">Function <code>encrypted_dk_exists</code> <a id="0x1_account_encrypted_dk_exists"></a></a></h2>
+<p>Returns whether an <code><a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a></code> is stored for <code>addr</code>.</p>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="account.html#0x1_account_encrypted_dk_exists">encrypted_dk_exists</a>(addr: <b>address</b>): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_encrypted_dk_exists">encrypted_dk_exists</a>(addr: <b>address</b>): bool {
+    <b>exists</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr)
+}
+</code></pre>
+</details>
 <h2 id="function-rotate_authentication_key"><a class="header" href="#function-rotate_authentication_key">Function <code>rotate_authentication_key</code> <a id="0x1_account_rotate_authentication_key"></a></a></h2>
 <p>Generic authentication key rotation function that allows the user to rotate their authentication key from any scheme to any scheme.
 To authorize the rotation, we need two signatures:</p>
@@ -1304,9 +1419,10 @@ to rotate his address to Alice's address in the first place.</p>
     cap_rotate_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a>, <a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a> {
+    // The rotation proofs are replay-protected by the <a href="account.html#0x1_account">account</a>'s sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr);
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[addr];
     <b>let</b> old_auth_key = account_resource.authentication_key;
     // Verify the given `from_public_key_bytes` matches this <a href="account.html#0x1_account">account</a>'s current authentication key.
@@ -1387,7 +1503,8 @@ to rotate his address to Alice's address in the first place.</p>
     new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a>, <a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a> {
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(delegate_signer);
+    // The rotation proof is replay-protected by the delegate's sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>assert</b>!(<a href="account.html#0x1_account_resource_exists_at">resource_exists_at</a>(rotation_cap_offerer_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EOFFERER_ADDRESS_DOES_NOT_EXIST">EOFFERER_ADDRESS_DOES_NOT_EXIST</a>));
 
     // Check that there <b>exists</b> a rotation capability offer at the offerer's <a href="account.html#0x1_account">account</a> resource for the delegate.
@@ -1472,7 +1589,8 @@ offer, calling this function will replace the previous <code>recipient_address</
     account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     recipient_address: <b>address</b>,
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
+    // The capability offer proof is replay-protected by the <a href="account.html#0x1_account">account</a>'s sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr);
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(recipient_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
@@ -1603,7 +1721,6 @@ authority of the new authentication key.</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_rotation_capability">revoke_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, to_be_revoked_address: <b>address</b>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(to_be_revoked_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(addr, <a href="account.html#0x1_account_ENO_SUCH_ROTATION_CAPABILITY_OFFER">ENO_SUCH_ROTATION_CAPABILITY_OFFER</a>);
     <b>let</b> account_resource = &<a href="account.html#0x1_account_Account">Account</a>[addr];
@@ -1622,7 +1739,6 @@ authority of the new authentication key.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_any_rotation_capability">revoke_any_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_rotation_permission">check_rotation_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> offerer_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(offerer_addr, <a href="account.html#0x1_account_ENO_SUCH_ROTATION_CAPABILITY_OFFER">ENO_SUCH_ROTATION_CAPABILITY_OFFER</a>);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>)];
@@ -1651,7 +1767,8 @@ to the account owner's signer capability).</p>
     account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;,
     recipient_address: <b>address</b>
 ) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(<a href="account.html#0x1_account">account</a>);
+    // The capability offer proof is replay-protected by the <a href="account.html#0x1_account">account</a>'s sequence number.
+    <a href="account.html#0x1_account_assert_seq_num_proof_replay_protected">assert_seq_num_proof_replay_protected</a>();
     <b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(source_address);
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(recipient_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
@@ -1717,7 +1834,6 @@ has a signer capability offer from <code><a href="account.html#0x1_account">acco
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_signer_capability">revoke_signer_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, to_be_revoked_address: <b>address</b>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>assert</b>!(<a href="account.html#0x1_account_exists_at">exists_at</a>(to_be_revoked_address), <a href="../move-stdlib/error.html#0x1_error_not_found">error::not_found</a>(<a href="account.html#0x1_account_EACCOUNT_DOES_NOT_EXIST">EACCOUNT_DOES_NOT_EXIST</a>));
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(addr, <a href="account.html#0x1_account_ENO_SUCH_SIGNER_CAPABILITY">ENO_SUCH_SIGNER_CAPABILITY</a>);
@@ -1737,7 +1853,6 @@ has a signer capability offer from <code><a href="account.html#0x1_account">acco
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_any_signer_capability">revoke_any_signer_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(<a href="account.html#0x1_account">account</a>);
     <b>let</b> offerer_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(offerer_addr, <a href="account.html#0x1_account_ENO_SUCH_SIGNER_CAPABILITY">ENO_SUCH_SIGNER_CAPABILITY</a>);
     <b>let</b> account_resource = &<b>mut</b> <a href="account.html#0x1_account_Account">Account</a>[<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>)];
@@ -1753,7 +1868,6 @@ at the offerer's address.</p>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_authorized_signer">create_authorized_signer</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, offerer_address: <b>address</b>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a> <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
-    <a href="account.html#0x1_account_check_offering_permission">check_offering_permission</a>(<a href="account.html#0x1_account">account</a>);
     <a href="account.html#0x1_account_assert_account_resource_with_error">assert_account_resource_with_error</a>(offerer_address, <a href="account.html#0x1_account_ENO_SUCH_SIGNER_CAPABILITY">ENO_SUCH_SIGNER_CAPABILITY</a>);
     // Check <b>if</b> there's an existing <a href="../move-stdlib/signer.html#0x1_signer">signer</a> capability offer from the offerer.
     <b>let</b> account_resource = &<a href="account.html#0x1_account_Account">Account</a>[offerer_address];
@@ -2181,7 +2295,7 @@ inheriting the same behavior regarding account existence and feature flags.</p>
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_4_initialize"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
@@ -2213,11 +2327,13 @@ OriginatingAddress does not exist under <code>@aptos_framework</code> before the
 <p>Check if the bytes of the new address is 32.
 The Account does not exist under the new address before creating the account.
 Limit the new account address is not @vm_reserved / @aptos_framework / @aptos_toke.</p>
-<pre><code><b>include</b> <a href="account.html#0x1_account_CreateAccountAbortsIf">CreateAccountAbortsIf</a> {addr: new_address};
+<pre><code><b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address);
 <b>aborts_if</b> new_address == @vm_reserved || new_address == @aptos_framework || new_address == @aptos_token;
+<b>aborts_if</b> !feature_on && len(<a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(new_address)) != 32;
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == new_address;
 // This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
-<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address);
+<b>ensures</b> !feature_on ==&gt; <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address);
 </code></pre>
 <h3 id="function-create_account_unchecked-1"><a class="header" href="#function-create_account_unchecked-1">Function <code>create_account_unchecked</code> <a id="@Specification_4_create_account_unchecked"></a></a></h3>
 <pre><code><b>fun</b> <a href="account.html#0x1_account_create_account_unchecked">create_account_unchecked</a>(new_address: <b>address</b>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
@@ -2229,6 +2345,9 @@ The Account does not exist under the new address before creating the account.</p
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address);
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == new_address;
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address);
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address).guid_creation_num == 2;
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address).sequence_number == 0;
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(new_address).authentication_key == <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(new_address);
 </code></pre>
 <h3 id="function-exists_at-1"><a class="header" href="#function-exists_at-1">Function <code>exists_at</code> <a id="@Specification_4_exists_at"></a></a></h3>
 <pre><code>#[view]
@@ -2259,46 +2378,73 @@ The Account does not exist under the new address before creating the account.</p
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_guid_next_creation_num">get_guid_next_creation_num</a>(addr: <b>address</b>): u64
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>ensures</b> result == <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num;
+<pre><code><b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr) && !feature_on;
+<b>ensures</b> result == (
+    <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num <b>else</b> 0
+);
 </code></pre>
 <h3 id="function-get_sequence_number-1"><a class="header" href="#function-get_sequence_number-1">Function <code>get_sequence_number</code> <a id="@Specification_4_get_sequence_number"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_sequence_number">get_sequence_number</a>(addr: <b>address</b>): u64
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>ensures</b> result == <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number;
+<pre><code><b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr) && !feature_on;
+<b>ensures</b> result == (
+    <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number <b>else</b> 0
+);
 </code></pre>
 <h3 id="function-originating_address-1"><a class="header" href="#function-originating_address-1">Function <code>originating_address</code> <a id="@Specification_4_originating_address"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_originating_address">originating_address</a>(auth_key: <b>address</b>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify=<b>false</b>;
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
+<b>let</b> address_map = <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework).address_map;
+<b>ensures</b> <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(address_map, auth_key) ==&gt;
+    result == <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(<a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(address_map, auth_key));
+<b>ensures</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(address_map, auth_key) ==&gt;
+    result == <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>&lt;<b>address</b>&gt;();
+</code></pre>
+<h3 id="function-ensure_resource_exists-1"><a class="header" href="#function-ensure_resource_exists-1">Function <code>ensure_resource_exists</code> <a id="@Specification_4_ensure_resource_exists"></a></a></h3>
+<pre><code><b>fun</b> <a href="account.html#0x1_account_ensure_resource_exists">ensure_resource_exists</a>(addr: <b>address</b>)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt;
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr) == <b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr));
+<b>ensures</b> !<b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt;
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key == <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(addr)
+        && <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number == 0
+        && <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == 2;
 </code></pre>
 <h3 id="function-increment_sequence_number-1"><a class="header" href="#function-increment_sequence_number-1">Function <code>increment_sequence_number</code> <a id="@Specification_4_increment_sequence_number"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_increment_sequence_number">increment_sequence_number</a>(addr: <b>address</b>)
 </code></pre>
-<p>The Account existed under the address.
-The sequence_number of the Account is up to MAX_U64.</p>
-<pre><code><b>let</b> sequence_number = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<pre><code><b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
+<b>let</b> sequence_number_pre = <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number <b>else</b> 0;
 // This enforces <a id="high-level-req-4" href="#high-level-req">high-level requirement 4</a>:
-<b>aborts_if</b> sequence_number == <a href="account.html#0x1_account_MAX_U64">MAX_U64</a>;
+<b>aborts_if</b> sequence_number_pre == <a href="account.html#0x1_account_MAX_U64">MAX_U64</a>;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>let</b> <b>post</b> post_sequence_number = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number;
-<b>ensures</b> post_sequence_number == sequence_number + 1;
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number == sequence_number_pre + 1;
 </code></pre>
 <h3 id="function-get_authentication_key-1"><a class="header" href="#function-get_authentication_key-1">Function <code>get_authentication_key</code> <a id="@Specification_4_get_authentication_key"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_authentication_key">get_authentication_key</a>(addr: <b>address</b>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr) && !feature_on;
 <b>ensures</b> result == <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(addr);
 </code></pre>
 <p><a id="0x1_account_spec_get_authentication_key"></a></p>
 <pre><code><b>fun</b> <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(addr: <b>address</b>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt; {
-   <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key
+   <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) {
+       <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key
+   } <b>else</b> {
+       <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(addr)
+   }
 }
 </code></pre>
 <h3 id="function-rotate_authentication_key_internal-1"><a class="header" href="#function-rotate_authentication_key_internal-1">Function <code>rotate_authentication_key_internal</code> <a id="@Specification_4_rotate_authentication_key_internal"></a></a></h3>
@@ -2307,57 +2453,78 @@ The sequence_number of the Account is up to MAX_U64.</p>
 <p>The Account existed under the signer before the call.
 The length of new_auth_key is 32.</p>
 <pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
-<b>let</b> <b>post</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
 <b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_auth_key) != 32;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>ensures</b> account_resource.authentication_key == new_auth_key;
+// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key == new_auth_key;
 </code></pre>
 <h3 id="function-rotate_authentication_key_call-1"><a class="header" href="#function-rotate_authentication_key_call-1">Function <code>rotate_authentication_key_call</code> <a id="@Specification_4_rotate_authentication_key_call"></a></a></h3>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_call">rotate_authentication_key_call</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_auth_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
-<b>let</b> <b>post</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
 <b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_auth_key) != 32;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>ensures</b> account_resource.authentication_key == new_auth_key;
+// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key == new_auth_key;
 </code></pre>
 <h3 id="function-rotate_authentication_key_from_public_key-1"><a class="header" href="#function-rotate_authentication_key_from_public_key-1">Function <code>rotate_authentication_key_from_public_key</code> <a id="@Specification_4_rotate_authentication_key_from_public_key"></a></a></h3>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_from_public_key">rotate_authentication_key_from_public_key</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, scheme: u8, new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>aborts_if</b> scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && scheme != <a href="account.html#0x1_account_SINGLE_KEY_SCHEME">SINGLE_KEY_SCHEME</a> && scheme != <a href="account.html#0x1_account_MULTI_KEY_SCHEME">MULTI_KEY_SCHEME</a>;
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>aborts_if</b> scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>
+    && scheme != <a href="account.html#0x1_account_SINGLE_KEY_SCHEME">SINGLE_KEY_SCHEME</a> && scheme != <a href="account.html#0x1_account_MULTI_KEY_SCHEME">MULTI_KEY_SCHEME</a>;
+<b>include</b> scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: new_public_key_bytes };
+<b>include</b> scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">multi_ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: new_public_key_bytes };
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 </code></pre>
 <p><a id="0x1_account_spec_assert_valid_rotation_proof_signature_and_get_auth_key"></a></p>
 <pre><code><b>fun</b> <a href="account.html#0x1_account_spec_assert_valid_rotation_proof_signature_and_get_auth_key">spec_assert_valid_rotation_proof_signature_and_get_auth_key</a>(scheme: u8, public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, challenge: <a href="account.html#0x1_account_RotationProofChallenge">RotationProofChallenge</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
+</code></pre>
+<h3 id="function-upsert_ed25519_backup_key_on_keyless_account-1"><a class="header" href="#function-upsert_ed25519_backup_key_on_keyless_account-1">Function <code>upsert_ed25519_backup_key_on_keyless_account</code> <a id="@Specification_4_upsert_ed25519_backup_key_on_keyless_account"></a></a></h3>
+<pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_on_keyless_account">upsert_ed25519_backup_key_on_keyless_account</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-upsert_ed25519_backup_key_and_encrypt_dk-1"><a class="header" href="#function-upsert_ed25519_backup_key_and_encrypt_dk-1">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code> <a id="@Specification_4_upsert_ed25519_backup_key_and_encrypt_dk"></a></a></h3>
+<pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_and_encrypt_dk">upsert_ed25519_backup_key_and_encrypt_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, dk_ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-rotate_authentication_key-1"><a class="header" href="#function-rotate_authentication_key-1">Function <code>rotate_authentication_key</code> <a id="@Specification_4_rotate_authentication_key"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key">rotate_authentication_key</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, from_scheme: u8, from_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, to_scheme: u8, to_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_rotate_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <p>The Account existed under the signer
 The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-<b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-// This enforces <a id="high-level-req-6.1" href="#high-level-req">high-level requirement 6</a>:
-<b>include</b> from_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: from_public_key_bytes };
-<b>aborts_if</b> from_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && ({
-    <b>let</b> expected_auth_key = <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">ed25519::spec_public_key_bytes_to_authentication_key</a>(from_public_key_bytes);
-    account_resource.authentication_key != expected_auth_key
-});
-<b>include</b> from_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">multi_ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: from_public_key_bytes };
-<b>aborts_if</b> from_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && ({
-    <b>let</b> from_auth_key = <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(from_public_key_bytes);
-    account_resource.authentication_key != from_auth_key
-});
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>pragma</b> aborts_if_is_partial;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr };
 // This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
 <b>aborts_if</b> from_scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && from_scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>;
-<b>let</b> curr_auth_key = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<b>address</b>&gt;(account_resource.authentication_key);
-<b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(account_resource.authentication_key);
+<b>aborts_if</b> to_scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && to_scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>;
+<b>let</b> current_auth_key_bytes = <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(addr);
+<b>let</b> current_seq = <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number <b>else</b> 0;
+<b>include</b> from_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: from_public_key_bytes };
+<b>include</b> from_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">multi_ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: from_public_key_bytes };
+// This enforces <a id="high-level-req-6.1" href="#high-level-req">high-level requirement 6</a>:
+<b>aborts_if</b> from_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> &&
+    current_auth_key_bytes !=
+        <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">ed25519::spec_public_key_bytes_to_authentication_key</a>(from_public_key_bytes);
+<b>aborts_if</b> from_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> &&
+    current_auth_key_bytes !=
+        <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(from_public_key_bytes);
+<b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(current_auth_key_bytes);
+<b>let</b> curr_auth_key = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<b>address</b>&gt;(current_auth_key_bytes);
 <b>let</b> challenge = <a href="account.html#0x1_account_RotationProofChallenge">RotationProofChallenge</a> {
-    sequence_number: account_resource.sequence_number,
+    sequence_number: current_seq,
     originator: addr,
     current_auth_key: curr_auth_key,
     new_public_key: to_public_key_bytes,
@@ -2375,40 +2542,40 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
     signature: cap_update_table,
     challenge,
 };
-<b>let</b> originating_addr = addr;
-<b>let</b> new_auth_key_vector = <a href="account.html#0x1_account_spec_assert_valid_rotation_proof_signature_and_get_auth_key">spec_assert_valid_rotation_proof_signature_and_get_auth_key</a>(to_scheme, to_public_key_bytes, cap_update_table, challenge);
-<b>let</b> address_map = <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework).address_map;
-<b>let</b> new_auth_key = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<b>address</b>&gt;(new_auth_key_vector);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
-<b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(account_resource.authentication_key);
-<b>aborts_if</b> <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(address_map, curr_auth_key) &&
-    <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(address_map, curr_auth_key) != originating_addr;
-<b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(new_auth_key_vector);
-<b>aborts_if</b> curr_auth_key != new_auth_key && <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(address_map, new_auth_key);
+<b>let</b> new_auth_key_vector = <a href="account.html#0x1_account_spec_assert_valid_rotation_proof_signature_and_get_auth_key">spec_assert_valid_rotation_proof_signature_and_get_auth_key</a>(
+    to_scheme, to_public_key_bytes, cap_update_table, challenge);
 <b>include</b> <a href="account.html#0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf">UpdateAuthKeyAndOriginatingAddressTableAbortsIf</a> {
     originating_addr: addr,
+    current_authentication_key_bytes: current_auth_key_bytes,
+    new_auth_key_vector,
 };
+// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
 <b>let</b> <b>post</b> auth_key = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key;
 <b>ensures</b> auth_key == new_auth_key_vector;
 </code></pre>
 <h3 id="function-rotate_authentication_key_with_rotation_capability-1"><a class="header" href="#function-rotate_authentication_key_with_rotation_capability-1">Function <code>rotate_authentication_key_with_rotation_capability</code> <a id="@Specification_4_rotate_authentication_key_with_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_with_rotation_capability">rotate_authentication_key_with_rotation_capability</a>(delegate_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rotation_cap_offerer_address: <b>address</b>, new_scheme: u8, new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>let</b> delegate_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(delegate_signer);
 <b>let</b> offerer_account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(offerer_account_resource.authentication_key);
 <b>let</b> curr_auth_key = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<b>address</b>&gt;(offerer_account_resource.authentication_key);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(delegate_address);
+<b>let</b> delegate_seq = <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(delegate_address)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(delegate_address).sequence_number <b>else</b> 0;
 <b>let</b> challenge = <a href="account.html#0x1_account_RotationProofChallenge">RotationProofChallenge</a> {
-    sequence_number: <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(delegate_address).sequence_number,
+    sequence_number: delegate_seq,
     originator: rotation_cap_offerer_address,
     current_auth_key: curr_auth_key,
     new_public_key: new_public_key_bytes,
 };
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(delegate_address)
+    && !std::features::spec_is_enabled(std::features::DEFAULT_ACCOUNT_RESOURCE);
 // This enforces <a id="high-level-req-6.2" href="#high-level-req">high-level requirement 6</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/option.html#0x1_option_spec_contains">option::spec_contains</a>(offerer_account_resource.rotation_capability_offer.for, delegate_address);
-// This enforces <a id="high-level-req-9.1" href="#high-level-req">high-level requirement 9</a>:
+// This enforces <a id="high-level-req-9.2" href="#high-level-req">high-level requirement 9</a>:
 <b>include</b> <a href="account.html#0x1_account_AssertValidRotationProofSignatureAndGetAuthKeyAbortsIf">AssertValidRotationProofSignatureAndGetAuthKeyAbortsIf</a> {
     scheme: new_scheme,
     public_key_bytes: new_public_key_bytes,
@@ -2426,7 +2593,7 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <b>aborts_if</b> curr_auth_key != new_auth_key && <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(address_map, new_auth_key);
 <b>include</b> <a href="account.html#0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf">UpdateAuthKeyAndOriginatingAddressTableAbortsIf</a> {
     originating_addr: rotation_cap_offerer_address,
-    account_resource: offerer_account_resource,
+    current_authentication_key_bytes: offerer_account_resource.authentication_key,
 };
 <b>let</b> <b>post</b> auth_key = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address).authentication_key;
 <b>ensures</b> auth_key == new_auth_key_vector;
@@ -2434,41 +2601,28 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-offer_rotation_capability-1"><a class="header" href="#function-offer_rotation_capability-1">Function <code>offer_rotation_capability</code> <a id="@Specification_4_offer_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_offer_rotation_capability">offer_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rotation_capability_sig_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, account_scheme: u8, account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, recipient_address: <b>address</b>)
 </code></pre>
-<pre><code><b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-<b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address);
-<b>let</b> proof_challenge = <a href="account.html#0x1_account_RotationCapabilityOfferProofChallengeV2">RotationCapabilityOfferProofChallengeV2</a> {
-    <a href="chain_id.html#0x1_chain_id">chain_id</a>: <b>global</b>&lt;<a href="chain_id.html#0x1_chain_id_ChainId">chain_id::ChainId</a>&gt;(@aptos_framework).id,
-    sequence_number: account_resource.sequence_number,
-    source_address,
-    recipient_address,
-};
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr: source_address };
+<b>let</b> current_auth_key_bytes = <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(source_address);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="chain_id.html#0x1_chain_id_ChainId">chain_id::ChainId</a>&gt;(@aptos_framework);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(recipient_address);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address);
-<b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key_bytes };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && ({
-    <b>let</b> expected_auth_key = <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
-    account_resource.authentication_key != expected_auth_key
-});
-<b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewSignatureFromBytesAbortsIf">ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: rotation_capability_sig_bytes };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && !<a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_signature_verify_strict_t">ed25519::spec_signature_verify_strict_t</a>(
-    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_Signature">ed25519::Signature</a> { bytes: rotation_capability_sig_bytes },
-    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key_bytes },
-    proof_challenge
-);
-<b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">multi_ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key_bytes };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && ({
-    <b>let</b> expected_auth_key = <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
-    account_resource.authentication_key != expected_auth_key
-});
-<b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewSignatureFromBytesAbortsIf">multi_ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: rotation_capability_sig_bytes };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && !<a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_signature_verify_strict_t">multi_ed25519::spec_signature_verify_strict_t</a>(
-    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_Signature">multi_ed25519::Signature</a> { bytes: rotation_capability_sig_bytes },
-    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_UnvalidatedPublicKey">multi_ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key_bytes },
-    proof_challenge
-);
+<b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(recipient_address);
 // This enforces <a id="high-level-req-5.2" href="#high-level-req">high-level requirement 5</a>:
 <b>aborts_if</b> account_scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && account_scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>;
+<b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key_bytes };
+<b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">multi_ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key_bytes };
+<b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewSignatureFromBytesAbortsIf">ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: rotation_capability_sig_bytes };
+<b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewSignatureFromBytesAbortsIf">multi_ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: rotation_capability_sig_bytes };
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> &&
+    current_auth_key_bytes !=
+        <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> &&
+    current_auth_key_bytes !=
+        <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
 // This enforces <a id="high-level-req-7.1" href="#high-level-req">high-level requirement 7</a>:
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address);
 <b>let</b> <b>post</b> offer_for = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address).rotation_capability_offer.for;
@@ -2477,13 +2631,14 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-set_originating_address-1"><a class="header" href="#function-set_originating_address-1">Function <code>set_originating_address</code> <a id="@Specification_4_set_originating_address"></a></a></h3>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_set_originating_address">set_originating_address</a>(_account: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>pragma</b> verify=<b>false</b>;
+<pre><code><b>aborts_if</b> <b>true</b>;
 </code></pre>
 <h3 id="function-is_rotation_capability_offered-1"><a class="header" href="#function-is_rotation_capability_offered-1">Function <code>is_rotation_capability_offered</code> <a id="@Specification_4_is_rotation_capability_offered"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_is_rotation_capability_offered">is_rotation_capability_offered</a>(account_addr: <b>address</b>): bool
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_addr);
+<pre><code><b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_addr) && !feature_on;
 </code></pre>
 <h3 id="function-get_rotation_capability_offer_for-1"><a class="header" href="#function-get_rotation_capability_offer_for-1">Function <code>get_rotation_capability_offer_for</code> <a id="@Specification_4_get_rotation_capability_offer_for"></a></a></h3>
 <pre><code>#[view]
@@ -2496,13 +2651,12 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-revoke_rotation_capability-1"><a class="header" href="#function-revoke_rotation_capability-1">Function <code>revoke_rotation_capability</code> <a id="@Specification_4_revoke_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_rotation_capability">revoke_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, to_be_revoked_address: <b>address</b>)
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(to_be_revoked_address);
+<pre><code><b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(to_be_revoked_address);
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<a href="../move-stdlib/option.html#0x1_option_spec_contains">option::spec_contains</a>(account_resource.rotation_capability_offer.for,to_be_revoked_address);
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(to_be_revoked_address);
 <b>let</b> <b>post</b> offer_for = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).rotation_capability_offer.for;
 <b>ensures</b> !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(offer_for);
 </code></pre>
@@ -2523,39 +2677,28 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 </code></pre>
 <p>The Account existed under the signer.
 The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.</p>
-<pre><code><b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-<b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address);
-<b>let</b> proof_challenge = <a href="account.html#0x1_account_SignerCapabilityOfferProofChallengeV2">SignerCapabilityOfferProofChallengeV2</a> {
-    sequence_number: account_resource.sequence_number,
-    source_address,
-    recipient_address,
-};
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(recipient_address);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address);
-<b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key_bytes };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && ({
-    <b>let</b> expected_auth_key = <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
-    account_resource.authentication_key != expected_auth_key
-});
-<b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewSignatureFromBytesAbortsIf">ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: signer_capability_sig_bytes };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && !<a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_signature_verify_strict_t">ed25519::spec_signature_verify_strict_t</a>(
-    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_Signature">ed25519::Signature</a> { bytes: signer_capability_sig_bytes },
-    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key_bytes },
-    proof_challenge
-);
-<b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">multi_ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key_bytes };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && ({
-    <b>let</b> expected_auth_key = <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
-    account_resource.authentication_key != expected_auth_key
-});
-<b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewSignatureFromBytesAbortsIf">multi_ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: signer_capability_sig_bytes };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && !<a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_signature_verify_strict_t">multi_ed25519::spec_signature_verify_strict_t</a>(
-    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_Signature">multi_ed25519::Signature</a> { bytes: signer_capability_sig_bytes },
-    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_UnvalidatedPublicKey">multi_ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key_bytes },
-    proof_challenge
-);
+<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<b>pragma</b> aborts_if_is_partial;
+<b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr: source_address };
+<b>let</b> current_auth_key_bytes = <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(source_address);
+<b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(recipient_address);
 // This enforces <a id="high-level-req-5.3" href="#high-level-req">high-level requirement 5</a>:
 <b>aborts_if</b> account_scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && account_scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>;
+<b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key_bytes };
+<b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">multi_ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key_bytes };
+<b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewSignatureFromBytesAbortsIf">ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: signer_capability_sig_bytes };
+<b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt;
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewSignatureFromBytesAbortsIf">multi_ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: signer_capability_sig_bytes };
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> &&
+    current_auth_key_bytes !=
+        <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> &&
+    current_auth_key_bytes !=
+        <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
 // This enforces <a id="high-level-req-7.2" href="#high-level-req">high-level requirement 7</a>:
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address);
 <b>let</b> <b>post</b> offer_for = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address).signer_capability_offer.for;
@@ -2565,7 +2708,8 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.</p>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_is_signer_capability_offered">is_signer_capability_offered</a>(account_addr: <b>address</b>): bool
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_addr);
+<pre><code><b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_addr) && !feature_on;
 </code></pre>
 <h3 id="function-get_signer_capability_offer_for-1"><a class="header" href="#function-get_signer_capability_offer_for-1">Function <code>get_signer_capability_offer_for</code> <a id="@Specification_4_get_signer_capability_offer_for"></a></a></h3>
 <pre><code>#[view]
@@ -2580,13 +2724,12 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.</p>
 </code></pre>
 <p>The Account existed under the signer.
 The value of signer_capability_offer.for of Account resource under the signer is to_be_revoked_address.</p>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(to_be_revoked_address);
+<pre><code><b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(to_be_revoked_address);
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<a href="../move-stdlib/option.html#0x1_option_spec_contains">option::spec_contains</a>(account_resource.signer_capability_offer.for,to_be_revoked_address);
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(to_be_revoked_address);
 </code></pre>
 <h3 id="function-revoke_any_signer_capability-1"><a class="header" href="#function-revoke_any_signer_capability-1">Function <code>revoke_any_signer_capability</code> <a id="@Specification_4_revoke_any_signer_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_any_signer_capability">revoke_any_signer_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
@@ -2625,7 +2768,8 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <h3 id="function-assert_valid_rotation_proof_signature_and_get_auth_key-1"><a class="header" href="#function-assert_valid_rotation_proof_signature_and_get_auth_key-1">Function <code>assert_valid_rotation_proof_signature_and_get_auth_key</code> <a id="@Specification_4_assert_valid_rotation_proof_signature_and_get_auth_key"></a></a></h3>
 <pre><code><b>fun</b> <a href="account.html#0x1_account_assert_valid_rotation_proof_signature_and_get_auth_key">assert_valid_rotation_proof_signature_and_get_auth_key</a>(scheme: u8, public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, challenge: &<a href="account.html#0x1_account_RotationProofChallenge">account::RotationProofChallenge</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
+<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>pragma</b> opaque;
 <b>include</b> <a href="account.html#0x1_account_AssertValidRotationProofSignatureAndGetAuthKeyAbortsIf">AssertValidRotationProofSignatureAndGetAuthKeyAbortsIf</a>;
 <b>ensures</b> [abstract] result == <a href="account.html#0x1_account_spec_assert_valid_rotation_proof_signature_and_get_auth_key">spec_assert_valid_rotation_proof_signature_and_get_auth_key</a>(scheme, public_key_bytes, signature, challenge);
 </code></pre>
@@ -2656,18 +2800,20 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <pre><code><b>fun</b> <a href="account.html#0x1_account_update_auth_key_and_originating_address_table">update_auth_key_and_originating_address_table</a>(originating_addr: <b>address</b>, account_resource: &<b>mut</b> <a href="account.html#0x1_account_Account">account::Account</a>, new_auth_key_vector: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <pre><code><b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
-<b>include</b> <a href="account.html#0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf">UpdateAuthKeyAndOriginatingAddressTableAbortsIf</a>;
+<b>include</b> <a href="account.html#0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf">UpdateAuthKeyAndOriginatingAddressTableAbortsIf</a> {
+    current_authentication_key_bytes: account_resource.authentication_key,
+};
 </code></pre>
 <p><a id="0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="account.html#0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf">UpdateAuthKeyAndOriginatingAddressTableAbortsIf</a> {
     originating_addr: <b>address</b>;
-    account_resource: <a href="account.html#0x1_account_Account">Account</a>;
+    current_authentication_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
     new_auth_key_vector: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
     <b>let</b> address_map = <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework).address_map;
-    <b>let</b> curr_auth_key = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<b>address</b>&gt;(account_resource.authentication_key);
+    <b>let</b> curr_auth_key = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<b>address</b>&gt;(current_authentication_key_bytes);
     <b>let</b> new_auth_key = <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<b>address</b>&gt;(new_auth_key_vector);
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
-    <b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(account_resource.authentication_key);
+    <b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(current_authentication_key_bytes);
     <b>aborts_if</b> <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(address_map, curr_auth_key) &&
         <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(address_map, curr_auth_key) != originating_addr;
     <b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<b>address</b>&gt;(new_auth_key_vector);
@@ -2693,7 +2839,8 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <h3 id="function-create_resource_account-1"><a class="header" href="#function-create_resource_account-1">Function <code>create_resource_account</code> <a id="@Specification_4_create_resource_account"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_resource_account">create_resource_account</a>(source: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>)
 </code></pre>
-<pre><code><b>let</b> source_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(source);
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> source_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(source);
 <b>let</b> resource_addr = <a href="account.html#0x1_account_spec_create_resource_address">spec_create_resource_address</a>(source_addr, seed);
 <b>aborts_if</b> len(<a href="account.html#0x1_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>) != 32;
 <b>include</b> <a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(resource_addr) ==&gt; <a href="account.html#0x1_account_CreateResourceAccountAbortsIf">CreateResourceAccountAbortsIf</a>;
@@ -2731,39 +2878,76 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
 <h3 id="function-create_guid-1"><a class="header" href="#function-create_guid-1">Function <code>create_guid</code> <a id="@Specification_4_create_guid"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_guid">create_guid</a>(account_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="guid.html#0x1_guid_GUID">guid::GUID</a>
 </code></pre>
-<p>The Account existed under the signer.
-The guid_creation_num of the account resource is up to MAX_U64.</p>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(account_signer);
-<b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a> {
-    <a href="account.html#0x1_account">account</a>: account_signer,
+<p>The Account existed under the signer.</p>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(account_signer);
+<b>let</b> account_exists_pre = <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>let</b> pre_gcn = <b>if</b> (account_exists_pre) {
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num
+} <b>else</b> {
+    2
 };
+<b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a> { <a href="account.html#0x1_account">account</a>: account_signer };
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 // This enforces <a id="high-level-req-11" href="#high-level-req">high-level requirement 11</a>:
-<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == <b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num) + 1;
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == pre_gcn + 1;
+<b>ensures</b> result == <a href="guid.html#0x1_guid_GUID">guid::GUID</a> { id: <a href="guid.html#0x1_guid_ID">guid::ID</a> { creation_num: pre_gcn, addr } };
 </code></pre>
 <h3 id="function-new_event_handle-1"><a class="header" href="#function-new_event_handle-1">Function <code>new_event_handle</code> <a id="@Specification_4_new_event_handle"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_new_event_handle">new_event_handle</a>&lt;T: drop, store&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;T&gt;
 </code></pre>
-<p>The Account existed under the signer.
-The guid_creation_num of the Account is up to MAX_U64.</p>
-<pre><code><b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a>;
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>let</b> account_exists_pre = <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>let</b> pre_gcn = <b>if</b> (account_exists_pre) {
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num
+} <b>else</b> {
+    2
+};
+<b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a>;
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == pre_gcn + 1;
+<b>ensures</b> result.counter == 0;
+<b>ensures</b> result.<a href="guid.html#0x1_guid">guid</a> == <a href="guid.html#0x1_guid_GUID">guid::GUID</a> { id: <a href="guid.html#0x1_guid_ID">guid::ID</a> { creation_num: pre_gcn, addr } };
+</code></pre>
+<p><a id="0x1_account_EnsureResourceExistsAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> {
+    addr: <b>address</b>;
+    <b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+    <b>let</b> account_exists_pre = <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+    <b>aborts_if</b> !account_exists_pre && !feature_on;
+    <b>aborts_if</b> !account_exists_pre && feature_on
+        && (addr == @vm_reserved || addr == @aptos_framework || addr == @aptos_token);
+    <b>aborts_if</b> !account_exists_pre && feature_on
+        && len(<a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(addr)) != 32;
+}
 </code></pre>
 <p><a id="0x1_account_NewEventHandleAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">NewEventHandleAbortsIf</a> {
     <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
     <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-    <b>let</b> <a href="account.html#0x1_account">account</a> = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-    <b>aborts_if</b> <a href="account.html#0x1_account">account</a>.guid_creation_num + 1 &gt; <a href="account.html#0x1_account_MAX_U64">MAX_U64</a>;
-    <b>aborts_if</b> <a href="account.html#0x1_account">account</a>.guid_creation_num + 1 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">MAX_GUID_CREATION_NUM</a>;
+    <b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+    <b>let</b> account_exists_pre = <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+    <b>aborts_if</b> !account_exists_pre && !feature_on;
+    <b>aborts_if</b> !account_exists_pre && feature_on
+        && (addr == @vm_reserved || addr == @aptos_framework || addr == @aptos_token);
+    <b>aborts_if</b> !account_exists_pre && feature_on
+        && len(<a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(addr)) != 32;
+    <b>let</b> creation_num = <b>if</b> (account_exists_pre) {
+        <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num
+    } <b>else</b> {
+        2
+    };
+    <b>aborts_if</b> creation_num + 1 &gt; <a href="account.html#0x1_account_MAX_U64">MAX_U64</a>;
+    <b>aborts_if</b> creation_num + 1 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">MAX_GUID_CREATION_NUM</a>;
 }
 </code></pre>
 <h3 id="function-register_coin-1"><a class="header" href="#function-register_coin-1">Function <code>register_coin</code> <a id="@Specification_4_register_coin"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_register_coin">register_coin</a>&lt;CoinType&gt;(account_addr: <b>address</b>)
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_addr);
-<b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
-<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_addr);
+<pre><code><b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
 </code></pre>
 <h3 id="function-create_signer_with_capability-1"><a class="header" href="#function-create_signer_with_capability-1">Function <code>create_signer_with_capability</code> <a id="@Specification_4_create_signer_with_capability"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_signer_with_capability">create_signer_with_capability</a>(capability: &<a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
@@ -2775,6 +2959,9 @@ The guid_creation_num of the Account is up to MAX_U64.</p>
 <pre><code><b>schema</b> <a href="account.html#0x1_account_CreateResourceAccountAbortsIf">CreateResourceAccountAbortsIf</a> {
     resource_addr: <b>address</b>;
     <b>let</b> <a href="account.html#0x1_account">account</a> = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr);
+    <b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr)
+        && <a href="../move-stdlib/option.html#0x1_option_spec_is_some">option::spec_is_some</a>(<a href="account.html#0x1_account">account</a>.signer_capability_offer.for);
+    <b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr) && <a href="account.html#0x1_account">account</a>.sequence_number != 0;
 }
 </code></pre>
 <h3 id="function-verify_signed_message-1"><a class="header" href="#function-verify_signed_message-1">Function <code>verify_signed_message</code> <a id="@Specification_4_verify_signed_message"></a></a></h3>
@@ -2782,18 +2969,14 @@ The guid_creation_num of the Account is up to MAX_U64.</p>
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="account.html#0x1_account">account</a>);
-<b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="account.html#0x1_account">account</a>);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="account.html#0x1_account">account</a>);
+<b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(<a href="account.html#0x1_account">account</a>);
+<b>let</b> auth_key = <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && ({
-    <b>let</b> expected_auth_key = <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key);
-    account_resource.authentication_key != expected_auth_key
-});
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> &&
+    auth_key != <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_public_key_bytes_to_authentication_key">ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key);
 <b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">multi_ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key };
-<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && ({
-    <b>let</b> expected_auth_key = <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key);
-    account_resource.authentication_key != expected_auth_key
-});
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> &&
+    auth_key != <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key);
 <b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewSignatureFromBytesAbortsIf">ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: signed_message_bytes };
 <b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewSignatureFromBytesAbortsIf">multi_ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: signed_message_bytes };
 <b>aborts_if</b> account_scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && account_scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>;

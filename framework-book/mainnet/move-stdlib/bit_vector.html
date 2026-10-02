@@ -182,6 +182,7 @@
 <li><a href="#@Specification_1_unset">Function <code>unset</code></a></li>
 <li><a href="#@Specification_1_shift_left">Function <code>shift_left</code></a></li>
 <li><a href="#@Specification_1_is_index_set">Function <code>is_index_set</code></a></li>
+<li><a href="#@Specification_1_length">Function <code>length</code></a></li>
 <li><a href="#@Specification_1_longest_set_sequence_starting_at">Function <code>longest_set_sequence_starting_at</code></a></li>
 </ul>
 </li>
@@ -397,7 +398,9 @@ sequence, then <code>0</code> is returned.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="bit_vector.html#0x1_bit_vector_set">set</a>(self: &<b>mut</b> <a href="bit_vector.html#0x1_bit_vector_BitVector">bit_vector::BitVector</a>, bit_index: u64)
 </code></pre>
 <pre><code><b>include</b> <a href="bit_vector.html#0x1_bit_vector_SetAbortsIf">SetAbortsIf</a>;
-<b>ensures</b> self.bit_field[bit_index];
+<b>ensures</b>  self.bit_field[bit_index];
+<b>ensures</b>  self.length == <b>old</b>(self).length;
+<b>ensures</b>  <b>forall</b> k in 0..self.length: k != bit_index ==&gt; self.bit_field[k] == <b>old</b>(self).bit_field[k];
 </code></pre>
 <p><a id="0x1_bit_vector_SetAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="bit_vector.html#0x1_bit_vector_SetAbortsIf">SetAbortsIf</a> {
@@ -411,6 +414,8 @@ sequence, then <code>0</code> is returned.</p>
 </code></pre>
 <pre><code><b>include</b> <a href="bit_vector.html#0x1_bit_vector_UnsetAbortsIf">UnsetAbortsIf</a>;
 <b>ensures</b> !self.bit_field[bit_index];
+<b>ensures</b>  self.length == <b>old</b>(self).length;
+<b>ensures</b>  <b>forall</b> k in 0..self.length: k != bit_index ==&gt; self.bit_field[k] == <b>old</b>(self).bit_field[k];
 </code></pre>
 <p><a id="0x1_bit_vector_UnsetAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="bit_vector.html#0x1_bit_vector_UnsetAbortsIf">UnsetAbortsIf</a> {
@@ -445,6 +450,13 @@ sequence, then <code>0</code> is returned.</p>
        self.bit_field[bit_index]
    }
 }
+</code></pre>
+<h3 id="function-length-1"><a class="header" href="#function-length-1">Function <code>length</code> <a id="@Specification_1_length"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="bit_vector.html#0x1_bit_vector_length">length</a>(self: &<a href="bit_vector.html#0x1_bit_vector_BitVector">bit_vector::BitVector</a>): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque = <b>true</b>;
+<b>ensures</b> [inferred] self.length == len(self.bit_field) ==&gt; result == len(self.bit_field);
+<b>aborts_if</b> [inferred] <b>false</b>;
 </code></pre>
 <h3 id="function-longest_set_sequence_starting_at-1"><a class="header" href="#function-longest_set_sequence_starting_at-1">Function <code>longest_set_sequence_starting_at</code> <a id="@Specification_1_longest_set_sequence_starting_at"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="bit_vector.html#0x1_bit_vector_longest_set_sequence_starting_at">longest_set_sequence_starting_at</a>(self: &<a href="bit_vector.html#0x1_bit_vector_BitVector">bit_vector::BitVector</a>, start_index: u64): u64
