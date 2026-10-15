@@ -2008,35 +2008,22 @@ involves the use of a cryptographic hash operation and should be use thoughtfull
 <h2 id="function-create_resource_account"><a class="header" href="#function-create_resource_account">Function <code>create_resource_account</code> <a id="0x1_account_create_resource_account"></a></a></h2>
 <p>A resource account is used to manage resources independent of an account managed by a user.
 In Aptos a resource account is created based upon the sha3 256 of the source's address and additional seed data.
-A resource account can only be created once, this is designated by setting the
-<code>Account::signer_capability_offer::for</code> to the address of the resource account. While an entity may call
-<code>create_account</code> to attempt to claim an account ahead of the creation of a resource account, if found Aptos will
-transition ownership of the account over to the resource account. This is done by validating that the account has
-yet to execute any transactions and that the <code>Account::signer_capability_offer::for</code> is none. The probability of a
-collision where someone has legitimately produced a private key that maps to a resource account address is less
-than <code>(1/2)^(256)</code>.</p>
+A resource account can only be created once. Once created, the <code>Account::signer_capability_offer::for</code> field
+is set to the address of the resource account to mark it as a resource account. If an Account resource already
+exists at the derived address, creation will fail to prevent SignerCapability duplication vulnerabilities.
+The probability of a collision where someone has legitimately produced a private key that maps to a resource
+account address is less than <code>(1/2)^(256)</code>.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_resource_account">create_resource_account</a>(source: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>)
 </code></pre>
 <details>
 <summary>Implementation</summary>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_resource_account">create_resource_account</a>(source: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="account.html#0x1_account_SignerCapability">SignerCapability</a>) <b>acquires</b> <a href="account.html#0x1_account_Account">Account</a> {
     <b>let</b> resource_addr = <a href="account.html#0x1_account_create_resource_address">create_resource_address</a>(&<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(source), seed);
-    <b>let</b> resource = <b>if</b> (<a href="account.html#0x1_account_exists_at">exists_at</a>(resource_addr)) {
-        <b>if</b> (<a href="account.html#0x1_account_resource_exists_at">resource_exists_at</a>(resource_addr)) {
-        <b>let</b> <a href="account.html#0x1_account">account</a> = &<a href="account.html#0x1_account_Account">Account</a>[resource_addr];
-        <b>assert</b>!(
-            <a href="account.html#0x1_account">account</a>.signer_capability_offer.for.is_none(),
-            <a href="../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="account.html#0x1_account_ERESOURCE_ACCCOUNT_EXISTS">ERESOURCE_ACCCOUNT_EXISTS</a>),
-        );
-        };
-        <b>assert</b>!(
-            <a href="account.html#0x1_account_get_sequence_number">get_sequence_number</a>(resource_addr) == 0,
-            <a href="../move-stdlib/error.html#0x1_error_invalid_state">error::invalid_state</a>(<a href="account.html#0x1_account_EACCOUNT_ALREADY_USED">EACCOUNT_ALREADY_USED</a>),
-        );
-        <a href="create_signer.html#0x1_create_signer">create_signer</a>(resource_addr)
-    } <b>else</b> {
-        <a href="account.html#0x1_account_create_account_unchecked">create_account_unchecked</a>(resource_addr)
-    };
+    <b>assert</b>!(
+        !<a href="account.html#0x1_account_resource_exists_at">resource_exists_at</a>(resource_addr),
+        <a href="../move-stdlib/error.html#0x1_error_already_exists">error::already_exists</a>(<a href="account.html#0x1_account_ERESOURCE_ACCCOUNT_EXISTS">ERESOURCE_ACCCOUNT_EXISTS</a>)
+    );
+    <b>let</b> resource = <a href="create_signer.html#0x1_create_signer">create_signer</a>(resource_addr);
 
     // By default, only the <a href="account.html#0x1_account_SignerCapability">SignerCapability</a> should have control over the resource <a href="account.html#0x1_account">account</a> and not the auth key.
     // If the source <a href="account.html#0x1_account">account</a> wants direct control via auth key, they would need <b>to</b> explicitly rotate the auth key
