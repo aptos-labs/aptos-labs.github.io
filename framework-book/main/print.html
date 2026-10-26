@@ -37731,9 +37731,12 @@ to O(n).</p>
 <summary>Implementation</summary>
 <pre><code><b>public</b> inline <b>fun</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_for_each_mut">for_each_mut</a>&lt;K: <b>copy</b> + drop + store, V: store&gt;(self: &<b>mut</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_BigOrderedMap">BigOrderedMap</a>&lt;K, V&gt;, f: |&K, &<b>mut</b> V|) {
     <b>let</b> iter = self.<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_internal_new_begin_iter">internal_new_begin_iter</a>();
+    // A value write moves no keys, so the walk stays on map entries.
     <b>while</b> ({
         <b>spec</b> {
             <b>invariant</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_iter_valid">spec_iter_valid</a>(iter, self);
+            <b>invariant</b> <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(self) == <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_len">spec_len</a>(<b>old</b>(self));
+            <b>invariant</b> !(iter is IteratorPtr::End&lt;K&gt;) ==&gt; <a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">spec_contains_key</a>(self, iter.key);
         };
         !iter.<a href="aptos-framework/big_ordered_map.html#0x1_big_ordered_map_iter_is_end">iter_is_end</a>(self)
     }) {
