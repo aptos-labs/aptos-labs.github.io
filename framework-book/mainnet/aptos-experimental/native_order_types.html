@@ -1,0 +1,443 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>native_order_types - The Aptos Framework Book</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Reference documentation for the Aptos Move framework.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/code-wrap.css">
+        <link rel="stylesheet" href="../theme/build-stamp.css">
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Aptos Framework Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/aptos-labs/aptos-core/edit/main/third_party/move/documentation/framework-book/src/aptos-experimental/native_order_types.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-0x7native_order_types"><a class="header" href="#module-0x7native_order_types">Module <code>0x7::native_order_types</code> <a id="0x7_native_order_types"></a></a></h1>
+<p>Types crossing the <code><a href="native_order_book.html#0x7_native_order_book">native_order_book</a></code> Move ↔ native boundary. The
+metadata type <code>M</code> is last in each value, so the Rust side decodes the
+header fields and keeps the trailing bytes, which are the BCS of <code>M</code>.</p>
+<ul>
+<li><a href="#0x7_native_order_types_NativeSingleOrder">Enum <code>NativeSingleOrder</code></a></li>
+<li><a href="#0x7_native_order_types_NativeBulkOrder">Enum <code>NativeBulkOrder</code></a></li>
+<li><a href="#0x7_native_order_types_new_single_order_v1">Function <code>new_single_order_v1</code></a></li>
+<li><a href="#0x7_native_order_types_new_bulk_order_v1">Function <code>new_bulk_order_v1</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+</code></pre>
+<h2 id="enum-nativesingleorder"><a class="header" href="#enum-nativesingleorder">Enum <code>NativeSingleOrder</code> <a id="0x7_native_order_types_NativeSingleOrder"></a></a></h2>
+<p>A single order, as stored natively. Pending iff <code>trigger_condition</code>
+is set.</p>
+<pre><code>enum <a href="native_order_types.html#0x7_native_order_types_NativeSingleOrder">NativeSingleOrder</a>&lt;M: <b>copy</b>, drop, store&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>orig_size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>remaining_size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_bid: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>creation_time_micros: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>unique_priority_idx: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>metadata: M</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-nativebulkorder"><a class="header" href="#enum-nativebulkorder">Enum <code>NativeBulkOrder</code> <a id="0x7_native_order_types_NativeBulkOrder"></a></a></h2>
+<p>A bulk order, as stored natively. Price levels are best first.</p>
+<pre><code>enum <a href="native_order_types.html#0x7_native_order_types_NativeBulkOrder">NativeBulkOrder</a>&lt;M: <b>copy</b>, drop, store&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>unique_priority_idx: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>creation_time_micros: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>metadata: M</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="function-new_single_order_v1"><a class="header" href="#function-new_single_order_v1">Function <code>new_single_order_v1</code> <a id="0x7_native_order_types_new_single_order_v1"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="native_order_types.html#0x7_native_order_types_new_single_order_v1">new_single_order_v1</a>&lt;M: <b>copy</b>, drop, store&gt;(<a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, client_order_id: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, price: u64, orig_size: u64, remaining_size: u64, is_bid: bool, trigger_condition: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;, time_in_force: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, creation_time_micros: u64, unique_priority_idx: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>, metadata: M): <a href="native_order_types.html#0x7_native_order_types_NativeSingleOrder">native_order_types::NativeSingleOrder</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="native_order_types.html#0x7_native_order_types_new_single_order_v1">new_single_order_v1</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    order_id: OrderId,
+    client_order_id: Option&lt;String&gt;,
+    price: u64,
+    orig_size: u64,
+    remaining_size: u64,
+    is_bid: bool,
+    trigger_condition: Option&lt;TriggerCondition&gt;,
+    time_in_force: TimeInForce,
+    creation_time_micros: u64,
+    unique_priority_idx: IncreasingIdx,
+    metadata: M,
+): <a href="native_order_types.html#0x7_native_order_types_NativeSingleOrder">NativeSingleOrder</a>&lt;M&gt; {
+    NativeSingleOrder::V1 {
+        <a href="../aptos-framework/account.html#0x1_account">account</a>,
+        order_id,
+        client_order_id,
+        price,
+        orig_size,
+        remaining_size,
+        is_bid,
+        trigger_condition,
+        time_in_force,
+        creation_time_micros,
+        unique_priority_idx,
+        metadata,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_bulk_order_v1"><a class="header" href="#function-new_bulk_order_v1">Function <code>new_bulk_order_v1</code> <a id="0x7_native_order_types_new_bulk_order_v1"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="native_order_types.html#0x7_native_order_types_new_bulk_order_v1">new_bulk_order_v1</a>&lt;M: <b>copy</b>, drop, store&gt;(<a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, order_id: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, sequence_number: u64, bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, unique_priority_idx: <a href="../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>, creation_time_micros: u64, metadata: M): <a href="native_order_types.html#0x7_native_order_types_NativeBulkOrder">native_order_types::NativeBulkOrder</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="native_order_types.html#0x7_native_order_types_new_bulk_order_v1">new_bulk_order_v1</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    <a href="../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    order_id: OrderId,
+    sequence_number: u64,
+    bid_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    bid_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_prices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_sizes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    unique_priority_idx: IncreasingIdx,
+    creation_time_micros: u64,
+    metadata: M,
+): <a href="native_order_types.html#0x7_native_order_types_NativeBulkOrder">NativeBulkOrder</a>&lt;M&gt; {
+    NativeBulkOrder::V1 {
+        <a href="../aptos-framework/account.html#0x1_account">account</a>,
+        order_id,
+        sequence_number,
+        bid_prices,
+        bid_sizes,
+        ask_prices,
+        ask_sizes,
+        unique_priority_idx,
+        creation_time_micros,
+        metadata,
+    }
+}
+</code></pre>
+</details>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../aptos-experimental/native_order_book.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../aptos-experimental/native_position.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../aptos-experimental/native_order_book.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../aptos-experimental/native_position.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/build-stamp.js"></script>
+        <script src="../theme/highlightjs-move.js"></script>
+        <script src="../theme/move-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

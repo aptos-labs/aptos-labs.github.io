@@ -102825,6 +102825,8 @@ particular match operation.</p>
 <li><a href="aptos-experimental/market_bulk_order.html#0x7_market_bulk_order"><code>0x7::market_bulk_order</code></a></li>
 <li><a href="aptos-experimental/market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info"><code>0x7::market_clearinghouse_order_info</code></a></li>
 <li><a href="aptos-experimental/market_types.html#0x7_market_types"><code>0x7::market_types</code></a></li>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book"><code>0x7::native_order_book</code></a></li>
+<li><a href="aptos-experimental/native_order_types.html#0x7_native_order_types"><code>0x7::native_order_types</code></a></li>
 <li><a href="aptos-experimental/native_position.html#0x7_native_position"><code>0x7::native_position</code></a></li>
 <li><a href="aptos-experimental/native_position_types.html#0x7_native_position_types"><code>0x7::native_position_types</code></a></li>
 <li><a href="aptos-experimental/order_book.html#0x7_order_book"><code>0x7::order_book</code></a></li>
@@ -107772,6 +107774,362 @@ call the <code>place_order_with_order_id</code> API to place the order with the 
 <summary>Implementation</summary>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos-experimental/market_types.html#0x7_market_types_get_market">get_market</a>&lt;M: store + <b>copy</b> + drop&gt;(self: &<a href="aptos-experimental/market_types.html#0x7_market_types_Market">Market</a>&lt;M&gt;): <b>address</b> {
     self.market
+}
+</code></pre>
+</details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7native_order_book"><a class="header" href="#module-0x7native_order_book">Module <code>0x7::native_order_book</code> <a id="0x7_native_order_book"></a></a></h1>
+<p>Native order storage, keyed by <code>(exchange, market, order_id)</code> for single
+orders and <code>(exchange, market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>)</code> for bulk orders. Write API is
+<code>set_<em></code> / <code>delete_</em></code>, gated by a <code>TradingNativeCapability</code> (re-checked via
+<code>assert_valid</code> on every call). Native state is read only on the validator
+side (Rust), never from Move.</p>
+<ul>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book_set_single_order">Function <code>set_single_order</code></a></li>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book_delete_single_order">Function <code>delete_single_order</code></a></li>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book_set_bulk_order">Function <code>set_bulk_order</code></a></li>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book_delete_bulk_order">Function <code>delete_bulk_order</code></a></li>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_set_single_order">Function <code>native_set_single_order</code></a></li>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_delete_single_order">Function <code>native_delete_single_order</code></a></li>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_set_bulk_order">Function <code>native_set_bulk_order</code></a></li>
+<li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_delete_bulk_order">Function <code>native_delete_bulk_order</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+<b>use</b> <a href="aptos-experimental/native_order_types.html#0x7_native_order_types">0x7::native_order_types</a>;
+<b>use</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability">0x7::trading_native_capability</a>;
+</code></pre>
+<h2 id="function-set_single_order"><a class="header" href="#function-set_single_order">Function <code>set_single_order</code> <a id="0x7_native_order_book_set_single_order"></a></a></h2>
+<p>Store a single order at <code>(exchange, market, order.order_id)</code>. <code>exchange</code>
+is derived from the cap; every call re-checks the cap via <code>assert_valid</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_set_single_order">set_single_order</a>&lt;M: <b>copy</b>, drop, store&gt;(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>, market: <b>address</b>, order: <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeSingleOrder">native_order_types::NativeSingleOrder</a>&lt;M&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_set_single_order">set_single_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    cap: &TradingNativeCapability,
+    market: <b>address</b>,
+    order: NativeSingleOrder&lt;M&gt;,
+) {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">trading_native_capability::assert_valid</a>(cap);
+    <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_set_single_order">native_set_single_order</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">trading_native_capability::exchange</a>(cap), market, order);
+}
+</code></pre>
+</details>
+<h2 id="function-delete_single_order"><a class="header" href="#function-delete_single_order">Function <code>delete_single_order</code> <a id="0x7_native_order_book_delete_single_order"></a></a></h2>
+<p>Delete the single order at <code>(exchange, market, order_id)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_delete_single_order">delete_single_order</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>, market: <b>address</b>, order_id: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_delete_single_order">delete_single_order</a>(
+    cap: &TradingNativeCapability,
+    market: <b>address</b>,
+    order_id: OrderId,
+) {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">trading_native_capability::assert_valid</a>(cap);
+    <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_delete_single_order">native_delete_single_order</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">trading_native_capability::exchange</a>(cap), market, order_id);
+}
+</code></pre>
+</details>
+<h2 id="function-set_bulk_order"><a class="header" href="#function-set_bulk_order">Function <code>set_bulk_order</code> <a id="0x7_native_order_book_set_bulk_order"></a></a></h2>
+<p>Store a bulk order at <code>(exchange, market, order.<a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_set_bulk_order">set_bulk_order</a>&lt;M: <b>copy</b>, drop, store&gt;(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>, market: <b>address</b>, order: <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeBulkOrder">native_order_types::NativeBulkOrder</a>&lt;M&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_set_bulk_order">set_bulk_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    cap: &TradingNativeCapability,
+    market: <b>address</b>,
+    order: NativeBulkOrder&lt;M&gt;,
+) {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">trading_native_capability::assert_valid</a>(cap);
+    <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_set_bulk_order">native_set_bulk_order</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">trading_native_capability::exchange</a>(cap), market, order);
+}
+</code></pre>
+</details>
+<h2 id="function-delete_bulk_order"><a class="header" href="#function-delete_bulk_order">Function <code>delete_bulk_order</code> <a id="0x7_native_order_book_delete_bulk_order"></a></a></h2>
+<p>Delete the bulk order at <code>(exchange, market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_delete_bulk_order">delete_bulk_order</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>, market: <b>address</b>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_delete_bulk_order">delete_bulk_order</a>(
+    cap: &TradingNativeCapability,
+    market: <b>address</b>,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+) {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">trading_native_capability::assert_valid</a>(cap);
+    <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_delete_bulk_order">native_delete_bulk_order</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">trading_native_capability::exchange</a>(cap), market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>);
+}
+</code></pre>
+</details>
+<h2 id="function-native_set_single_order"><a class="header" href="#function-native_set_single_order">Function <code>native_set_single_order</code> <a id="0x7_native_order_book_native_set_single_order"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_set_single_order">native_set_single_order</a>&lt;M: <b>copy</b>, drop, store&gt;(exchange: <b>address</b>, market: <b>address</b>, order: <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeSingleOrder">native_order_types::NativeSingleOrder</a>&lt;M&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_set_single_order">native_set_single_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    exchange: <b>address</b>,
+    market: <b>address</b>,
+    order: NativeSingleOrder&lt;M&gt;,
+);
+</code></pre>
+</details>
+<h2 id="function-native_delete_single_order"><a class="header" href="#function-native_delete_single_order">Function <code>native_delete_single_order</code> <a id="0x7_native_order_book_native_delete_single_order"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_delete_single_order">native_delete_single_order</a>(exchange: <b>address</b>, market: <b>address</b>, order_id: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_delete_single_order">native_delete_single_order</a>(
+    exchange: <b>address</b>,
+    market: <b>address</b>,
+    order_id: OrderId,
+);
+</code></pre>
+</details>
+<h2 id="function-native_set_bulk_order"><a class="header" href="#function-native_set_bulk_order">Function <code>native_set_bulk_order</code> <a id="0x7_native_order_book_native_set_bulk_order"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_set_bulk_order">native_set_bulk_order</a>&lt;M: <b>copy</b>, drop, store&gt;(exchange: <b>address</b>, market: <b>address</b>, order: <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeBulkOrder">native_order_types::NativeBulkOrder</a>&lt;M&gt;)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_set_bulk_order">native_set_bulk_order</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    exchange: <b>address</b>,
+    market: <b>address</b>,
+    order: NativeBulkOrder&lt;M&gt;,
+);
+</code></pre>
+</details>
+<h2 id="function-native_delete_bulk_order"><a class="header" href="#function-native_delete_bulk_order">Function <code>native_delete_bulk_order</code> <a id="0x7_native_order_book_native_delete_bulk_order"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_delete_bulk_order">native_delete_bulk_order</a>(exchange: <b>address</b>, market: <b>address</b>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-experimental/native_order_book.html#0x7_native_order_book_native_delete_bulk_order">native_delete_bulk_order</a>(
+    exchange: <b>address</b>,
+    market: <b>address</b>,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+);
+</code></pre>
+</details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7native_order_types"><a class="header" href="#module-0x7native_order_types">Module <code>0x7::native_order_types</code> <a id="0x7_native_order_types"></a></a></h1>
+<p>Types crossing the <code><a href="aptos-experimental/native_order_book.html#0x7_native_order_book">native_order_book</a></code> Move ↔ native boundary. The
+metadata type <code>M</code> is last in each value, so the Rust side decodes the
+header fields and keeps the trailing bytes, which are the BCS of <code>M</code>.</p>
+<ul>
+<li><a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeSingleOrder">Enum <code>NativeSingleOrder</code></a></li>
+<li><a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeBulkOrder">Enum <code>NativeBulkOrder</code></a></li>
+<li><a href="aptos-experimental/native_order_types.html#0x7_native_order_types_new_single_order_v1">Function <code>new_single_order_v1</code></a></li>
+<li><a href="aptos-experimental/native_order_types.html#0x7_native_order_types_new_bulk_order_v1">Function <code>new_bulk_order_v1</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="aptos-experimental/../move-stdlib/option.html#0x1_option">0x1::option</a>;
+<b>use</b> <a href="aptos-experimental/../move-stdlib/string.html#0x1_string">0x1::string</a>;
+<b>use</b> <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types">0x5::order_book_types</a>;
+</code></pre>
+<h2 id="enum-nativesingleorder"><a class="header" href="#enum-nativesingleorder">Enum <code>NativeSingleOrder</code> <a id="0x7_native_order_types_NativeSingleOrder"></a></a></h2>
+<p>A single order, as stored natively. Pending iff <code>trigger_condition</code>
+is set.</p>
+<pre><code>enum <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeSingleOrder">NativeSingleOrder</a>&lt;M: <b>copy</b>, drop, store&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>order_id: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>client_order_id: <a href="aptos-experimental/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-experimental/../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>price: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>orig_size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>remaining_size: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_bid: bool</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>trigger_condition: <a href="aptos-experimental/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>time_in_force: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>creation_time_micros: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>unique_priority_idx: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>metadata: M</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-nativebulkorder"><a class="header" href="#enum-nativebulkorder">Enum <code>NativeBulkOrder</code> <a id="0x7_native_order_types_NativeBulkOrder"></a></a></h2>
+<p>A bulk order, as stored natively. Price levels are best first.</p>
+<pre><code>enum <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeBulkOrder">NativeBulkOrder</a>&lt;M: <b>copy</b>, drop, store&gt; <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code><a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>order_id: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>bid_prices: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>bid_sizes: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ask_prices: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>ask_sizes: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>unique_priority_idx: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>creation_time_micros: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>metadata: M</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="function-new_single_order_v1"><a class="header" href="#function-new_single_order_v1">Function <code>new_single_order_v1</code> <a id="0x7_native_order_types_new_single_order_v1"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_new_single_order_v1">new_single_order_v1</a>&lt;M: <b>copy</b>, drop, store&gt;(<a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, order_id: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, client_order_id: <a href="aptos-experimental/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-experimental/../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, price: u64, orig_size: u64, remaining_size: u64, is_bid: bool, trigger_condition: <a href="aptos-experimental/../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_TriggerCondition">order_book_types::TriggerCondition</a>&gt;, time_in_force: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_TimeInForce">order_book_types::TimeInForce</a>, creation_time_micros: u64, unique_priority_idx: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>, metadata: M): <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeSingleOrder">native_order_types::NativeSingleOrder</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_new_single_order_v1">new_single_order_v1</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    order_id: OrderId,
+    client_order_id: Option&lt;String&gt;,
+    price: u64,
+    orig_size: u64,
+    remaining_size: u64,
+    is_bid: bool,
+    trigger_condition: Option&lt;TriggerCondition&gt;,
+    time_in_force: TimeInForce,
+    creation_time_micros: u64,
+    unique_priority_idx: IncreasingIdx,
+    metadata: M,
+): <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeSingleOrder">NativeSingleOrder</a>&lt;M&gt; {
+    NativeSingleOrder::V1 {
+        <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>,
+        order_id,
+        client_order_id,
+        price,
+        orig_size,
+        remaining_size,
+        is_bid,
+        trigger_condition,
+        time_in_force,
+        creation_time_micros,
+        unique_priority_idx,
+        metadata,
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-new_bulk_order_v1"><a class="header" href="#function-new_bulk_order_v1">Function <code>new_bulk_order_v1</code> <a id="0x7_native_order_types_new_bulk_order_v1"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_new_bulk_order_v1">new_bulk_order_v1</a>&lt;M: <b>copy</b>, drop, store&gt;(<a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, order_id: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_OrderId">order_book_types::OrderId</a>, sequence_number: u64, bid_prices: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, bid_sizes: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_prices: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, ask_sizes: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, unique_priority_idx: <a href="aptos-experimental/../aptos-trading/order_book_types.html#0x5_order_book_types_IncreasingIdx">order_book_types::IncreasingIdx</a>, creation_time_micros: u64, metadata: M): <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeBulkOrder">native_order_types::NativeBulkOrder</a>&lt;M&gt;
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_new_bulk_order_v1">new_bulk_order_v1</a>&lt;M: store + <b>copy</b> + drop&gt;(
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    order_id: OrderId,
+    sequence_number: u64,
+    bid_prices: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    bid_sizes: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_prices: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    ask_sizes: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;,
+    unique_priority_idx: IncreasingIdx,
+    creation_time_micros: u64,
+    metadata: M,
+): <a href="aptos-experimental/native_order_types.html#0x7_native_order_types_NativeBulkOrder">NativeBulkOrder</a>&lt;M&gt; {
+    NativeBulkOrder::V1 {
+        <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>,
+        order_id,
+        sequence_number,
+        bid_prices,
+        bid_sizes,
+        ask_prices,
+        ask_sizes,
+        unique_priority_idx,
+        creation_time_micros,
+        metadata,
+    }
 }
 </code></pre>
 </details>
