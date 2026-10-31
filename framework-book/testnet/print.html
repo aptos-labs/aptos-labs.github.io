@@ -102825,6 +102825,8 @@ particular match operation.</p>
 <li><a href="aptos-experimental/market_bulk_order.html#0x7_market_bulk_order"><code>0x7::market_bulk_order</code></a></li>
 <li><a href="aptos-experimental/market_clearinghouse_order_info.html#0x7_market_clearinghouse_order_info"><code>0x7::market_clearinghouse_order_info</code></a></li>
 <li><a href="aptos-experimental/market_types.html#0x7_market_types"><code>0x7::market_types</code></a></li>
+<li><a href="aptos-experimental/native_collateral.html#0x7_native_collateral"><code>0x7::native_collateral</code></a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types"><code>0x7::native_collateral_types</code></a></li>
 <li><a href="aptos-experimental/native_order_book.html#0x7_native_order_book"><code>0x7::native_order_book</code></a></li>
 <li><a href="aptos-experimental/native_order_types.html#0x7_native_order_types"><code>0x7::native_order_types</code></a></li>
 <li><a href="aptos-experimental/native_position.html#0x7_native_position"><code>0x7::native_position</code></a></li>
@@ -107777,6 +107779,240 @@ call the <code>place_order_with_order_id</code> API to place the order with the 
 }
 </code></pre>
 </details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7native_collateral"><a class="header" href="#module-0x7native_collateral">Module <code>0x7::native_collateral</code> <a id="0x7_native_collateral"></a></a></h1>
+<p>Native collateral storage, keyed by <code>(exchange, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>, scope)</code>. Write API
+is <code>set_collateral</code> / <code>delete_collateral</code>, gated by a
+<code>TradingNativeCapability</code> (re-checked via <code>assert_valid</code> on every call).
+Native state is read only on the validator side (Rust), never from Move.</p>
+<ul>
+<li><a href="aptos-experimental/native_collateral.html#0x7_native_collateral_set_collateral">Function <code>set_collateral</code></a></li>
+<li><a href="aptos-experimental/native_collateral.html#0x7_native_collateral_delete_collateral">Function <code>delete_collateral</code></a></li>
+<li><a href="aptos-experimental/native_collateral.html#0x7_native_collateral_native_set_collateral">Function <code>native_set_collateral</code></a></li>
+<li><a href="aptos-experimental/native_collateral.html#0x7_native_collateral_native_delete_collateral">Function <code>native_delete_collateral</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types">0x7::native_collateral_types</a>;
+<b>use</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability">0x7::trading_native_capability</a>;
+</code></pre>
+<h2 id="function-set_collateral"><a class="header" href="#function-set_collateral">Function <code>set_collateral</code> <a id="0x7_native_collateral_set_collateral"></a></a></h2>
+<p>Set the collateral at <code>(exchange, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>, scope)</code>. <code>exchange</code> is derived
+from the cap; every call re-checks the cap via <code>assert_valid</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_set_collateral">set_collateral</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, scope: <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">native_collateral_types::CollateralScope</a>, collateral: <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_Collateral">native_collateral_types::Collateral</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_set_collateral">set_collateral</a>(
+    cap: &TradingNativeCapability,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    scope: CollateralScope,
+    collateral: Collateral,
+) {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">trading_native_capability::assert_valid</a>(cap);
+    <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_native_set_collateral">native_set_collateral</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">trading_native_capability::exchange</a>(cap), <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>, scope, collateral);
+}
+</code></pre>
+</details>
+<h2 id="function-delete_collateral"><a class="header" href="#function-delete_collateral">Function <code>delete_collateral</code> <a id="0x7_native_collateral_delete_collateral"></a></a></h2>
+<p>Delete the collateral at <code>(exchange, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>, scope)</code>.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_delete_collateral">delete_collateral</a>(cap: &<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_TradingNativeCapability">trading_native_capability::TradingNativeCapability</a>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, scope: <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">native_collateral_types::CollateralScope</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_delete_collateral">delete_collateral</a>(
+    cap: &TradingNativeCapability,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    scope: CollateralScope,
+) {
+    <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_assert_valid">trading_native_capability::assert_valid</a>(cap);
+    <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_native_delete_collateral">native_delete_collateral</a>(<a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_exchange">trading_native_capability::exchange</a>(cap), <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>, scope);
+}
+</code></pre>
+</details>
+<h2 id="function-native_set_collateral"><a class="header" href="#function-native_set_collateral">Function <code>native_set_collateral</code> <a id="0x7_native_collateral_native_set_collateral"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_native_set_collateral">native_set_collateral</a>(exchange: <b>address</b>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, scope: <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">native_collateral_types::CollateralScope</a>, collateral: <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_Collateral">native_collateral_types::Collateral</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_native_set_collateral">native_set_collateral</a>(
+    exchange: <b>address</b>,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    scope: CollateralScope,
+    collateral: Collateral,
+);
+</code></pre>
+</details>
+<h2 id="function-native_delete_collateral"><a class="header" href="#function-native_delete_collateral">Function <code>native_delete_collateral</code> <a id="0x7_native_collateral_native_delete_collateral"></a></a></h2>
+<pre><code><b>fun</b> <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_native_delete_collateral">native_delete_collateral</a>(exchange: <b>address</b>, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>, scope: <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">native_collateral_types::CollateralScope</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="aptos-experimental/native_collateral.html#0x7_native_collateral_native_delete_collateral">native_delete_collateral</a>(
+    exchange: <b>address</b>,
+    <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>: <b>address</b>,
+    scope: CollateralScope,
+);
+</code></pre>
+</details>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7native_collateral_types"><a class="header" href="#module-0x7native_collateral_types">Module <code>0x7::native_collateral_types</code> <a id="0x7_native_collateral_types"></a></a></h1>
+<p>Types crossing the <code><a href="aptos-experimental/native_collateral.html#0x7_native_collateral">native_collateral</a></code> Move ↔ native boundary. Field
+order/widths here pin the BCS encoding the Rust <code>NativeCollateral</code> must
+match once the primary balance's aggregator snapshot is materialized.</p>
+<ul>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">Enum <code>CollateralScope</code></a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">Struct <code>SecondaryBalance</code></a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_Collateral">Enum <code>Collateral</code></a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#@Constants_0">Constants</a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_cross">Function <code>cross</code></a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_isolated">Function <code>isolated</code></a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_secondary_balance">Function <code>new_secondary_balance</code></a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_collateral_v1">Function <code>new_collateral_v1</code></a></li>
+<li><a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_collateral_v1_from_balance">Function <code>new_collateral_v1_from_balance</code></a></li>
+</ul>
+<pre><code><b>use</b> <a href="aptos-experimental/../aptos-framework/aggregator_v2.html#0x1_aggregator_v2">0x1::aggregator_v2</a>;
+</code></pre>
+<h2 id="enum-collateralscope"><a class="header" href="#enum-collateralscope">Enum <code>CollateralScope</code> <a id="0x7_native_collateral_types_CollateralScope"></a></a></h2>
+<p>Balance domain of a collateral entry: the account's cross-margin pool,
+or the collateral dedicated to one isolated market.</p>
+<pre><code>enum <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">CollateralScope</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>Cross</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+</dl>
+</details>
+</details>
+<details>
+<summary>Isolated</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>market: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="struct-secondarybalance"><a class="header" href="#struct-secondarybalance">Struct <code>SecondaryBalance</code> <a id="0x7_native_collateral_types_SecondaryBalance"></a></a></h2>
+<p>Balance of one secondary collateral asset, in its own units.</p>
+<pre><code><b>struct</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">SecondaryBalance</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>asset: <b>address</b></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>amount: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="enum-collateral"><a class="header" href="#enum-collateral">Enum <code>Collateral</code> <a id="0x7_native_collateral_types_Collateral"></a></a></h2>
+<p><code>primary</code> is the signed primary balance offset by 2^63, as a snapshot
+so writing it records no read of the aggregator it came from.</p>
+<pre><code>enum <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_Collateral">Collateral</a> <b>has</b> drop, store
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>primary: <a href="aptos-experimental/../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>secondaries: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">native_collateral_types::SecondaryBalance</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>reserved: u64</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="constants-144"><a class="header" href="#constants-144">Constants <a id="@Constants_0"></a></a></h2>
+<p><a id="0x7_native_collateral_types_SIGN_OFFSET"></a></p>
+<p>Offset applied to the signed primary balance so it fits a <code>u64</code>.</p>
+<pre><code><b>const</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SIGN_OFFSET">SIGN_OFFSET</a>: u64 = 9223372036854775808;
+</code></pre>
+<h2 id="function-cross"><a class="header" href="#function-cross">Function <code>cross</code> <a id="0x7_native_collateral_types_cross"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_cross">cross</a>(): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">native_collateral_types::CollateralScope</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_cross">cross</a>(): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">CollateralScope</a> {
+    CollateralScope::Cross
+}
+</code></pre>
+</details>
+<h2 id="function-isolated"><a class="header" href="#function-isolated">Function <code>isolated</code> <a id="0x7_native_collateral_types_isolated"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_isolated">isolated</a>(market: <b>address</b>): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">native_collateral_types::CollateralScope</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_isolated">isolated</a>(market: <b>address</b>): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_CollateralScope">CollateralScope</a> {
+    CollateralScope::Isolated { market }
+}
+</code></pre>
+</details>
+<h2 id="function-new_secondary_balance"><a class="header" href="#function-new_secondary_balance">Function <code>new_secondary_balance</code> <a id="0x7_native_collateral_types_new_secondary_balance"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_secondary_balance">new_secondary_balance</a>(asset: <b>address</b>, amount: u64): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">native_collateral_types::SecondaryBalance</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_secondary_balance">new_secondary_balance</a>(asset: <b>address</b>, amount: u64): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">SecondaryBalance</a> {
+    <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">SecondaryBalance</a> { asset, amount }
+}
+</code></pre>
+</details>
+<h2 id="function-new_collateral_v1"><a class="header" href="#function-new_collateral_v1">Function <code>new_collateral_v1</code> <a id="0x7_native_collateral_types_new_collateral_v1"></a></a></h2>
+<p><code>primary</code> must hold the balance offset by 2^63.</p>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_collateral_v1">new_collateral_v1</a>(primary: <a href="aptos-experimental/../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;, secondaries: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">native_collateral_types::SecondaryBalance</a>&gt;, reserved: u64): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_Collateral">native_collateral_types::Collateral</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_collateral_v1">new_collateral_v1</a>(
+    primary: AggregatorSnapshot&lt;u64&gt;,
+    secondaries: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">SecondaryBalance</a>&gt;,
+    reserved: u64,
+): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_Collateral">Collateral</a> {
+    Collateral::V1 { primary, secondaries, reserved }
+}
+</code></pre>
+</details>
+<h2 id="function-new_collateral_v1_from_balance"><a class="header" href="#function-new_collateral_v1_from_balance">Function <code>new_collateral_v1_from_balance</code> <a id="0x7_native_collateral_types_new_collateral_v1_from_balance"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_collateral_v1_from_balance">new_collateral_v1_from_balance</a>(primary: i64, secondaries: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">native_collateral_types::SecondaryBalance</a>&gt;, reserved: u64): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_Collateral">native_collateral_types::Collateral</a>
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_collateral_v1_from_balance">new_collateral_v1_from_balance</a>(
+    primary: i64,
+    secondaries: <a href="aptos-experimental/../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SecondaryBalance">SecondaryBalance</a>&gt;,
+    reserved: u64,
+): <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_Collateral">Collateral</a> {
+    <b>let</b> offset = ((primary <b>as</b> i128) + (<a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_SIGN_OFFSET">SIGN_OFFSET</a> <b>as</b> i128)) <b>as</b> u64;
+    <a href="aptos-experimental/native_collateral_types.html#0x7_native_collateral_types_new_collateral_v1">new_collateral_v1</a>(<a href="aptos-experimental/../aptos-framework/aggregator_v2.html#0x1_aggregator_v2_create_snapshot">aggregator_v2::create_snapshot</a>(offset), secondaries, reserved)
+}
+</code></pre>
+</details>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="module-0x7native_order_book"><a class="header" href="#module-0x7native_order_book">Module <code>0x7::native_order_book</code> <a id="0x7_native_order_book"></a></a></h1>
 <p>Native order storage, keyed by <code>(exchange, market, order_id)</code> for single
 orders and <code>(exchange, market, <a href="aptos-experimental/../aptos-framework/account.html#0x1_account">account</a>)</code> for bulk orders. Write API is
@@ -108449,7 +108685,7 @@ is precision-agnostic.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-144"><a class="header" href="#constants-144">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-145"><a class="header" href="#constants-145">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_order_book_E_REINSERT_ORDER_MISMATCH"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/order_book.html#0x7_order_book_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>: u64 = 8;
 </code></pre>
@@ -108813,7 +109049,7 @@ is precision-agnostic.</p>
 </ul>
 <pre><code><b>use</b> <a href="aptos-experimental/../aptos-framework/big_ordered_map.html#0x1_big_ordered_map">0x1::big_ordered_map</a>;
 </code></pre>
-<h2 id="constants-145"><a class="header" href="#constants-145">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-146"><a class="header" href="#constants-146">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_order_book_utils_BIG_MAP_INNER_DEGREE"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/order_book_utils.html#0x7_order_book_utils_BIG_MAP_INNER_DEGREE">BIG_MAP_INNER_DEGREE</a>: u16 = 64;
 </code></pre>
@@ -108925,7 +109161,7 @@ and reducing the size of existing orders.</p>
 <b>use</b> <a href="aptos-experimental/order_placement.html#0x7_order_placement">0x7::order_placement</a>;
 <b>use</b> <a href="aptos-experimental/pre_cancellation_tracker.html#0x7_pre_cancellation_tracker">0x7::pre_cancellation_tracker</a>;
 </code></pre>
-<h2 id="constants-146"><a class="header" href="#constants-146">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-147"><a class="header" href="#constants-147">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_order_operations_EORDER_DOES_NOT_EXIST"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/order_operations.html#0x7_order_operations_EORDER_DOES_NOT_EXIST">EORDER_DOES_NOT_EXIST</a>: u64 = 6;
 </code></pre>
@@ -109345,7 +109581,7 @@ TimeBased(time): The order is triggered when the current time is greater than or
 </details>
 </details>
 </details>
-<h2 id="constants-147"><a class="header" href="#constants-147">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-148"><a class="header" href="#constants-148">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_order_placement_U64_MAX"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/order_placement.html#0x7_order_placement_U64_MAX">U64_MAX</a>: u64 = 18446744073709551615;
 </code></pre>
@@ -111069,7 +111305,7 @@ This reduces the latency to submit a cancellation transaction from 500 ms to 0.<
 </dd>
 </dl>
 </details>
-<h2 id="constants-148"><a class="header" href="#constants-148">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-149"><a class="header" href="#constants-149">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_pre_cancellation_tracker_DUPLICATE_ORDER_PLACEMENT"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/pre_cancellation_tracker.html#0x7_pre_cancellation_tracker_DUPLICATE_ORDER_PLACEMENT">DUPLICATE_ORDER_PLACEMENT</a>: u64 = 1;
 </code></pre>
@@ -111308,7 +111544,7 @@ that is taken first, is the one inserted first, amongst those with same bid pric
 </details>
 </details>
 </details>
-<h2 id="constants-149"><a class="header" href="#constants-149">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-150"><a class="header" href="#constants-150">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_price_time_index_EINTERNAL_INVARIANT_BROKEN"></a></p>
 <p>There is a code bug that breaks internal invariant</p>
 <pre><code><b>const</b> <a href="aptos-experimental/price_time_index.html#0x7_price_time_index_EINTERNAL_INVARIANT_BROKEN">EINTERNAL_INVARIANT_BROKEN</a>: u64 = 2;
@@ -111779,7 +112015,7 @@ types of pending orders are supported.</li>
 </details>
 </details>
 </details>
-<h2 id="constants-150"><a class="header" href="#constants-150">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-151"><a class="header" href="#constants-151">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_single_order_book_E_REINSERT_ORDER_MISMATCH"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/single_order_book.html#0x7_single_order_book_E_REINSERT_ORDER_MISMATCH">E_REINSERT_ORDER_MISMATCH</a>: u64 = 8;
 </code></pre>
@@ -112413,7 +112649,7 @@ account_identity is raw public_key.</p>
 <b>use</b> <a href="aptos-experimental/../move-stdlib/string.html#0x1_string">0x1::string</a>;
 <b>use</b> <a href="aptos-experimental/../aptos-stdlib/string_utils.html#0x1_string_utils">0x1::string_utils</a>;
 </code></pre>
-<h2 id="constants-151"><a class="header" href="#constants-151">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-152"><a class="header" href="#constants-152">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_test_derivable_account_abstraction_ed25519_hex_EINVALID_SIGNATURE"></a></p>
 <pre><code><b>const</b> <a href="aptos-experimental/test_derivable_account_abstraction_ed25519_hex.html#0x7_test_derivable_account_abstraction_ed25519_hex_EINVALID_SIGNATURE">EINVALID_SIGNATURE</a>: u64 = 1;
 </code></pre>
@@ -112561,7 +112797,7 @@ so writes to distinct addresses don't contend under block-STM.</p>
 </details>
 </details>
 </details>
-<h2 id="constants-152"><a class="header" href="#constants-152">Constants <a id="@Constants_0"></a></a></h2>
+<h2 id="constants-153"><a class="header" href="#constants-153">Constants <a id="@Constants_0"></a></a></h2>
 <p><a id="0x7_trading_native_capability_EEXCHANGE_DENIED"></a></p>
 <p>This exchange address has been disabled by governance.</p>
 <pre><code><b>const</b> <a href="aptos-experimental/trading_native_capability.html#0x7_trading_native_capability_EEXCHANGE_DENIED">EEXCHANGE_DENIED</a>: u64 = 3;
