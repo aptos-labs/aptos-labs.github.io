@@ -166,18 +166,21 @@
                         <h1 id="module-0x1hot_state_config"><a class="header" href="#module-0x1hot_state_config">Module <code>0x1::hot_state_config</code> <a id="0x1_hot_state_config"></a></a></h1>
 <p>Maintains the hot state config for the blockchain.</p>
 <p>The config is opaque to Move and interpreted by node software, so fields can be added without
-a framework upgrade. Since it affects the hot state root, it only changes at epoch boundaries.</p>
+a framework upgrade. Since it affects the hot state root, it only changes at epoch boundaries.
+A config that nodes can't apply is rejected here, as applying it would halt the chain.</p>
 <ul>
 <li><a href="#0x1_hot_state_config_HotStateConfig">Resource <code>HotStateConfig</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
 <li><a href="#0x1_hot_state_config_initialize">Function <code>initialize</code></a></li>
 <li><a href="#0x1_hot_state_config_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
 <li><a href="#0x1_hot_state_config_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#0x1_hot_state_config_validate_internal">Function <code>validate_internal</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_set_for_next_epoch">Function <code>set_for_next_epoch</code></a></li>
 <li><a href="#@Specification_1_on_new_epoch">Function <code>on_new_epoch</code></a></li>
+<li><a href="#@Specification_1_validate_internal">Function <code>validate_internal</code></a></li>
 </ul>
 </li>
 </ul>
@@ -212,6 +215,7 @@ a framework upgrade. Since it affects the hot state root, it only changes at epo
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="hot_state_config.html#0x1_hot_state_config_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) {
     <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
     <b>assert</b>!(config.length() &gt; 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="hot_state_config.html#0x1_hot_state_config_EINVALID_CONFIG">EINVALID_CONFIG</a>));
+    <b>assert</b>!(<a href="hot_state_config.html#0x1_hot_state_config_validate_internal">validate_internal</a>(config), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="hot_state_config.html#0x1_hot_state_config_EINVALID_CONFIG">EINVALID_CONFIG</a>));
     <b>if</b> (!<b>exists</b>&lt;<a href="hot_state_config.html#0x1_hot_state_config_HotStateConfig">HotStateConfig</a>&gt;(@aptos_framework)) {
         <b>move_to</b>(framework, <a href="hot_state_config.html#0x1_hot_state_config_HotStateConfig">HotStateConfig</a> { config });
     }
@@ -231,6 +235,7 @@ aptos_framework::aptos_governance::reconfigure(&amp;framework_signer);
 <pre><code><b>public</b> <b>fun</b> <a href="hot_state_config.html#0x1_hot_state_config_set_for_next_epoch">set_for_next_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;) {
     <a href="system_addresses.html#0x1_system_addresses_assert_aptos_framework">system_addresses::assert_aptos_framework</a>(framework);
     <b>assert</b>!(config.length() &gt; 0, <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="hot_state_config.html#0x1_hot_state_config_EINVALID_CONFIG">EINVALID_CONFIG</a>));
+    <b>assert</b>!(<a href="hot_state_config.html#0x1_hot_state_config_validate_internal">validate_internal</a>(config), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="hot_state_config.html#0x1_hot_state_config_EINVALID_CONFIG">EINVALID_CONFIG</a>));
     <a href="config_buffer.html#0x1_config_buffer_upsert">config_buffer::upsert</a>(<a href="hot_state_config.html#0x1_hot_state_config_HotStateConfig">HotStateConfig</a> { config });
 }
 </code></pre>
@@ -254,6 +259,15 @@ aptos_framework::aptos_governance::reconfigure(&amp;framework_signer);
 }
 </code></pre>
 </details>
+<h2 id="function-validate_internal"><a class="header" href="#function-validate_internal">Function <code>validate_internal</code> <a id="0x1_hot_state_config_validate_internal"></a></a></h2>
+<p>Whether <code>config</code> is a BCS-serialized <code>OnChainHotStateConfig</code> that nodes accept.</p>
+<pre><code><b>fun</b> <a href="hot_state_config.html#0x1_hot_state_config_validate_internal">validate_internal</a>(config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>native</b> <b>fun</b> <a href="hot_state_config.html#0x1_hot_state_config_validate_internal">validate_internal</a>(config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool;
+</code></pre>
+</details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="hot_state_config.html#0x1_hot_state_config_initialize">initialize</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
@@ -263,6 +277,7 @@ aptos_framework::aptos_governance::reconfigure(&amp;framework_signer);
     config: <a href="hot_state_config.html#0x1_hot_state_config_HotStateConfig">HotStateConfig</a> { config }
 };
 <b>aborts_if</b> len(config) == 0;
+<b>aborts_if</b> !<a href="hot_state_config.html#0x1_hot_state_config_spec_validate_internal">spec_validate_internal</a>(config);
 </code></pre>
 <h3 id="function-set_for_next_epoch-1"><a class="header" href="#function-set_for_next_epoch-1">Function <code>set_for_next_epoch</code> <a id="@Specification_1_set_for_next_epoch"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="hot_state_config.html#0x1_hot_state_config_set_for_next_epoch">set_for_next_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
@@ -270,6 +285,7 @@ aptos_framework::aptos_governance::reconfigure(&amp;framework_signer);
 <pre><code><b>pragma</b> opaque;
 <b>modifies</b> <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework);
 <b>include</b> <a href="config_buffer.html#0x1_config_buffer_SetForNextEpochAbortsIf">config_buffer::SetForNextEpochAbortsIf</a> { <a href="account.html#0x1_account">account</a>: framework };
+<b>aborts_if</b> !<a href="hot_state_config.html#0x1_hot_state_config_spec_validate_internal">spec_validate_internal</a>(config);
 <b>let</b> key = std::type_info::type_name&lt;<a href="hot_state_config.html#0x1_hot_state_config_HotStateConfig">HotStateConfig</a>&gt;();
 <b>let</b> <b>post</b> configs_post = <b>global</b>&lt;<a href="config_buffer.html#0x1_config_buffer_PendingConfigs">config_buffer::PendingConfigs</a>&gt;(@aptos_framework).configs;
 <b>ensures</b> std::simple_map::spec_contains_key(configs_post, key);
@@ -280,6 +296,16 @@ aptos_framework::aptos_governance::reconfigure(&amp;framework_signer);
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="hot_state_config.html#0x1_hot_state_config_HotStateConfig">HotStateConfig</a>&gt;;
+</code></pre>
+<h3 id="function-validate_internal-1"><a class="header" href="#function-validate_internal-1">Function <code>validate_internal</code> <a id="@Specification_1_validate_internal"></a></a></h3>
+<pre><code><b>fun</b> <a href="hot_state_config.html#0x1_hot_state_config_validate_internal">validate_internal</a>(config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="hot_state_config.html#0x1_hot_state_config_spec_validate_internal">spec_validate_internal</a>(config);
+</code></pre>
+<p><a id="0x1_hot_state_config_spec_validate_internal"></a></p>
+<pre><code><b>fun</b> <a href="hot_state_config.html#0x1_hot_state_config_spec_validate_internal">spec_validate_internal</a>(config: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): bool;
 </code></pre>
 
                     </main>
