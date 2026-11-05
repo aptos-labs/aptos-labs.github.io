@@ -781,12 +781,12 @@ let f: |u64|bool has copy+drop+store = is_even;
 let g: |u64|bool has copy+drop = is_odd;
 </code></pre>
 <p>A <em>persistent</em> function is required to build a storable function value because it needs to be guaranteed that the underlying function exists and can be safely restored from storage at any point in the future. However, a code upgrade may change the underlying implementation of the function, while its signature is persistent.</p>
-<p>While <code>public</code> and <code>entry</code> functions are persistent by default, a non-public function needs to be marked with the attribute <code>#[persistent]</code> to become storable:</p>
+<p>While <code>public</code> functions are persistent by default, a non-public function, including an <code>entry</code> function, needs to be marked with the attribute <code>#[persistent]</code> to become storable:</p>
 <pre><code class="language-move">#[persistent] fun is_odd(x: u64): bool { x % 2 == 1 }
 ...
 let g: |u64|bool has copy+drop+store = is_odd;
 </code></pre>
-<p>Using the <code>#[persistent]</code> attribute is preferred if the only objective is to make a function storable, avoiding security implications with public or entry visibility.</p>
+<p>Using the <code>#[persistent]</code> attribute is preferred if the only objective is to make a function storable, avoiding the security implications of <code>public</code> visibility.</p>
 <h3 id="lambda-expressions-and-closures"><a class="header" href="#lambda-expressions-and-closures">Lambda Expressions and Closures</a></h3>
 <p>Function values can be denoted by <em>lambda expressions</em> (as also available as parameters for <a href="#function-parameters-and-lambda-expressions">inline functions</a>). Lambda expressions can capture context variables <em>by value</em>: those values are moved (or copied) into a <em>closure</em>, from where they are produced when the function is evaluated. Examples:</p>
 <pre><code class="language-move">struct S(u64); // cannot be copied or dropped
