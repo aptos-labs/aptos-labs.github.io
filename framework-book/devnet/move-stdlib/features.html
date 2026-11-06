@@ -342,6 +342,7 @@ return true.</p>
 <li><a href="#0x1_features_get_function_value_dispatch_feature">Function <code>get_function_value_dispatch_feature</code></a></li>
 <li><a href="#0x1_features_is_function_value_dispatch_enabled">Function <code>is_function_value_dispatch_enabled</code></a></li>
 <li><a href="#0x1_features_is_lazy_module_initialization_enabled">Function <code>is_lazy_module_initialization_enabled</code></a></li>
+<li><a href="#0x1_features_is_eager_module_initialization_disabled">Function <code>is_eager_module_initialization_disabled</code></a></li>
 <li><a href="#0x1_features_change_feature_flags">Function <code>change_feature_flags</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_internal">Function <code>change_feature_flags_internal</code></a></li>
 <li><a href="#0x1_features_change_feature_flags_for_next_epoch">Function <code>change_feature_flags_for_next_epoch</code></a></li>
@@ -537,6 +538,12 @@ Lifetime: transient</p>
 <p>Whether the account abstraction is enabled.</p>
 <p>Lifetime: transient</p>
 <pre><code><b>const</b> <a href="features.html#0x1_features_DERIVABLE_ACCOUNT_ABSTRACTION">DERIVABLE_ACCOUNT_ABSTRACTION</a>: u64 = 88;
+</code></pre>
+<p><a id="0x1_features_DISABLE_EAGER_MODULE_INITIALIZATION"></a></p>
+<p>Rejects publishing new modules that would run eager <code>init_module</code>. Modules must
+use a newer compiler with lazy initialization support instead.
+Lifetime: permanent</p>
+<pre><code><b>const</b> <a href="features.html#0x1_features_DISABLE_EAGER_MODULE_INITIALIZATION">DISABLE_EAGER_MODULE_INITIALIZATION</a>: u64 = 130;
 </code></pre>
 <p><a id="0x1_features_DISTRIBUTE_TRANSACTION_FEE"></a></p>
 <p>Whether to distribute transaction fee to validators.</p>
@@ -2339,6 +2346,16 @@ Lifetime: transient</p>
 }
 </code></pre>
 </details>
+<h2 id="function-is_eager_module_initialization_disabled"><a class="header" href="#function-is_eager_module_initialization_disabled">Function <code>is_eager_module_initialization_disabled</code> <a id="0x1_features_is_eager_module_initialization_disabled"></a></a></h2>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_eager_module_initialization_disabled">is_eager_module_initialization_disabled</a>(): bool
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>public</b> <b>fun</b> <a href="features.html#0x1_features_is_eager_module_initialization_disabled">is_eager_module_initialization_disabled</a>(): bool {
+    <a href="features.html#0x1_features_is_enabled">is_enabled</a>(<a href="features.html#0x1_features_DISABLE_EAGER_MODULE_INITIALIZATION">DISABLE_EAGER_MODULE_INITIALIZATION</a>)
+}
+</code></pre>
+</details>
 <h2 id="function-change_feature_flags"><a class="header" href="#function-change_feature_flags">Function <code>change_feature_flags</code> <a id="0x1_features_change_feature_flags"></a></a></h2>
 <p>Deprecated to prevent validator set changes during DKG.</p>
 <p>Genesis/tests should use <code><a href="features.html#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>()</code> for feature vec initialization.</p>
@@ -2371,12 +2388,14 @@ Lifetime: transient</p>
         <b>move_to</b>&lt;<a href="features.html#0x1_features_Features">Features</a>&gt;(framework, <a href="features.html#0x1_features_Features">Features</a> { <a href="features.html#0x1_features">features</a>: <a href="vector.html#0x1_vector">vector</a>[] })
     };
     <b>let</b> <a href="features.html#0x1_features">features</a> = &<b>mut</b> <a href="features.html#0x1_features_Features">Features</a>[@std].<a href="features.html#0x1_features">features</a>;
-    enable.for_each_ref(|feature| {
-        <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>, *feature, <b>true</b>);
-    });
-    disable.for_each_ref(|feature| {
-        <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>, *feature, <b>false</b>);
-    });
+    // `for_each_ref` is not supported in verification since
+    // bit-<a href="vector.html#0x1_vector">vector</a> integer mutation is unsupported (TODO(#20375)).
+    for (i in 0..enable.length()) {
+        <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>, enable[i], <b>true</b>);
+    };
+    for (i in 0..disable.length()) {
+        <a href="features.html#0x1_features_set">set</a>(<a href="features.html#0x1_features">features</a>, disable[i], <b>false</b>);
+    };
 }
 </code></pre>
 </details>

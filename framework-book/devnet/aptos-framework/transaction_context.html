@@ -168,6 +168,7 @@
 <li><a href="#0x1_transaction_context_AUID">Struct <code>AUID</code></a></li>
 <li><a href="#0x1_transaction_context_EntryFunctionPayload">Struct <code>EntryFunctionPayload</code></a></li>
 <li><a href="#0x1_transaction_context_MultisigPayload">Struct <code>MultisigPayload</code></a></li>
+<li><a href="#0x1_transaction_context_Ghost$spec_counter_draws">Resource <code>Ghost$spec_counter_draws</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
 <li><a href="#0x1_transaction_context_get_txn_hash">Function <code>get_txn_hash</code></a></li>
 <li><a href="#0x1_transaction_context_get_transaction_hash">Function <code>get_transaction_hash</code></a></li>
@@ -309,6 +310,20 @@ for storing an address</p>
 </dd>
 <dt>
 <code>entry_function_payload: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_context.html#0x1_transaction_context_EntryFunctionPayload">transaction_context::EntryFunctionPayload</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+<h2 id="resource-ghostspec_counter_draws"><a class="header" href="#resource-ghostspec_counter_draws">Resource <code>Ghost$spec_counter_draws</code> <a id="0x1_transaction_context_Ghost$spec_counter_draws"></a></a></h2>
+<p>How many values the counter has issued so far.</p>
+<pre><code><b>struct</b> Ghost$<a href="transaction_context.html#0x1_transaction_context_spec_counter_draws">spec_counter_draws</a> <b>has</b> <b>copy</b>, drop, store, key
+</code></pre>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>v: num</code>
 </dt>
 <dd>
 </dd>
@@ -980,6 +995,8 @@ the monotonically increasing behavior.</p>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] result == <a href="transaction_context.html#0x1_transaction_context_spec_counter_issued">spec_counter_issued</a>(<b>old</b>(<a href="transaction_context.html#0x1_transaction_context_spec_counter_draws">spec_counter_draws</a>));
+<b>update</b> <a href="transaction_context.html#0x1_transaction_context_spec_counter_draws">spec_counter_draws</a> = <a href="transaction_context.html#0x1_transaction_context_spec_counter_draws">spec_counter_draws</a> + 1;
 </code></pre>
 <h3 id="function-monotonically_increasing_counter_internal-1"><a class="header" href="#function-monotonically_increasing_counter_internal-1">Function <code>monotonically_increasing_counter_internal</code> <a id="@Specification_1_monotonically_increasing_counter_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_monotonically_increasing_counter_internal">monotonically_increasing_counter_internal</a>(timestamp_us: u64): u128
@@ -992,6 +1009,18 @@ the monotonically increasing behavior.</p>
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
+</code></pre>
+<p>How many values the counter has issued so far.</p>
+<p><a id="0x1_transaction_context_spec_counter_draws"></a></p>
+<pre><code><b>global</b> <a href="transaction_context.html#0x1_transaction_context_spec_counter_draws">spec_counter_draws</a>: num;
+</code></pre>
+<p>The counter packs timestamp, transaction index, session and a per-session
+counter, most significant first, so later values are strictly larger.</p>
+<pre><code><b>axiom</b> <b>forall</b> i: num, j: num <b>where</b> i &lt; j: <a href="transaction_context.html#0x1_transaction_context_spec_counter_issued">spec_counter_issued</a>(i) &lt; <a href="transaction_context.html#0x1_transaction_context_spec_counter_issued">spec_counter_issued</a>(j);
+</code></pre>
+<p>The i-th value the counter issued.</p>
+<p><a id="0x1_transaction_context_spec_counter_issued"></a></p>
+<pre><code><b>fun</b> <a href="transaction_context.html#0x1_transaction_context_spec_counter_issued">spec_counter_issued</a>(i: num): u128;
 </code></pre>
 
                     </main>

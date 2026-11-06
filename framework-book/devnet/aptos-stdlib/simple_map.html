@@ -538,6 +538,12 @@ using lambdas to destroy the individual keys and values.</p>
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<p><a id="0x1_simple_map_spec_insertion_key_at"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_insertion_key_at">spec_insertion_key_at</a>&lt;K, V&gt;(t: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, i: num): K;
+</code></pre>
+<p><a id="0x1_simple_map_spec_insertion_rank"></a></p>
+<pre><code><b>native</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_spec_insertion_rank">spec_insertion_rank</a>&lt;K, V&gt;(t: <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;K, V&gt;, k: K): num;
+</code></pre>
 <h3 id="struct-simplemap-1"><a class="header" href="#struct-simplemap-1">Struct <code>SimpleMap</code> <a id="@Specification_1_SimpleMap"></a></a></h3>
 <pre><code><b>struct</b> <a href="simple_map.html#0x1_simple_map_SimpleMap">SimpleMap</a>&lt;Key, Value&gt; <b>has</b> <b>copy</b>, drop, store
 </code></pre>
@@ -566,7 +572,9 @@ using lambdas to destroy the individual keys and values.</p>
     map_spec_aborts_destroy_empty = spec_aborts_destroy_empty,
     map_spec_aborts_add = spec_aborts_add,
     map_spec_aborts_del = spec_aborts_del,
-    map_spec_aborts_borrow = spec_aborts_borrow;
+    map_spec_aborts_borrow = spec_aborts_borrow,
+    map_spec_insertion_key_at = spec_insertion_key_at,
+    map_spec_insertion_rank = spec_insertion_rank;
 </code></pre>
 <h3 id="function-length-1"><a class="header" href="#function-length-1">Function <code>length</code> <a id="@Specification_1_length"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="simple_map.html#0x1_simple_map_length">length</a>&lt;Key: store, Value: store&gt;(self: &<a href="simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;Key, Value&gt;): u64
@@ -635,6 +643,7 @@ using lambdas to destroy the individual keys and values.</p>
 <pre><code><b>pragma</b> intrinsic;
 <b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
+<b>ensures</b> [abstract] self == <a href="simple_map.html#0x1_simple_map_spec_set">spec_set</a>(<b>old</b>(self), key, value);
 <b>ensures</b> [abstract] !<a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result_1);
 <b>ensures</b> [abstract] !<a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(<b>old</b>(self), key) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result_2);
 <b>ensures</b> [abstract] <a href="simple_map.html#0x1_simple_map_spec_contains_key">spec_contains_key</a>(self, key);
