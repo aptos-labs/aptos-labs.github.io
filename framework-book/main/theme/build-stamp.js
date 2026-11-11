@@ -1,6 +1,6 @@
 // Appends a build-stamp footer to every page.
 //
-// The literal "2026-11-10 06:31 UTC (aptos-framework main 8c3e660; tooling aptos-core 8e92d274)" is the placeholder that `deploy.sh` substitutes
+// The literal "2026-11-11 06:26 UTC (aptos-framework main 8e334b6; tooling aptos-core c60a164e)" is the placeholder that `deploy.sh` substitutes
 // with the deploy timestamp + source commit hash. Local mdbook builds leave
 // it untouched, signalling that the page wasn't deployed.
 (function () {
@@ -9,7 +9,7 @@
     if (!main || main.querySelector('.build-stamp')) return;
     var p = document.createElement('p');
     p.className = 'build-stamp';
-    p.innerHTML = '<em>Build: 2026-11-10 06:31 UTC (aptos-framework main 8c3e660; tooling aptos-core 8e92d274)</em>';
+    p.innerHTML = '<em>Build: 2026-11-11 06:26 UTC (aptos-framework main 8e334b6; tooling aptos-core c60a164e)</em>';
     main.appendChild(p);
   }
   if (document.readyState === 'loading') {
