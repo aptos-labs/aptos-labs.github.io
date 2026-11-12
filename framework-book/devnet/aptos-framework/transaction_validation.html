@@ -169,6 +169,7 @@
 <li><a href="#0x1_transaction_validation_TransactionValidation">Resource <code>TransactionValidation</code></a></li>
 <li><a href="#0x1_transaction_validation_GasPermission">Struct <code>GasPermission</code></a></li>
 <li><a href="#0x1_transaction_validation_PrologueArgs">Enum <code>PrologueArgs</code></a></li>
+<li><a href="#0x1_transaction_validation_MeteredPrologueArgs">Enum <code>MeteredPrologueArgs</code></a></li>
 <li><a href="#0x1_transaction_validation_EpilogueArgs">Enum <code>EpilogueArgs</code></a></li>
 <li><a href="#@Constants_0">Constants</a></li>
 <li><a href="#0x1_transaction_validation_grant_gas_permission">Function <code>grant_gas_permission</code></a></li>
@@ -198,6 +199,8 @@
 <li><a href="#0x1_transaction_validation_unified_prologue_fee_payer_v2">Function <code>unified_prologue_fee_payer_v2</code></a></li>
 <li><a href="#0x1_transaction_validation_unified_epilogue_v2">Function <code>unified_epilogue_v2</code></a></li>
 <li><a href="#0x1_transaction_validation_versioned_prologue">Function <code>versioned_prologue</code></a></li>
+<li><a href="#0x1_transaction_validation_metered_prologue">Function <code>metered_prologue</code></a></li>
+<li><a href="#0x1_transaction_validation_create_sender_account_if_needed">Function <code>create_sender_account_if_needed</code></a></li>
 <li><a href="#0x1_transaction_validation_versioned_epilogue">Function <code>versioned_epilogue</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
@@ -227,6 +230,8 @@
 <li><a href="#@Specification_1_unified_prologue_fee_payer_v2">Function <code>unified_prologue_fee_payer_v2</code></a></li>
 <li><a href="#@Specification_1_unified_epilogue_v2">Function <code>unified_epilogue_v2</code></a></li>
 <li><a href="#@Specification_1_versioned_prologue">Function <code>versioned_prologue</code></a></li>
+<li><a href="#@Specification_1_metered_prologue">Function <code>metered_prologue</code></a></li>
+<li><a href="#@Specification_1_create_sender_account_if_needed">Function <code>create_sender_account_if_needed</code></a></li>
 <li><a href="#@Specification_1_versioned_epilogue">Function <code>versioned_epilogue</code></a></li>
 </ul>
 </li>
@@ -408,6 +413,27 @@ against the framework version that shipped them and are not reached from this co
 </dd>
 <dt>
 <code>txn_limits_request: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_UserTxnLimitsRequest">transaction_limits::UserTxnLimitsRequest</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+</details>
+</details>
+</details>
+<h2 id="enum-meteredprologueargs"><a class="header" href="#enum-meteredprologueargs">Enum <code>MeteredPrologueArgs</code> <a id="0x1_transaction_validation_MeteredPrologueArgs"></a></a></h2>
+<p>Arguments for <code>metered_prologue</code>. Versioned like <code><a href="transaction_validation.html#0x1_transaction_validation_PrologueArgs">PrologueArgs</a></code>:
+a new field becomes a new enum variant, and old variants keep their layout.</p>
+<pre><code>enum <a href="transaction_validation.html#0x1_transaction_validation_MeteredPrologueArgs">MeteredPrologueArgs</a>
+</code></pre>
+<details>
+<summary>Variants</summary>
+<details>
+<summary>V1</summary>
+<details>
+<summary>Fields</summary>
+<dl>
+<dt>
+<code>replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">transaction_validation::ReplayProtector</a></code>
 </dt>
 <dd>
 </dd>
@@ -1478,6 +1504,43 @@ Called by the Adapter</p>
 }
 </code></pre>
 </details>
+<h2 id="function-metered_prologue"><a class="header" href="#function-metered_prologue">Function <code>metered_prologue</code> <a id="0x1_transaction_validation_metered_prologue"></a></a></h2>
+<p>The metered half of the prologue. Runs after <code>versioned_prologue</code> has
+validated the transaction and before the payload, charged against the
+transaction's gas budget. Its effects survive a failed payload.</p>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_metered_prologue">metered_prologue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_MeteredPrologueArgs">transaction_validation::MeteredPrologueArgs</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_metered_prologue">metered_prologue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_MeteredPrologueArgs">MeteredPrologueArgs</a>) {
+    match (args) {
+        V1 { replay_protector } =&gt; {
+            <a href="transaction_validation.html#0x1_transaction_validation_create_sender_account_if_needed">create_sender_account_if_needed</a>(&sender, replay_protector);
+        },
+    }
+}
+</code></pre>
+</details>
+<h2 id="function-create_sender_account_if_needed"><a class="header" href="#function-create_sender_account_if_needed">Function <code>create_sender_account_if_needed</code> <a id="0x1_transaction_validation_create_sender_account_if_needed"></a></a></h2>
+<p>The sender's first transaction may come from an address holding no
+<code>Account</code> resource yet. Create it, so that the payload and the epilogue
+find it in place.</p>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_create_sender_account_if_needed">create_sender_account_if_needed</a>(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">transaction_validation::ReplayProtector</a>)
+</code></pre>
+<details>
+<summary>Implementation</summary>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_create_sender_account_if_needed">create_sender_account_if_needed</a>(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">ReplayProtector</a>) {
+    match (replay_protector) {
+        SequenceNumber(txn_sequence_number) =&gt; {
+            <b>if</b> (txn_sequence_number == 0) {
+                <a href="account.html#0x1_account_create_account_if_does_not_exist">account::create_account_if_does_not_exist</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(sender));
+            };
+        },
+        Nonce(_) =&gt; {},
+    }
+}
+</code></pre>
+</details>
 <h2 id="function-versioned_epilogue"><a class="header" href="#function-versioned_epilogue">Function <code>versioned_epilogue</code> <a id="0x1_transaction_validation_versioned_epilogue"></a></a></h2>
 <pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_versioned_epilogue">versioned_epilogue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_EpilogueArgs">transaction_validation::EpilogueArgs</a>)
 </code></pre>
@@ -1744,6 +1807,16 @@ Skip transaction_fee::burn_fee verification.</p>
 </code></pre>
 <h3 id="function-versioned_prologue-1"><a class="header" href="#function-versioned_prologue-1">Function <code>versioned_prologue</code> <a id="@Specification_1_versioned_prologue"></a></a></h3>
 <pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_versioned_prologue">versioned_prologue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_PrologueArgs">transaction_validation::PrologueArgs</a>)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-metered_prologue-1"><a class="header" href="#function-metered_prologue-1">Function <code>metered_prologue</code> <a id="@Specification_1_metered_prologue"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_metered_prologue">metered_prologue</a>(sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, _fee_payer: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>, args: <a href="transaction_validation.html#0x1_transaction_validation_MeteredPrologueArgs">transaction_validation::MeteredPrologueArgs</a>)
+</code></pre>
+<pre><code><b>pragma</b> verify = <b>false</b>;
+</code></pre>
+<h3 id="function-create_sender_account_if_needed-1"><a class="header" href="#function-create_sender_account_if_needed-1">Function <code>create_sender_account_if_needed</code> <a id="@Specification_1_create_sender_account_if_needed"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_validation.html#0x1_transaction_validation_create_sender_account_if_needed">create_sender_account_if_needed</a>(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, replay_protector: <a href="transaction_validation.html#0x1_transaction_validation_ReplayProtector">transaction_validation::ReplayProtector</a>)
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
