@@ -609,7 +609,11 @@ aggregator (parallelizable) or via normal integers.</p>
 <h3 id="function-switch-1"><a class="header" href="#function-switch-1">Function <code>switch</code> <a id="@Specification_1_switch"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_switch">switch</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>: &<b>mut</b> <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">optional_aggregator::OptionalAggregator</a>)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<p>Only a parallelizable aggregator can be switched; the value and limit are preserved.</p>
+<pre><code><b>aborts_if</b> !<a href="optional_aggregator.html#0x1_optional_aggregator_is_parallelizable">is_parallelizable</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>);
+<b>ensures</b> !<a href="optional_aggregator.html#0x1_optional_aggregator_is_parallelizable">is_parallelizable</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>);
+<b>ensures</b> <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator_value</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>) == <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator_value</a>(<b>old</b>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>));
+<b>ensures</b> <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_limit">optional_aggregator_limit</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>) == <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_limit">optional_aggregator_limit</a>(<b>old</b>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>));
 </code></pre>
 <h3 id="function-destroy-1"><a class="header" href="#function-destroy-1">Function <code>destroy</code> <a id="@Specification_1_destroy"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_destroy">destroy</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>: <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">optional_aggregator::OptionalAggregator</a>)

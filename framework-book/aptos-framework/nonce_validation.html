@@ -175,6 +175,11 @@
 <li><a href="#0x1_nonce_validation_empty_bucket">Function <code>empty_bucket</code></a></li>
 <li><a href="#0x1_nonce_validation_add_nonce_buckets">Function <code>add_nonce_buckets</code></a></li>
 <li><a href="#0x1_nonce_validation_check_and_insert_nonce">Function <code>check_and_insert_nonce</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_check_and_insert_nonce">Function <code>check_and_insert_nonce</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="../move-stdlib/hash.html#0x1_aptos_hash">0x1::aptos_hash</a>;
 <b>use</b> <a href="big_ordered_map.html#0x1_big_ordered_map">0x1::big_ordered_map</a>;
@@ -433,6 +438,53 @@
 }
 </code></pre>
 </details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<p>The pair is kept with an expiration time that is not over, or that is within the overlap interval of
+<code>txn_expiration_time</code>.</p>
+<p><a id="0x1_nonce_validation_spec_is_nonce_in_use"></a></p>
+<pre><code><b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_spec_is_nonce_in_use">spec_is_nonce_in_use</a>(sender_address: <b>address</b>, nonce: u64, txn_expiration_time: u64): bool {
+   <b>let</b> exp = <a href="nonce_validation.html#0x1_nonce_validation_spec_nonce_expiration_time">spec_nonce_expiration_time</a>(sender_address, nonce);
+   <a href="nonce_validation.html#0x1_nonce_validation_spec_has_nonce">spec_has_nonce</a>(sender_address, nonce) && (exp &gt;= <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>()
+       || txn_expiration_time &lt;= exp + <a href="nonce_validation.html#0x1_nonce_validation_NONCE_REPLAY_PROTECTION_OVERLAP_INTERVAL_SECONDS">NONCE_REPLAY_PROTECTION_OVERLAP_INTERVAL_SECONDS</a>)
+}
+</code></pre>
+<h3 id="function-check_and_insert_nonce-1"><a class="header" href="#function-check_and_insert_nonce-1">Function <code>check_and_insert_nonce</code> <a id="@Specification_1_check_and_insert_nonce"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_check_and_insert_nonce">check_and_insert_nonce</a>(sender_address: <b>address</b>, nonce: u64, txn_expiration_time: u64): bool
+</code></pre>
+<p>Returns false iff <code>(sender_address, nonce)</code> is in use; otherwise records it with <code>txn_expiration_time</code>.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework);
+<b>aborts_if</b> txn_expiration_time
+    &gt; <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() + <a href="nonce_validation.html#0x1_nonce_validation_NONCE_REPLAY_PROTECTION_OVERLAP_INTERVAL_SECONDS">NONCE_REPLAY_PROTECTION_OVERLAP_INTERVAL_SECONDS</a>;
+<b>ensures</b> result == !<b>old</b>(<a href="nonce_validation.html#0x1_nonce_validation_spec_is_nonce_in_use">spec_is_nonce_in_use</a>(sender_address, nonce, txn_expiration_time));
+<b>ensures</b> result ==&gt; <a href="nonce_validation.html#0x1_nonce_validation_spec_has_nonce">spec_has_nonce</a>(sender_address, nonce)
+    && <a href="nonce_validation.html#0x1_nonce_validation_spec_nonce_expiration_time">spec_nonce_expiration_time</a>(sender_address, nonce) == txn_expiration_time;
+</code></pre>
+<p>The bucket map of the nonce history that <code>(sender_address, nonce)</code> is kept in.</p>
+<p><a id="0x1_nonce_validation_spec_bucket_map"></a></p>
+<pre><code><b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_spec_bucket_map">spec_bucket_map</a>(sender_address: <b>address</b>, nonce: u64): BigOrderedMap&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceKey">NonceKey</a>, u64&gt; {
+   <b>use</b> std::bcs;
+   <b>use</b> aptos_std::aptos_hash;
+   <b>let</b> index = <a href="../move-stdlib/hash.html#0x1_aptos_hash_spec_sip_hash">aptos_hash::spec_sip_hash</a>(<a href="../move-stdlib/bcs.html#0x1_bcs_serialize">bcs::serialize</a>(<a href="nonce_validation.html#0x1_nonce_validation_NonceKey">NonceKey</a> { sender_address, nonce })) % <a href="nonce_validation.html#0x1_nonce_validation_NUM_BUCKETS">NUM_BUCKETS</a>;
+   <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(<b>global</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework).nonce_table, index).nonce_to_exp_time_map
+}
+</code></pre>
+<p><a id="0x1_nonce_validation_spec_has_nonce"></a></p>
+<pre><code><b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_spec_has_nonce">spec_has_nonce</a>(sender_address: <b>address</b>, nonce: u64): bool {
+   <b>use</b> std::bcs;
+   <b>use</b> aptos_std::aptos_hash;
+   <b>let</b> index = <a href="../move-stdlib/hash.html#0x1_aptos_hash_spec_sip_hash">aptos_hash::spec_sip_hash</a>(<a href="../move-stdlib/bcs.html#0x1_bcs_serialize">bcs::serialize</a>(<a href="nonce_validation.html#0x1_nonce_validation_NonceKey">NonceKey</a> { sender_address, nonce })) % <a href="nonce_validation.html#0x1_nonce_validation_NUM_BUCKETS">NUM_BUCKETS</a>;
+   <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(<b>global</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework).nonce_table, index)
+       && <a href="big_ordered_map.html#0x1_big_ordered_map_spec_contains_key">big_ordered_map::spec_contains_key</a>(
+           <a href="nonce_validation.html#0x1_nonce_validation_spec_bucket_map">spec_bucket_map</a>(sender_address, nonce), <a href="nonce_validation.html#0x1_nonce_validation_NonceKey">NonceKey</a> { sender_address, nonce }
+       )
+}
+</code></pre>
+<p><a id="0x1_nonce_validation_spec_nonce_expiration_time"></a></p>
+<pre><code><b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_spec_nonce_expiration_time">spec_nonce_expiration_time</a>(sender_address: <b>address</b>, nonce: u64): u64 {
+   <a href="big_ordered_map.html#0x1_big_ordered_map_spec_get">big_ordered_map::spec_get</a>(<a href="nonce_validation.html#0x1_nonce_validation_spec_bucket_map">spec_bucket_map</a>(sender_address, nonce), <a href="nonce_validation.html#0x1_nonce_validation_NonceKey">NonceKey</a> { sender_address, nonce })
+}
+</code></pre>
 
                     </main>
 

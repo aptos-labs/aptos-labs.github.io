@@ -207,6 +207,11 @@ Once modules are marked as immutable, they cannot be made mutable again.</li>
 <li><a href="#0x1_object_code_deployment_upgrade">Function <code>upgrade</code></a></li>
 <li><a href="#0x1_object_code_deployment_freeze_code_object">Function <code>freeze_code_object</code></a></li>
 <li><a href="#0x1_object_code_deployment_get_code_object_signer">Function <code>get_code_object_signer</code></a></li>
+<li><a href="#@Specification_1">Specification</a>
+<ul>
+<li><a href="#@Specification_1_upgrade">Function <code>upgrade</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="account.html#0x1_account">0x1::account</a>;
 <b>use</b> <a href="../move-stdlib/bcs.html#0x1_bcs">0x1::bcs</a>;
@@ -409,6 +414,16 @@ after upgrading a module.</p>
 }
 </code></pre>
 </details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<h3 id="function-upgrade-1"><a class="header" href="#function-upgrade-1">Function <code>upgrade</code> <a id="@Specification_1_upgrade"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="object_code_deployment.html#0x1_object_code_deployment_upgrade">upgrade</a>(publisher: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata_serialized: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, <a href="code.html#0x1_code">code</a>: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, code_object: <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="code.html#0x1_code_PackageRegistry">code::PackageRegistry</a>&gt;)
+</code></pre>
+<p>Only the owner of a code object created by <code>publish</code> may upgrade it.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(code_object.inner);
+<b>aborts_if</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(code_object.inner).owner != <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(publisher);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object_code_deployment.html#0x1_object_code_deployment_ManagingRefs">ManagingRefs</a>&gt;(code_object.inner);
+</code></pre>
 
                     </main>
 

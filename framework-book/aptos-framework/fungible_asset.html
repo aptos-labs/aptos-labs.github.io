@@ -295,6 +295,7 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#module-level-spec">Module-level Specification</a></li>
 <li><a href="#@Specification_1_add_fungibility">Function <code>add_fungibility</code></a></li>
 <li><a href="#@Specification_1_is_untransferable">Function <code>is_untransferable</code></a></li>
+<li><a href="#@Specification_1_supply">Function <code>supply</code></a></li>
 <li><a href="#@Specification_1_name">Function <code>name</code></a></li>
 <li><a href="#@Specification_1_symbol">Function <code>symbol</code></a></li>
 <li><a href="#@Specification_1_decimals">Function <code>decimals</code></a></li>
@@ -303,6 +304,8 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#@Specification_1_metadata">Function <code>metadata</code></a></li>
 <li><a href="#@Specification_1_store_exists">Function <code>store_exists</code></a></li>
 <li><a href="#@Specification_1_store_metadata">Function <code>store_metadata</code></a></li>
+<li><a href="#@Specification_1_balance">Function <code>balance</code></a></li>
+<li><a href="#@Specification_1_is_address_balance_at_least">Function <code>is_address_balance_at_least</code></a></li>
 <li><a href="#@Specification_1_is_frozen">Function <code>is_frozen</code></a></li>
 <li><a href="#@Specification_1_amount">Function <code>amount</code></a></li>
 <li><a href="#@Specification_1_metadata_from_asset">Function <code>metadata_from_asset</code></a></li>
@@ -313,12 +316,18 @@ metadata object can be any object that equipped with <code><a href="fungible_ass
 <li><a href="#@Specification_1_object_from_metadata_ref">Function <code>object_from_metadata_ref</code></a></li>
 <li><a href="#@Specification_1_create_store">Function <code>create_store</code></a></li>
 <li><a href="#@Specification_1_remove_store">Function <code>remove_store</code></a></li>
+<li><a href="#@Specification_1_withdraw">Function <code>withdraw</code></a></li>
 <li><a href="#@Specification_1_deposit">Function <code>deposit</code></a></li>
+<li><a href="#@Specification_1_mutate_metadata">Function <code>mutate_metadata</code></a></li>
 <li><a href="#@Specification_1_extract">Function <code>extract</code></a></li>
 <li><a href="#@Specification_1_merge">Function <code>merge</code></a></li>
 <li><a href="#@Specification_1_destroy_zero">Function <code>destroy_zero</code></a></li>
 <li><a href="#@Specification_1_unchecked_deposit">Function <code>unchecked_deposit</code></a></li>
 <li><a href="#@Specification_1_unchecked_withdraw">Function <code>unchecked_withdraw</code></a></li>
+<li><a href="#@Specification_1_increase_supply">Function <code>increase_supply</code></a></li>
+<li><a href="#@Specification_1_decrease_supply">Function <code>decrease_supply</code></a></li>
+<li><a href="#@Specification_1_upgrade_to_concurrent">Function <code>upgrade_to_concurrent</code></a></li>
+<li><a href="#@Specification_1_upgrade_store_to_concurrent">Function <code>upgrade_store_to_concurrent</code></a></li>
 </ul>
 </li>
 </ul>
@@ -2934,16 +2943,75 @@ not create conflicts and maintain parallelism.</p>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
 <pre><code><b>pragma</b> verify = <b>true</b>;
 </code></pre>
+<p>Once a store has a concurrent balance, its plain balance stays zero.</p>
+<pre><code><b>invariant</b> <b>forall</b> addr: <b>address</b> <b>where</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr) && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr):
+    <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).balance == 0;
+</code></pre>
+<p>Mirrors <code>has_balance_dispatch_function</code>, which is false for APT without looking up its function store.</p>
+<p><a id="0x1_fungible_asset_spec_has_balance_dispatch_function"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_balance_dispatch_function">spec_has_balance_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool {
+   metadata.inner != @aptos_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner)
+       && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner).derived_balance_function)
+}
+</code></pre>
+<p>Mirrors <code>has_deposit_dispatch_function</code>, which is false for APT without looking up its function store.</p>
+<p><a id="0x1_fungible_asset_spec_has_deposit_dispatch_function"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_deposit_dispatch_function">spec_has_deposit_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool {
+   metadata.inner != @aptos_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner)
+       && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner).deposit_function)
+}
+</code></pre>
+<p>Mirrors <code>has_withdraw_dispatch_function</code>, which is false for APT without looking up its function store.</p>
+<p><a id="0x1_fungible_asset_spec_has_withdraw_dispatch_function"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_withdraw_dispatch_function">spec_has_withdraw_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool {
+   metadata.inner != @aptos_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner)
+       && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner).withdraw_function)
+}
+</code></pre>
+<p>The asset of the store at <code>store_addr</code> has a derived-balance hook (dispatchable path, no APT short-circuit).</p>
+<p><a id="0x1_fungible_asset_spec_store_has_balance_hook"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_has_balance_hook">spec_store_has_balance_hook</a>(store_addr: <b>address</b>): bool {
+   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
+   <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).derived_balance_function)
+}
+</code></pre>
+<p>The asset of the store at <code>store_addr</code> has no deposit hook (dispatchable path, no APT short-circuit).</p>
+<p><a id="0x1_fungible_asset_spec_store_no_deposit_hook"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">spec_store_no_deposit_hook</a>(store_addr: <b>address</b>): bool {
+   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
+   !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) || <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).deposit_function)
+}
+</code></pre>
+<p>The asset of the store at <code>store_addr</code> has no withdraw hook (dispatchable path, no APT short-circuit).</p>
+<p><a id="0x1_fungible_asset_spec_store_no_withdraw_hook"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">spec_store_no_withdraw_hook</a>(store_addr: <b>address</b>): bool {
+   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
+   !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) || <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).withdraw_function)
+}
+</code></pre>
 <h3 id="function-add_fungibility-1"><a class="header" href="#function-add_fungibility-1">Function <code>add_fungibility</code> <a id="@Specification_1_add_fungibility"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_add_fungibility">add_fungibility</a>(constructor_ref: &<a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, maximum_supply: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, icon_uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, project_uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>let</b> addr = constructor_ref.self;
+<b>let</b> concurrent = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_CONCURRENT_FUNGIBLE_ASSETS">features::CONCURRENT_FUNGIBLE_ASSETS</a>);
+<b>let</b> <b>post</b> supply = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr).current;
+<b>aborts_if</b> constructor_ref.can_delete;
 // This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
 <b>aborts_if</b> std::string::length(name) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_NAME_LENGTH">MAX_NAME_LENGTH</a>;
 <b>aborts_if</b> std::string::length(symbol) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_SYMBOL_LENGTH">MAX_SYMBOL_LENGTH</a>;
 <b>aborts_if</b> decimals &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_DECIMALS">MAX_DECIMALS</a>;
 <b>aborts_if</b> std::string::length(icon_uri) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_URI_LENGTH">MAX_URI_LENGTH</a>;
 <b>aborts_if</b> std::string::length(project_uri) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_URI_LENGTH">MAX_URI_LENGTH</a>;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(addr);
+<b>aborts_if</b> concurrent && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr);
+<b>aborts_if</b> !concurrent && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(addr) == <a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a> { name, symbol, decimals, icon_uri, project_uri };
+<b>ensures</b> concurrent ==&gt; <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">aggregator_v2::spec_get_value</a>(supply) == 0;
+<b>ensures</b> concurrent ==&gt; <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(supply)
+    == <b>if</b> (<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(maximum_supply)) { <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(maximum_supply) } <b>else</b> { <a href="fungible_asset.html#0x1_fungible_asset_MAX_U128">MAX_U128</a> };
+<b>ensures</b> !concurrent ==&gt; <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr) == <a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a> { current: 0, maximum: maximum_supply };
+<b>ensures</b> result.inner == addr;
 </code></pre>
 <h3 id="function-is_untransferable-1"><a class="header" href="#function-is_untransferable-1">Function <code>is_untransferable</code> <a id="@Specification_1_is_untransferable"></a></a></h3>
 <pre><code>#[view]
@@ -2952,6 +3020,19 @@ not create conflicts and maintain parallelism.</p>
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Untransferable">Untransferable</a>&gt;(metadata.inner);
+</code></pre>
+<h3 id="function-supply-1"><a class="header" href="#function-supply-1">Function <code>supply</code> <a id="@Specification_1_supply"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_supply">supply</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = metadata.inner;
+<b>aborts_if</b> addr != @aptos_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DeriveSupply">DeriveSupply</a>&gt;(addr);
+<b>ensures</b> result == <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr) || <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr)) {
+    <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(addr))
+} <b>else</b> {
+    <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>()
+};
 </code></pre>
 <h3 id="function-name-1"><a class="header" href="#function-name-1">Function <code>name</code> <a id="@Specification_1_name"></a></a></h3>
 <pre><code>#[view]
@@ -3017,6 +3098,29 @@ not create conflicts and maintain parallelism.</p>
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store.inner);
 <b>ensures</b> result == <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store.inner).metadata;
 </code></pre>
+<h3 id="function-balance-1"><a class="header" href="#function-balance-1">Function <code>balance</code> <a id="@Specification_1_balance"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_balance">balance</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): u64
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = store.inner;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr)
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_has_balance_dispatch_function">spec_has_balance_dispatch_function</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).metadata);
+<b>ensures</b> result == <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr)) { <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(addr) } <b>else</b> { 0 };
+</code></pre>
+<p>The store at <code>store_addr</code> holds at least <code>amount</code>; a missing store counts as an empty one.</p>
+<p><a id="0x1_fungible_asset_spec_is_address_balance_at_least"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_is_address_balance_at_least">spec_is_address_balance_at_least</a>(store_addr: <b>address</b>, amount: u64): bool {
+   <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr)) { <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(store_addr) &gt;= amount } <b>else</b> { amount == 0 }
+}
+</code></pre>
+<h3 id="function-is_address_balance_at_least-1"><a class="header" href="#function-is_address_balance_at_least-1">Function <code>is_address_balance_at_least</code> <a id="@Specification_1_is_address_balance_at_least"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_is_address_balance_at_least">is_address_balance_at_least</a>(store_addr: <b>address</b>, amount: u64): bool
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <a href="fungible_asset.html#0x1_fungible_asset_spec_is_address_balance_at_least">spec_is_address_balance_at_least</a>(store_addr, amount);
+</code></pre>
 <h3 id="function-is_frozen-1"><a class="header" href="#function-is_frozen-1">Function <code>is_frozen</code> <a id="@Specification_1_is_frozen"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_is_frozen">is_frozen</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): bool
@@ -3075,14 +3179,88 @@ not create conflicts and maintain parallelism.</p>
 <b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == self.metadata;
 </code></pre>
+<p>The balance of the store at <code>addr</code>: kept in <code><a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a></code>, or in <code><a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a></code> once the
+store has been upgraded.</p>
+<p><a id="0x1_fungible_asset_spec_balance"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(addr: <b>address</b>): u64 {
+   <b>if</b> (<a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">spec_is_concurrent_balance</a>(addr)) {
+       <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">aggregator_v2::spec_get_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr).balance)
+   } <b>else</b> {
+       <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).balance
+   }
+}
+</code></pre>
+<p><a id="0x1_fungible_asset_spec_is_concurrent_balance"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">spec_is_concurrent_balance</a>(addr: <b>address</b>): bool {
+   <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).balance == 0 && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr)
+}
+</code></pre>
+<p>The current supply of the asset at <code>addr</code>: kept in <code><a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a></code> if present, else in <code><a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a></code>.</p>
+<p><a id="0x1_fungible_asset_spec_supply"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(addr: <b>address</b>): u128 {
+   <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr)) {
+       <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">aggregator_v2::spec_get_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr).current)
+   } <b>else</b> {
+       <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr).current
+   }
+}
+</code></pre>
+<p>A store keeps its metadata and frozen flag, and whether its balance is concurrent.</p>
+<p><a id="0x1_fungible_asset_StoreBalanceFrame"></a></p>
+<pre><code><b>schema</b> <a href="fungible_asset.html#0x1_fungible_asset_StoreBalanceFrame">StoreBalanceFrame</a> {
+    store_addr: <b>address</b>;
+    <b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr);
+    <b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr);
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr);
+    <b>ensures</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata);
+    <b>ensures</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).frozen == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).frozen);
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr) == <b>old</b>(<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr));
+    <b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">spec_is_concurrent_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">spec_is_concurrent_balance</a>(store_addr));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr) ==&gt;
+        <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr).balance)
+            == <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(<b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr).balance));
+}
+</code></pre>
+<p><a id="0x1_fungible_asset_UncheckedDeposit"></a></p>
+<pre><code><b>schema</b> <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDeposit">UncheckedDeposit</a> {
+    store_addr: <b>address</b>;
+    fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">FungibleAsset</a>;
+    <b>let</b> store = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr);
+    <b>let</b> concurrent = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr).balance;
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr);
+    <b>aborts_if</b> fa.metadata != store.metadata;
+    <b>aborts_if</b> fa.amount != 0 && <a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">spec_is_concurrent_balance</a>(store_addr)
+        && <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">aggregator_v2::spec_get_value</a>(concurrent) + fa.amount &gt; <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(concurrent);
+    <b>aborts_if</b> fa.amount != 0 && !<a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">spec_is_concurrent_balance</a>(store_addr) && store.balance + fa.amount &gt; MAX_U64;
+    <b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_StoreBalanceFrame">StoreBalanceFrame</a>;
+    <b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(store_addr)) + fa.amount;
+}
+</code></pre>
+<p><a id="0x1_fungible_asset_UncheckedWithdraw"></a></p>
+<pre><code><b>schema</b> <a href="fungible_asset.html#0x1_fungible_asset_UncheckedWithdraw">UncheckedWithdraw</a> {
+    store_addr: <b>address</b>;
+    amount: u64;
+    result: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">FungibleAsset</a>;
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr);
+    <b>aborts_if</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(store_addr) &lt; amount;
+    <b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_StoreBalanceFrame">StoreBalanceFrame</a>;
+    <b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(store_addr)) - amount;
+    <b>ensures</b> result == <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">FungibleAsset</a> { metadata: <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata), amount };
+}
+</code></pre>
 <h3 id="function-create_store-1"><a class="header" href="#function-create_store-1">Function <code>create_store</code> <a id="@Specification_1_create_store"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_create_store">create_store</a>&lt;T: key&gt;(constructor_ref: &<a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>let</b> addr = constructor_ref.self;
+<pre><code><b>let</b> addr = constructor_ref.self;
 // This enforces <a id="high-level-req-8" href="#high-level-req">high-level requirement 8</a>:
 <b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(metadata.inner) || !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(metadata.inner);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Untransferable">Untransferable</a>&gt;(metadata.inner) && <b>exists</b>&lt;<a href="object.html#0x1_object_Untransferable">object::Untransferable</a>&gt;(addr);
+<b>aborts_if</b> <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE">features::DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE</a>)
+    && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr);
 <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).metadata.inner == metadata.inner;
 // This enforces <a id="high-level-req-9" href="#high-level-req">high-level requirement 9</a>:
 <b>ensures</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).balance == 0;
 <b>ensures</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).frozen == <b>false</b>;
@@ -3091,8 +3269,8 @@ not create conflicts and maintain parallelism.</p>
 <h3 id="function-remove_store-1"><a class="header" href="#function-remove_store-1">Function <code>remove_store</code> <a id="@Specification_1_remove_store"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_remove_store">remove_store</a>(delete_ref: &<a href="object.html#0x1_object_DeleteRef">object::DeleteRef</a>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>let</b> addr = delete_ref.self;
+<pre><code><b>let</b> addr = delete_ref.self;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
 // This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
 <b>aborts_if</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).balance != 0;
@@ -3100,17 +3278,55 @@ not create conflicts and maintain parallelism.</p>
 <b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr)
     && <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">aggregator_v2::spec_get_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr).balance) != 0;
 <b>ensures</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
+<b>ensures</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr);
+</code></pre>
+<h3 id="function-withdraw-1"><a class="header" href="#function-withdraw-1">Function <code>withdraw</code> <a id="@Specification_1_withdraw"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_withdraw">withdraw</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
+</code></pre>
+<p>The owner of an unfrozen store can withdraw up to its balance.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> fa_store = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store.inner);
+<b>aborts_if</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_withdraw_dispatch_function">spec_has_withdraw_dispatch_function</a>(fa_store.metadata);
+<b>aborts_if</b> fa_store.frozen;
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_UncheckedWithdraw">UncheckedWithdraw</a> { store_addr: store.inner };
 </code></pre>
 <h3 id="function-deposit-1"><a class="header" href="#function-deposit-1">Function <code>deposit</code> <a id="@Specification_1_deposit"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_deposit">deposit</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
 </code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(store));
-<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(store));
+<p>Anyone can deposit an asset of the store's type into an unfrozen store.</p>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> fa_store = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store.inner);
+<b>aborts_if</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_deposit_dispatch_function">spec_has_deposit_dispatch_function</a>(fa_store.metadata);
+<b>aborts_if</b> fa_store.frozen;
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDeposit">UncheckedDeposit</a> { store_addr: store.inner };
+</code></pre>
+<h3 id="function-mutate_metadata-1"><a class="header" href="#function-mutate_metadata-1">Function <code>mutate_metadata</code> <a id="@Specification_1_mutate_metadata"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_mutate_metadata">mutate_metadata</a>(self: &<a href="fungible_asset.html#0x1_fungible_asset_MutateMetadataRef">fungible_asset::MutateMetadataRef</a>, name: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, symbol: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, decimals: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u8&gt;, icon_uri: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, project_uri: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = self.metadata.inner;
+<b>let</b> pre = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(addr);
+<b>let</b> <b>post</b> post_metadata = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(addr);
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(name) && <a href="../move-stdlib/string.html#0x1_string_length">string::length</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(name)) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_NAME_LENGTH">MAX_NAME_LENGTH</a>;
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(symbol) && <a href="../move-stdlib/string.html#0x1_string_length">string::length</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(symbol)) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_SYMBOL_LENGTH">MAX_SYMBOL_LENGTH</a>;
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(decimals) && <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(decimals) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_DECIMALS">MAX_DECIMALS</a>;
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(icon_uri) && <a href="../move-stdlib/string.html#0x1_string_length">string::length</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(icon_uri)) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_URI_LENGTH">MAX_URI_LENGTH</a>;
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(project_uri) && <a href="../move-stdlib/string.html#0x1_string_length">string::length</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(project_uri)) &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_URI_LENGTH">MAX_URI_LENGTH</a>;
+<b>ensures</b> post_metadata == <a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a> {
+    name: <a href="../move-stdlib/option.html#0x1_option_get_with_default">option::get_with_default</a>(name, pre.name),
+    symbol: <a href="../move-stdlib/option.html#0x1_option_get_with_default">option::get_with_default</a>(symbol, pre.symbol),
+    decimals: <a href="../move-stdlib/option.html#0x1_option_get_with_default">option::get_with_default</a>(decimals, pre.decimals),
+    icon_uri: <a href="../move-stdlib/option.html#0x1_option_get_with_default">option::get_with_default</a>(icon_uri, pre.icon_uri),
+    project_uri: <a href="../move-stdlib/option.html#0x1_option_get_with_default">option::get_with_default</a>(project_uri, pre.project_uri),
+};
 </code></pre>
 <h3 id="function-extract-1"><a class="header" href="#function-extract-1">Function <code>extract</code> <a id="@Specification_1_extract"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_extract">extract</a>(self: &<b>mut</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>, amount: u64): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
 </code></pre>
 <pre><code>// This enforces <a id="high-level-req-14" href="#high-level-req">high-level requirement 14</a>:
+<b>pragma</b> opaque;
 <b>aborts_if</b> self.<a href="fungible_asset.html#0x1_fungible_asset_amount">amount</a> &lt; amount;
 <b>ensures</b> self.amount == <b>old</b>(self).amount - amount;
 <b>ensures</b> self.metadata == <b>old</b>(self).metadata;
@@ -3121,6 +3337,7 @@ not create conflicts and maintain parallelism.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_merge">merge</a>(self: &<b>mut</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>, src_fungible_asset: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
 </code></pre>
 <pre><code>// This enforces <a id="high-level-req-15" href="#high-level-req">high-level requirement 15</a>:
+<b>pragma</b> opaque;
 <b>aborts_if</b> src_fungible_asset.metadata != self.metadata;
 <b>aborts_if</b> self.amount + src_fungible_asset.amount &gt; MAX_U64;
 // This enforces <a id="high-level-req-16" href="#high-level-req">high-level requirement 16</a>:
@@ -3136,14 +3353,93 @@ not create conflicts and maintain parallelism.</p>
 <h3 id="function-unchecked_deposit-1"><a class="header" href="#function-unchecked_deposit-1">Function <code>unchecked_deposit</code> <a id="@Specification_1_unchecked_deposit"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_unchecked_deposit">unchecked_deposit</a>(store_addr: <b>address</b>, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
 </code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr);
-<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr);
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDeposit">UncheckedDeposit</a>;
 </code></pre>
 <h3 id="function-unchecked_withdraw-1"><a class="header" href="#function-unchecked_withdraw-1">Function <code>unchecked_withdraw</code> <a id="@Specification_1_unchecked_withdraw"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_unchecked_withdraw">unchecked_withdraw</a>(store_addr: <b>address</b>, amount: u64): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
 </code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr);
-<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(store_addr);
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_UncheckedWithdraw">UncheckedWithdraw</a>;
+</code></pre>
+<h3 id="function-increase_supply-1"><a class="header" href="#function-increase_supply-1">Function <code>increase_supply</code> <a id="@Specification_1_increase_supply"></a></a></h3>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_increase_supply">increase_supply</a>&lt;T: key&gt;(metadata: &<a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> metadata_addr = metadata.inner;
+<b>let</b> supply = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr);
+<b>let</b> concurrent = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr).current;
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr);
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr);
+<b>aborts_if</b> amount != 0 && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr);
+<b>aborts_if</b> amount != 0 && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr)
+    && <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_value">aggregator_v2::spec_get_value</a>(concurrent) + amount &gt; <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(concurrent);
+<b>aborts_if</b> amount != 0 && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(supply.maximum)
+    && supply.current + amount &gt; <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(supply.maximum);
+<b>aborts_if</b> amount != 0 && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) && supply.current + amount &gt; <a href="fungible_asset.html#0x1_fungible_asset_MAX_U128">MAX_U128</a>;
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_SupplyFrame">SupplyFrame</a> { metadata_addr };
+<b>ensures</b> amount != 0 ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(metadata_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(metadata_addr)) + amount;
+</code></pre>
+<h3 id="function-decrease_supply-1"><a class="header" href="#function-decrease_supply-1">Function <code>decrease_supply</code> <a id="@Specification_1_decrease_supply"></a></a></h3>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_decrease_supply">decrease_supply</a>&lt;T: key&gt;(metadata: &<a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> metadata_addr = metadata.inner;
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr);
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr);
+<b>aborts_if</b> amount != 0 && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr);
+<b>aborts_if</b> amount != 0 && <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(metadata_addr) &lt; amount;
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_SupplyFrame">SupplyFrame</a> { metadata_addr };
+<b>ensures</b> amount != 0 ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(metadata_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(metadata_addr)) - amount;
+</code></pre>
+<p>Minting and burning change only the current supply.</p>
+<p><a id="0x1_fungible_asset_SupplyFrame"></a></p>
+<pre><code><b>schema</b> <a href="fungible_asset.html#0x1_fungible_asset_SupplyFrame">SupplyFrame</a> {
+    metadata_addr: <b>address</b>;
+    amount: u64;
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr) == <b>old</b>(<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) == <b>old</b>(<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr) ==&gt;
+        <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr).maximum == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr).maximum);
+    <b>ensures</b> amount == 0 ==&gt; <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr) == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr));
+    <b>ensures</b> amount == 0 ==&gt; <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) ==&gt;
+        <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr).current)
+            == <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(<b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr).current));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) ==&gt;
+        <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr) == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr));
+}
+</code></pre>
+<h3 id="function-upgrade_to_concurrent-1"><a class="header" href="#function-upgrade_to_concurrent-1">Function <code>upgrade_to_concurrent</code> <a id="@Specification_1_upgrade_to_concurrent"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_upgrade_to_concurrent">upgrade_to_concurrent</a>(ref: &<a href="object.html#0x1_object_ExtendRef">object::ExtendRef</a>)
+</code></pre>
+<p>Replaces the <code><a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a></code> with a <code><a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a></code> of the same current value and bound.</p>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = ref.self;
+<b>let</b> supply = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr);
+<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_CONCURRENT_FUNGIBLE_ASSETS">features::CONCURRENT_FUNGIBLE_ASSETS</a>);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr);
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(supply.maximum) && supply.current &gt; <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(supply.maximum);
+<b>ensures</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr) && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr);
+<b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(addr) == supply.current;
+<b>ensures</b> <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr).current)
+    == <b>if</b> (<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(supply.maximum)) { <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(supply.maximum) } <b>else</b> { <a href="fungible_asset.html#0x1_fungible_asset_MAX_U128">MAX_U128</a> };
+</code></pre>
+<h3 id="function-upgrade_store_to_concurrent-1"><a class="header" href="#function-upgrade_store_to_concurrent-1">Function <code>upgrade_store_to_concurrent</code> <a id="@Specification_1_upgrade_store_to_concurrent"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_upgrade_store_to_concurrent">upgrade_store_to_concurrent</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;)
+</code></pre>
+<p>Moves the store balance into a <code><a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a></code>, preserving it.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> addr = store.inner;
+<b>let</b> upgrading = !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr);
+<b>aborts_if</b> upgrading && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr);
+<b>aborts_if</b> upgrading && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(addr).frozen;
+<b>aborts_if</b> upgrading && !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_CONCURRENT_FUNGIBLE_BALANCE">features::CONCURRENT_FUNGIBLE_BALANCE</a>);
+<b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">ConcurrentFungibleBalance</a>&gt;(addr);
+<b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">spec_balance</a>(addr));
 </code></pre>
 
                     </main>

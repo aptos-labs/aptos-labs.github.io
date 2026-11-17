@@ -187,7 +187,9 @@
 <li><a href="#module-level-spec">Module-level Specification</a></li>
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_initialize_aptos_coin">Function <code>initialize_aptos_coin</code></a></li>
+<li><a href="#@Specification_1_initialize_core_resources_and_aptos_coin">Function <code>initialize_core_resources_and_aptos_coin</code></a></li>
 <li><a href="#@Specification_1_create_accounts">Function <code>create_accounts</code></a></li>
+<li><a href="#@Specification_1_create_account">Function <code>create_account</code></a></li>
 <li><a href="#@Specification_1_create_employee_validators">Function <code>create_employee_validators</code></a></li>
 <li><a href="#@Specification_1_create_initialize_validators_with_commission">Function <code>create_initialize_validators_with_commission</code></a></li>
 <li><a href="#@Specification_1_create_initialize_validators">Function <code>create_initialize_validators</code></a></li>
@@ -881,10 +883,27 @@ encoded in a single BCS byte array.</p>
 <b>requires</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
 <b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
 </code></pre>
+<h3 id="function-initialize_core_resources_and_aptos_coin-1"><a class="header" href="#function-initialize_core_resources_and_aptos_coin-1">Function <code>initialize_core_resources_and_aptos_coin</code> <a id="@Specification_1_initialize_core_resources_and_aptos_coin"></a></a></h3>
+<pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_initialize_core_resources_and_aptos_coin">initialize_core_resources_and_aptos_coin</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, core_resources_auth_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> std::signer::address_of(aptos_framework) != @aptos_framework;
+<b>aborts_if</b> len(core_resources_auth_key) != 32;
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(@core_resources).authentication_key == core_resources_auth_key;
+</code></pre>
 <h3 id="function-create_accounts-1"><a class="header" href="#function-create_accounts-1">Function <code>create_accounts</code> <a id="@Specification_1_create_accounts"></a></a></h3>
 <pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_create_accounts">create_accounts</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, accounts: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="genesis.html#0x1_genesis_AccountMap">genesis::AccountMap</a>&gt;)
 </code></pre>
 <pre><code><b>pragma</b> opaque;
+</code></pre>
+<h3 id="function-create_account-1"><a class="header" href="#function-create_account-1">Function <code>create_account</code> <a id="@Specification_1_create_account"></a></a></h3>
+<pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_create_account">create_account</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, account_address: <b>address</b>, balance: u64): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">account::spec_exists_at</a>(account_address) && (account_address == @vm_reserved
+    || account_address == @aptos_framework || account_address == @aptos_token);
+<b>ensures</b> std::signer::address_of(result) == account_address;
 </code></pre>
 <h3 id="function-create_employee_validators-1"><a class="header" href="#function-create_employee_validators-1">Function <code>create_employee_validators</code> <a id="@Specification_1_create_employee_validators"></a></a></h3>
 <pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_create_employee_validators">create_employee_validators</a>(employee_vesting_start: u64, employee_vesting_period_duration: u64, employees: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="genesis.html#0x1_genesis_EmployeeAccountMap">genesis::EmployeeAccountMap</a>&gt;)
@@ -917,6 +936,17 @@ encoded in a single BCS byte array.</p>
 </code></pre>
 <h3 id="function-initialize_validator-1"><a class="header" href="#function-initialize_validator-1">Function <code>initialize_validator</code> <a id="@Specification_1_initialize_validator"></a></a></h3>
 <pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_initialize_validator">initialize_validator</a>(pool_address: <b>address</b>, validator: &<a href="genesis.html#0x1_genesis_ValidatorConfiguration">genesis::ValidatorConfiguration</a>)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">stake::ValidatorConfig</a>&gt;(pool_address);
+<b>aborts_if</b> validator.operator_address != <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address).operator_address;
+<b>let</b> <b>post</b> config = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">stake::ValidatorConfig</a>&gt;(pool_address);
+<b>ensures</b> config.consensus_pubkey == validator.consensus_pubkey;
+<b>ensures</b> config.network_addresses == validator.network_addresses;
+<b>ensures</b> config.fullnode_addresses == validator.full_node_network_addresses;
+<b>ensures</b> <a href="stake.html#0x1_stake_spec_contains">stake::spec_contains</a>(<b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework).pending_active, pool_address);
 </code></pre>
 <h3 id="function-set_genesis_end-1"><a class="header" href="#function-set_genesis_end-1">Function <code>set_genesis_end</code> <a id="@Specification_1_set_genesis_end"></a></a></h3>
 <pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_set_genesis_end">set_genesis_end</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)

@@ -258,6 +258,7 @@
 <li><a href="#@Specification_4_rotate_authentication_key_from_public_key">Function <code>rotate_authentication_key_from_public_key</code></a></li>
 <li><a href="#@Specification_4_upsert_ed25519_backup_key_on_keyless_account">Function <code>upsert_ed25519_backup_key_on_keyless_account</code></a></li>
 <li><a href="#@Specification_4_upsert_ed25519_backup_key_and_encrypt_dk">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code></a></li>
+<li><a href="#@Specification_4_upsert_encrypted_dk">Function <code>upsert_encrypted_dk</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key">Function <code>rotate_authentication_key</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key_with_rotation_capability">Function <code>rotate_authentication_key_with_rotation_capability</code></a></li>
 <li><a href="#@Specification_4_offer_rotation_capability">Function <code>offer_rotation_capability</code></a></li>
@@ -2298,7 +2299,8 @@ OriginatingAddress does not exist under <code>@aptos_framework</code> before the
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_account_if_does_not_exist">create_account_if_does_not_exist</a>(account_address: <b>address</b>)
 </code></pre>
 <p>Ensure that the account exists at the end of the call.</p>
-<pre><code><b>let</b> authentication_key = <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(account_address);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> authentication_key = <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(account_address);
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address) && (
     account_address == @vm_reserved
@@ -2307,6 +2309,12 @@ OriginatingAddress does not exist under <code>@aptos_framework</code> before the
     || !(len(authentication_key) == 32)
 );
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address);
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address)) ==&gt;
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address) == <b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address));
+<b>ensures</b> !<b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address)) ==&gt;
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address).authentication_key == authentication_key
+        && <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address).sequence_number == 0
+        && <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(account_address).guid_creation_num == 2;
 </code></pre>
 <h3 id="function-create_account-1"><a class="header" href="#function-create_account-1">Function <code>create_account</code> <a id="@Specification_4_create_account"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_create_account">create_account</a>(new_address: <b>address</b>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
@@ -2365,7 +2373,8 @@ The Account does not exist under the new address before creating the account.</p
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_guid_next_creation_num">get_guid_next_creation_num</a>(addr: <b>address</b>): u64
 </code></pre>
-<pre><code><b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr) && !feature_on;
 <b>ensures</b> result == (
     <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num <b>else</b> 0
@@ -2375,7 +2384,8 @@ The Account does not exist under the new address before creating the account.</p
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_get_sequence_number">get_sequence_number</a>(addr: <b>address</b>): u64
 </code></pre>
-<pre><code><b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> feature_on = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr) && !feature_on;
 <b>ensures</b> result == (
     <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number <b>else</b> 0
@@ -2385,7 +2395,8 @@ The Account does not exist under the new address before creating the account.</p
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="account.html#0x1_account_originating_address">originating_address</a>(auth_key: <b>address</b>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
 <b>let</b> address_map = <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework).address_map;
 <b>ensures</b> <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(address_map, auth_key) ==&gt;
     result == <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(<a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(address_map, auth_key));
@@ -2409,12 +2420,16 @@ The Account does not exist under the new address before creating the account.</p
 <h3 id="function-increment_sequence_number-1"><a class="header" href="#function-increment_sequence_number-1">Function <code>increment_sequence_number</code> <a id="@Specification_4_increment_sequence_number"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_increment_sequence_number">increment_sequence_number</a>(addr: <b>address</b>)
 </code></pre>
-<pre><code><b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
 <b>let</b> sequence_number_pre = <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number <b>else</b> 0;
 // This enforces <a id="high-level-req-4" href="#high-level-req">high-level requirement 4</a>:
 <b>aborts_if</b> sequence_number_pre == <a href="account.html#0x1_account_MAX_U64">MAX_U64</a>;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number == sequence_number_pre + 1;
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt; <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)
+    == update_field(<b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)), sequence_number, sequence_number_pre + 1);
 </code></pre>
 <h3 id="function-get_authentication_key-1"><a class="header" href="#function-get_authentication_key-1">Function <code>get_authentication_key</code> <a id="@Specification_4_get_authentication_key"></a></a></h3>
 <pre><code>#[view]
@@ -2439,27 +2454,39 @@ The Account does not exist under the new address before creating the account.</p
 </code></pre>
 <p>The Account existed under the signer before the call.
 The length of new_auth_key is 32.</p>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
 <b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_auth_key) != 32;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 // This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key == new_auth_key;
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt; <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)
+    == update_field(<b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)), authentication_key, new_auth_key);
+<b>ensures</b> !<b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt;
+    <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).sequence_number == 0
+        && <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == 2;
 </code></pre>
 <h3 id="function-rotate_authentication_key_call-1"><a class="header" href="#function-rotate_authentication_key_call-1">Function <code>rotate_authentication_key_call</code> <a id="@Specification_4_rotate_authentication_key_call"></a></a></h3>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_call">rotate_authentication_key_call</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_auth_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
 <b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_auth_key) != 32;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 // This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key == new_auth_key;
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt; <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)
+    == update_field(<b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)), authentication_key, new_auth_key);
 </code></pre>
 <h3 id="function-rotate_authentication_key_from_public_key-1"><a class="header" href="#function-rotate_authentication_key_from_public_key-1">Function <code>rotate_authentication_key_from_public_key</code> <a id="@Specification_4_rotate_authentication_key_from_public_key"></a></a></h3>
 <pre><code>entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_from_public_key">rotate_authentication_key_from_public_key</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, scheme: u8, new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial;
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>
@@ -2483,13 +2510,22 @@ The length of new_auth_key is 32.</p>
 </code></pre>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
+<h3 id="function-upsert_encrypted_dk-1"><a class="header" href="#function-upsert_encrypted_dk-1">Function <code>upsert_encrypted_dk</code> <a id="@Specification_4_upsert_encrypted_dk"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_upsert_encrypted_dk">upsert_encrypted_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>aborts_if</b> len(ciphertext) &gt; <a href="account.html#0x1_account_MAX_ENCRYPTED_DK_BYTES">MAX_ENCRYPTED_DK_BYTES</a>;
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_EncryptedDK">EncryptedDK</a>&gt;(addr).ciphertext == ciphertext;
+</code></pre>
 <h3 id="function-rotate_authentication_key-1"><a class="header" href="#function-rotate_authentication_key-1">Function <code>rotate_authentication_key</code> <a id="@Specification_4_rotate_authentication_key"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key">rotate_authentication_key</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, from_scheme: u8, from_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, to_scheme: u8, to_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_rotate_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <p>The Account existed under the signer
 The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> aborts_if_is_partial;
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr };
 // This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
@@ -2545,7 +2581,7 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-rotate_authentication_key_with_rotation_capability-1"><a class="header" href="#function-rotate_authentication_key_with_rotation_capability-1">Function <code>rotate_authentication_key_with_rotation_capability</code> <a id="@Specification_4_rotate_authentication_key_with_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_rotate_authentication_key_with_rotation_capability">rotate_authentication_key_with_rotation_capability</a>(delegate_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, rotation_cap_offerer_address: <b>address</b>, new_scheme: u8, new_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, cap_update_table: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<pre><code><b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
 <b>let</b> delegate_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(delegate_signer);
 <b>let</b> offerer_account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(rotation_cap_offerer_address);
@@ -2610,6 +2646,22 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> &&
     current_auth_key_bytes !=
         <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
+<b>let</b> proof_challenge = <a href="account.html#0x1_account_RotationCapabilityOfferProofChallengeV2">RotationCapabilityOfferProofChallengeV2</a> {
+    <a href="chain_id.html#0x1_chain_id">chain_id</a>: <b>global</b>&lt;<a href="chain_id.html#0x1_chain_id_ChainId">chain_id::ChainId</a>&gt;(@aptos_framework).id,
+    sequence_number: <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address).sequence_number <b>else</b> 0,
+    source_address,
+    recipient_address,
+};
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && !<a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_signature_verify_strict_t">ed25519::spec_signature_verify_strict_t</a>(
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_Signature">ed25519::Signature</a> { bytes: rotation_capability_sig_bytes },
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key_bytes },
+    proof_challenge
+);
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && !<a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_signature_verify_strict_t">multi_ed25519::spec_signature_verify_strict_t</a>(
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_Signature">multi_ed25519::Signature</a> { bytes: rotation_capability_sig_bytes },
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_UnvalidatedPublicKey">multi_ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key_bytes },
+    proof_challenge
+);
 // This enforces <a id="high-level-req-7.1" href="#high-level-req">high-level requirement 7</a>:
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address);
 <b>let</b> <b>post</b> offer_for = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address).rotation_capability_offer.for;
@@ -2638,34 +2690,37 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
 <h3 id="function-revoke_rotation_capability-1"><a class="header" href="#function-revoke_rotation_capability-1">Function <code>revoke_rotation_capability</code> <a id="@Specification_4_revoke_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_rotation_capability">revoke_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, to_be_revoked_address: <b>address</b>)
 </code></pre>
-<pre><code><b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(to_be_revoked_address);
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(to_be_revoked_address);
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<a href="../move-stdlib/option.html#0x1_option_spec_contains">option::spec_contains</a>(account_resource.rotation_capability_offer.for,to_be_revoked_address);
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-<b>let</b> <b>post</b> offer_for = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).rotation_capability_offer.for;
-<b>ensures</b> !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(offer_for);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr) == update_field(account_resource, rotation_capability_offer,
+    update_field(account_resource.rotation_capability_offer, for, <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()));
 </code></pre>
 <h3 id="function-revoke_any_rotation_capability-1"><a class="header" href="#function-revoke_any_rotation_capability-1">Function <code>revoke_any_rotation_capability</code> <a id="@Specification_4_revoke_any_rotation_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_revoke_any_rotation_capability">revoke_any_rotation_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>let</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 // This enforces <a id="high-level-req-7.3" href="#high-level-req">high-level requirement 7</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(account_resource.rotation_capability_offer.for);
-<b>let</b> <b>post</b> offer_for = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).rotation_capability_offer.for;
-<b>ensures</b> !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(offer_for);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr) == update_field(account_resource, rotation_capability_offer,
+    update_field(account_resource.rotation_capability_offer, for, <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>()));
 </code></pre>
 <h3 id="function-offer_signer_capability-1"><a class="header" href="#function-offer_signer_capability-1">Function <code>offer_signer_capability</code> <a id="@Specification_4_offer_signer_capability"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="account.html#0x1_account_offer_signer_capability">offer_signer_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, signer_capability_sig_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, account_scheme: u8, account_public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, recipient_address: <b>address</b>)
 </code></pre>
 <p>The Account existed under the signer.
 The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.</p>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> aborts_if_is_partial;
 <b>let</b> source_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr: source_address };
 <b>let</b> current_auth_key_bytes = <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(source_address);
@@ -2686,6 +2741,21 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME.</p>
 <b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> &&
     current_auth_key_bytes !=
         <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key_bytes);
+<b>let</b> proof_challenge = <a href="account.html#0x1_account_SignerCapabilityOfferProofChallengeV2">SignerCapabilityOfferProofChallengeV2</a> {
+    sequence_number: <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address)) <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address).sequence_number <b>else</b> 0,
+    source_address,
+    recipient_address,
+};
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && !<a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_signature_verify_strict_t">ed25519::spec_signature_verify_strict_t</a>(
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_Signature">ed25519::Signature</a> { bytes: signer_capability_sig_bytes },
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key_bytes },
+    proof_challenge
+);
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && !<a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_signature_verify_strict_t">multi_ed25519::spec_signature_verify_strict_t</a>(
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_Signature">multi_ed25519::Signature</a> { bytes: signer_capability_sig_bytes },
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_UnvalidatedPublicKey">multi_ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key_bytes },
+    proof_challenge
+);
 // This enforces <a id="high-level-req-7.2" href="#high-level-req">high-level requirement 7</a>:
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address);
 <b>let</b> <b>post</b> offer_for = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(source_address).signer_capability_offer.for;
@@ -2733,11 +2803,11 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <p>The Account existed under the signer.
 The value of signer_capability_offer.for of Account resource under the signer is offerer_address.</p>
 <pre><code>// This enforces <a id="high-level-req-8" href="#high-level-req">high-level requirement 8</a>:
+<b>pragma</b> opaque;
 <b>include</b> <a href="account.html#0x1_account_AccountContainsAddr">AccountContainsAddr</a>{
     <a href="account.html#0x1_account">account</a>,
     <b>address</b>: offerer_address,
 };
-<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(offerer_address);
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(offerer_address);
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == offerer_address;
 </code></pre>
@@ -2755,8 +2825,7 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <h3 id="function-assert_valid_rotation_proof_signature_and_get_auth_key-1"><a class="header" href="#function-assert_valid_rotation_proof_signature_and_get_auth_key-1">Function <code>assert_valid_rotation_proof_signature_and_get_auth_key</code> <a id="@Specification_4_assert_valid_rotation_proof_signature_and_get_auth_key"></a></a></h3>
 <pre><code><b>fun</b> <a href="account.html#0x1_account_assert_valid_rotation_proof_signature_and_get_auth_key">assert_valid_rotation_proof_signature_and_get_auth_key</a>(scheme: u8, public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, challenge: &<a href="account.html#0x1_account_RotationProofChallenge">account::RotationProofChallenge</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> opaque;
 <b>include</b> <a href="account.html#0x1_account_AssertValidRotationProofSignatureAndGetAuthKeyAbortsIf">AssertValidRotationProofSignatureAndGetAuthKeyAbortsIf</a>;
 <b>ensures</b> [abstract] result == <a href="account.html#0x1_account_spec_assert_valid_rotation_proof_signature_and_get_auth_key">spec_assert_valid_rotation_proof_signature_and_get_auth_key</a>(scheme, public_key_bytes, signature, challenge);
 </code></pre>
@@ -2786,10 +2855,13 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <h3 id="function-update_auth_key_and_originating_address_table-1"><a class="header" href="#function-update_auth_key_and_originating_address_table-1">Function <code>update_auth_key_and_originating_address_table</code> <a id="@Specification_4_update_auth_key_and_originating_address_table"></a></a></h3>
 <pre><code><b>fun</b> <a href="account.html#0x1_account_update_auth_key_and_originating_address_table">update_auth_key_and_originating_address_table</a>(originating_addr: <b>address</b>, account_resource: &<b>mut</b> <a href="account.html#0x1_account_Account">account::Account</a>, new_auth_key_vector: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
+<pre><code><b>pragma</b> opaque;
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
 <b>include</b> <a href="account.html#0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf">UpdateAuthKeyAndOriginatingAddressTableAbortsIf</a> {
     current_authentication_key_bytes: account_resource.authentication_key,
 };
+<b>ensures</b> account_resource
+    == update_field(<b>old</b>(account_resource), authentication_key, new_auth_key_vector);
 </code></pre>
 <p><a id="0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="account.html#0x1_account_UpdateAuthKeyAndOriginatingAddressTableAbortsIf">UpdateAuthKeyAndOriginatingAddressTableAbortsIf</a> {
@@ -2815,7 +2887,6 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <p>The Account existed under the signer
 The value of signer_capability_offer.for of Account resource under the signer is to_be_revoked_address</p>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> aborts_if_is_strict = <b>false</b>;
 <b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] result == <a href="account.html#0x1_account_spec_create_resource_address">spec_create_resource_address</a>(source, seed);
 <b>ensures</b> [abstract] source != result;
@@ -2826,15 +2897,20 @@ The value of signer_capability_offer.for of Account resource under the signer is
 <h3 id="function-create_resource_account-1"><a class="header" href="#function-create_resource_account-1">Function <code>create_resource_account</code> <a id="@Specification_4_create_resource_account"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_resource_account">create_resource_account</a>(source: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> opaque;
 <b>let</b> source_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(source);
 <b>let</b> resource_addr = <a href="account.html#0x1_account_spec_create_resource_address">spec_create_resource_address</a>(source_addr, seed);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr);
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a> { addr: resource_addr };
 <b>aborts_if</b> len(<a href="account.html#0x1_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>) != 32;
-<b>include</b> <a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(resource_addr) ==&gt; <a href="account.html#0x1_account_CreateResourceAccountAbortsIf">CreateResourceAccountAbortsIf</a>;
-<b>include</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(resource_addr) ==&gt; <a href="account.html#0x1_account_CreateAccountAbortsIf">CreateAccountAbortsIf</a> {addr: resource_addr};
+<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr);
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result_1) == resource_addr;
 <b>let</b> <b>post</b> offer_for = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr).signer_capability_offer.for;
-<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(offer_for) == resource_addr;
+<b>ensures</b> offer_for == <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(resource_addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr);
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr).authentication_key == <a href="account.html#0x1_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>;
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr).sequence_number == 0;
+<b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr).guid_creation_num == 2;
 <b>ensures</b> result_2 == <a href="account.html#0x1_account_SignerCapability">SignerCapability</a> { <a href="account.html#0x1_account">account</a>: resource_addr };
 </code></pre>
 <h3 id="function-create_framework_reserved_account-1"><a class="header" href="#function-create_framework_reserved_account-1">Function <code>create_framework_reserved_account</code> <a id="@Specification_4_create_framework_reserved_account"></a></a></h3>
@@ -2879,6 +2955,8 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 // This enforces <a id="high-level-req-11" href="#high-level-req">high-level requirement 11</a>:
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == pre_gcn + 1;
+<b>ensures</b> account_exists_pre ==&gt; <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)
+    == update_field(<b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)), guid_creation_num, pre_gcn + 1);
 <b>ensures</b> result == <a href="guid.html#0x1_guid_GUID">guid::GUID</a> { id: <a href="guid.html#0x1_guid_ID">guid::ID</a> { creation_num: pre_gcn, addr } };
 </code></pre>
 <h3 id="function-new_event_handle-1"><a class="header" href="#function-new_event_handle-1">Function <code>new_event_handle</code> <a id="@Specification_4_new_event_handle"></a></a></h3>
@@ -2896,6 +2974,8 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).guid_creation_num == pre_gcn + 1;
+<b>ensures</b> account_exists_pre ==&gt; <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)
+    == update_field(<b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)), guid_creation_num, pre_gcn + 1);
 <b>ensures</b> result.counter == 0;
 <b>ensures</b> result.<a href="guid.html#0x1_guid">guid</a> == <a href="guid.html#0x1_guid_GUID">guid::GUID</a> { id: <a href="guid.html#0x1_guid_ID">guid::ID</a> { creation_num: pre_gcn, addr } };
 </code></pre>
@@ -2934,12 +3014,15 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
 <h3 id="function-register_coin-1"><a class="header" href="#function-register_coin-1">Function <code>register_coin</code> <a id="@Specification_4_register_coin"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_register_coin">register_coin</a>&lt;CoinType&gt;(account_addr: <b>address</b>)
 </code></pre>
-<pre><code><b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
 </code></pre>
 <h3 id="function-create_signer_with_capability-1"><a class="header" href="#function-create_signer_with_capability-1">Function <code>create_signer_with_capability</code> <a id="@Specification_4_create_signer_with_capability"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_create_signer_with_capability">create_signer_with_capability</a>(capability: &<a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
 </code></pre>
-<pre><code><b>let</b> addr = capability.<a href="account.html#0x1_account">account</a>;
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = capability.<a href="account.html#0x1_account">account</a>;
+<b>aborts_if</b> <b>false</b>;
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == addr;
 </code></pre>
 <p><a id="0x1_account_CreateResourceAccountAbortsIf"></a></p>
@@ -2954,8 +3037,7 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
 <h3 id="function-verify_signed_message-1"><a class="header" href="#function-verify_signed_message-1">Function <code>verify_signed_message</code> <a id="@Specification_4_verify_signed_message"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_verify_signed_message">verify_signed_message</a>&lt;T: drop&gt;(<a href="account.html#0x1_account">account</a>: <b>address</b>, account_scheme: u8, account_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, signed_message_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, message: T)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">spec_exists_at</a>(<a href="account.html#0x1_account">account</a>);
 <b>let</b> auth_key = <a href="account.html#0x1_account_spec_get_authentication_key">spec_get_authentication_key</a>(<a href="account.html#0x1_account">account</a>);
 <b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewUnvalidatedPublicKeyFromBytesAbortsIf">ed25519::NewUnvalidatedPublicKeyFromBytesAbortsIf</a> { bytes: account_public_key };
@@ -2966,6 +3048,18 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
     auth_key != <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_public_key_bytes_to_authentication_key">multi_ed25519::spec_public_key_bytes_to_authentication_key</a>(account_public_key);
 <b>include</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_NewSignatureFromBytesAbortsIf">ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: signed_message_bytes };
 <b>include</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> ==&gt; <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_NewSignatureFromBytesAbortsIf">multi_ed25519::NewSignatureFromBytesAbortsIf</a> { bytes: signed_message_bytes };
+<b>aborts_if</b> (account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> || account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>)
+    && !aptos_std::type_info::spec_is_struct&lt;T&gt;();
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && !<a href="../aptos-stdlib/ed25519.html#0x1_ed25519_spec_signature_verify_strict_t">ed25519::spec_signature_verify_strict_t</a>(
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_Signature">ed25519::Signature</a> { bytes: signed_message_bytes },
+    <a href="../aptos-stdlib/ed25519.html#0x1_ed25519_UnvalidatedPublicKey">ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key },
+    message
+);
+<b>aborts_if</b> account_scheme == <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a> && !<a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_spec_signature_verify_strict_t">multi_ed25519::spec_signature_verify_strict_t</a>(
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_Signature">multi_ed25519::Signature</a> { bytes: signed_message_bytes },
+    <a href="../aptos-stdlib/multi_ed25519.html#0x1_multi_ed25519_UnvalidatedPublicKey">multi_ed25519::UnvalidatedPublicKey</a> { bytes: account_public_key },
+    message
+);
 <b>aborts_if</b> account_scheme != <a href="account.html#0x1_account_ED25519_SCHEME">ED25519_SCHEME</a> && account_scheme != <a href="account.html#0x1_account_MULTI_ED25519_SCHEME">MULTI_ED25519_SCHEME</a>;
 </code></pre>
 

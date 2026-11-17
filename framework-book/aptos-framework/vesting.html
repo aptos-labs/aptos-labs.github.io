@@ -303,7 +303,6 @@ withdrawable, admin can call admin_withdraw to withdraw all funds to the vesting
 <li><a href="#@Specification_1_terminate_vesting_contract">Function <code>terminate_vesting_contract</code></a></li>
 <li><a href="#@Specification_1_admin_withdraw">Function <code>admin_withdraw</code></a></li>
 <li><a href="#@Specification_1_update_operator">Function <code>update_operator</code></a></li>
-<li><a href="#@Specification_1_update_operator_with_same_commission">Function <code>update_operator_with_same_commission</code></a></li>
 <li><a href="#@Specification_1_update_commission_percentage">Function <code>update_commission_percentage</code></a></li>
 <li><a href="#@Specification_1_update_voter">Function <code>update_voter</code></a></li>
 <li><a href="#@Specification_1_reset_lockup">Function <code>reset_lockup</code></a></li>
@@ -311,7 +310,6 @@ withdrawable, admin can call admin_withdraw to withdraw all funds to the vesting
 <li><a href="#@Specification_1_reset_beneficiary">Function <code>reset_beneficiary</code></a></li>
 <li><a href="#@Specification_1_set_management_role">Function <code>set_management_role</code></a></li>
 <li><a href="#@Specification_1_set_beneficiary_resetter">Function <code>set_beneficiary_resetter</code></a></li>
-<li><a href="#@Specification_1_set_beneficiary_for_operator">Function <code>set_beneficiary_for_operator</code></a></li>
 <li><a href="#@Specification_1_get_role_holder">Function <code>get_role_holder</code></a></li>
 <li><a href="#@Specification_1_get_vesting_account_signer">Function <code>get_vesting_account_signer</code></a></li>
 <li><a href="#@Specification_1_get_vesting_account_signer_internal">Function <code>get_vesting_account_signer_internal</code></a></li>
@@ -2414,8 +2412,7 @@ This address should be deterministic for the same admin and vesting contract cre
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="vesting.html#0x1_vesting_total_accumulated_rewards">total_accumulated_rewards</a>(vesting_contract_address: <b>address</b>): u64
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="vesting.html#0x1_vesting_TotalAccumulatedRewardsAbortsIf">TotalAccumulatedRewardsAbortsIf</a>;
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_TotalAccumulatedRewardsAbortsIf">TotalAccumulatedRewardsAbortsIf</a>;
 </code></pre>
 <p><a id="0x1_vesting_TotalAccumulatedRewardsAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="vesting.html#0x1_vesting_TotalAccumulatedRewardsAbortsIf">TotalAccumulatedRewardsAbortsIf</a> {
@@ -2434,12 +2431,10 @@ This address should be deterministic for the same admin and vesting contract cre
     <b>let</b> pending_active = <a href="coin.html#0x1_coin_value">coin::value</a>(stake_pool.pending_active);
     <b>let</b> total_active_stake = active + pending_active;
     <b>let</b> accumulated_rewards = total_active_stake - <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.principal;
-    <b>let</b> commission_amount = accumulated_rewards * <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.commission_percentage / 100;
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address);
     <b>aborts_if</b> active + pending_active &gt; MAX_U64;
     <b>aborts_if</b> total_active_stake &lt; <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.principal;
     <b>aborts_if</b> accumulated_rewards * <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.commission_percentage &gt; MAX_U64;
-    <b>aborts_if</b> (vesting_contract.remaining_grant + commission_amount) &gt; total_active_stake;
     <b>aborts_if</b> total_active_stake &lt; vesting_contract.remaining_grant;
 }
 </code></pre>
@@ -2447,26 +2442,7 @@ This address should be deterministic for the same admin and vesting contract cre
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="vesting.html#0x1_vesting_accumulated_rewards">accumulated_rewards</a>(vesting_contract_address: <b>address</b>, shareholder_or_beneficiary: <b>address</b>): u64
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="vesting.html#0x1_vesting_TotalAccumulatedRewardsAbortsIf">TotalAccumulatedRewardsAbortsIf</a>;
-<b>let</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(vesting_contract_address);
-<b>let</b> operator = vesting_contract.staking.operator;
-<b>let</b> staking_contracts = <b>global</b>&lt;<a href="staking_contract.html#0x1_staking_contract_Store">staking_contract::Store</a>&gt;(vesting_contract_address).staking_contracts;
-<b>let</b> <a href="staking_contract.html#0x1_staking_contract">staking_contract</a> = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(staking_contracts, operator);
-<b>let</b> pool_address = <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.pool_address;
-<b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address);
-<b>let</b> active = <a href="coin.html#0x1_coin_value">coin::value</a>(stake_pool.active);
-<b>let</b> pending_active = <a href="coin.html#0x1_coin_value">coin::value</a>(stake_pool.pending_active);
-<b>let</b> total_active_stake = active + pending_active;
-<b>let</b> accumulated_rewards = total_active_stake - <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.principal;
-<b>let</b> commission_amount = accumulated_rewards * <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.commission_percentage / 100;
-<b>let</b> total_accumulated_rewards = total_active_stake - vesting_contract.remaining_grant - commission_amount;
-<b>let</b> shareholder = <a href="vesting.html#0x1_vesting_spec_shareholder">spec_shareholder</a>(vesting_contract_address, shareholder_or_beneficiary);
-<b>let</b> pool = vesting_contract.grant_pool;
-<b>let</b> shares = <a href="../aptos-stdlib/pool_u64.html#0x1_pool_u64_spec_shares">pool_u64::spec_shares</a>(pool, shareholder);
-<b>aborts_if</b> pool.total_coins &gt; 0 && pool.total_shares &gt; 0
-    && (shares * total_accumulated_rewards) / pool.total_shares &gt; MAX_U64;
-<b>ensures</b> result == <a href="../aptos-stdlib/pool_u64.html#0x1_pool_u64_spec_shares_to_amount_with_total_coins">pool_u64::spec_shares_to_amount_with_total_coins</a>(pool, shares, total_accumulated_rewards);
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_TotalAccumulatedRewardsAbortsIf">TotalAccumulatedRewardsAbortsIf</a>;
 </code></pre>
 <h3 id="function-shareholders-1"><a class="header" href="#function-shareholders-1">Function <code>shareholders</code> <a id="@Specification_1_shareholders"></a></a></h3>
 <pre><code>#[view]
@@ -2509,26 +2485,12 @@ This address should be deterministic for the same admin and vesting contract cre
 <h3 id="function-unlock_rewards-1"><a class="header" href="#function-unlock_rewards-1">Function <code>unlock_rewards</code> <a id="@Specification_1_unlock_rewards"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_unlock_rewards">unlock_rewards</a>(contract_address: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="vesting.html#0x1_vesting_UnlockRewardsAbortsIf">UnlockRewardsAbortsIf</a>;
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_UnlockRewardsAbortsIf">UnlockRewardsAbortsIf</a>;
 </code></pre>
 <p><a id="0x1_vesting_UnlockRewardsAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="vesting.html#0x1_vesting_UnlockRewardsAbortsIf">UnlockRewardsAbortsIf</a> {
     contract_address: <b>address</b>;
     <b>include</b> <a href="vesting.html#0x1_vesting_TotalAccumulatedRewardsAbortsIf">TotalAccumulatedRewardsAbortsIf</a> { vesting_contract_address: contract_address };
-    <b>let</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
-    <b>let</b> operator = vesting_contract.staking.operator;
-    <b>let</b> staking_contracts = <b>global</b>&lt;<a href="staking_contract.html#0x1_staking_contract_Store">staking_contract::Store</a>&gt;(contract_address).staking_contracts;
-    <b>let</b> <a href="staking_contract.html#0x1_staking_contract">staking_contract</a> = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(staking_contracts, operator);
-    <b>let</b> pool_address = <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.pool_address;
-    <b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address);
-    <b>let</b> active = <a href="coin.html#0x1_coin_value">coin::value</a>(stake_pool.active);
-    <b>let</b> pending_active = <a href="coin.html#0x1_coin_value">coin::value</a>(stake_pool.pending_active);
-    <b>let</b> total_active_stake = active + pending_active;
-    <b>let</b> accumulated_rewards = total_active_stake - <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.principal;
-    <b>let</b> commission_amount = accumulated_rewards * <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.commission_percentage / 100;
-    <b>let</b> amount = total_active_stake - vesting_contract.remaining_grant - commission_amount;
-    <b>include</b> <a href="vesting.html#0x1_vesting_UnlockStakeAbortsIf">UnlockStakeAbortsIf</a> { vesting_contract, amount };
 }
 </code></pre>
 <h3 id="function-unlock_rewards_many-1"><a class="header" href="#function-unlock_rewards_many-1">Function <code>unlock_rewards_many</code> <a id="@Specification_1_unlock_rewards_many"></a></a></h3>
@@ -2552,8 +2514,7 @@ This address should be deterministic for the same admin and vesting contract cre
 <h3 id="function-distribute-1"><a class="header" href="#function-distribute-1">Function <code>distribute</code> <a id="@Specification_1_distribute"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_distribute">distribute</a>(contract_address: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="vesting.html#0x1_vesting_ActiveVestingContractAbortsIf">ActiveVestingContractAbortsIf</a>;
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_ActiveVestingContractAbortsIf">ActiveVestingContractAbortsIf</a>;
 <b>let</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
 <b>include</b> <a href="vesting.html#0x1_vesting_WithdrawStakeAbortsIf">WithdrawStakeAbortsIf</a> { vesting_contract };
 </code></pre>
@@ -2574,8 +2535,7 @@ This address should be deterministic for the same admin and vesting contract cre
 <h3 id="function-admin_withdraw-1"><a class="header" href="#function-admin_withdraw-1">Function <code>admin_withdraw</code> <a id="@Specification_1_admin_withdraw"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_admin_withdraw">admin_withdraw</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>let</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
+<pre><code><b>let</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
 <b>aborts_if</b> vesting_contract.state != <a href="vesting.html#0x1_vesting_VESTING_POOL_TERMINATED">VESTING_POOL_TERMINATED</a>;
 <b>include</b> <a href="vesting.html#0x1_vesting_VerifyAdminAbortsIf">VerifyAdminAbortsIf</a>;
 <b>include</b> <a href="vesting.html#0x1_vesting_WithdrawStakeAbortsIf">WithdrawStakeAbortsIf</a> { vesting_contract };
@@ -2583,27 +2543,33 @@ This address should be deterministic for the same admin and vesting contract cre
 <h3 id="function-update_operator-1"><a class="header" href="#function-update_operator-1">Function <code>update_operator</code> <a id="@Specification_1_update_operator"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_update_operator">update_operator</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>, new_operator: <b>address</b>, commission_percentage: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="vesting.html#0x1_vesting_VerifyAdminAbortsIf">VerifyAdminAbortsIf</a>;
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_VerifyAdminAbortsIf">VerifyAdminAbortsIf</a>;
 <b>let</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
 <b>let</b> acc = vesting_contract.signer_cap.<a href="account.html#0x1_account">account</a>;
 <b>let</b> old_operator = vesting_contract.staking.operator;
 <b>include</b> <a href="staking_contract.html#0x1_staking_contract_ContractExistsAbortsIf">staking_contract::ContractExistsAbortsIf</a> { staker: acc, operator: old_operator };
+<b>aborts_if</b> commission_percentage &gt; 100;
 <b>let</b> store = <b>global</b>&lt;<a href="staking_contract.html#0x1_staking_contract_Store">staking_contract::Store</a>&gt;(acc);
 <b>let</b> staking_contracts = store.staking_contracts;
 <b>aborts_if</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(staking_contracts, new_operator);
 <b>let</b> <a href="staking_contract.html#0x1_staking_contract">staking_contract</a> = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(staking_contracts, old_operator);
 <b>include</b> <a href="vesting.html#0x1_vesting_DistributeInternalAbortsIf">DistributeInternalAbortsIf</a> { staker: acc, operator: old_operator, <a href="staking_contract.html#0x1_staking_contract">staking_contract</a> };
-</code></pre>
-<h3 id="function-update_operator_with_same_commission-1"><a class="header" href="#function-update_operator_with_same_commission-1">Function <code>update_operator_with_same_commission</code> <a id="@Specification_1_update_operator_with_same_commission"></a></a></h3>
-<pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_update_operator_with_same_commission">update_operator_with_same_commission</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>, new_operator: <b>address</b>)
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<b>let</b> <b>post</b> post_vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
+<b>ensures</b> post_vesting_contract.staking.operator == new_operator;
+<b>ensures</b> post_vesting_contract.staking.commission_percentage == commission_percentage;
 </code></pre>
 <h3 id="function-update_commission_percentage-1"><a class="header" href="#function-update_commission_percentage-1">Function <code>update_commission_percentage</code> <a id="@Specification_1_update_commission_percentage"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_update_commission_percentage">update_commission_percentage</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>, new_commission_percentage: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_VerifyAdminAbortsIf">VerifyAdminAbortsIf</a>;
+<b>aborts_if</b> new_commission_percentage &gt; 100;
+<b>let</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
+<b>include</b> <a href="staking_contract.html#0x1_staking_contract_ContractExistsAbortsIf">staking_contract::ContractExistsAbortsIf</a> {
+    staker: vesting_contract.signer_cap.<a href="account.html#0x1_account">account</a>,
+    operator: vesting_contract.staking.operator,
+};
+<b>let</b> <b>post</b> post_vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
+<b>ensures</b> post_vesting_contract.staking.commission_percentage == new_commission_percentage;
 </code></pre>
 <h3 id="function-update_voter-1"><a class="header" href="#function-update_voter-1">Function <code>update_voter</code> <a id="@Specification_1_update_voter"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_update_voter">update_voter</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>, new_voter: <b>address</b>)
@@ -2634,7 +2600,6 @@ This address should be deterministic for the same admin and vesting contract cre
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_set_beneficiary">set_beneficiary</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>, shareholder: <b>address</b>, new_beneficiary: <b>address</b>)
 </code></pre>
 <pre><code><b>pragma</b> verify_duration_estimate = 300;
-<b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> !<a href="account.html#0x1_account_spec_exists_at">account::spec_exists_at</a>(new_beneficiary);
 <b>include</b> <a href="vesting.html#0x1_vesting_VerifyAdminAbortsIf">VerifyAdminAbortsIf</a>;
 <b>let</b> <b>post</b> vesting_contract = <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
@@ -2658,20 +2623,13 @@ This address should be deterministic for the same admin and vesting contract cre
 <h3 id="function-set_management_role-1"><a class="header" href="#function-set_management_role-1">Function <code>set_management_role</code> <a id="@Specification_1_set_management_role"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_set_management_role">set_management_role</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>, role: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, role_holder: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="vesting.html#0x1_vesting_SetManagementRoleAbortsIf">SetManagementRoleAbortsIf</a>;
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_SetManagementRoleAbortsIf">SetManagementRoleAbortsIf</a>;
 </code></pre>
 <h3 id="function-set_beneficiary_resetter-1"><a class="header" href="#function-set_beneficiary_resetter-1">Function <code>set_beneficiary_resetter</code> <a id="@Specification_1_set_beneficiary_resetter"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_set_beneficiary_resetter">set_beneficiary_resetter</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>, beneficiary_resetter: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="vesting.html#0x1_vesting_ROLE_BENEFICIARY_RESETTER">ROLE_BENEFICIARY_RESETTER</a>);
+<pre><code><b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="vesting.html#0x1_vesting_ROLE_BENEFICIARY_RESETTER">ROLE_BENEFICIARY_RESETTER</a>);
 <b>include</b> <a href="vesting.html#0x1_vesting_SetManagementRoleAbortsIf">SetManagementRoleAbortsIf</a>;
-</code></pre>
-<h3 id="function-set_beneficiary_for_operator-1"><a class="header" href="#function-set_beneficiary_for_operator-1">Function <code>set_beneficiary_for_operator</code> <a id="@Specification_1_set_beneficiary_for_operator"></a></a></h3>
-<pre><code><b>public</b> entry <b>fun</b> <a href="vesting.html#0x1_vesting_set_beneficiary_for_operator">set_beneficiary_for_operator</a>(operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_beneficiary: <b>address</b>)
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-get_role_holder-1"><a class="header" href="#function-get_role_holder-1">Function <code>get_role_holder</code> <a id="@Specification_1_get_role_holder"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="vesting.html#0x1_vesting_get_role_holder">get_role_holder</a>(contract_address: <b>address</b>, role: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <b>address</b>
@@ -2683,13 +2641,17 @@ This address should be deterministic for the same admin and vesting contract cre
 <h3 id="function-get_vesting_account_signer-1"><a class="header" href="#function-get_vesting_account_signer-1">Function <code>get_vesting_account_signer</code> <a id="@Specification_1_get_vesting_account_signer"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="vesting.html#0x1_vesting_get_vesting_account_signer">get_vesting_account_signer</a>(admin: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, contract_address: <b>address</b>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
 <b>include</b> <a href="vesting.html#0x1_vesting_VerifyAdminAbortsIf">VerifyAdminAbortsIf</a>;
+<b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result)
+    == <b>global</b>&lt;<a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address).signer_cap.<a href="account.html#0x1_account">account</a>;
 </code></pre>
 <h3 id="function-get_vesting_account_signer_internal-1"><a class="header" href="#function-get_vesting_account_signer_internal-1">Function <code>get_vesting_account_signer_internal</code> <a id="@Specification_1_get_vesting_account_signer_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="vesting.html#0x1_vesting_get_vesting_account_signer_internal">get_vesting_account_signer_internal</a>(vesting_contract: &<a href="vesting.html#0x1_vesting_VestingContract">vesting::VestingContract</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
 </code></pre>
 <pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == vesting_contract.signer_cap.<a href="account.html#0x1_account">account</a>;
 </code></pre>
 <p><a id="0x1_vesting_spec_get_vesting_account_signer"></a></p>
 <pre><code><b>fun</b> <a href="vesting.html#0x1_vesting_spec_get_vesting_account_signer">spec_get_vesting_account_signer</a>(vesting_contract: <a href="vesting.html#0x1_vesting_VestingContract">VestingContract</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
@@ -2710,15 +2672,12 @@ This address should be deterministic for the same admin and vesting contract cre
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="vesting.html#0x1_vesting_AdminStore">AdminStore</a>&gt;(admin_addr);
 <b>aborts_if</b> len(<a href="account.html#0x1_account_ZERO_AUTH_KEY">account::ZERO_AUTH_KEY</a>) != 32;
 <b>aborts_if</b> admin_store.nonce + (1 <b>as</b> u64) &gt; (MAX_U64 <b>as</b> u64);
-<b>let</b> ea = <a href="account.html#0x1_account_spec_exists_at">account::spec_exists_at</a>(resource_addr);
-<b>include</b> <b>if</b> (ea) <a href="account.html#0x1_account_CreateResourceAccountAbortsIf">account::CreateResourceAccountAbortsIf</a> <b>else</b> <a href="account.html#0x1_account_CreateAccountAbortsIf">account::CreateAccountAbortsIf</a> {addr: resource_addr};
-<b>let</b> acc = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(resource_addr);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(resource_addr);
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">account::EnsureResourceExistsAbortsIf</a> { addr: resource_addr };
 <b>let</b> <b>post</b> post_acc = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(resource_addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(resource_addr) && !aptos_std::type_info::spec_is_struct&lt;AptosCoin&gt;();
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(resource_addr) && ea && acc.guid_creation_num + 2 &gt; MAX_U64;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(resource_addr) && ea && acc.guid_creation_num + 2 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">account::MAX_GUID_CREATION_NUM</a>;
-<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(resource_addr) && post_acc.authentication_key == <a href="account.html#0x1_account_ZERO_AUTH_KEY">account::ZERO_AUTH_KEY</a> &&
-        <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(resource_addr);
+<b>aborts_if</b> !aptos_std::type_info::spec_is_struct&lt;AptosCoin&gt;();
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(resource_addr) && post_acc.authentication_key == <a href="account.html#0x1_account_ZERO_AUTH_KEY">account::ZERO_AUTH_KEY</a>;
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result_1) == resource_addr;
 <b>ensures</b> result_2.<a href="account.html#0x1_account">account</a> == resource_addr;
 </code></pre>
@@ -2738,13 +2697,14 @@ This address should be deterministic for the same admin and vesting contract cre
 <h3 id="function-assert_active_vesting_contract-1"><a class="header" href="#function-assert_active_vesting_contract-1">Function <code>assert_active_vesting_contract</code> <a id="@Specification_1_assert_active_vesting_contract"></a></a></h3>
 <pre><code><b>fun</b> <a href="vesting.html#0x1_vesting_assert_active_vesting_contract">assert_active_vesting_contract</a>(contract_address: <b>address</b>)
 </code></pre>
-<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_ActiveVestingContractAbortsIf">ActiveVestingContractAbortsIf</a>;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>include</b> <a href="vesting.html#0x1_vesting_ActiveVestingContractAbortsIf">ActiveVestingContractAbortsIf</a>;
 </code></pre>
 <h3 id="function-unlock_stake-1"><a class="header" href="#function-unlock_stake-1">Function <code>unlock_stake</code> <a id="@Specification_1_unlock_stake"></a></a></h3>
 <pre><code><b>fun</b> <a href="vesting.html#0x1_vesting_unlock_stake">unlock_stake</a>(vesting_contract: &<a href="vesting.html#0x1_vesting_VestingContract">vesting::VestingContract</a>, amount: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="vesting.html#0x1_vesting_UnlockStakeAbortsIf">UnlockStakeAbortsIf</a>;
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_UnlockStakeAbortsIf">UnlockStakeAbortsIf</a>;
 </code></pre>
 <p><a id="0x1_vesting_UnlockStakeAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="vesting.html#0x1_vesting_UnlockStakeAbortsIf">UnlockStakeAbortsIf</a> {
@@ -2761,8 +2721,7 @@ This address should be deterministic for the same admin and vesting contract cre
 <h3 id="function-withdraw_stake-1"><a class="header" href="#function-withdraw_stake-1">Function <code>withdraw_stake</code> <a id="@Specification_1_withdraw_stake"></a></a></h3>
 <pre><code><b>fun</b> <a href="vesting.html#0x1_vesting_withdraw_stake">withdraw_stake</a>(vesting_contract: &<a href="vesting.html#0x1_vesting_VestingContract">vesting::VestingContract</a>, contract_address: <b>address</b>): <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>include</b> <a href="vesting.html#0x1_vesting_WithdrawStakeAbortsIf">WithdrawStakeAbortsIf</a>;
+<pre><code><b>include</b> <a href="vesting.html#0x1_vesting_WithdrawStakeAbortsIf">WithdrawStakeAbortsIf</a>;
 </code></pre>
 <p><a id="0x1_vesting_WithdrawStakeAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="vesting.html#0x1_vesting_WithdrawStakeAbortsIf">WithdrawStakeAbortsIf</a> {

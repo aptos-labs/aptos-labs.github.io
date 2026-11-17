@@ -496,18 +496,32 @@ epoch".</p>
 <h3 id="function-try_clear_incomplete_session-1"><a class="header" href="#function-try_clear_incomplete_session-1">Function <code>try_clear_incomplete_session</code> <a id="@Specification_1_try_clear_incomplete_session"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg.html#0x1_chunky_dkg_try_clear_incomplete_session">try_clear_incomplete_session</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx);
+<pre><code><b>pragma</b> opaque;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(fx);
 <b>aborts_if</b> addr != @aptos_framework;
+<b>modifies</b> <b>global</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework) == <b>old</b>(<b>exists</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework));
+<b>ensures</b> <b>exists</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework) ==&gt;
+    <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework).in_progress)
+    && <b>global</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework).last_completed
+        == <b>old</b>(<b>global</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework).last_completed);
 </code></pre>
 <h3 id="function-incomplete_session-1"><a class="header" href="#function-incomplete_session-1">Function <code>incomplete_session</code> <a id="@Specification_1_incomplete_session"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg.html#0x1_chunky_dkg_incomplete_session">incomplete_session</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGSessionState">chunky_dkg::ChunkyDKGSessionState</a>&gt;
 </code></pre>
-<pre><code><b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == <b>if</b> (<b>exists</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework)) {
+    <b>global</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework).in_progress
+} <b>else</b> {
+    <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>()
+};
 </code></pre>
 <h3 id="function-last_completed_session-1"><a class="header" href="#function-last_completed_session-1">Function <code>last_completed_session</code> <a id="@Specification_1_last_completed_session"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg.html#0x1_chunky_dkg_last_completed_session">last_completed_session</a>(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGSessionState">chunky_dkg::ChunkyDKGSessionState</a>&gt;
 </code></pre>
-<pre><code><b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == <b>if</b> (<b>exists</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework)) {
     <b>global</b>&lt;<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGState">ChunkyDKGState</a>&gt;(@aptos_framework).last_completed
 } <b>else</b> {
@@ -518,11 +532,13 @@ epoch".</p>
 <pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg.html#0x1_chunky_dkg_session_dealer_epoch">session_dealer_epoch</a>(session: &<a href="chunky_dkg.html#0x1_chunky_dkg_ChunkyDKGSessionState">chunky_dkg::ChunkyDKGSessionState</a>): u64
 </code></pre>
 <pre><code><b>aborts_if</b> <b>false</b>;
+<b>ensures</b> result == session.metadata.dealer_epoch;
 </code></pre>
 <h3 id="function-is_session_started-1"><a class="header" href="#function-is_session_started-1">Function <code>is_session_started</code> <a id="@Specification_1_is_session_started"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="chunky_dkg.html#0x1_chunky_dkg_is_session_started">is_session_started</a>(epoch: u64): bool
 </code></pre>
-<pre><code><b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == <a href="chunky_dkg.html#0x1_chunky_dkg_spec_is_session_started">spec_is_session_started</a>(epoch);
 </code></pre>
 <p>A session has been started for <code>epoch</code> iff either the in-progress or

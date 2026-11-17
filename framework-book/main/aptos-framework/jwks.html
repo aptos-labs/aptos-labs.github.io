@@ -238,7 +238,10 @@ have a simple layout which is easily accessible in Rust.</p>
 <li><a href="#@Specification_1_regenerate_patched_jwks">Function <code>regenerate_patched_jwks</code></a></li>
 <li><a href="#@Specification_1_try_get_jwk_by_issuer">Function <code>try_get_jwk_by_issuer</code></a></li>
 <li><a href="#@Specification_1_try_get_jwk_by_id">Function <code>try_get_jwk_by_id</code></a></li>
+<li><a href="#@Specification_1_get_jwk_id">Function <code>get_jwk_id</code></a></li>
+<li><a href="#@Specification_1_upsert_provider_jwks">Function <code>upsert_provider_jwks</code></a></li>
 <li><a href="#@Specification_1_remove_issuer">Function <code>remove_issuer</code></a></li>
+<li><a href="#@Specification_1_upsert_jwk">Function <code>upsert_jwk</code></a></li>
 <li><a href="#@Specification_1_remove_jwk">Function <code>remove_jwk</code></a></li>
 <li><a href="#@Specification_1_apply_patch">Function <code>apply_patch</code></a></li>
 </ul>
@@ -1396,9 +1399,8 @@ Maintains the sorted-by-issuer invariant in <code><a href="jwks.html#0x1_jwks_Al
 <h3 id="function-on_new_epoch-1"><a class="header" href="#function-on_new_epoch-1">Function <code>on_new_epoch</code> <a id="@Specification_1_on_new_epoch"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="jwks.html#0x1_jwks_on_new_epoch">on_new_epoch</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>requires</b> @aptos_framework == std::signer::address_of(framework);
-<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochRequirement">config_buffer::OnNewEpochRequirement</a>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;;
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="config_buffer.html#0x1_config_buffer_OnNewEpochApply">config_buffer::OnNewEpochApply</a>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;;
 </code></pre>
 <h3 id="function-set_patches-1"><a class="header" href="#function-set_patches-1">Function <code>set_patches</code> <a id="@Specification_1_set_patches"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_set_patches">set_patches</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, patches: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_Patch">jwks::Patch</a>&gt;)
@@ -1426,7 +1428,16 @@ Maintains the sorted-by-issuer invariant in <code><a href="jwks.html#0x1_jwks_Al
 <h3 id="function-initialize_with_defaults-1"><a class="header" href="#function-initialize_with_defaults-1">Function <code>initialize_with_defaults</code> <a id="@Specification_1_initialize_with_defaults"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="jwks.html#0x1_jwks_initialize_with_defaults">initialize_with_defaults</a>(fx: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, providers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_OIDCProvider">jwks::OIDCProvider</a>&gt;, patches: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="jwks.html#0x1_jwks_Patch">jwks::Patch</a>&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> std::signer::address_of(fx) != @aptos_framework;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_ObservedJWKs">ObservedJWKs</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_Patches">Patches</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_PatchedJWKs">PatchedJWKs</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_SupportedOIDCProviders">SupportedOIDCProviders</a>&gt;(@aptos_framework).providers == providers;
+<b>ensures</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_ObservedJWKs">ObservedJWKs</a>&gt;(@aptos_framework).<a href="jwks.html#0x1_jwks">jwks</a>.entries == <a href="../move-stdlib/vector.html#0x1_vector">vector</a>[];
+<b>ensures</b> <b>global</b>&lt;<a href="jwks.html#0x1_jwks_Patches">Patches</a>&gt;(@aptos_framework).patches == patches;
+<b>ensures</b> <b>exists</b>&lt;<a href="jwks.html#0x1_jwks_PatchedJWKs">PatchedJWKs</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-remove_oidc_provider_internal-1"><a class="header" href="#function-remove_oidc_provider_internal-1">Function <code>remove_oidc_provider_internal</code> <a id="@Specification_1_remove_oidc_provider_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="jwks.html#0x1_jwks_remove_oidc_provider_internal">remove_oidc_provider_internal</a>(provider_set: &<b>mut</b> <a href="jwks.html#0x1_jwks_SupportedOIDCProviders">jwks::SupportedOIDCProviders</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
@@ -1459,6 +1470,27 @@ Maintains the sorted-by-issuer invariant in <code><a href="jwks.html#0x1_jwks_Al
 </code></pre>
 <pre><code><b>pragma</b> verify_duration_estimate = 80;
 </code></pre>
+<h3 id="function-get_jwk_id-1"><a class="header" href="#function-get_jwk_id-1">Function <code>get_jwk_id</code> <a id="@Specification_1_get_jwk_id"></a></a></h3>
+<pre><code><b>fun</b> <a href="jwks.html#0x1_jwks_get_jwk_id">get_jwk_id</a>(jwk: &<a href="jwks.html#0x1_jwks_JWK">jwks::JWK</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>let</b> name = jwk.variant.type_name.bytes;
+<b>let</b> data = jwk.variant.data;
+<b>aborts_if</b> name != b"<a href="jwks.html#0x1_jwks_RSA_JWK">0x1::jwks::RSA_JWK</a>" && name != b"<a href="jwks.html#0x1_jwks_UnsupportedJWK">0x1::jwks::UnsupportedJWK</a>"
+    <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+<b>aborts_if</b> name == b"<a href="jwks.html#0x1_jwks_RSA_JWK">0x1::jwks::RSA_JWK</a>" && !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<a href="jwks.html#0x1_jwks_RSA_JWK">RSA_JWK</a>&gt;(data);
+<b>aborts_if</b> name == b"<a href="jwks.html#0x1_jwks_UnsupportedJWK">0x1::jwks::UnsupportedJWK</a>" && !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;<a href="jwks.html#0x1_jwks_UnsupportedJWK">UnsupportedJWK</a>&gt;(data);
+<b>ensures</b> name == b"<a href="jwks.html#0x1_jwks_RSA_JWK">0x1::jwks::RSA_JWK</a>" ==&gt; result == <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<a href="jwks.html#0x1_jwks_RSA_JWK">RSA_JWK</a>&gt;(data).kid.bytes;
+<b>ensures</b> name == b"<a href="jwks.html#0x1_jwks_UnsupportedJWK">0x1::jwks::UnsupportedJWK</a>" ==&gt; result == <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;<a href="jwks.html#0x1_jwks_UnsupportedJWK">UnsupportedJWK</a>&gt;(data).id;
+</code></pre>
+<h3 id="function-upsert_provider_jwks-1"><a class="header" href="#function-upsert_provider_jwks-1">Function <code>upsert_provider_jwks</code> <a id="@Specification_1_upsert_provider_jwks"></a></a></h3>
+<pre><code><b>fun</b> <a href="jwks.html#0x1_jwks_upsert_provider_jwks">upsert_provider_jwks</a>(<a href="jwks.html#0x1_jwks">jwks</a>: &<b>mut</b> <a href="jwks.html#0x1_jwks_AllProvidersJWKs">jwks::AllProvidersJWKs</a>, provider_jwks: <a href="jwks.html#0x1_jwks_ProviderJWKs">jwks::ProviderJWKs</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="jwks.html#0x1_jwks_ProviderJWKs">jwks::ProviderJWKs</a>&gt;
+</code></pre>
+<p>Either an existing entry is replaced and returned, or a new entry is inserted.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result) ==&gt; len(<a href="jwks.html#0x1_jwks">jwks</a>.entries) == len(<b>old</b>(<a href="jwks.html#0x1_jwks">jwks</a>).entries) + 1;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result) ==&gt; len(<a href="jwks.html#0x1_jwks">jwks</a>.entries) == len(<b>old</b>(<a href="jwks.html#0x1_jwks">jwks</a>).entries)
+    && <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>old</b>(<a href="jwks.html#0x1_jwks">jwks</a>).entries, <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result));
+</code></pre>
 <h3 id="function-remove_issuer-1"><a class="header" href="#function-remove_issuer-1">Function <code>remove_issuer</code> <a id="@Specification_1_remove_issuer"></a></a></h3>
 <pre><code><b>fun</b> <a href="jwks.html#0x1_jwks_remove_issuer">remove_issuer</a>(<a href="jwks.html#0x1_jwks">jwks</a>: &<b>mut</b> <a href="jwks.html#0x1_jwks_AllProvidersJWKs">jwks::AllProvidersJWKs</a>, issuer: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="jwks.html#0x1_jwks_ProviderJWKs">jwks::ProviderJWKs</a>&gt;
 </code></pre>
@@ -1466,6 +1498,17 @@ Maintains the sorted-by-issuer invariant in <code><a href="jwks.html#0x1_jwks_Al
 <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result) &lt;==&gt; (<b>forall</b> jwk: <a href="jwks.html#0x1_jwks_ProviderJWKs">ProviderJWKs</a> <b>where</b> <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>old</b>(<a href="jwks.html#0x1_jwks">jwks</a>).entries, jwk): jwk.issuer != issuer);
 <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result) ==&gt; <b>old</b>(<a href="jwks.html#0x1_jwks">jwks</a>) == <a href="jwks.html#0x1_jwks">jwks</a>;
 <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result) ==&gt; <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>old</b>(<a href="jwks.html#0x1_jwks">jwks</a>).entries, <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result));
+</code></pre>
+<h3 id="function-upsert_jwk-1"><a class="header" href="#function-upsert_jwk-1">Function <code>upsert_jwk</code> <a id="@Specification_1_upsert_jwk"></a></a></h3>
+<pre><code><b>fun</b> <a href="jwks.html#0x1_jwks_upsert_jwk">upsert_jwk</a>(set: &<b>mut</b> <a href="jwks.html#0x1_jwks_ProviderJWKs">jwks::ProviderJWKs</a>, jwk: <a href="jwks.html#0x1_jwks_JWK">jwks::JWK</a>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="jwks.html#0x1_jwks_JWK">jwks::JWK</a>&gt;
+</code></pre>
+<p>Either an existing JWK is replaced and returned, or a new JWK is inserted; issuer and version are unchanged.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>ensures</b> set.issuer == <b>old</b>(set).issuer;
+<b>ensures</b> set.<a href="version.html#0x1_version">version</a> == <b>old</b>(set).<a href="version.html#0x1_version">version</a>;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result) ==&gt; len(set.<a href="jwks.html#0x1_jwks">jwks</a>) == len(<b>old</b>(set).<a href="jwks.html#0x1_jwks">jwks</a>) + 1;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result) ==&gt; len(set.<a href="jwks.html#0x1_jwks">jwks</a>) == len(<b>old</b>(set).<a href="jwks.html#0x1_jwks">jwks</a>)
+    && <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>old</b>(set).<a href="jwks.html#0x1_jwks">jwks</a>, <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result));
 </code></pre>
 <h3 id="function-remove_jwk-1"><a class="header" href="#function-remove_jwk-1">Function <code>remove_jwk</code> <a id="@Specification_1_remove_jwk"></a></a></h3>
 <pre><code><b>fun</b> <a href="jwks.html#0x1_jwks_remove_jwk">remove_jwk</a>(<a href="jwks.html#0x1_jwks">jwks</a>: &<b>mut</b> <a href="jwks.html#0x1_jwks_ProviderJWKs">jwks::ProviderJWKs</a>, jwk_id: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="jwks.html#0x1_jwks_JWK">jwks::JWK</a>&gt;

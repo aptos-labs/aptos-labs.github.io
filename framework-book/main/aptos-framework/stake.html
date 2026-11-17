@@ -307,13 +307,17 @@ or if their stake drops below the min required, they would get removed at the en
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
 <li><a href="#@Specification_1_ValidatorSet">Resource <code>ValidatorSet</code></a></li>
+<li><a href="#@Specification_1_PrecomputedValidatorSet">Resource <code>PrecomputedValidatorSet</code></a></li>
 <li><a href="#@Specification_1_get_validator_state">Function <code>get_validator_state</code></a></li>
 <li><a href="#@Specification_1_get_pending_transaction_fee">Function <code>get_pending_transaction_fee</code></a></li>
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_remove_validators">Function <code>remove_validators</code></a></li>
 <li><a href="#@Specification_1_initialize_pending_transaction_fee">Function <code>initialize_pending_transaction_fee</code></a></li>
+<li><a href="#@Specification_1_set_transaction_fee_config">Function <code>set_transaction_fee_config</code></a></li>
+<li><a href="#@Specification_1_record_fee">Function <code>record_fee</code></a></li>
 <li><a href="#@Specification_1_initialize_stake_owner">Function <code>initialize_stake_owner</code></a></li>
 <li><a href="#@Specification_1_initialize_validator">Function <code>initialize_validator</code></a></li>
+<li><a href="#@Specification_1_initialize_owner">Function <code>initialize_owner</code></a></li>
 <li><a href="#@Specification_1_extract_owner_cap">Function <code>extract_owner_cap</code></a></li>
 <li><a href="#@Specification_1_deposit_owner_cap">Function <code>deposit_owner_cap</code></a></li>
 <li><a href="#@Specification_1_set_operator_with_cap">Function <code>set_operator_with_cap</code></a></li>
@@ -325,8 +329,10 @@ or if their stake drops below the min required, they would get removed at the en
 <li><a href="#@Specification_1_update_network_and_fullnode_addresses">Function <code>update_network_and_fullnode_addresses</code></a></li>
 <li><a href="#@Specification_1_increase_lockup_with_cap">Function <code>increase_lockup_with_cap</code></a></li>
 <li><a href="#@Specification_1_join_validator_set">Function <code>join_validator_set</code></a></li>
+<li><a href="#@Specification_1_join_validator_set_internal">Function <code>join_validator_set_internal</code></a></li>
 <li><a href="#@Specification_1_unlock_with_cap">Function <code>unlock_with_cap</code></a></li>
 <li><a href="#@Specification_1_withdraw">Function <code>withdraw</code></a></li>
+<li><a href="#@Specification_1_withdraw_with_cap">Function <code>withdraw_with_cap</code></a></li>
 <li><a href="#@Specification_1_leave_validator_set">Function <code>leave_validator_set</code></a></li>
 <li><a href="#@Specification_1_is_current_epoch_validator">Function <code>is_current_epoch_validator</code></a></li>
 <li><a href="#@Specification_1_update_performance_statistics">Function <code>update_performance_statistics</code></a></li>
@@ -3107,6 +3113,9 @@ Should only be called when reconfiguration starts.</p>
             new_active_validators.push_back(new_validator_info);
             new_total_power +=(new_voting_power <b>as</b> u128);
             is_liveness_fallback = <b>true</b>;
+        } <b>spec</b> {
+            <b>invariant</b> <b>forall</b> i in 0..len(new_active_validators):
+                new_active_validators[i].config.validator_index == i;
         };
     };
 
@@ -3765,11 +3774,33 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
        && <a href="stake.html#0x1_stake_spec_validator_indices_active_pending_inactive">spec_validator_indices_active_pending_inactive</a>(validator_set)
 }
 </code></pre>
+<h3 id="resource-precomputedvalidatorset-1"><a class="header" href="#resource-precomputedvalidatorset-1">Resource <code>PrecomputedValidatorSet</code> <a id="@Specification_1_PrecomputedValidatorSet"></a></a></h3>
+<pre><code><b>struct</b> <a href="stake.html#0x1_stake_PrecomputedValidatorSet">PrecomputedValidatorSet</a> <b>has</b> key
+</code></pre>
+<dl>
+<dt>
+<code>validator_set: <a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a></code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>is_liveness_fallback: bool</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code><b>invariant</b> len(validator_set.pending_inactive) == 0;
+<b>invariant</b> len(validator_set.pending_active) == 0;
+<b>invariant</b> <b>forall</b> i in 0..len(validator_set.active_validators):
+    validator_set.active_validators[i].config.validator_index == i;
+</code></pre>
 <h3 id="function-get_validator_state-1"><a class="header" href="#function-get_validator_state-1">Function <code>get_validator_state</code> <a id="@Specification_1_get_validator_state"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_get_validator_state">get_validator_state</a>(pool_address: <b>address</b>): u64
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
 <b>let</b> validator_set = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
 <b>ensures</b> result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_PENDING_ACTIVE">VALIDATOR_STATUS_PENDING_ACTIVE</a> ==&gt;
     <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address);
@@ -3783,6 +3814,29 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
             && !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
             && !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address)
     );
+<b>ensures</b> result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_PENDING_ACTIVE">VALIDATOR_STATUS_PENDING_ACTIVE</a>
+    || result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_ACTIVE">VALIDATOR_STATUS_ACTIVE</a>
+    || result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_PENDING_INACTIVE">VALIDATOR_STATUS_PENDING_INACTIVE</a>
+    || result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_INACTIVE">VALIDATOR_STATUS_INACTIVE</a>;
+<b>ensures</b> <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address) ==&gt;
+    result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_PENDING_ACTIVE">VALIDATOR_STATUS_PENDING_ACTIVE</a>;
+<b>ensures</b> result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_PENDING_INACTIVE">VALIDATOR_STATUS_PENDING_INACTIVE</a> ==&gt;
+    !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address);
+<b>ensures</b> !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
+    && <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address) ==&gt;
+    result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_ACTIVE">VALIDATOR_STATUS_ACTIVE</a>;
+<b>ensures</b> !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
+    && !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
+    && !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address) ==&gt;
+    result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_INACTIVE">VALIDATOR_STATUS_INACTIVE</a>;
+<b>ensures</b> result == <a href="stake.html#0x1_stake_VALIDATOR_STATUS_INACTIVE">VALIDATOR_STATUS_INACTIVE</a> ==&gt;
+    <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<a href="stake.html#0x1_stake_spec_find_validator">spec_find_validator</a>(validator_set.pending_active, pool_address))
+        && <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(
+            <a href="stake.html#0x1_stake_spec_find_validator">spec_find_validator</a>(validator_set.active_validators, pool_address)
+        )
+        && <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(
+            <a href="stake.html#0x1_stake_spec_find_validator">spec_find_validator</a>(validator_set.pending_inactive, pool_address)
+        );
 </code></pre>
 <h3 id="function-get_pending_transaction_fee-1"><a class="header" href="#function-get_pending_transaction_fee-1">Function <code>get_pending_transaction_fee</code> <a id="@Specification_1_get_pending_transaction_fee"></a></a></h3>
 <pre><code>#[view]
@@ -3819,17 +3873,43 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-initialize_pending_transaction_fee-1"><a class="header" href="#function-initialize_pending_transaction_fee-1">Function <code>initialize_pending_transaction_fee</code> <a id="@Specification_1_initialize_pending_transaction_fee"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_initialize_pending_transaction_fee">initialize_pending_transaction_fee</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(framework));
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
+</code></pre>
+<h3 id="function-set_transaction_fee_config-1"><a class="header" href="#function-set_transaction_fee_config-1">Function <code>set_transaction_fee_config</code> <a id="@Specification_1_set_transaction_fee_config"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_set_transaction_fee_config">set_transaction_fee_config</a>(framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, config: <a href="stake.html#0x1_stake_TransactionFeeConfig">stake::TransactionFeeConfig</a>)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(framework));
+<b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_TransactionFeeConfig">TransactionFeeConfig</a>&gt;(@aptos_framework) == config;
+</code></pre>
+<h3 id="function-record_fee-1"><a class="header" href="#function-record_fee-1">Function <code>record_fee</code> <a id="@Specification_1_record_fee"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="stake.html#0x1_stake_record_fee">record_fee</a>(vm: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fee_distribution_validator_indices: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, fee_amounts_octa: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_vm">system_addresses::is_vm</a>(vm);
+<b>aborts_if</b> len(fee_distribution_validator_indices) != len(fee_amounts_octa);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
 <b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-initialize_stake_owner-1"><a class="header" href="#function-initialize_stake_owner-1">Function <code>initialize_stake_owner</code> <a id="@Specification_1_initialize_stake_owner"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_initialize_stake_owner">initialize_stake_owner</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, initial_stake_amount: u64, operator: <b>address</b>, voter: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
+<pre><code><b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>let</b> store_addr = <a href="stake.html#0x1_stake_spec_apt_paired_store_address">spec_apt_paired_store_address</a>(addr);
+<b>let</b> plain = <a href="stake.html#0x1_stake_spec_has_apt_paired_store">spec_has_apt_paired_store</a>(addr)
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(store_addr);
+<b>let</b> staking = initial_stake_amount &gt; 0;
+<b>include</b> <a href="stake.html#0x1_stake_InitializeOwnerAbortsIf">InitializeOwnerAbortsIf</a>;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(addr);
+<b>aborts_if</b> staking && <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
+<b>aborts_if</b> staking && plain && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; initial_stake_amount;
+<b>aborts_if</b> staking && plain
+    && initial_stake_amount &gt; <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework).maximum_stake;
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(addr);
 <b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(addr)
     == <a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a> {
         consensus_pubkey: <a href="../move-stdlib/vector.html#0x1_vector_empty">vector::empty</a>(),
@@ -3838,39 +3918,28 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
         validator_index: 0
     };
 <b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr) == <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a> { pool_address: addr };
-<b>let</b> <b>post</b> stakepool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(addr);
-<b>let</b> <b>post</b> active = stakepool.active.value;
-<b>let</b> <b>post</b> pending_active = stakepool.pending_active.value;
-<b>ensures</b> <a href="stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(addr) ==&gt;
-    pending_active == initial_stake_amount;
-<b>ensures</b> !<a href="stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(addr) ==&gt;
-    active == initial_stake_amount;
+<b>let</b> <b>post</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(addr);
+<b>ensures</b> stake_pool.operator_address == operator;
+<b>ensures</b> stake_pool.delegated_voter == voter;
+<b>let</b> kept = voter == addr;
+<b>ensures</b> kept && (!staking || plain) ==&gt; stake_pool.active.value == initial_stake_amount;
+<b>ensures</b> kept ==&gt; stake_pool.pending_active.value == 0
+    && stake_pool.inactive.value == 0
+    && stake_pool.pending_inactive.value == 0;
 </code></pre>
 <h3 id="function-initialize_validator-1"><a class="header" href="#function-initialize_validator-1">Function <code>initialize_validator</code> <a id="@Specification_1_initialize_validator"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_initialize_validator">initialize_validator</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, consensus_pubkey: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, proof_of_possession: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, network_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, fullnode_addresses: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>let</b> pubkey_from_pop = <a href="../aptos-stdlib/bls12381.html#0x1_bls12381_spec_public_key_from_bytes_with_pop">bls12381::spec_public_key_from_bytes_with_pop</a>(
+<pre><code><b>let</b> pubkey_from_pop = <a href="../aptos-stdlib/bls12381.html#0x1_bls12381_spec_public_key_from_bytes_with_pop">bls12381::spec_public_key_from_bytes_with_pop</a>(
     consensus_pubkey,
     proof_of_possession_from_bytes(proof_of_possession)
 );
-<b>aborts_if</b> !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(pubkey_from_pop);
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-<b>let</b> post_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-<b>let</b> allowed = <b>global</b>&lt;<a href="stake.html#0x1_stake_AllowedValidators">AllowedValidators</a>&gt;(@aptos_framework);
+<b>aborts_if</b> !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(pubkey_from_pop);
+<b>include</b> <a href="stake.html#0x1_stake_InitializeOwnerAbortsIfAndEnsures">InitializeOwnerAbortsIfAndEnsures</a> { owner: <a href="account.html#0x1_account">account</a> };
 <b>aborts_if</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(addr);
-<b>aborts_if</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_AllowedValidators">AllowedValidators</a>&gt;(@aptos_framework)
-    && !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(allowed.accounts, addr);
-<b>aborts_if</b> <a href="stake.html#0x1_stake_stake_pool_exists">stake_pool_exists</a>(addr);
-<b>aborts_if</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr);
-<b>aborts_if</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr).guid_creation_num + 12 &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>;
-<b>aborts_if</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr).guid_creation_num + 12
-    &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">account::MAX_GUID_CREATION_NUM</a>;
-<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(post_addr);
-<b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(post_addr)
-    == <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a> { pool_address: post_addr };
-<b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(post_addr)
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(addr)
     == <a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a> {
         consensus_pubkey,
         network_addresses,
@@ -3878,55 +3947,88 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
         validator_index: 0
     };
 </code></pre>
+<h3 id="function-initialize_owner-1"><a class="header" href="#function-initialize_owner-1">Function <code>initialize_owner</code> <a id="@Specification_1_initialize_owner"></a></a></h3>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_initialize_owner">initialize_owner</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<pre><code><b>include</b> <a href="stake.html#0x1_stake_InitializeOwnerAbortsIfAndEnsures">InitializeOwnerAbortsIfAndEnsures</a>;
+</code></pre>
 <h3 id="function-extract_owner_cap-1"><a class="header" href="#function-extract_owner_cap-1">Function <code>extract_owner_cap</code> <a id="@Specification_1_extract_owner_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_extract_owner_cap">extract_owner_cap</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): <a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 300;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
 <b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
 <b>ensures</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
+<b>ensures</b> result == <b>old</b>(<b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address));
 </code></pre>
 <h3 id="function-deposit_owner_cap-1"><a class="header" href="#function-deposit_owner_cap-1">Function <code>deposit_owner_cap</code> <a id="@Specification_1_deposit_owner_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_deposit_owner_cap">deposit_owner_cap</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, owner_cap: <a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>)
 </code></pre>
-<pre><code><b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
 <b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
 <b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address) == owner_cap;
 </code></pre>
 <h3 id="function-set_operator_with_cap-1"><a class="header" href="#function-set_operator_with_cap-1">Function <code>set_operator_with_cap</code> <a id="@Specification_1_set_operator_with_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_set_operator_with_cap">set_operator_with_cap</a>(owner_cap: &<a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>, new_operator: <b>address</b>)
 </code></pre>
-<pre><code><b>let</b> pool_address = owner_cap.pool_address;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> pool_address = owner_cap.pool_address;
 <b>let</b> <b>post</b> post_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>include</b> <a href="stake.html#0x1_stake_StakedValueNochange">StakedValueNochange</a>;
-<b>ensures</b> post_stake_pool.operator_address == new_operator;
+<b>aborts_if</b> !<a href="stake.html#0x1_stake_stake_pool_exists">stake_pool_exists</a>(pool_address);
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>ensures</b> post_stake_pool == update_field(
+    <b>old</b>(<b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address)), operator_address, new_operator);
 </code></pre>
 <h3 id="function-set_delegated_voter_with_cap-1"><a class="header" href="#function-set_delegated_voter_with_cap-1">Function <code>set_delegated_voter_with_cap</code> <a id="@Specification_1_set_delegated_voter_with_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_set_delegated_voter_with_cap">set_delegated_voter_with_cap</a>(owner_cap: &<a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>, new_voter: <b>address</b>)
 </code></pre>
-<pre><code><b>let</b> pool_address = owner_cap.pool_address;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> pool_address = owner_cap.pool_address;
 <b>let</b> <b>post</b> post_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>include</b> <a href="stake.html#0x1_stake_StakedValueNochange">StakedValueNochange</a>;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>ensures</b> post_stake_pool.delegated_voter == new_voter;
+<b>ensures</b> post_stake_pool.operator_address
+    == <b>old</b>(<b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address)).operator_address;
 </code></pre>
 <h3 id="function-add_stake-1"><a class="header" href="#function-add_stake-1">Function <code>add_stake</code> <a id="@Specification_1_add_stake"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_add_stake">add_stake</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>let</b> store_addr = <a href="stake.html#0x1_stake_spec_apt_paired_store_address">spec_apt_paired_store_address</a>(owner_address);
+<b>let</b> plain = <a href="stake.html#0x1_stake_spec_has_apt_paired_store">spec_has_apt_paired_store</a>(owner_address)
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(store_addr);
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
-<b>include</b> <a href="stake.html#0x1_stake_AddStakeAbortsIfAndEnsures">AddStakeAbortsIfAndEnsures</a>;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
+<b>let</b> pool_address = <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address).pool_address;
+<b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>let</b> <b>post</b> post_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>let</b> current = <a href="stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(pool_address);
+<b>ensures</b> plain ==&gt; post_stake_pool.active.value
+    == stake_pool.active.value + <b>if</b> (current) { 0 } <b>else</b> { amount };
+<b>ensures</b> plain ==&gt; post_stake_pool.pending_active.value
+    == stake_pool.pending_active.value + <b>if</b> (current) { amount } <b>else</b> { 0 };
+<b>ensures</b> post_stake_pool.inactive == stake_pool.inactive;
+<b>ensures</b> post_stake_pool.pending_inactive == stake_pool.pending_inactive;
 </code></pre>
 <h3 id="function-add_stake_with_cap-1"><a class="header" href="#function-add_stake_with_cap-1">Function <code>add_stake_with_cap</code> <a id="@Specification_1_add_stake_with_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_add_stake_with_cap">add_stake_with_cap</a>(owner_cap: &<a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>, coins: <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;)
 </code></pre>
 <pre><code><b>pragma</b> disable_invariants_in_body;
-<b>pragma</b> verify = <b>false</b>;
 <b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
 <b>let</b> amount = coins.value;
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
@@ -3935,7 +4037,9 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-reactivate_stake_with_cap-1"><a class="header" href="#function-reactivate_stake_with_cap-1">Function <code>reactivate_stake_with_cap</code> <a id="@Specification_1_reactivate_stake_with_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_reactivate_stake_with_cap">reactivate_stake_with_cap</a>(owner_cap: &<a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>, amount: u64)
 </code></pre>
-<pre><code><b>let</b> pool_address = owner_cap.pool_address;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> pool_address = owner_cap.pool_address;
 <b>include</b> <a href="stake.html#0x1_stake_StakedValueNochange">StakedValueNochange</a>;
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>aborts_if</b> !<a href="stake.html#0x1_stake_stake_pool_exists">stake_pool_exists</a>(pool_address);
@@ -3945,6 +4049,8 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <b>let</b> min_amount = aptos_std::math64::min(
     amount, pre_stake_pool.pending_inactive.value
 );
+<b>aborts_if</b> pre_stake_pool.active.value + min_amount &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>;
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>ensures</b> stake_pool.pending_inactive.value
     == pre_stake_pool.pending_inactive.value - min_amount;
 <b>ensures</b> stake_pool.active.value == pre_stake_pool.active.value + min_amount;
@@ -3984,7 +4090,9 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-increase_lockup_with_cap-1"><a class="header" href="#function-increase_lockup_with_cap-1">Function <code>increase_lockup_with_cap</code> <a id="@Specification_1_increase_lockup_with_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_increase_lockup_with_cap">increase_lockup_with_cap</a>(owner_cap: &<a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>)
 </code></pre>
-<pre><code><b>let</b> config = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> config = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
 <b>let</b> pool_address = owner_cap.pool_address;
 <b>let</b> pre_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>let</b> <b>post</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
@@ -3997,6 +4105,7 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <b>aborts_if</b> lockup + now_seconds &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>ensures</b> stake_pool.locked_until_secs == lockup + now_seconds;
 </code></pre>
 <h3 id="function-join_validator_set-1"><a class="header" href="#function-join_validator_set-1">Function <code>join_validator_set</code> <a id="@Specification_1_join_validator_set"></a></a></h3>
@@ -4061,10 +4170,63 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
     == p_validator_set.total_joining_power;
 <b>ensures</b> <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(p_validator_set.pending_active, p_validator_info);
 </code></pre>
+<h3 id="function-join_validator_set_internal-1"><a class="header" href="#function-join_validator_set_internal-1">Function <code>join_validator_set_internal</code> <a id="@Specification_1_join_validator_set_internal"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="stake.html#0x1_stake_join_validator_set_internal">join_validator_set_internal</a>(operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pool_address: <b>address</b>)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> config = <b>global</b>&lt;StakingConfig&gt;(@aptos_framework);
+<b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>let</b> validator_set = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+<b>let</b> validator_config = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(pool_address);
+<b>let</b> <b>post</b> post_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>let</b> <b>post</b> post_validator_set = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+<b>let</b> settle = stake_pool.locked_until_secs &gt; 0
+    && <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() &gt;= stake_pool.locked_until_secs;
+<b>let</b> voting_power = stake_pool.active.value + stake_pool.pending_active.value
+    + <b>if</b> (settle) { 0 } <b>else</b> { stake_pool.pending_inactive.value };
+<b>let</b> limit = config.voting_power_increase_limit;
+<b>let</b> total_voting_power = validator_set.total_voting_power;
+<b>let</b> total_joining_power = validator_set.total_joining_power + voting_power;
+<b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(operator) != stake_pool.operator_address;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
+    || <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
+    || <a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address);
+<b>aborts_if</b> !<b>exists</b>&lt;StakingConfig&gt;(@aptos_framework);
+<b>aborts_if</b> stake_pool.locked_until_secs &gt; 0
+    && !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>aborts_if</b> settle && stake_pool.inactive.value + stake_pool.pending_inactive.value &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>;
+<b>aborts_if</b> voting_power &lt; config.minimum_stake;
+<b>aborts_if</b> voting_power &gt; config.maximum_stake;
+<b>aborts_if</b> total_joining_power &gt; MAX_U128;
+<b>aborts_if</b> total_voting_power &gt; 0 && total_voting_power * limit &gt; MAX_U128;
+<b>aborts_if</b> total_voting_power &gt; 0 && total_joining_power &gt; total_voting_power * limit / 100;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(pool_address);
+<b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_is_empty">vector::is_empty</a>(validator_config.consensus_pubkey);
+<b>aborts_if</b> len(validator_set.active_validators) + len(validator_set.pending_active) + 1
+    &gt; <a href="stake.html#0x1_stake_MAX_VALIDATOR_SET_SIZE">MAX_VALIDATOR_SET_SIZE</a>;
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+<b>ensures</b> update_field(update_field(post_stake_pool, inactive, stake_pool.inactive),
+    pending_inactive, stake_pool.pending_inactive) == stake_pool;
+<b>ensures</b> post_stake_pool.inactive.value == stake_pool.inactive.value
+    + <b>if</b> (settle) { stake_pool.pending_inactive.value } <b>else</b> { 0 };
+<b>ensures</b> post_stake_pool.pending_inactive.value
+    == <b>if</b> (settle) { 0 } <b>else</b> { stake_pool.pending_inactive.value };
+<b>ensures</b> post_validator_set == update_field(
+    update_field(validator_set, total_joining_power, total_joining_power),
+    pending_active,
+    concat(validator_set.pending_active,
+        vec(<a href="stake.html#0x1_stake_ValidatorInfo">ValidatorInfo</a> { addr: pool_address, voting_power, config: validator_config })));
+</code></pre>
 <h3 id="function-unlock_with_cap-1"><a class="header" href="#function-unlock_with_cap-1">Function <code>unlock_with_cap</code> <a id="@Specification_1_unlock_with_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_unlock_with_cap">unlock_with_cap</a>(amount: u64, owner_cap: &<a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>)
 </code></pre>
-<pre><code><b>let</b> pool_address = owner_cap.pool_address;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> pool_address = owner_cap.pool_address;
 <b>let</b> pre_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>let</b> <b>post</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
@@ -4072,6 +4234,9 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>include</b> <a href="stake.html#0x1_stake_StakedValueNochange">StakedValueNochange</a>;
 <b>let</b> min_amount = aptos_std::math64::min(amount, pre_stake_pool.active.value);
+<b>aborts_if</b> amount != 0
+    && pre_stake_pool.pending_inactive.value + min_amount &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>;
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address) == <b>old</b>(<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address));
 <b>ensures</b> stake_pool.active.value == pre_stake_pool.active.value - min_amount;
 <b>ensures</b> stake_pool.pending_inactive.value
     == pre_stake_pool.pending_inactive.value + min_amount;
@@ -4079,59 +4244,32 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-withdraw-1"><a class="header" href="#function-withdraw-1">Function <code>withdraw</code> <a id="@Specification_1_withdraw"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_withdraw">withdraw</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, withdraw_amount: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
-<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
-<b>let</b> ownership_cap = <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr);
-<b>let</b> pool_address = ownership_cap.pool_address;
+<pre><code><b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>let</b> owner_cap = <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
+<b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(owner_cap.pool_address);
+<b>let</b> <b>post</b> post_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(owner_cap.pool_address);
+<b>let</b> store_addr = <a href="stake.html#0x1_stake_spec_apt_paired_store_address">spec_apt_paired_store_address</a>(owner_address);
+<b>let</b> existing = <a href="stake.html#0x1_stake_spec_has_apt_paired_store">spec_has_apt_paired_store</a>(owner_address);
+<b>let</b> plain = existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(store_addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
+<b>include</b> <a href="stake.html#0x1_stake_WithdrawWithCapAbortsIfAndEnsures">WithdrawWithCapAbortsIfAndEnsures</a>;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">coin::CoinConversionMap</a>&gt;(@aptos_framework);
+<b>aborts_if</b> existing && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).frozen;
+<b>ensures</b> plain ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
+    == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr))
+        + stake_pool.inactive.value + stake_pool.pending_inactive.value
+        - post_stake_pool.inactive.value - post_stake_pool.pending_inactive.value;
+</code></pre>
+<h3 id="function-withdraw_with_cap-1"><a class="header" href="#function-withdraw_with_cap-1">Function <code>withdraw_with_cap</code> <a id="@Specification_1_withdraw_with_cap"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_withdraw_with_cap">withdraw_with_cap</a>(owner_cap: &<a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>, withdraw_amount: u64): <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>include</b> <a href="stake.html#0x1_stake_WithdrawWithCapAbortsIfAndEnsures">WithdrawWithCapAbortsIfAndEnsures</a>;
+<b>let</b> pool_address = owner_cap.pool_address;
 <b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
-<b>let</b> validator_set = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
-<b>let</b> bool_find_validator = !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(
-    <a href="stake.html#0x1_stake_spec_find_validator">spec_find_validator</a>(validator_set.active_validators, pool_address)
-)
-    && !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(
-        <a href="stake.html#0x1_stake_spec_find_validator">spec_find_validator</a>(validator_set.pending_inactive, pool_address)
-    )
-    && !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(
-        <a href="stake.html#0x1_stake_spec_find_validator">spec_find_validator</a>(validator_set.pending_active, pool_address)
-    );
-<b>aborts_if</b> bool_find_validator
-    && !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
-<b>let</b> new_withdraw_amount_1 = <b>min</b>(
-    withdraw_amount,
-    stake_pool.inactive.value + stake_pool.pending_inactive.value
-);
-<b>let</b> new_withdraw_amount_2 = <b>min</b>(withdraw_amount, stake_pool.inactive.value);
-<b>aborts_if</b> bool_find_validator
-    && <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>() &gt; stake_pool.locked_until_secs
-    && new_withdraw_amount_1 &gt; 0
-    && stake_pool.inactive.value + stake_pool.pending_inactive.value
-        &lt; new_withdraw_amount_1;
-<b>aborts_if</b> !(
-    bool_find_validator
-        && <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework)
-)
-    && new_withdraw_amount_2 &gt; 0
-    && stake_pool.inactive.value &lt; new_withdraw_amount_2;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(addr);
-<b>include</b> <a href="coin.html#0x1_coin_DepositAbortsIf">coin::DepositAbortsIf</a>&lt;AptosCoin&gt; { account_addr: addr };
-<b>let</b> coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(addr);
-<b>let</b> <b>post</b> p_coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(addr);
-<b>ensures</b> bool_find_validator
-    && <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>() &gt; stake_pool.locked_until_secs
-    && <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr)
-    && <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(addr) ==&gt;
-    coin_store.<a href="coin.html#0x1_coin">coin</a>.value + new_withdraw_amount_1 == p_coin_store.<a href="coin.html#0x1_coin">coin</a>.value;
-<b>ensures</b> !(
-    bool_find_validator
-        && <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework)
-)
-    && <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr)
-    && <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;AptosCoin&gt;&gt;(addr) ==&gt;
-    coin_store.<a href="coin.html#0x1_coin">coin</a>.value + new_withdraw_amount_2 == p_coin_store.<a href="coin.html#0x1_coin">coin</a>.value;
+<b>let</b> <b>post</b> post_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>ensures</b> result.value + post_stake_pool.inactive.value + post_stake_pool.pending_inactive.value
+    == stake_pool.inactive.value + stake_pool.pending_inactive.value;
 </code></pre>
 <h3 id="function-leave_validator_set-1"><a class="header" href="#function-leave_validator_set-1">Function <code>leave_validator_set</code> <a id="@Specification_1_leave_validator_set"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="stake.html#0x1_stake_leave_validator_set">leave_validator_set</a>(operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, pool_address: <b>address</b>)
@@ -4182,8 +4320,10 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-is_current_epoch_validator-1"><a class="header" href="#function-is_current_epoch_validator-1">Function <code>is_current_epoch_validator</code> <a id="@Specification_1_is_current_epoch_validator"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_is_current_epoch_validator">is_current_epoch_validator</a>(pool_address: <b>address</b>): bool
 </code></pre>
-<pre><code><b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
 <b>aborts_if</b> !<a href="stake.html#0x1_stake_spec_has_stake_pool">spec_has_stake_pool</a>(pool_address);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
 <b>ensures</b> result == <a href="stake.html#0x1_stake_spec_is_current_epoch_validator">spec_is_current_epoch_validator</a>(pool_address);
 </code></pre>
 <h3 id="function-update_performance_statistics-1"><a class="header" href="#function-update_performance_statistics-1">Function <code>update_performance_statistics</code> <a id="@Specification_1_update_performance_statistics"></a></a></h3>
@@ -4230,7 +4370,8 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <b>requires</b> rewards_rate &lt;= rewards_rate_denominator;
 <b>requires</b> include_rewards ==&gt;
     candidate.config.validator_index &lt; len(validator_perf.validators);
-<b>aborts_if</b> <b>false</b>;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(candidate.addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(candidate.addr);
 <b>ensures</b> result_2.addr == candidate.addr;
 <b>ensures</b> result_2.config.validator_index == validator_index;
 <b>ensures</b> result_2.voting_power == result_1;
@@ -4238,13 +4379,22 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-next_validator_consensus_infos_v2-1"><a class="header" href="#function-next_validator_consensus_infos_v2-1">Function <code>next_validator_consensus_infos_v2</code> <a id="@Specification_1_next_validator_consensus_infos_v2"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="stake.html#0x1_stake_next_validator_consensus_infos_v2">next_validator_consensus_infos_v2</a>(): <a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 300;
+<pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> <b>false</b>;
 <b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
 <b>include</b> <a href="stake.html#0x1_stake_GetReconfigStartTimeRequirement">GetReconfigStartTimeRequirement</a>;
 <b>include</b> <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>() ==&gt;
     <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigEnabledRequirement">staking_config::StakingRewardsConfigEnabledRequirement</a>;
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_PrecomputedValidatorSet">PrecomputedValidatorSet</a>&gt;(@aptos_framework);
 <b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_PrecomputedValidatorSet">PrecomputedValidatorSet</a>&gt;(@aptos_framework);
+<b>ensures</b> result == <b>global</b>&lt;<a href="stake.html#0x1_stake_PrecomputedValidatorSet">PrecomputedValidatorSet</a>&gt;(@aptos_framework).validator_set;
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="stake.html#0x1_stake_PrecomputedValidatorSet">PrecomputedValidatorSet</a>&gt;(@aptos_framework)) ==&gt;
+    <b>global</b>&lt;<a href="stake.html#0x1_stake_PrecomputedValidatorSet">PrecomputedValidatorSet</a>&gt;(@aptos_framework)
+        == <b>old</b>(<b>global</b>&lt;<a href="stake.html#0x1_stake_PrecomputedValidatorSet">PrecomputedValidatorSet</a>&gt;(@aptos_framework));
+<b>ensures</b> len(result.pending_inactive) == 0;
+<b>ensures</b> <a href="stake.html#0x1_stake_spec_validator_indices_are_valid_config">spec_validator_indices_are_valid_config</a>(
+    result.active_validators, len(result.active_validators)
+);
 </code></pre>
 <h3 id="function-validator_consensus_infos_from_validator_set-1"><a class="header" href="#function-validator_consensus_infos_from_validator_set-1">Function <code>validator_consensus_infos_from_validator_set</code> <a id="@Specification_1_validator_consensus_infos_from_validator_set"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="stake.html#0x1_stake_validator_consensus_infos_from_validator_set">validator_consensus_infos_from_validator_set</a>(validator_set: &<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="validator_consensus_info.html#0x1_validator_consensus_info_ValidatorConsensusInfo">validator_consensus_info::ValidatorConsensusInfo</a>&gt;
@@ -4314,6 +4464,78 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
     <b>let</b> owner_cap = <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner_address);
     <b>include</b> <a href="stake.html#0x1_stake_AddStakeWithCapAbortsIfAndEnsures">AddStakeWithCapAbortsIfAndEnsures</a> { owner_cap };
+}
+</code></pre>
+<p>The primary store of <code>owner</code> for the fungible asset paired with <code>AptosCoin</code> in the coin conversion map.</p>
+<p><a id="0x1_stake_spec_apt_paired_store_address"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_apt_paired_store_address">spec_apt_paired_store_address</a>(owner: <b>address</b>): <b>address</b> {
+   <a href="coin.html#0x1_coin_spec_paired_store_address">coin::spec_paired_store_address</a>(owner, <a href="coin.html#0x1_coin_spec_paired_metadata">coin::spec_paired_metadata</a>(aptos_std::type_info::type_of&lt;AptosCoin&gt;()))
+}
+</code></pre>
+<p>The fungible asset paired with <code>AptosCoin</code> exists and <code>owner</code> has a primary store for it.</p>
+<p><a id="0x1_stake_spec_has_apt_paired_store"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_has_apt_paired_store">spec_has_apt_paired_store</a>(owner: <b>address</b>): bool {
+   <a href="coin.html#0x1_coin_spec_has_paired_store">coin::spec_has_paired_store</a>(owner, <a href="coin.html#0x1_coin_spec_paired_metadata">coin::spec_paired_metadata</a>(aptos_std::type_info::type_of&lt;AptosCoin&gt;()))
+}
+</code></pre>
+<p>Withdraws up to <code>withdraw_amount</code> from the inactive stake, after moving the pending_inactive stake to
+inactive if the validator is inactive and its lockup has expired.</p>
+<p><a id="0x1_stake_WithdrawWithCapAbortsIfAndEnsures"></a></p>
+<pre><code><b>schema</b> <a href="stake.html#0x1_stake_WithdrawWithCapAbortsIfAndEnsures">WithdrawWithCapAbortsIfAndEnsures</a> {
+    owner_cap: <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>;
+    withdraw_amount: u64;
+    <b>let</b> pool_address = owner_cap.pool_address;
+    <b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+    <b>let</b> <b>post</b> post_stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+    <b>let</b> validator_set = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+    <b>let</b> inactive_validator = !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_active, pool_address)
+        && !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.active_validators, pool_address)
+        && !<a href="stake.html#0x1_stake_spec_contains">spec_contains</a>(validator_set.pending_inactive, pool_address);
+    <b>let</b> unlock = inactive_validator && <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() &gt;= stake_pool.locked_until_secs;
+    <b>let</b> withdrawable = <b>if</b> (unlock) {
+        stake_pool.inactive.value + stake_pool.pending_inactive.value
+    } <b>else</b> {
+        stake_pool.inactive.value
+    };
+    <b>let</b> withdrawn = <b>if</b> (withdraw_amount &lt; withdrawable) { withdraw_amount } <b>else</b> { withdrawable };
+    <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
+    <b>aborts_if</b> inactive_validator && !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+    <b>aborts_if</b> unlock && withdrawable &gt; <a href="stake.html#0x1_stake_MAX_U64">MAX_U64</a>;
+    <b>ensures</b> post_stake_pool.inactive.value == withdrawable - withdrawn;
+    <b>ensures</b> post_stake_pool.pending_inactive.value
+        == <b>if</b> (unlock) { 0 } <b>else</b> { stake_pool.pending_inactive.value };
+    <b>ensures</b> post_stake_pool.active == stake_pool.active;
+    <b>ensures</b> post_stake_pool.pending_active == stake_pool.pending_active;
+}
+</code></pre>
+<p><a id="0x1_stake_InitializeOwnerAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="stake.html#0x1_stake_InitializeOwnerAbortsIf">InitializeOwnerAbortsIf</a> {
+    owner: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+    <b>aborts_if</b> !<a href="stake.html#0x1_stake_spec_is_allowed">spec_is_allowed</a>(addr);
+    <b>aborts_if</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(addr);
+    <b>aborts_if</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr);
+}
+</code></pre>
+<p>An allowed account without a stake pool gets an empty stake pool that it owns, operates and votes for.</p>
+<p><a id="0x1_stake_InitializeOwnerAbortsIfAndEnsures"></a></p>
+<pre><code><b>schema</b> <a href="stake.html#0x1_stake_InitializeOwnerAbortsIfAndEnsures">InitializeOwnerAbortsIfAndEnsures</a> {
+    owner: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
+    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+    <b>let</b> <b>post</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(addr);
+    <b>include</b> <a href="stake.html#0x1_stake_InitializeOwnerAbortsIf">InitializeOwnerAbortsIf</a>;
+    <b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(addr);
+    <b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr);
+    <b>ensures</b> stake_pool.active.value == 0;
+    <b>ensures</b> stake_pool.inactive.value == 0;
+    <b>ensures</b> stake_pool.pending_active.value == 0;
+    <b>ensures</b> stake_pool.pending_inactive.value == 0;
+    <b>ensures</b> stake_pool.locked_until_secs == 0;
+    <b>ensures</b> stake_pool.operator_address == addr;
+    <b>ensures</b> stake_pool.delegated_voter == addr;
+    <b>ensures</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(addr) == <a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a> { pool_address: addr };
 }
 </code></pre>
 <p><a id="0x1_stake_spec_is_allowed"></a></p>
@@ -4477,7 +4699,12 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-update_stake_pool-1"><a class="header" href="#function-update_stake_pool-1">Function <code>update_stake_pool</code> <a id="@Specification_1_update_stake_pool"></a></a></h3>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_update_stake_pool">update_stake_pool</a>(validator_perf: &<a href="stake.html#0x1_stake_ValidatorPerformance">stake::ValidatorPerformance</a>, pool_address: <b>address</b>, <a href="staking_config.html#0x1_staking_config">staking_config</a>: &<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 300;
+<pre><code><b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(
+    aptos_std::type_info::type_of&lt;AptosCoin&gt;().account_address
+);
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
 <b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
 <b>include</b> <a href="stake.html#0x1_stake_GetReconfigStartTimeRequirement">GetReconfigStartTimeRequirement</a>;
 <b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">staking_config::StakingRewardsConfigRequirement</a>;
@@ -4513,18 +4740,26 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <b>let</b> <b>post</b> post_pending_inactive_value = post_stake_pool.pending_inactive.value;
 <b>let</b> <b>post</b> post_inactive_value = post_stake_pool.inactive.value;
 <b>ensures</b> post_stake_pool.pending_active.value == 0;
+<b>let</b> no_fee = !<b>exists</b>&lt;<a href="stake.html#0x1_stake_PendingTransactionFee">PendingTransactionFee</a>&gt;(@aptos_framework);
+<b>let</b> expired = <a href="stake.html#0x1_stake_spec_get_reconfig_start_time_secs">spec_get_reconfig_start_time_secs</a>() &gt;= stake_pool.locked_until_secs;
 <b>ensures</b> post_active_value
+    &gt;= stake_pool.active.value + rewards_amount_1
+        + stake_pool.pending_active.value;
+<b>ensures</b> no_fee ==&gt; post_active_value
     == stake_pool.active.value + rewards_amount_1
         + stake_pool.pending_active.value;
-<b>ensures</b> <b>if</b> (<a href="stake.html#0x1_stake_spec_get_reconfig_start_time_secs">spec_get_reconfig_start_time_secs</a>() &gt;= stake_pool.locked_until_secs) {
-    post_pending_inactive_value == 0
-        && post_inactive_value
-            == stake_pool.inactive.value + stake_pool.pending_inactive.value
-                + rewards_amount_2
-} <b>else</b> {
-    post_pending_inactive_value
-        == stake_pool.pending_inactive.value + rewards_amount_2
-};
+<b>ensures</b> expired ==&gt; post_pending_inactive_value == 0
+    && post_inactive_value
+        &gt;= stake_pool.inactive.value + stake_pool.pending_inactive.value
+            + rewards_amount_2;
+<b>ensures</b> expired && no_fee ==&gt; post_inactive_value
+    == stake_pool.inactive.value + stake_pool.pending_inactive.value
+        + rewards_amount_2;
+<b>ensures</b> !expired ==&gt; post_inactive_value == stake_pool.inactive.value
+    && post_pending_inactive_value
+        &gt;= stake_pool.pending_inactive.value + rewards_amount_2;
+<b>ensures</b> !expired && no_fee ==&gt; post_pending_inactive_value
+    == stake_pool.pending_inactive.value + rewards_amount_2;
 </code></pre>
 <p><a id="0x1_stake_UpdateStakePoolAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="stake.html#0x1_stake_UpdateStakePoolAbortsIf">UpdateStakePoolAbortsIf</a> {
@@ -4534,18 +4769,37 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(pool_address);
     <b>aborts_if</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">ValidatorConfig</a>&gt;(pool_address).validator_index
         &gt;= len(validator_perf.validators);
-    <b>let</b> aptos_addr = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;AptosCoin&gt;().account_address;
-    <b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address);
-    <b>include</b> <a href="stake.html#0x1_stake_DistributeRewardsAbortsIf">DistributeRewardsAbortsIf</a> { <a href="stake.html#0x1_stake">stake</a>: stake_pool.active };
-    <b>include</b> <a href="stake.html#0x1_stake_DistributeRewardsAbortsIf">DistributeRewardsAbortsIf</a> { <a href="stake.html#0x1_stake">stake</a>: stake_pool.pending_inactive };
 }
 </code></pre>
 <h3 id="function-get_reconfig_start_time_secs-1"><a class="header" href="#function-get_reconfig_start_time_secs-1">Function <code>get_reconfig_start_time_secs</code> <a id="@Specification_1_get_reconfig_start_time_secs"></a></a></h3>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_get_reconfig_start_time_secs">get_reconfig_start_time_secs</a>(): u64
 </code></pre>
-<pre><code><b>include</b> <a href="stake.html#0x1_stake_GetReconfigStartTimeRequirement">GetReconfigStartTimeRequirement</a>;
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>include</b> <a href="stake.html#0x1_stake_GetReconfigStartTimeRequirement">GetReconfigStartTimeRequirement</a>;
 <b>aborts_if</b> <b>false</b>;
 <b>ensures</b> result == <a href="stake.html#0x1_stake_spec_get_reconfig_start_time_secs">spec_get_reconfig_start_time_secs</a>();
+</code></pre>
+<p><a id="0x1_stake_GetReconfigStartTimeRequirement"></a></p>
+<pre><code><b>schema</b> <a href="stake.html#0x1_stake_GetReconfigStartTimeRequirement">GetReconfigStartTimeRequirement</a> {
+    <b>requires</b> <b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+    <b>include</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>() ==&gt;
+        <a href="reconfiguration_state.html#0x1_reconfiguration_state_StartTimeSecsRequirement">reconfiguration_state::StartTimeSecsRequirement</a>;
+}
+</code></pre>
+<p><a id="0x1_stake_spec_get_reconfig_start_time_secs"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_get_reconfig_start_time_secs">spec_get_reconfig_start_time_secs</a>(): u64 {
+   <b>if</b> (<a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>()) {
+       <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_start_time_secs">reconfiguration_state::spec_start_time_secs</a>()
+   } <b>else</b> {
+       <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>()
+   }
+}
+</code></pre>
+<p><a id="0x1_stake_spec_get_lockup_secs"></a></p>
+<pre><code><b>fun</b> <a href="stake.html#0x1_stake_spec_get_lockup_secs">spec_get_lockup_secs</a>(pool_address: <b>address</b>): u64 {
+   <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">StakePool</a>&gt;(pool_address).locked_until_secs
+}
 </code></pre>
 <h3 id="function-calculate_rewards_amount-1"><a class="header" href="#function-calculate_rewards_amount-1">Function <code>calculate_rewards_amount</code> <a id="@Specification_1_calculate_rewards_amount"></a></a></h3>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_calculate_rewards_amount">calculate_rewards_amount</a>(stake_amount: u64, num_successful_proposals: u64, num_total_proposals: u64, rewards_rate: u64, rewards_rate_denominator: u64): u64
@@ -4580,7 +4834,6 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_distribute_rewards">distribute_rewards</a>(<a href="stake.html#0x1_stake">stake</a>: &<b>mut</b> <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;, num_successful_proposals: u64, num_total_proposals: u64, rewards_rate: u64, rewards_rate_denominator: u64): u64
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> aborts_if_is_partial;
 <b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">ResourceRequirement</a>;
 <b>requires</b> rewards_rate &lt;= <a href="stake.html#0x1_stake_MAX_REWARDS_RATE">MAX_REWARDS_RATE</a>;
 <b>requires</b> rewards_rate_denominator &gt; 0;
@@ -4607,6 +4860,9 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
                 rewards_rate_denominator
             );
 <b>ensures</b> <b>old</b>(<a href="stake.html#0x1_stake">stake</a>.value) == 0 ==&gt; result == 0;
+<b>let</b> coin_addr = aptos_std::type_info::type_of&lt;AptosCoin&gt;().account_address;
+<b>ensures</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(coin_addr)
+    == <b>old</b>(<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(coin_addr));
 <b>ensures</b> <b>old</b>(<a href="stake.html#0x1_stake">stake</a>.value) == 0 ==&gt;
     <a href="stake.html#0x1_stake">stake</a>.value == <b>old</b>(<a href="stake.html#0x1_stake">stake</a>.value);
 </code></pre>
@@ -4663,7 +4919,9 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-update_voting_power_increase-1"><a class="header" href="#function-update_voting_power_increase-1">Function <code>update_voting_power_increase</code> <a id="@Specification_1_update_voting_power_increase"></a></a></h3>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_update_voting_power_increase">update_voting_power_increase</a>(increase_amount: u64)
 </code></pre>
-<pre><code><b>requires</b> !<a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>requires</b> !<a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(@aptos_framework);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
 <b>let</b> aptos = @aptos_framework;
@@ -4684,11 +4942,20 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
         &lt;= validator_set.total_voting_power * voting_power_increase_limit / 100;
 <b>ensures</b> validator_set.total_joining_power
     == pre_validator_set.total_joining_power + increase_amount;
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(aptos);
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">ValidatorSet</a>&gt;(aptos);
+<b>ensures</b> validator_set == update_field(
+    pre_validator_set,
+    total_joining_power,
+    pre_validator_set.total_joining_power + increase_amount
+);
 </code></pre>
 <h3 id="function-assert_stake_pool_exists-1"><a class="header" href="#function-assert_stake_pool_exists-1">Function <code>assert_stake_pool_exists</code> <a id="@Specification_1_assert_stake_pool_exists"></a></a></h3>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_assert_stake_pool_exists">assert_stake_pool_exists</a>(pool_address: <b>address</b>)
 </code></pre>
-<pre><code><b>aborts_if</b> !<a href="stake.html#0x1_stake_stake_pool_exists">stake_pool_exists</a>(pool_address);
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>aborts_if</b> !<a href="stake.html#0x1_stake_stake_pool_exists">stake_pool_exists</a>(pool_address);
 </code></pre>
 <h3 id="function-configure_allowed_validators-1"><a class="header" href="#function-configure_allowed_validators-1">Function <code>configure_allowed_validators</code> <a id="@Specification_1_configure_allowed_validators"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="stake.html#0x1_stake_configure_allowed_validators">configure_allowed_validators</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, accounts: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;)
@@ -4701,7 +4968,9 @@ pending_inactive has been settled to inactive (e.g. in on_new_epoch or join_vali
 <h3 id="function-assert_owner_cap_exists-1"><a class="header" href="#function-assert_owner_cap_exists-1">Function <code>assert_owner_cap_exists</code> <a id="@Specification_1_assert_owner_cap_exists"></a></a></h3>
 <pre><code><b>fun</b> <a href="stake.html#0x1_stake_assert_owner_cap_exists">assert_owner_cap_exists</a>(owner: <b>address</b>)
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner);
+<pre><code><b>pragma</b> opaque;
+<b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_OwnerCapability">OwnerCapability</a>&gt;(owner);
 </code></pre>
 
                     </main>

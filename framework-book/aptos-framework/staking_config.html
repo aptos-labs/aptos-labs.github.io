@@ -1003,16 +1003,41 @@ proof {
 <h3 id="function-calculate_and_save_latest_epoch_rewards_rate-1"><a class="header" href="#function-calculate_and_save_latest_epoch_rewards_rate-1">Function <code>calculate_and_save_latest_epoch_rewards_rate</code> <a id="@Specification_1_calculate_and_save_latest_epoch_rewards_rate"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_epoch_rewards_rate">calculate_and_save_latest_epoch_rewards_rate</a>(): <a href="../aptos-stdlib/fixed_point64.html#0x1_fixed_point64_FixedPoint64">fixed_point64::FixedPoint64</a>
 </code></pre>
-<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
 <b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
 <b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
+<b>modifies</b> <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> result == <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework).rewards_rate;
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigUpdateFrame">StakingRewardsConfigUpdateFrame</a>;
 </code></pre>
 <h3 id="function-calculate_and_save_latest_rewards_config-1"><a class="header" href="#function-calculate_and_save_latest_rewards_config-1">Function <code>calculate_and_save_latest_rewards_config</code> <a id="@Specification_1_calculate_and_save_latest_rewards_config"></a></a></h3>
 <pre><code><b>fun</b> <a href="staking_config.html#0x1_staking_config_calculate_and_save_latest_rewards_config">calculate_and_save_latest_rewards_config</a>(): <a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>
 </code></pre>
-<pre><code><b>requires</b> <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
+<pre><code><b>pragma</b> opaque;
+<b>requires</b> <a href="../move-stdlib/features.html#0x1_features_spec_periodical_reward_rate_decrease_enabled">features::spec_periodical_reward_rate_decrease_enabled</a>();
 <b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigRequirement">StakingRewardsConfigRequirement</a>;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> result == <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+<b>include</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigUpdateFrame">StakingRewardsConfigUpdateFrame</a>;
+</code></pre>
+<p>Only the rewards rate and the period start change, and only once a full period has elapsed.</p>
+<p><a id="0x1_staking_config_StakingRewardsConfigUpdateFrame"></a></p>
+<pre><code><b>schema</b> <a href="staking_config.html#0x1_staking_config_StakingRewardsConfigUpdateFrame">StakingRewardsConfigUpdateFrame</a> {
+    <b>let</b> pre = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+    <b>let</b> <b>post</b> post_config = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">StakingRewardsConfig</a>&gt;(@aptos_framework);
+    <b>ensures</b> post_config.min_rewards_rate == pre.min_rewards_rate;
+    <b>ensures</b> post_config.rewards_rate_period_in_secs == pre.rewards_rate_period_in_secs;
+    <b>ensures</b> post_config.rewards_rate_decrease_rate == pre.rewards_rate_decrease_rate;
+    <b>ensures</b> <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() - pre.last_rewards_rate_period_start_in_secs
+        &lt; pre.rewards_rate_period_in_secs ==&gt; post_config == pre;
+    <b>ensures</b> <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() - pre.last_rewards_rate_period_start_in_secs
+        &gt;= pre.rewards_rate_period_in_secs ==&gt; post_config.last_rewards_rate_period_start_in_secs
+            == pre.last_rewards_rate_period_start_in_secs + pre.rewards_rate_period_in_secs;
+}
 </code></pre>
 <h3 id="function-update_required_stake-1"><a class="header" href="#function-update_required_stake-1">Function <code>update_required_stake</code> <a id="@Specification_1_update_required_stake"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="staking_config.html#0x1_staking_config_update_required_stake">update_required_stake</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, minimum_stake: u64, maximum_stake: u64)
