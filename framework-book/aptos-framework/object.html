@@ -303,6 +303,7 @@ make it so that a reference to a global object can be returned from a function.<
 <li><a href="#@Specification_1_owner">Function <code>owner</code></a></li>
 <li><a href="#@Specification_1_is_owner">Function <code>is_owner</code></a></li>
 <li><a href="#@Specification_1_owns">Function <code>owns</code></a></li>
+<li><a href="#@Specification_1_root_owner">Function <code>root_owner</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1396,6 +1397,10 @@ objects may have cyclic dependencies.</p>
             <a href="../move-stdlib/error.html#0x1_error_permission_denied">error::permission_denied</a>(<a href="object.html#0x1_object_ENO_UNGATED_TRANSFERS">ENO_UNGATED_TRANSFERS</a>),
         );
         current_address = <a href="object.html#0x1_object">object</a>.owner;
+    } <b>spec</b> {
+        <b>invariant</b> count &lt; <a href="object.html#0x1_object_MAXIMUM_OBJECT_NESTING">MAXIMUM_OBJECT_NESTING</a>;
+        <b>invariant</b> <a href="object.html#0x1_object_spec_ungated_descendant_at">spec_ungated_descendant_at</a>(owner, current_address, count)
+            == <a href="object.html#0x1_object_spec_ungated_descendant_at">spec_ungated_descendant_at</a>(owner, <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(destination).owner, 0);
     };
 }
 </code></pre>
@@ -1527,6 +1532,12 @@ Return true if ungated transfer is allowed.</p>
 
         <b>let</b> <a href="object.html#0x1_object">object</a> = <b>borrow_global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current_address);
         current_address = <a href="object.html#0x1_object">object</a>.owner;
+    } <b>spec</b> {
+        <b>invariant</b> count &lt; <a href="object.html#0x1_object_MAXIMUM_OBJECT_NESTING">MAXIMUM_OBJECT_NESTING</a>;
+        <b>invariant</b> <a href="object.html#0x1_object_spec_owns_at">spec_owns_at</a>(owner, current_address, count)
+            == <a href="object.html#0x1_object_spec_owns_at">spec_owns_at</a>(owner, <a href="object.html#0x1_object">object</a>.owner, 0);
+        <b>invariant</b> <a href="object.html#0x1_object_spec_owns_limit_at">spec_owns_limit_at</a>(owner, current_address, count)
+            == <a href="object.html#0x1_object_spec_owns_limit_at">spec_owns_limit_at</a>(owner, <a href="object.html#0x1_object">object</a>.owner, 0);
     };
     <b>true</b>
 }
@@ -1589,21 +1600,21 @@ to determine the identity of the starting point of ownership.</p>
 <td>It's not possible to create an object twice on the same address.</td>
 <td>Critical</td>
 <td>The create_object_internal function includes an assertion to ensure that the object being created does not already exist at the specified address.</td>
-<td>Formally verified via <a href="#high-level-req-1">create_object_internal</a>.</td>
+<td>Formally verified via <a href="#high-level-req-1.1">create_object_internal</a> and <a href="#high-level-req-1.2">create_sticky_object_at_address</a>.</td>
 </tr>
 <tr>
 <td>2</td>
 <td>Only its owner may transfer an object.</td>
 <td>Critical</td>
 <td>The transfer function mandates that the transaction be signed by the owner's address, ensuring that only the rightful owner may initiate the object transfer.</td>
-<td>Audited that it aborts if anyone other than the owner attempts to transfer.</td>
+<td>Formally verified via <a href="#high-level-req-2">transfer_raw</a> that it aborts unless the signer is reached by the owner chain of the object within the nesting limit.</td>
 </tr>
 <tr>
 <td>3</td>
 <td>The indirect owner of an object may transfer the object.</td>
 <td>Medium</td>
 <td>The owns function evaluates to true when the given address possesses either direct or indirect ownership of the specified object.</td>
-<td>Audited that it aborts if address transferring is not indirect owner.</td>
+<td>Formally verified via <a href="#high-level-req-3">transfer_raw</a> that the abort set is exact: an indirect owner whose chain allows ungated transfer at every object can transfer; <code>owns</code> is characterised exactly as well.</td>
 </tr>
 <tr>
 <td>4</td>
@@ -1632,6 +1643,56 @@ to determine the identity of the starting point of ownership.</p>
 </code></pre>
 <p><a id="0x1_object_spec_exists_at"></a></p>
 <pre><code><b>fun</b> <a href="object.html#0x1_object_spec_exists_at">spec_exists_at</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <b>address</b>): bool;
+</code></pre>
+<p><code>destination</code> exists, allows ungated transfer, and its owner chain reaches <code>owner</code> within the
+nesting limit with every intermediate object allowing ungated transfer.</p>
+<p><a id="0x1_object_spec_ungated_descendant"></a></p>
+<pre><code><b>fun</b> <a href="object.html#0x1_object_spec_ungated_descendant">spec_ungated_descendant</a>(owner: <b>address</b>, destination: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(destination) && <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(destination).allow_ungated_transfer
+       && <a href="object.html#0x1_object_spec_ungated_descendant_at">spec_ungated_descendant_at</a>(owner, <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(destination).owner, 0)
+}
+</code></pre>
+<p>The walk from <code>current</code>, after <code>count</code> hops, reaches <code>owner</code> within the nesting limit through
+objects that allow ungated transfer.</p>
+<p><a id="0x1_object_spec_ungated_descendant_at"></a></p>
+<pre><code><b>fun</b> <a href="object.html#0x1_object_spec_ungated_descendant_at">spec_ungated_descendant_at</a>(owner: <b>address</b>, current: <b>address</b>, count: num): bool {
+   <b>if</b> (current == owner) {
+       <b>true</b>
+   } <b>else</b> <b>if</b> (count + 1 &gt;= <a href="object.html#0x1_object_MAXIMUM_OBJECT_NESTING">MAXIMUM_OBJECT_NESTING</a>) {
+       <b>false</b>
+   } <b>else</b> {
+       <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current) && <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current).allow_ungated_transfer
+           && <a href="object.html#0x1_object_spec_ungated_descendant_at">spec_ungated_descendant_at</a>(owner, <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current).owner, count + 1)
+   }
+}
+</code></pre>
+<p>The owner walk from <code>current</code>, after <code>count</code> hops, reaches <code>owner</code> within the nesting limit.</p>
+<p><a id="0x1_object_spec_owns_at"></a></p>
+<pre><code><b>fun</b> <a href="object.html#0x1_object_spec_owns_at">spec_owns_at</a>(owner: <b>address</b>, current: <b>address</b>, count: num): bool {
+   <b>if</b> (current == owner) {
+       <b>true</b>
+   } <b>else</b> <b>if</b> (count + 1 &gt;= <a href="object.html#0x1_object_MAXIMUM_OBJECT_NESTING">MAXIMUM_OBJECT_NESTING</a>) {
+       <b>false</b>
+   } <b>else</b> <b>if</b> (!<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current)) {
+       <b>false</b>
+   } <b>else</b> {
+       <a href="object.html#0x1_object_spec_owns_at">spec_owns_at</a>(owner, <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current).owner, count + 1)
+   }
+}
+</code></pre>
+<p>The owner walk from <code>current</code>, after <code>count</code> hops, runs into the nesting limit.</p>
+<p><a id="0x1_object_spec_owns_limit_at"></a></p>
+<pre><code><b>fun</b> <a href="object.html#0x1_object_spec_owns_limit_at">spec_owns_limit_at</a>(owner: <b>address</b>, current: <b>address</b>, count: num): bool {
+   <b>if</b> (current == owner) {
+       <b>false</b>
+   } <b>else</b> <b>if</b> (count + 1 &gt;= <a href="object.html#0x1_object_MAXIMUM_OBJECT_NESTING">MAXIMUM_OBJECT_NESTING</a>) {
+       <b>true</b>
+   } <b>else</b> <b>if</b> (!<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current)) {
+       <b>false</b>
+   } <b>else</b> {
+       <a href="object.html#0x1_object_spec_owns_limit_at">spec_owns_limit_at</a>(owner, <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current).owner, count + 1)
+   }
+}
 </code></pre>
 <h3 id="function-address_to_object-1"><a class="header" href="#function-address_to_object-1">Function <code>address_to_object</code> <a id="@Specification_1_address_to_object"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_address_to_object">address_to_object</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <b>address</b>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;
@@ -1788,7 +1849,7 @@ to determine the identity of the starting point of ownership.</p>
 <h3 id="function-create_sticky_object_at_address-1"><a class="header" href="#function-create_sticky_object_at_address-1">Function <code>create_sticky_object_at_address</code> <a id="@Specification_1_create_sticky_object_at_address"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="object.html#0x1_object_create_sticky_object_at_address">create_sticky_object_at_address</a>(owner_address: <b>address</b>, object_address: <b>address</b>): <a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
+<pre><code>// This enforces <a id="high-level-req-1.2" href="#high-level-req">high-level requirement 1</a>:
 <b>aborts_if</b> <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(object_address);
 <b>ensures</b> <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(object_address);
 <b>ensures</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(object_address).guid_creation_num == <a href="object.html#0x1_object_INIT_GUID_CREATION_NUM">INIT_GUID_CREATION_NUM</a> + 1;
@@ -1921,8 +1982,8 @@ to determine the identity of the starting point of ownership.</p>
 <h3 id="function-create_object_internal-1"><a class="header" href="#function-create_object_internal-1">Function <code>create_object_internal</code> <a id="@Specification_1_create_object_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="object.html#0x1_object_create_object_internal">create_object_internal</a>(creator_address: <b>address</b>, <a href="object.html#0x1_object">object</a>: <b>address</b>, can_delete: bool): <a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> opaque;
+// This enforces <a id="high-level-req-1.1" href="#high-level-req">high-level requirement 1</a>:
 <b>aborts_if</b> <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>);
 <b>ensures</b> <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>);
 <b>modifies</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>);
@@ -2068,44 +2129,39 @@ to determine the identity of the starting point of ownership.</p>
 <h3 id="function-transfer_call-1"><a class="header" href="#function-transfer_call-1">Function <code>transfer_call</code> <a id="@Specification_1_transfer_call"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="object.html#0x1_object_transfer_call">transfer_call</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="object.html#0x1_object">object</a>: <b>address</b>, <b>to</b>: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>);
-<b>aborts_if</b> !<b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>).allow_ungated_transfer;
+<pre><code><b>include</b> <a href="object.html#0x1_object_TransferRawAbortsIf">TransferRawAbortsIf</a> { owner_address: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner) };
+<b>ensures</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>).owner == <b>to</b>;
 </code></pre>
 <h3 id="function-transfer-1"><a class="header" href="#function-transfer-1">Function <code>transfer</code> <a id="@Specification_1_transfer"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="object.html#0x1_object_transfer">transfer</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, <b>to</b>: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
-<b>let</b> object_address = <a href="object.html#0x1_object">object</a>.inner;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(object_address);
-<b>aborts_if</b> !<b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(object_address).allow_ungated_transfer;
+<pre><code><b>include</b> <a href="object.html#0x1_object_TransferRawAbortsIf">TransferRawAbortsIf</a> { owner_address: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner), <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object">object</a>.inner };
+<b>ensures</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>.inner).owner == <b>to</b>;
 </code></pre>
 <h3 id="function-transfer_raw-1"><a class="header" href="#function-transfer_raw-1">Function <code>transfer_raw</code> <a id="@Specification_1_transfer_raw"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="object.html#0x1_object_transfer_raw">transfer_raw</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="object.html#0x1_object">object</a>: <b>address</b>, <b>to</b>: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<pre><code><b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>);
 <b>aborts_if</b> !<b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>).allow_ungated_transfer;
+<b>let</b> first_owner = <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>).owner;
+// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
+<b>aborts_if</b> !<a href="object.html#0x1_object_spec_owns_at">spec_owns_at</a>(owner_address, first_owner, 0);
+// This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
+<b>aborts_if</b> !<a href="object.html#0x1_object_spec_ungated_descendant_at">spec_ungated_descendant_at</a>(owner_address, first_owner, 0);
+<b>ensures</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>).owner == <b>to</b>;
 </code></pre>
 <h3 id="function-transfer_to_object-1"><a class="header" href="#function-transfer_to_object-1">Function <code>transfer_to_object</code> <a id="@Specification_1_transfer_to_object"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="object.html#0x1_object_transfer_to_object">transfer_to_object</a>&lt;O: key, T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">object::Object</a>&lt;O&gt;, <b>to</b>: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
-<b>let</b> object_address = <a href="object.html#0x1_object">object</a>.inner;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(object_address);
-<b>aborts_if</b> !<b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(object_address).allow_ungated_transfer;
+<pre><code><b>include</b> <a href="object.html#0x1_object_TransferRawAbortsIf">TransferRawAbortsIf</a> { owner_address: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner), <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object">object</a>.inner };
+<b>ensures</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>.inner).owner == <b>to</b>.inner;
 </code></pre>
 <h3 id="function-verify_ungated_and_descendant-1"><a class="header" href="#function-verify_ungated_and_descendant-1">Function <code>verify_ungated_and_descendant</code> <a id="@Specification_1_verify_ungated_and_descendant"></a></a></h3>
 <pre><code><b>fun</b> <a href="object.html#0x1_object_verify_ungated_and_descendant">verify_ungated_and_descendant</a>(owner: <b>address</b>, destination: <b>address</b>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>pragma</b> unroll = <a href="object.html#0x1_object_MAXIMUM_OBJECT_NESTING">MAXIMUM_OBJECT_NESTING</a>;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(destination);
-<b>aborts_if</b> !<b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(destination).allow_ungated_transfer;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="object.html#0x1_object_spec_ungated_descendant">spec_ungated_descendant</a>(owner, destination);
 </code></pre>
 <h3 id="function-burn-1"><a class="header" href="#function-burn-1">Function <code>burn</code> <a id="@Specification_1_burn"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="object.html#0x1_object_burn">burn</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;)
@@ -2156,12 +2212,22 @@ to determine the identity of the starting point of ownership.</p>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="object.html#0x1_object_owns">owns</a>&lt;T: key&gt;(<a href="object.html#0x1_object">object</a>: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, owner: <b>address</b>): bool
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>let</b> current_address_0 = <a href="object.html#0x1_object">object</a>.inner;
-<b>let</b> object_0 = <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(current_address_0);
-<b>let</b> current_address = object_0.owner;
-<b>aborts_if</b> <a href="object.html#0x1_object">object</a>.inner != owner && !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>.inner);
-<b>ensures</b> current_address_0 == owner ==&gt; result == <b>true</b>;
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> <a href="object.html#0x1_object_spec_owns_aborts">spec_owns_aborts</a>(<a href="object.html#0x1_object">object</a>.inner, owner);
+<b>ensures</b> result == <a href="object.html#0x1_object_spec_owns">spec_owns</a>(<a href="object.html#0x1_object">object</a>.inner, owner);
+</code></pre>
+<p><code>owns</code> aborts: the object does not exist, or the walk runs into the nesting limit.</p>
+<p><a id="0x1_object_spec_owns_aborts"></a></p>
+<pre><code><b>fun</b> <a href="object.html#0x1_object_spec_owns_aborts">spec_owns_aborts</a>(<a href="object.html#0x1_object">object</a>: <b>address</b>, owner: <b>address</b>): bool {
+   !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>)
+       || <a href="object.html#0x1_object">object</a> != owner && <a href="object.html#0x1_object_spec_owns_limit_at">spec_owns_limit_at</a>(owner, <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>).owner, 0)
+}
+</code></pre>
+<p><code>owner</code> owns <code><a href="object.html#0x1_object">object</a></code> directly or indirectly within the nesting limit.</p>
+<p><a id="0x1_object_spec_owns"></a></p>
+<pre><code><b>fun</b> <a href="object.html#0x1_object_spec_owns">spec_owns</a>(<a href="object.html#0x1_object">object</a>: <b>address</b>, owner: <b>address</b>): bool {
+   <a href="object.html#0x1_object">object</a> == owner || <a href="object.html#0x1_object_spec_owns_at">spec_owns_at</a>(owner, <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(<a href="object.html#0x1_object">object</a>).owner, 0)
+}
 </code></pre>
 <p><a id="0x1_object_spec_create_object_address"></a></p>
 <pre><code><b>fun</b> <a href="object.html#0x1_object_spec_create_object_address">spec_create_object_address</a>(source: <b>address</b>, seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <b>address</b>;
@@ -2176,6 +2242,14 @@ to determine the identity of the starting point of ownership.</p>
 <pre><code><b>fun</b> <a href="object.html#0x1_object_spec_generate_signer_for_extending">spec_generate_signer_for_extending</a>(ref: &<a href="object.html#0x1_object_ExtendRef">ExtendRef</a>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a> {
    aptos_framework::create_signer::spec_create_signer(ref.self)
 }
+</code></pre>
+<h3 id="function-root_owner-1"><a class="header" href="#function-root_owner-1">Function <code>root_owner</code> <a id="@Specification_1_root_owner"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="object.html#0x1_object_root_owner">root_owner</a>&lt;T: key&gt;(self: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <b>address</b>
+</code></pre>
+<p>The end of the ownership chain is not an object.</p>
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(self.inner);
+<b>ensures</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">ObjectCore</a>&gt;(result);
 </code></pre>
 
                     </main>

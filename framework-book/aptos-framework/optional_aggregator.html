@@ -516,7 +516,7 @@ aggregator (parallelizable) or via normal integers.</p>
 <td>Every successful switch must end with the aggregator type changed from non-parallelizable to parallelizable or vice versa.</td>
 <td>High</td>
 <td>The switch function run, if successful, should always change the aggregator type.</td>
-<td>Formally verified via <a href="#high-level-req-3">switch_and_zero_out</a>.</td>
+<td>Formally verified via <a href="#high-level-req-3.1">switch</a> and <a href="#high-level-req-3.2">switch</a>: only a parallelizable aggregator can be switched, and it ends non-parallelizable.</td>
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
@@ -610,7 +610,9 @@ aggregator (parallelizable) or via normal integers.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="optional_aggregator.html#0x1_optional_aggregator_switch">switch</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>: &<b>mut</b> <a href="optional_aggregator.html#0x1_optional_aggregator_OptionalAggregator">optional_aggregator::OptionalAggregator</a>)
 </code></pre>
 <p>Only a parallelizable aggregator can be switched; the value and limit are preserved.</p>
-<pre><code><b>aborts_if</b> !<a href="optional_aggregator.html#0x1_optional_aggregator_is_parallelizable">is_parallelizable</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>);
+<pre><code>// This enforces <a id="high-level-req-3.1" href="#high-level-req">high-level requirement 3</a>:
+<b>aborts_if</b> !<a href="optional_aggregator.html#0x1_optional_aggregator_is_parallelizable">is_parallelizable</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>);
+// This enforces <a id="high-level-req-3.2" href="#high-level-req">high-level requirement 3</a>:
 <b>ensures</b> !<a href="optional_aggregator.html#0x1_optional_aggregator_is_parallelizable">is_parallelizable</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>);
 <b>ensures</b> <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator_value</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>) == <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator_value</a>(<b>old</b>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>));
 <b>ensures</b> <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_limit">optional_aggregator_limit</a>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>) == <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_limit">optional_aggregator_limit</a>(<b>old</b>(<a href="optional_aggregator.html#0x1_optional_aggregator">optional_aggregator</a>));

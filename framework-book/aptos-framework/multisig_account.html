@@ -301,6 +301,7 @@ and implement the governance voting logic on top.</p>
 <ul>
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_MultisigAccount">Resource <code>MultisigAccount</code></a></li>
 <li><a href="#@Specification_1_metadata">Function <code>metadata</code></a></li>
 <li><a href="#@Specification_1_timelock_period">Function <code>timelock_period</code></a></li>
 <li><a href="#@Specification_1_timelock_override_threshold">Function <code>timelock_override_threshold</code></a></li>
@@ -308,8 +309,12 @@ and implement the governance voting logic on top.</p>
 <li><a href="#@Specification_1_owners">Function <code>owners</code></a></li>
 <li><a href="#@Specification_1_is_owner">Function <code>is_owner</code></a></li>
 <li><a href="#@Specification_1_get_transaction">Function <code>get_transaction</code></a></li>
+<li><a href="#@Specification_1_get_pending_transactions">Function <code>get_pending_transactions</code></a></li>
 <li><a href="#@Specification_1_get_next_transaction_payload">Function <code>get_next_transaction_payload</code></a></li>
+<li><a href="#@Specification_1_can_be_executed">Function <code>can_be_executed</code></a></li>
 <li><a href="#@Specification_1_can_execute">Function <code>can_execute</code></a></li>
+<li><a href="#@Specification_1_can_be_rejected">Function <code>can_be_rejected</code></a></li>
+<li><a href="#@Specification_1_can_reject">Function <code>can_reject</code></a></li>
 <li><a href="#@Specification_1_get_next_multisig_account_address">Function <code>get_next_multisig_account_address</code></a></li>
 <li><a href="#@Specification_1_last_resolved_sequence_number">Function <code>last_resolved_sequence_number</code></a></li>
 <li><a href="#@Specification_1_next_sequence_number">Function <code>next_sequence_number</code></a></li>
@@ -317,7 +322,9 @@ and implement the governance voting logic on top.</p>
 <li><a href="#@Specification_1_create_with_existing_account">Function <code>create_with_existing_account</code></a></li>
 <li><a href="#@Specification_1_create_with_existing_account_and_revoke_auth_key_call">Function <code>create_with_existing_account_and_revoke_auth_key_call</code></a></li>
 <li><a href="#@Specification_1_create_with_existing_account_and_revoke_auth_key">Function <code>create_with_existing_account_and_revoke_auth_key</code></a></li>
+<li><a href="#@Specification_1_create_with_owners">Function <code>create_with_owners</code></a></li>
 <li><a href="#@Specification_1_create_with_owners_and_timelock">Function <code>create_with_owners_and_timelock</code></a></li>
+<li><a href="#@Specification_1_create_with_owners_then_remove_bootstrapper">Function <code>create_with_owners_then_remove_bootstrapper</code></a></li>
 <li><a href="#@Specification_1_create_with_owners_internal">Function <code>create_with_owners_internal</code></a></li>
 <li><a href="#@Specification_1_upsert_timelock">Function <code>upsert_timelock</code></a></li>
 <li><a href="#@Specification_1_upsert_timelock_internal">Function <code>upsert_timelock_internal</code></a></li>
@@ -329,12 +336,16 @@ and implement the governance voting logic on top.</p>
 <li><a href="#@Specification_1_reject_transaction">Function <code>reject_transaction</code></a></li>
 <li><a href="#@Specification_1_vote_transanction">Function <code>vote_transanction</code></a></li>
 <li><a href="#@Specification_1_vote_transaction">Function <code>vote_transaction</code></a></li>
+<li><a href="#@Specification_1_vote_transactions">Function <code>vote_transactions</code></a></li>
 <li><a href="#@Specification_1_execute_rejected_transaction">Function <code>execute_rejected_transaction</code></a></li>
+<li><a href="#@Specification_1_execute_rejected_transactions">Function <code>execute_rejected_transactions</code></a></li>
 <li><a href="#@Specification_1_validate_multisig_transaction">Function <code>validate_multisig_transaction</code></a></li>
 <li><a href="#@Specification_1_successful_transaction_execution_cleanup">Function <code>successful_transaction_execution_cleanup</code></a></li>
 <li><a href="#@Specification_1_failed_transaction_execution_cleanup">Function <code>failed_transaction_execution_cleanup</code></a></li>
 <li><a href="#@Specification_1_remove_executed_transaction">Function <code>remove_executed_transaction</code></a></li>
+<li><a href="#@Specification_1_create_multisig_account">Function <code>create_multisig_account</code></a></li>
 <li><a href="#@Specification_1_validate_owners">Function <code>validate_owners</code></a></li>
+<li><a href="#@Specification_1_update_owner_schema">Function <code>update_owner_schema</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1339,6 +1350,9 @@ multisig account.</p>
     <b>while</b> (i &lt; next_sequence_number) {
         pending_transactions.push_back(*<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>.transactions.borrow(i));
         i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>.last_executed_sequence_number &lt; i && i &lt;= next_sequence_number;
+        <b>invariant</b> len(pending_transactions) == i - <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>.last_executed_sequence_number - 1;
     };
     pending_transactions
 }
@@ -2391,6 +2405,19 @@ will continue to be an accessible entry point.</p>
     <b>while</b>(sequence_number &lt;= final_sequence_number) {
         <a href="multisig_account.html#0x1_multisig_account_vote_transanction">vote_transanction</a>(owner, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>, sequence_number, approved);
         sequence_number += 1;
+    } <b>spec</b> {
+        <b>invariant</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>) == <b>old</b>(<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>));
+        <b>invariant</b> !<b>old</b>(<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>))
+            || !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].owners), address_of(owner))
+            ==&gt; sequence_number == starting_sequence_number;
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].owners == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].owners);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].num_signatures_required
+            == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].num_signatures_required);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].last_executed_sequence_number
+            == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].last_executed_sequence_number);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].next_sequence_number
+            == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].next_sequence_number);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].metadata == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].metadata);
     }
 }
 </code></pre>
@@ -2451,6 +2478,18 @@ will continue to be an accessible entry point.</p>
     <b>assert</b>!(final_sequence_number &lt; <a href="multisig_account.html#0x1_multisig_account_next_sequence_number">next_sequence_number</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>), <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="multisig_account.html#0x1_multisig_account_EINVALID_SEQUENCE_NUMBER">EINVALID_SEQUENCE_NUMBER</a>));
     <b>while</b>(<a href="multisig_account.html#0x1_multisig_account_last_resolved_sequence_number">last_resolved_sequence_number</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>) &lt; final_sequence_number) {
         <a href="multisig_account.html#0x1_multisig_account_execute_rejected_transaction">execute_rejected_transaction</a>(owner, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+    } <b>spec</b> {
+        <b>invariant</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].last_executed_sequence_number &lt;= final_sequence_number;
+        <b>invariant</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].owners), address_of(owner))
+            ==&gt; <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].last_executed_sequence_number
+                == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].last_executed_sequence_number);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].owners == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].owners);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].num_signatures_required
+            == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].num_signatures_required);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].next_sequence_number
+            == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].next_sequence_number);
+        <b>invariant</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].metadata == <b>old</b>(<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>[<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>].metadata);
     }
 }
 </code></pre>
@@ -2956,70 +2995,70 @@ sequence number. Functions verifying such a proof must reject them.</p>
 <td>For every multi-signature account, the range of required signatures should always be in the range of one to the total number of owners.</td>
 <td>Critical</td>
 <td>While creating a MultisigAccount, the function create_with_owners_internal checks that num_signatures_required is in the span from 1 to total count of owners.</td>
-<td>This has been audited.</td>
+<td>Formally verified via <a href="#high-level-req-1">global invariant</a> for every MultisigAccount, at creation and across all owner and threshold updates.</td>
 </tr>
 <tr>
 <td>2</td>
 <td>The list of owners for a multi-signature account should not contain any duplicate owners, and the multi-signature account itself cannot be listed as one of its owners.</td>
 <td>Critical</td>
 <td>The function validate_owners validates the owner vector that no duplicate entries exists.</td>
-<td>This has been audited.</td>
+<td>Formally verified at creation via the aborts conditions of create_with_owners_internal. Audited that removing owners preserves it.</td>
 </tr>
 <tr>
 <td>3</td>
 <td>The current value of the next sequence number should not be present in the transaction table, until the next sequence number gets increased.</td>
 <td>Medium</td>
 <td>The add_transaction function increases the next sequence number and only then adds the transaction with the old next sequence number to the transaction table.</td>
-<td>This has been audited.</td>
+<td>Formally verified via <a href="#high-level-req-3">MultisigAccount</a> as a data invariant: the table contains exactly the sequence numbers strictly between last_executed_sequence_number and next_sequence_number.</td>
 </tr>
 <tr>
 <td>4</td>
 <td>When the last executed sequence number is smaller than the next sequence number by only one unit, no transactions should exist in the multi-signature account's transactions list.</td>
 <td>High</td>
 <td>The get_pending_transactions function retrieves pending transactions by iterating through the transactions table, starting from the last_executed_sequence_number + 1 to the next_sequence_number.</td>
-<td>Audited that MultisigAccount.transactions is empty when last_executed_sequence_number == next_sequence_number -1</td>
+<td>Formally verified via <a href="#high-level-req-3">MultisigAccount</a>, whose interval is empty when last_executed_sequence_number == next_sequence_number - 1.</td>
 </tr>
 <tr>
 <td>5</td>
 <td>The last executed sequence number is always smaller than the next sequence number.</td>
 <td>Medium</td>
 <td>When creating a new MultisigAccount, the last_executed_sequence_number and next_sequence_number are assigned with 0 and 1 respectively, and from there both these values increase monotonically when a transaction is executed and removed from the table and when new transaction are added respectively.</td>
-<td>This has been audited.</td>
+<td>Formally verified via <a href="#high-level-req-5">MultisigAccount</a> as a data invariant.</td>
 </tr>
 <tr>
 <td>6</td>
 <td>The number of pending transactions should be equal to the difference between the next sequence number and the last executed sequence number.</td>
 <td>High</td>
 <td>When a transaction is added, next_sequence_number is incremented. And when a transaction is removed after execution, last_executed_sequence_number is incremented.</td>
-<td>This has been audited.</td>
+<td>Formally verified via <a href="#high-level-req-6.1">MultisigAccount</a> that the stored transactions are exactly those numbered last_executed_sequence_number + 1 to next_sequence_number - 1, and via <a href="#high-level-req-6.2">get_pending_transactions</a> that it returns next_sequence_number - last_executed_sequence_number - 1 transactions.</td>
 </tr>
 <tr>
 <td>7</td>
 <td>Only transactions with valid sequence number should be fetched.</td>
 <td>Medium</td>
 <td>Functions such as: 1. get_transaction 2. can_be_executed 3. can_be_rejected 4. vote always validate the given sequence number and only then fetch the associated transaction.</td>
-<td>Audited that it aborts if the sequence number is not valid.</td>
+<td>Formally verified via <a href="#high-level-req-7.1">ValidSequenceNumberAbortsIf</a> and <a href="#high-level-req-7.2">ValidSequenceNumberAbortsIf</a>, included by get_transaction, vote and the can_* functions, that it aborts if the sequence number is not valid.</td>
 </tr>
 <tr>
 <td>8</td>
 <td>The execution or rejection of a transaction should enforce that the minimum number of required signatures is less or equal to the total number of approvals.</td>
 <td>Critical</td>
 <td>The functions can_be_executed and can_be_rejected perform validation on the number of votes required for execution or rejection.</td>
-<td>Audited that these functions return the correct value.</td>
+<td>Formally verified via <a href="#high-level-req-8.1">can_be_executed</a>, <a href="#high-level-req-8.2">can_be_rejected</a>, <a href="#high-level-req-8.3">can_execute</a> and <a href="#high-level-req-8.4">can_reject</a> that the result is exactly: the transaction is the next one to resolve, and the approvals (resp. rejections) cast by current owners, counting the given owner's vote as cast for can_execute and can_reject, reach num_signatures_required, and for execution the timelock admits it. The abort conditions of these functions are only partly specified.</td>
 </tr>
 <tr>
 <td>9</td>
 <td>The creation of a multi-signature account properly initializes the resources and then it gets published under the corresponding account.</td>
 <td>Medium</td>
 <td>When creating a MultisigAccount via one of the functions: create_with_existing_account, create_with_existing_account_and_revoke_auth_key, create_with_owners, create, the MultisigAccount data is initialized properly and published to the multisig_account (new or existing).</td>
-<td>Audited that the MultisigAccount is initialized properly.</td>
+<td>Formally verified via <a href="#high-level-req-9.1">CreateMultisigAccountAbortsIfAndEnsures</a>, included by create_with_owners and the create_with_existing_account variants, that the MultisigAccount is published with the given owners and number of signatures required, and via <a href="#high-level-req-9.2">create_with_owners_internal</a> that its sequence numbers start at 0 and 1. Audited that the metadata, the transaction table and the event handles are initialized properly.</td>
 </tr>
 <tr>
 <td>10</td>
 <td>Creation of a multi-signature account on top of an existing account should revoke auth key and any previous offered capabilities or control.</td>
 <td>Critical</td>
 <td>The function create_with_existing_account_and_revoke_auth_key, after successfully creating the MultisigAccount, rotates the account to ZeroAuthKey and revokes any offered capabilities of that account.</td>
-<td>Audited that the account's auth key and the offered capabilities are revoked.</td>
+<td>Formally verified via <a href="#high-level-req-10.1">create_with_existing_account_and_revoke_auth_key</a>, <a href="#high-level-req-10.2">create_with_existing_account_and_revoke_auth_key</a> and <a href="#high-level-req-10.3">create_with_existing_account_and_revoke_auth_key</a> that the account's auth key and the offered capabilities are revoked; create_with_existing_account_and_revoke_auth_key_call has the same conditions.</td>
 </tr>
 <tr>
 <td>11</td>
@@ -3040,35 +3079,35 @@ sequence number. Functions verifying such a proof must reject them.</p>
 <td>The creation of a transaction should be limited to an account owner, which should be automatically considered a voter; additionally, the account's sequence should increase monotonically.</td>
 <td>Critical</td>
 <td>The following functions can only be called by the owners of the account and create a transaction and uses add_transaction function to gives approval on behalf of the creator and increments the next_sequence_number and finally adds the transaction to the MultsigAccount: create_transaction_with_hash, create_transaction.</td>
-<td>Audited it aborts if the caller is not in the owner's list of the account. (create_transaction_with_hash, create_transaction) Audited that the transaction is successfully stored in the MultisigAccount.(create_transaction_with_hash, create_transaction, add_transaction) Audited that the creators voted to approve the transaction. (create_transaction_with_hash, create_transaction, add_transaction) Audited that the next_sequence_number increases monotonically. (create_transaction_with_hash, create_transaction, add_transaction)</td>
+<td>Formally verified via <a href="#high-level-req-13.1">create_transaction</a> and <a href="#high-level-req-13.2">create_transaction_with_hash</a> that it aborts if the caller is not in the owner's list of the account. Audited that the transaction is successfully stored in the MultisigAccount.(create_transaction_with_hash, create_transaction, add_transaction) Audited that the creators voted to approve the transaction. (create_transaction_with_hash, create_transaction, add_transaction) Audited that the next_sequence_number increases monotonically. (create_transaction_with_hash, create_transaction, add_transaction)</td>
 </tr>
 <tr>
 <td>14</td>
 <td>Only owners are allowed to vote for a valid transaction.</td>
 <td>Critical</td>
 <td>Any owner of the MultisigAccount can either approve (approve_transaction) or reject (reject_transaction) a transaction. Both these functions use a generic function to vote for the transaction which validates the caller and the transaction id and adds/updates the vote.</td>
-<td>Audited that it aborts if the caller is not in the owner's list (approve_transaction, reject_transaction, vote_transaction, assert_is_owner). Audited that it aborts if the transaction with the given sequence number doesn't exist in the account (approve_transaction, reject_transaction, vote_transaction). Audited that the vote is recorded as intended.</td>
+<td>Formally verified via <a href="#high-level-req-14.1">approve_transaction</a>, <a href="#high-level-req-14.2">reject_transaction</a> and <a href="#high-level-req-14.3">vote_transaction</a> that it aborts if the caller is not in the owner's list, and via <a href="#high-level-req-14.4">vote_transaction</a> that vote_transaction aborts if the transaction with the given sequence number doesn't exist in the account. Audited the latter for approve_transaction and reject_transaction, and that the vote is recorded as intended.</td>
 </tr>
 <tr>
 <td>15</td>
 <td>Only owners are allowed to execute a valid transaction, if the number of approvals meets the k-of-n criteria, finally the executed transaction should be removed.</td>
 <td>Critical</td>
 <td>Functions execute_rejected_transaction and validate_multisig_transaction can only be called by the owner which validates the transaction and based on the number of approvals and rejections it proceeds to execute the transactions. For rejected transaction, the transactions are immediately removed from the MultisigAccount via remove_executed_transaction. VM validates the transaction via validate_multisig_transaction and cleans up the transaction via successful_transaction_execution_cleanup and failed_transaction_execution_cleanup.</td>
-<td>Audited that it aborts if the caller is not in the owner's list (execute_rejected_transaction, validate_multisig_transaction). Audited that it aborts if the transaction with the given sequence number doesn't exist in the account (execute_rejected_transaction, validate_multisig_transaction). Audited that it aborts if the votes (approvals or rejections) are less than num_signatures_required (execute_rejected_transaction, validate_multisig_transaction). Audited that the transaction is removed from the MultisigAccount (execute_rejected_transaction, remove_executed_transaction, successful_transaction_execution_cleanup, failed_transaction_execution_cleanup).</td>
+<td>Formally verified via <a href="#high-level-req-15.1">execute_rejected_transaction</a> and <a href="#high-level-req-15.2">validate_multisig_transaction</a> that it aborts if the caller is not in the owner's list, via <a href="#high-level-req-15.3">validate_multisig_transaction</a> that validate_multisig_transaction aborts if the next transaction doesn't exist in the account, and via <a href="#high-level-req-15.4">TransactionExecutionCleanup</a>, included by successful_transaction_execution_cleanup and failed_transaction_execution_cleanup, that the executed transaction is removed. Audited that it aborts if the votes (approvals or rejections) are less than num_signatures_required, that execute_rejected_transaction aborts if the transaction doesn't exist, and that it removes the transaction.</td>
 </tr>
 <tr>
 <td>16</td>
 <td>Removing an executed transaction from the transactions list should increase the last sequence number monotonically.</td>
 <td>High</td>
 <td>When transactions are removed via remove_executed_transaction (maybe called by VM cleanup or execute_rejected_transaction), the last_executed_sequence_number increases by 1.</td>
-<td>Audited that last_executed_sequence_number is incremented.</td>
+<td>Formally verified via <a href="#high-level-req-16.1">remove_executed_transaction</a> and <a href="#high-level-req-16.2">TransactionExecutionCleanup</a> that last_executed_sequence_number is incremented by one.</td>
 </tr>
 <tr>
 <td>17</td>
 <td>The voting and transaction creation operations should only be available if a multi-signature account exists.</td>
 <td>Low</td>
 <td>The function assert_multisig_account_exists validates the existence of MultisigAccount under the account.</td>
-<td>Audited that it aborts if the MultisigAccount doesn't exist on the account.</td>
+<td>Formally verified via <a href="#high-level-req-17.1">create_transaction</a>, <a href="#high-level-req-17.2">create_transaction_with_hash</a>, <a href="#high-level-req-17.3">approve_transaction</a>, <a href="#high-level-req-17.4">reject_transaction</a> and <a href="#high-level-req-17.5">vote_transaction</a> that it aborts if the MultisigAccount doesn't exist on the account.</td>
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
@@ -3077,6 +3116,103 @@ This is enforced at write time by <code>upsert_timelock_internal</code>, which a
 multisig account exists before publishing the timelock resource.</p>
 <pre><code><b>invariant</b> <b>forall</b> a: <b>address</b> <b>where</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccountTimeLock">MultisigAccountTimeLock</a>&gt;(a):
     <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(a);
+</code></pre>
+<pre><code>// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
+<b>invariant</b> [suspendable] <b>forall</b> a: <b>address</b> {<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(a)} <b>where</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(a):
+    1 &lt;= <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(a).num_signatures_required
+        && <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(a).<a href="multisig_account.html#0x1_multisig_account_num_signatures_required">num_signatures_required</a> &lt;= len(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(a).owners);
+</code></pre>
+<h3 id="resource-multisigaccount-1"><a class="header" href="#resource-multisigaccount-1">Resource <code>MultisigAccount</code> <a id="@Specification_1_MultisigAccount"></a></a></h3>
+<pre><code><b>struct</b> <a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a> <b>has</b> key
+</code></pre>
+<dl>
+<dt>
+<code>owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>num_signatures_required: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>transactions: <a href="../aptos-stdlib/table.html#0x1_table_Table">table::Table</a>&lt;u64, <a href="multisig_account.html#0x1_multisig_account_MultisigTransaction">multisig_account::MultisigTransaction</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>last_executed_sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>next_sequence_number: u64</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>signer_cap: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>add_owners_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_AddOwnersEvent">multisig_account::AddOwnersEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>remove_owners_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_RemoveOwnersEvent">multisig_account::RemoveOwnersEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>update_signature_required_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_UpdateSignaturesRequiredEvent">multisig_account::UpdateSignaturesRequiredEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>create_transaction_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_CreateTransactionEvent">multisig_account::CreateTransactionEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>vote_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_VoteEvent">multisig_account::VoteEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>execute_rejected_transaction_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_ExecuteRejectedTransactionEvent">multisig_account::ExecuteRejectedTransactionEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>execute_transaction_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_TransactionExecutionSucceededEvent">multisig_account::TransactionExecutionSucceededEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>transaction_execution_failed_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_TransactionExecutionFailedEvent">multisig_account::TransactionExecutionFailedEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>metadata_updated_events: <a href="event.html#0x1_event_EventHandle">event::EventHandle</a>&lt;<a href="multisig_account.html#0x1_multisig_account_MetadataUpdatedEvent">multisig_account::MetadataUpdatedEvent</a>&gt;</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<pre><code>// This enforces <a id="high-level-req-5" href="#high-level-req">high-level requirement 5</a>:
+<b>invariant</b> last_executed_sequence_number &lt; next_sequence_number;
+// This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a> and <a id="high-level-req-6.1" href="#high-level-req">high-level requirement 6</a>:
+<b>invariant</b> <b>forall</b> i: u64 {<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(transactions, i)}:
+    <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(transactions, i) &lt;==&gt;
+        last_executed_sequence_number &lt; i && i &lt; next_sequence_number;
 </code></pre>
 <h3 id="function-metadata-1"><a class="header" href="#function-metadata-1">Function <code>metadata</code> <a id="@Specification_1_metadata"></a></a></h3>
 <pre><code>#[view]
@@ -3130,10 +3266,18 @@ multisig account exists before publishing the timelock resource.</p>
 <b>public</b> <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_get_transaction">get_transaction</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64): <a href="multisig_account.html#0x1_multisig_account_MultisigTransaction">multisig_account::MultisigTransaction</a>
 </code></pre>
 <pre><code><b>let</b> multisig_account_resource = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
-<b>aborts_if</b> sequence_number == 0 || sequence_number &gt;= multisig_account_resource.next_sequence_number;
-<b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(multisig_account_resource.transactions, sequence_number);
+<b>include</b> <a href="multisig_account.html#0x1_multisig_account_ValidSequenceNumberAbortsIf">ValidSequenceNumberAbortsIf</a>;
 <b>ensures</b> result == <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(multisig_account_resource.transactions, sequence_number);
+</code></pre>
+<h3 id="function-get_pending_transactions-1"><a class="header" href="#function-get_pending_transactions-1">Function <code>get_pending_transactions</code> <a id="@Specification_1_get_pending_transactions"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_get_pending_transactions">get_pending_transactions</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigTransaction">multisig_account::MultisigTransaction</a>&gt;
+</code></pre>
+<pre><code><b>let</b> multisig_account_resource = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>let</b> last = multisig_account_resource.last_executed_sequence_number;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+// This enforces <a id="high-level-req-6.2" href="#high-level-req">high-level requirement 6</a>:
+<b>ensures</b> len(result) == multisig_account_resource.next_sequence_number - last - 1;
 </code></pre>
 <h3 id="function-get_next_transaction_payload-1"><a class="header" href="#function-get_next_transaction_payload-1">Function <code>get_next_transaction_payload</code> <a id="@Specification_1_get_next_transaction_payload"></a></a></h3>
 <pre><code>#[view]
@@ -3147,6 +3291,57 @@ multisig account exists before publishing the timelock resource.</p>
 <b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(multisig_account_resource.transactions, sequence_number);
 <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(transaction.payload) ==&gt; result == provided_payload;
 </code></pre>
+<h3 id="function-can_be_executed-1"><a class="header" href="#function-can_be_executed-1">Function <code>can_be_executed</code> <a id="@Specification_1_can_be_executed"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_can_be_executed">can_be_executed</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64): bool
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> multisig_account_resource = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>include</b> <a href="multisig_account.html#0x1_multisig_account_ValidSequenceNumberAbortsIf">ValidSequenceNumberAbortsIf</a>;
+<b>aborts_if</b> multisig_account_resource.last_executed_sequence_number + 1 &gt; MAX_U64;
+<b>let</b> votes = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(multisig_account_resource.transactions, sequence_number).votes;
+<b>let</b> num_approvals = <a href="multisig_account.html#0x1_multisig_account_spec_num_approvals">spec_num_approvals</a>(multisig_account_resource.owners, votes);
+// This enforces <a id="high-level-req-8.1" href="#high-level-req">high-level requirement 8</a>:
+<b>ensures</b> result == (sequence_number == multisig_account_resource.last_executed_sequence_number + 1
+    && num_approvals &gt;= multisig_account_resource.num_signatures_required
+    && <a href="multisig_account.html#0x1_multisig_account_spec_timelock_admits">spec_timelock_admits</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>, sequence_number, num_approvals));
+</code></pre>
+<p>The number of approvals cast by <code>owners</code>.</p>
+<p><a id="0x1_multisig_account_spec_num_approvals"></a></p>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_spec_num_approvals">spec_num_approvals</a>(owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, votes: SimpleMap&lt;<b>address</b>, bool&gt;): u64 {
+   <a href="../move-stdlib/vector.html#0x1_vector_spec_fold">vector::spec_fold</a>&lt;<b>address</b>, u64&gt;(
+       |acc, owner| <b>if</b> (<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(votes, owner) && <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(votes, owner)) {
+           acc + 1u64
+       } <b>else</b> acc,
+       owners, 0u64, len(owners))
+}
+</code></pre>
+<p>Whether the timelock of <code><a href="multisig_account.html#0x1_multisig_account">multisig_account</a></code>, if any, admits executing transaction <code>sequence_number</code> with
+<code>num_approvals</code> approvals now.</p>
+<p><a id="0x1_multisig_account_spec_timelock_admits"></a></p>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_spec_timelock_admits">spec_timelock_admits</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64, num_approvals: u64): bool {
+   <b>if</b> (<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccountTimeLock">MultisigAccountTimeLock</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>)) {
+       <b>let</b> timelock = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccountTimeLock">MultisigAccountTimeLock</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+       <b>let</b> creation_time_secs = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(
+           <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>).transactions, sequence_number).creation_time_secs;
+       (<a href="../move-stdlib/option.html#0x1_option_spec_is_some">option::spec_is_some</a>(timelock.override_threshold)
+           && num_approvals &gt;= <a href="../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(timelock.override_threshold))
+           || aptos_framework::timestamp::spec_now_seconds() - creation_time_secs &gt;= timelock.timelock_period
+   } <b>else</b> {
+       <b>true</b>
+   }
+}
+</code></pre>
+<p>The number of rejections cast by <code>owners</code>.</p>
+<p><a id="0x1_multisig_account_spec_num_rejections"></a></p>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_spec_num_rejections">spec_num_rejections</a>(owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, votes: SimpleMap&lt;<b>address</b>, bool&gt;): u64 {
+   <a href="../move-stdlib/vector.html#0x1_vector_spec_fold">vector::spec_fold</a>&lt;<b>address</b>, u64&gt;(
+       |acc, owner| <b>if</b> (<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(votes, owner)) {
+           <b>if</b> (<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(votes, owner)) acc <b>else</b> acc + 1u64
+       } <b>else</b> acc,
+       owners, 0u64, len(owners))
+}
+</code></pre>
 <h3 id="function-can_execute-1"><a class="header" href="#function-can_execute-1">Function <code>can_execute</code> <a id="@Specification_1_can_execute"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_can_execute">can_execute</a>(owner: <b>address</b>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64): bool
@@ -3156,17 +3351,56 @@ at every call site. Its preconditions and result are therefore captured here via
 <code>can_execute</code> spec rather than via a standalone spec block.</p>
 <pre><code><b>pragma</b> aborts_if_is_partial;
 <b>let</b> multisig_account_resource = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
-<b>aborts_if</b> sequence_number == 0 || sequence_number &gt;= multisig_account_resource.next_sequence_number;
+<b>include</b> <a href="multisig_account.html#0x1_multisig_account_ValidSequenceNumberAbortsIf">ValidSequenceNumberAbortsIf</a>;
+<b>let</b> votes = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(multisig_account_resource.transactions, sequence_number).votes;
+<b>let</b> num_approvals = <a href="multisig_account.html#0x1_multisig_account_spec_num_approvals">spec_num_approvals</a>(multisig_account_resource.owners, votes)
+    + <b>if</b> (<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(votes, owner) && <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(votes, owner)) 0 <b>else</b> 1;
+// This enforces <a id="high-level-req-8.3" href="#high-level-req">high-level requirement 8</a>:
+<b>ensures</b> result == (<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(multisig_account_resource.owners, owner)
+    && sequence_number == multisig_account_resource.last_executed_sequence_number + 1
+    && num_approvals &gt;= multisig_account_resource.num_signatures_required
+    && <a href="multisig_account.html#0x1_multisig_account_spec_timelock_admits">spec_timelock_admits</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>, sequence_number, num_approvals));
+</code></pre>
+<h3 id="function-can_be_rejected-1"><a class="header" href="#function-can_be_rejected-1">Function <code>can_be_rejected</code> <a id="@Specification_1_can_be_rejected"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_can_be_rejected">can_be_rejected</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64): bool
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> multisig_account_resource = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>include</b> <a href="multisig_account.html#0x1_multisig_account_ValidSequenceNumberAbortsIf">ValidSequenceNumberAbortsIf</a>;
+<b>aborts_if</b> multisig_account_resource.last_executed_sequence_number + 1 &gt; MAX_U64;
+<b>let</b> votes = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(multisig_account_resource.transactions, sequence_number).votes;
+// This enforces <a id="high-level-req-8.2" href="#high-level-req">high-level requirement 8</a>:
+<b>ensures</b> result == (sequence_number == multisig_account_resource.last_executed_sequence_number + 1
+    && <a href="multisig_account.html#0x1_multisig_account_spec_num_rejections">spec_num_rejections</a>(multisig_account_resource.owners, votes)
+        &gt;= multisig_account_resource.num_signatures_required);
+</code></pre>
+<h3 id="function-can_reject-1"><a class="header" href="#function-can_reject-1">Function <code>can_reject</code> <a id="@Specification_1_can_reject"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_can_reject">can_reject</a>(owner: <b>address</b>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64): bool
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> multisig_account_resource = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>include</b> <a href="multisig_account.html#0x1_multisig_account_ValidSequenceNumberAbortsIf">ValidSequenceNumberAbortsIf</a>;
+<b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(multisig_account_resource.owners, owner)
+    && multisig_account_resource.last_executed_sequence_number + 1 &gt; MAX_U64;
 <b>ensures</b> result ==&gt;
     <a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(multisig_account_resource.owners, owner) &&
     sequence_number == multisig_account_resource.last_executed_sequence_number + 1;
+<b>let</b> votes = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(multisig_account_resource.transactions, sequence_number).votes;
+<b>let</b> num_rejections = <a href="multisig_account.html#0x1_multisig_account_spec_num_rejections">spec_num_rejections</a>(multisig_account_resource.owners, votes)
+    + <b>if</b> (<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(votes, owner) && !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(votes, owner)) 0 <b>else</b> 1;
+// This enforces <a id="high-level-req-8.4" href="#high-level-req">high-level requirement 8</a>:
+<b>ensures</b> result == (<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(multisig_account_resource.owners, owner)
+    && sequence_number == multisig_account_resource.last_executed_sequence_number + 1
+    && num_rejections &gt;= multisig_account_resource.num_signatures_required);
 </code></pre>
 <h3 id="function-get_next_multisig_account_address-1"><a class="header" href="#function-get_next_multisig_account_address-1">Function <code>get_next_multisig_account_address</code> <a id="@Specification_1_get_next_multisig_account_address"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_get_next_multisig_account_address">get_next_multisig_account_address</a>(creator: <b>address</b>): <b>address</b>
 </code></pre>
-<pre><code><b>let</b> owner_nonce = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(creator).sequence_number;
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(creator) && !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>ensures</b> result == <a href="multisig_account.html#0x1_multisig_account_spec_next_multisig_account_address">spec_next_multisig_account_address</a>(creator);
 </code></pre>
 <h3 id="function-last_resolved_sequence_number-1"><a class="header" href="#function-last_resolved_sequence_number-1">Function <code>last_resolved_sequence_number</code> <a id="@Specification_1_last_resolved_sequence_number"></a></a></h3>
 <pre><code>#[view]
@@ -3189,9 +3423,7 @@ at every call site. Its preconditions and result are therefore captured here via
 <b>public</b> <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_vote">vote</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64, owner: <b>address</b>): (bool, bool)
 </code></pre>
 <pre><code><b>let</b> multisig_account_resource = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
-<b>aborts_if</b> sequence_number == 0 || sequence_number &gt;= multisig_account_resource.next_sequence_number;
-<b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(multisig_account_resource.transactions, sequence_number);
+<b>include</b> <a href="multisig_account.html#0x1_multisig_account_ValidSequenceNumberAbortsIf">ValidSequenceNumberAbortsIf</a>;
 <b>let</b> transaction = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(multisig_account_resource.transactions, sequence_number);
 <b>let</b> votes = transaction.votes;
 <b>let</b> voted = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(votes, owner);
@@ -3211,12 +3443,39 @@ at every call site. Its preconditions and result are therefore captured here via
 <pre><code><b>pragma</b> aborts_if_is_partial;
 <b>let</b> multisig_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
 <b>include</b> <a href="multisig_account.html#0x1_multisig_account_CreateMultisigAccountAbortsIfAndEnsures">CreateMultisigAccountAbortsIfAndEnsures</a>;
+<b>let</b> <b>post</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(multisig_address);
+<b>ensures</b> account_resource.authentication_key == <a href="multisig_account.html#0x1_multisig_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(account_resource.signer_capability_offer.for);
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(account_resource.rotation_capability_offer.for);
 </code></pre>
 <h3 id="function-create_with_existing_account_and_revoke_auth_key-1"><a class="header" href="#function-create_with_existing_account_and_revoke_auth_key-1">Function <code>create_with_existing_account_and_revoke_auth_key</code> <a id="@Specification_1_create_with_existing_account_and_revoke_auth_key"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_create_with_existing_account_and_revoke_auth_key">create_with_existing_account_and_revoke_auth_key</a>(multisig_address: <b>address</b>, owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, num_signatures_required: u64, account_scheme: u8, account_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, create_multisig_account_signed_message: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, metadata_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, metadata_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
 <b>include</b> <a href="multisig_account.html#0x1_multisig_account_CreateMultisigAccountAbortsIfAndEnsures">CreateMultisigAccountAbortsIfAndEnsures</a>;
+<b>let</b> <b>post</b> account_resource = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(multisig_address);
+// This enforces <a id="high-level-req-10.1" href="#high-level-req">high-level requirement 10</a>:
+<b>ensures</b> account_resource.authentication_key == <a href="multisig_account.html#0x1_multisig_account_ZERO_AUTH_KEY">ZERO_AUTH_KEY</a>;
+// This enforces <a id="high-level-req-10.2" href="#high-level-req">high-level requirement 10</a>:
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(account_resource.signer_capability_offer.for);
+// This enforces <a id="high-level-req-10.3" href="#high-level-req">high-level requirement 10</a>:
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(account_resource.rotation_capability_offer.for);
+</code></pre>
+<h3 id="function-create_with_owners-1"><a class="header" href="#function-create_with_owners-1">Function <code>create_with_owners</code> <a id="@Specification_1_create_with_owners"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_create_with_owners">create_with_owners</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, additional_owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, num_signatures_required: u64, metadata_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, metadata_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> owner_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>let</b> owners = concat(additional_owners, vec(owner_addr));
+<b>let</b> multisig_address = <a href="multisig_account.html#0x1_multisig_account_spec_next_multisig_account_address">spec_next_multisig_account_address</a>(owner_addr);
+<b>include</b> <a href="multisig_account.html#0x1_multisig_account_CreateMultisigAccountAbortsIfAndEnsures">CreateMultisigAccountAbortsIfAndEnsures</a>;
+<b>aborts_if</b> <b>exists</b> i in 0..len(owners), j in 0..len(owners):
+    i &lt; j && owners[i] == owners[j];
+<b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(multisig_address);
+<b>let</b> <b>post</b> multisig = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>ensures</b> multisig.last_executed_sequence_number == 0;
+<b>ensures</b> multisig.next_sequence_number == 1;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(multisig.signer_cap) && <a href="../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(multisig.signer_cap).<a href="account.html#0x1_account">account</a> == multisig_address;
 </code></pre>
 <h3 id="function-create_with_owners_and_timelock-1"><a class="header" href="#function-create_with_owners_and_timelock-1">Function <code>create_with_owners_and_timelock</code> <a id="@Specification_1_create_with_owners_and_timelock"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_create_with_owners_and_timelock">create_with_owners_and_timelock</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, additional_owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, num_signatures_required: u64, metadata_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, metadata_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, timelock_period: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;, override_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
@@ -3234,6 +3493,32 @@ at every call site. Its preconditions and result are therefore captured here via
 <b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(override_threshold) &&
     <a href="../move-stdlib/option.html#0x1_option_spec_borrow">option::spec_borrow</a>(override_threshold) &gt; total_owners;
 </code></pre>
+<h3 id="function-create_with_owners_then_remove_bootstrapper-1"><a class="header" href="#function-create_with_owners_then_remove_bootstrapper-1">Function <code>create_with_owners_then_remove_bootstrapper</code> <a id="@Specification_1_create_with_owners_then_remove_bootstrapper"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_create_with_owners_then_remove_bootstrapper">create_with_owners_then_remove_bootstrapper</a>(bootstrapper: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, num_signatures_required: u64, metadata_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, metadata_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> bootstrapper_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(bootstrapper);
+<b>let</b> all_owners = concat(owners, vec(bootstrapper_addr));
+<b>let</b> multisig_address = <a href="multisig_account.html#0x1_multisig_account_spec_next_multisig_account_address">spec_next_multisig_account_address</a>(bootstrapper_addr);
+<b>include</b> <a href="multisig_account.html#0x1_multisig_account_CreateMultisigAccountAbortsIf">CreateMultisigAccountAbortsIf</a> { owners: all_owners };
+<b>aborts_if</b> <b>exists</b> i in 0..len(all_owners), j in 0..len(all_owners):
+    i &lt; j && all_owners[i] == all_owners[j];
+<b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(multisig_address);
+<b>let</b> <b>post</b> multisig = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>ensures</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+<b>ensures</b> multisig.num_signatures_required == num_signatures_required;
+<b>ensures</b> len(multisig.owners) &gt;= num_signatures_required;
+<b>ensures</b> multisig.next_sequence_number == 1;
+</code></pre>
+<p>The address <code>create_multisig_account</code> uses; the seed mirrors <code>create_multisig_account_seed</code>.</p>
+<p><a id="0x1_multisig_account_spec_next_multisig_account_address"></a></p>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_spec_next_multisig_account_address">spec_next_multisig_account_address</a>(creator: <b>address</b>): <b>address</b> {
+   <b>let</b> nonce = <b>if</b> (<b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(creator)) {
+       <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(creator).sequence_number
+   } <b>else</b> { 0 };
+   <a href="account.html#0x1_account_spec_create_resource_address">account::spec_create_resource_address</a>(creator, concat(concat(vec&lt;u8&gt;(), <a href="multisig_account.html#0x1_multisig_account_DOMAIN_SEPARATOR">DOMAIN_SEPARATOR</a>), std::bcs::to_bytes((nonce <b>as</b> u64))))
+}
+</code></pre>
 <h3 id="function-create_with_owners_internal-1"><a class="header" href="#function-create_with_owners_internal-1">Function <code>create_with_owners_internal</code> <a id="@Specification_1_create_with_owners_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_create_with_owners_internal">create_with_owners_internal</a>(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, num_signatures_required: u64, multisig_account_signer_cap: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>&gt;, metadata_keys: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;, metadata_values: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
 </code></pre>
@@ -3249,6 +3534,7 @@ at every call site. Its preconditions and result are therefore captured here via
 <b>let</b> <b>post</b> multisig = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
 <b>ensures</b> multisig.owners == owners;
 <b>ensures</b> multisig.num_signatures_required == num_signatures_required;
+// This enforces <a id="high-level-req-9.2" href="#high-level-req">high-level requirement 9</a>:
 <b>ensures</b> multisig.last_executed_sequence_number == 0;
 <b>ensures</b> multisig.next_sequence_number == 1;
 </code></pre>
@@ -3296,14 +3582,23 @@ at every call site. Its preconditions and result are therefore captured here via
 <b>ensures</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccountTimeLock">MultisigAccountTimeLock</a>&gt;(multisig_address);
 <b>ensures</b> <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address) == <b>old</b>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address));
 </code></pre>
-<p><a id="0x1_multisig_account_CreateMultisigAccountAbortsIfAndEnsures"></a></p>
-<pre><code><b>schema</b> <a href="multisig_account.html#0x1_multisig_account_CreateMultisigAccountAbortsIfAndEnsures">CreateMultisigAccountAbortsIfAndEnsures</a> {
+<p><a id="0x1_multisig_account_CreateMultisigAccountAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="multisig_account.html#0x1_multisig_account_CreateMultisigAccountAbortsIf">CreateMultisigAccountAbortsIf</a> {
     multisig_address: <b>address</b>;
     owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;;
     num_signatures_required: u64;
     <b>aborts_if</b> num_signatures_required == 0 || num_signatures_required &gt; len(owners);
     <b>aborts_if</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+}
+</code></pre>
+<p><a id="0x1_multisig_account_CreateMultisigAccountAbortsIfAndEnsures"></a></p>
+<pre><code><b>schema</b> <a href="multisig_account.html#0x1_multisig_account_CreateMultisigAccountAbortsIfAndEnsures">CreateMultisigAccountAbortsIfAndEnsures</a> {
+    multisig_address: <b>address</b>;
+    owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;;
+    num_signatures_required: u64;
+    <b>include</b> <a href="multisig_account.html#0x1_multisig_account_CreateMultisigAccountAbortsIf">CreateMultisigAccountAbortsIf</a>;
     <b>let</b> <b>post</b> multisig = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
+    // This enforces <a id="high-level-req-9.1" href="#high-level-req">high-level requirement 9</a>:
     <b>ensures</b> <b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(multisig_address);
     <b>ensures</b> multisig.owners == owners;
     <b>ensures</b> multisig.num_signatures_required == num_signatures_required;
@@ -3333,7 +3628,9 @@ at every call site. Its preconditions and result are therefore captured here via
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> len(payload) == 0;
+// This enforces <a id="high-level-req-17.1" href="#high-level-req">high-level requirement 17</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+// This enforces <a id="high-level-req-13.1" href="#high-level-req">high-level requirement 13</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>).owners, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
 </code></pre>
 <h3 id="function-create_transaction_with_hash-1"><a class="header" href="#function-create_transaction_with_hash-1">Function <code>create_transaction_with_hash</code> <a id="@Specification_1_create_transaction_with_hash"></a></a></h3>
@@ -3341,21 +3638,27 @@ at every call site. Its preconditions and result are therefore captured here via
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> len(payload_hash) != 32;
+// This enforces <a id="high-level-req-17.2" href="#high-level-req">high-level requirement 17</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+// This enforces <a id="high-level-req-13.2" href="#high-level-req">high-level requirement 13</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>).owners, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
 </code></pre>
 <h3 id="function-approve_transaction-1"><a class="header" href="#function-approve_transaction-1">Function <code>approve_transaction</code> <a id="@Specification_1_approve_transaction"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_approve_transaction">approve_transaction</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64)
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
+// This enforces <a id="high-level-req-17.3" href="#high-level-req">high-level requirement 17</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+// This enforces <a id="high-level-req-14.1" href="#high-level-req">high-level requirement 14</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>).owners, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
 </code></pre>
 <h3 id="function-reject_transaction-1"><a class="header" href="#function-reject_transaction-1">Function <code>reject_transaction</code> <a id="@Specification_1_reject_transaction"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_reject_transaction">reject_transaction</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64)
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
+// This enforces <a id="high-level-req-17.4" href="#high-level-req">high-level requirement 17</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+// This enforces <a id="high-level-req-14.2" href="#high-level-req">high-level requirement 14</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>).owners, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
 </code></pre>
 <h3 id="function-vote_transanction-1"><a class="header" href="#function-vote_transanction-1">Function <code>vote_transanction</code> <a id="@Specification_1_vote_transanction"></a></a></h3>
@@ -3370,16 +3673,53 @@ at every call site. Its preconditions and result are therefore captured here via
 <pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_vote_transaction">vote_transaction</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, sequence_number: u64, approved: bool)
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
+// This enforces <a id="high-level-req-17.5" href="#high-level-req">high-level requirement 17</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+// This enforces <a id="high-level-req-14.3" href="#high-level-req">high-level requirement 14</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>).owners, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
+// This enforces <a id="high-level-req-14.4" href="#high-level-req">high-level requirement 14</a>:
 <b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>).transactions, sequence_number);
+</code></pre>
+<h3 id="function-vote_transactions-1"><a class="header" href="#function-vote_transactions-1">Function <code>vote_transactions</code> <a id="@Specification_1_vote_transactions"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_vote_transactions">vote_transactions</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, starting_sequence_number: u64, final_sequence_number: u64, approved: bool)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> pre = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>let</b> <b>post</b> post_r = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>let</b> <a href="voting.html#0x1_voting">voting</a> = starting_sequence_number &lt;= final_sequence_number;
+<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_MULTISIG_V2_ENHANCEMENT">features::MULTISIG_V2_ENHANCEMENT</a>);
+<b>aborts_if</b> <a href="voting.html#0x1_voting">voting</a> && !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>aborts_if</b> <a href="voting.html#0x1_voting">voting</a> && !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(pre.owners, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
+<b>ensures</b> post_r.owners == pre.owners;
+<b>ensures</b> post_r.num_signatures_required == pre.num_signatures_required;
+<b>ensures</b> post_r.last_executed_sequence_number == pre.last_executed_sequence_number;
+<b>ensures</b> post_r.next_sequence_number == pre.next_sequence_number;
+<b>ensures</b> post_r.metadata == pre.metadata;
 </code></pre>
 <h3 id="function-execute_rejected_transaction-1"><a class="header" href="#function-execute_rejected_transaction-1">Function <code>execute_rejected_transaction</code> <a id="@Specification_1_execute_rejected_transaction"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_execute_rejected_transaction">execute_rejected_transaction</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>)
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+// This enforces <a id="high-level-req-15.1" href="#high-level-req">high-level requirement 15</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(<b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>).owners, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
+</code></pre>
+<h3 id="function-execute_rejected_transactions-1"><a class="header" href="#function-execute_rejected_transactions-1">Function <code>execute_rejected_transactions</code> <a id="@Specification_1_execute_rejected_transactions"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="multisig_account.html#0x1_multisig_account_execute_rejected_transactions">execute_rejected_transactions</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>, final_sequence_number: u64)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> pre = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>let</b> <b>post</b> post_r = <b>global</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_MULTISIG_V2_ENHANCEMENT">features::MULTISIG_V2_ENHANCEMENT</a>);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+<b>aborts_if</b> pre.last_executed_sequence_number &gt;= final_sequence_number;
+<b>aborts_if</b> final_sequence_number &gt;= pre.next_sequence_number;
+<b>aborts_if</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(pre.owners, <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner));
+<b>ensures</b> post_r.last_executed_sequence_number == final_sequence_number;
+<b>ensures</b> post_r.next_sequence_number == pre.next_sequence_number;
+<b>ensures</b> post_r.owners == pre.owners;
+<b>ensures</b> post_r.num_signatures_required == pre.num_signatures_required;
+<b>ensures</b> post_r.metadata == pre.metadata;
 </code></pre>
 <h3 id="function-validate_multisig_transaction-1"><a class="header" href="#function-validate_multisig_transaction-1">Function <code>validate_multisig_transaction</code> <a id="@Specification_1_validate_multisig_transaction"></a></a></h3>
 <pre><code>#[lint::skip(#[unused_function])]
@@ -3396,8 +3736,10 @@ level state (and, for timelock, an inline helper plus the optional
 <b>let</b> sequence_number = multisig_account_resource.last_executed_sequence_number + 1;
 <b>let</b> owner_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="multisig_account.html#0x1_multisig_account_MultisigAccount">MultisigAccount</a>&gt;(<a href="multisig_account.html#0x1_multisig_account">multisig_account</a>);
+// This enforces <a id="high-level-req-15.2" href="#high-level-req">high-level requirement 15</a>:
 <b>aborts_if</b> !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(multisig_account_resource.owners, owner_addr);
 <b>aborts_if</b> multisig_account_resource.last_executed_sequence_number + 1 &gt; MAX_U64;
+// This enforces <a id="high-level-req-15.3" href="#high-level-req">high-level requirement 15</a>:
 <b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(multisig_account_resource.transactions, sequence_number);
 </code></pre>
 <h3 id="function-successful_transaction_execution_cleanup-1"><a class="header" href="#function-successful_transaction_execution_cleanup-1">Function <code>successful_transaction_execution_cleanup</code> <a id="@Specification_1_successful_transaction_execution_cleanup"></a></a></h3>
@@ -3426,7 +3768,9 @@ set and signature threshold are unchanged.</p>
     <b>aborts_if</b> sequence_number &gt; MAX_U64;
     <b>aborts_if</b> sequence_number &gt;= pre.next_sequence_number;
     <b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(pre.transactions, sequence_number);
+    // This enforces <a id="high-level-req-16.2" href="#high-level-req">high-level requirement 16</a>:
     <b>ensures</b> post_r.last_executed_sequence_number == sequence_number;
+    // This enforces <a id="high-level-req-15.4" href="#high-level-req">high-level requirement 15</a>:
     <b>ensures</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(post_r.transactions, sequence_number);
     <b>ensures</b> post_r.next_sequence_number == pre.next_sequence_number;
     <b>ensures</b> post_r.owners == pre.owners;
@@ -3442,17 +3786,36 @@ set and signature threshold are unchanged.</p>
     multisig_account_resource.transactions,
     multisig_account_resource.last_executed_sequence_number + 1
 );
+// This enforces <a id="high-level-req-16.1" href="#high-level-req">high-level requirement 16</a>:
 <b>ensures</b> multisig_account_resource.last_executed_sequence_number ==
     <b>old</b>(multisig_account_resource).last_executed_sequence_number + 1;
+</code></pre>
+<h3 id="function-create_multisig_account-1"><a class="header" href="#function-create_multisig_account-1">Function <code>create_multisig_account</code> <a id="@Specification_1_create_multisig_account"></a></a></h3>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_create_multisig_account">create_multisig_account</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): (<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>)
+</code></pre>
+<pre><code><b>let</b> owner_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>let</b> multisig_address = <a href="multisig_account.html#0x1_multisig_account_spec_next_multisig_account_address">spec_next_multisig_account_address</a>(owner_addr);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(owner_addr) && !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(DEFAULT_ACCOUNT_RESOURCE);
+<b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(multisig_address);
+<b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">account::EnsureResourceExistsAbortsIf</a> { addr: multisig_address };
+<b>aborts_if</b> len(<a href="account.html#0x1_account_ZERO_AUTH_KEY">account::ZERO_AUTH_KEY</a>) != 32;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;AptosCoin&gt;().account_address);
+<b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result_1) == multisig_address;
+<b>ensures</b> result_2.<a href="account.html#0x1_account">account</a> == multisig_address;
+<b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(multisig_address);
 </code></pre>
 <h3 id="function-validate_owners-1"><a class="header" href="#function-validate_owners-1">Function <code>validate_owners</code> <a id="@Specification_1_validate_owners"></a></a></h3>
 <pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_validate_owners">validate_owners</a>(owners: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>: <b>address</b>)
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify = <b>false</b>;
 <b>aborts_if</b> [abstract] <b>exists</b> i in 0..len(owners): owners[i] == <a href="multisig_account.html#0x1_multisig_account">multisig_account</a>;
 <b>aborts_if</b> [abstract] <b>exists</b> i in 0..len(owners), j in 0..len(owners) <b>where</b> i &lt; j:
     owners[i] == owners[j];
+</code></pre>
+<h3 id="function-update_owner_schema-1"><a class="header" href="#function-update_owner_schema-1">Function <code>update_owner_schema</code> <a id="@Specification_1_update_owner_schema"></a></a></h3>
+<pre><code><b>fun</b> <a href="multisig_account.html#0x1_multisig_account_update_owner_schema">update_owner_schema</a>(multisig_address: <b>address</b>, new_owners: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, owners_to_remove: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, optional_new_num_signatures_required: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;)
+</code></pre>
+<pre><code><b>pragma</b> disable_invariants_in_body;
 </code></pre>
 
                     </main>

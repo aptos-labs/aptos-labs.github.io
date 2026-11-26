@@ -868,7 +868,7 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 <td>The arbitrary upgrade policy should never be used.</td>
 <td>Critical</td>
 <td>There should never be a pass of an arbitrary upgrade policy to the request_publish native function.</td>
-<td>Manually audited that it aborts if package.upgrade_policy.policy == 0.</td>
+<td>Formally verified via <a href="#high-level-req-2.1">publish_package</a> and <a href="#high-level-req-2.2">publish_package_to_object</a> that it aborts if package.upgrade_policy.policy == 0.</td>
 </tr>
 <tr>
 <td>3</td>
@@ -882,7 +882,7 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 <td>Package upgrades should abide by policy change rules. In particular, The new upgrade policy must be equal to or stricter when compared to the old one. The original upgrade policy must not be immutable. The new package must contain all modules contained in the old package.</td>
 <td>Medium</td>
 <td>A package may only be updated using the publish_package function when the check_upgradability function returns true.</td>
-<td>This is audited by a manual review of the check_upgradability patterns.</td>
+<td>Formally verified via <a href="#high-level-req-4.1">check_upgradability</a> that it aborts if the original policy is immutable and via <a href="#high-level-req-4.2">check_upgradability</a> that it aborts if the new policy is weaker. Audited that the new package contains all modules of the old one.</td>
 </tr>
 <tr>
 <td>5</td>
@@ -925,6 +925,7 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 </code></pre>
 <pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
 <b>modifies</b> <b>global</b>&lt;<a href="code.html#0x1_code_PackageRegistry">PackageRegistry</a>&gt;(addr);
+// This enforces <a id="high-level-req-2.1" href="#high-level-req">high-level requirement 2</a>:
 <b>aborts_if</b> pack.upgrade_policy.policy &lt;= <a href="code.html#0x1_code_upgrade_policy_arbitrary">upgrade_policy_arbitrary</a>().policy;
 </code></pre>
 <h3 id="function-freeze_code_object-1"><a class="header" href="#function-freeze_code_object-1">Function <code>freeze_code_object</code> <a id="@Specification_1_freeze_code_object"></a></a></h3>
@@ -944,12 +945,15 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 </code></pre>
 <p>The deserialized package must not use the arbitrary upgrade policy.</p>
 <pre><code><b>let</b> pack = <a href="util.html#0x1_util_spec_from_bytes">util::spec_from_bytes</a>&lt;<a href="code.html#0x1_code_PackageMetadata">PackageMetadata</a>&gt;(metadata_serialized);
+// This enforces <a id="high-level-req-2.2" href="#high-level-req">high-level requirement 2</a>:
 <b>aborts_if</b> pack.upgrade_policy.policy &lt;= <a href="code.html#0x1_code_upgrade_policy_arbitrary">upgrade_policy_arbitrary</a>().policy;
 </code></pre>
 <h3 id="function-check_upgradability-1"><a class="header" href="#function-check_upgradability-1">Function <code>check_upgradability</code> <a id="@Specification_1_check_upgradability"></a></a></h3>
 <pre><code><b>fun</b> <a href="code.html#0x1_code_check_upgradability">check_upgradability</a>(old_pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>, new_pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>, new_modules: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;)
 </code></pre>
-<pre><code><b>aborts_if</b> old_pack.upgrade_policy.policy &gt;= <a href="code.html#0x1_code_upgrade_policy_immutable">upgrade_policy_immutable</a>().policy;
+<pre><code>// This enforces <a id="high-level-req-4.1" href="#high-level-req">high-level requirement 4</a>:
+<b>aborts_if</b> old_pack.upgrade_policy.policy &gt;= <a href="code.html#0x1_code_upgrade_policy_immutable">upgrade_policy_immutable</a>().policy;
+// This enforces <a id="high-level-req-4.2" href="#high-level-req">high-level requirement 4</a>:
 <b>aborts_if</b> !<a href="code.html#0x1_code_can_change_upgrade_policy_to">can_change_upgrade_policy_to</a>(old_pack.upgrade_policy, new_pack.upgrade_policy);
 </code></pre>
 <h3 id="function-get_module_names-1"><a class="header" href="#function-get_module_names-1">Function <code>get_module_names</code> <a id="@Specification_1_get_module_names"></a></a></h3>

@@ -169,6 +169,13 @@
 <li><a href="#0x1_rate_limiter_initialize">Function <code>initialize</code></a></li>
 <li><a href="#0x1_rate_limiter_request">Function <code>request</code></a></li>
 <li><a href="#0x1_rate_limiter_refill">Function <code>refill</code></a></li>
+<li><a href="#@Specification_0">Specification</a>
+<ul>
+<li><a href="#@Specification_0_initialize">Function <code>initialize</code></a></li>
+<li><a href="#@Specification_0_request">Function <code>request</code></a></li>
+<li><a href="#@Specification_0_refill">Function <code>refill</code></a></li>
+</ul>
+</li>
 </ul>
 <pre><code><b>use</b> <a href="timestamp.html#0x1_timestamp">0x1::timestamp</a>;
 </code></pre>
@@ -266,6 +273,66 @@
 }
 </code></pre>
 </details>
+<h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_0"></a></a></h2>
+<p>The limiter after adding the tokens accrued since its last refill at time <code>now</code>, capped at capacity.</p>
+<p><a id="0x1_rate_limiter_spec_refill"></a></p>
+<pre><code><b>fun</b> <a href="rate_limiter.html#0x1_rate_limiter_spec_refill">spec_refill</a>(limiter: <a href="rate_limiter.html#0x1_rate_limiter_RateLimiter">RateLimiter</a>, now: u64): <a href="rate_limiter.html#0x1_rate_limiter_RateLimiter">RateLimiter</a> {
+   <b>let</b> accumulated = (now - limiter.last_refill_timestamp) * limiter.capacity
+       + limiter.fractional_accumulated;
+   <b>let</b> new_tokens = accumulated / limiter.refill_interval;
+   <b>let</b> full = limiter.current_amount + new_tokens &gt;= limiter.capacity;
+   RateLimiter::TokenBucket {
+       capacity: limiter.capacity,
+       current_amount: <b>if</b> (full) { limiter.capacity } <b>else</b> { limiter.current_amount + new_tokens },
+       refill_interval: limiter.refill_interval,
+       last_refill_timestamp: now,
+       fractional_accumulated: <b>if</b> (full) { 0 } <b>else</b> { accumulated % limiter.refill_interval },
+   }
+}
+</code></pre>
+<h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_0_initialize"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="rate_limiter.html#0x1_rate_limiter_initialize">initialize</a>(capacity: u64, refill_interval: u64): <a href="rate_limiter.html#0x1_rate_limiter_RateLimiter">rate_limiter::RateLimiter</a>
+</code></pre>
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<b>ensures</b> result == RateLimiter::TokenBucket {
+    capacity,
+    current_amount: capacity,
+    refill_interval,
+    last_refill_timestamp: <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>(),
+    fractional_accumulated: 0,
+};
+</code></pre>
+<h3 id="function-request-1"><a class="header" href="#function-request-1">Function <code>request</code> <a id="@Specification_0_request"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="rate_limiter.html#0x1_rate_limiter_request">request</a>(limiter: &<b>mut</b> <a href="rate_limiter.html#0x1_rate_limiter_RateLimiter">rate_limiter::RateLimiter</a>, num_token_requested: u64): bool
+</code></pre>
+<pre><code><b>include</b> <a href="rate_limiter.html#0x1_rate_limiter_RefillAbortsIf">RefillAbortsIf</a>;
+<b>let</b> refilled = <a href="rate_limiter.html#0x1_rate_limiter_spec_refill">spec_refill</a>(limiter, <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>());
+<b>ensures</b> result == (refilled.current_amount &gt;= num_token_requested);
+<b>ensures</b> limiter == <b>if</b> (result) {
+    update_field(refilled, current_amount, refilled.current_amount - num_token_requested)
+} <b>else</b> {
+    refilled
+};
+</code></pre>
+<h3 id="function-refill-1"><a class="header" href="#function-refill-1">Function <code>refill</code> <a id="@Specification_0_refill"></a></a></h3>
+<pre><code><b>fun</b> <a href="rate_limiter.html#0x1_rate_limiter_refill">refill</a>(limiter: &<b>mut</b> <a href="rate_limiter.html#0x1_rate_limiter_RateLimiter">rate_limiter::RateLimiter</a>)
+</code></pre>
+<pre><code><b>include</b> <a href="rate_limiter.html#0x1_rate_limiter_RefillAbortsIf">RefillAbortsIf</a>;
+<b>ensures</b> limiter == <a href="rate_limiter.html#0x1_rate_limiter_spec_refill">spec_refill</a>(<b>old</b>(limiter), <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>());
+</code></pre>
+<p><a id="0x1_rate_limiter_RefillAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="rate_limiter.html#0x1_rate_limiter_RefillAbortsIf">RefillAbortsIf</a> {
+    limiter: <a href="rate_limiter.html#0x1_rate_limiter_RateLimiter">RateLimiter</a>;
+    <b>let</b> now = <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>();
+    <b>let</b> accumulated = (now - limiter.last_refill_timestamp) * limiter.capacity
+        + limiter.fractional_accumulated;
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+    <b>aborts_if</b> now &lt; limiter.last_refill_timestamp;
+    <b>aborts_if</b> accumulated &gt; MAX_U64;
+    <b>aborts_if</b> limiter.refill_interval == 0;
+    <b>aborts_if</b> limiter.current_amount + accumulated / limiter.refill_interval &gt; MAX_U64;
+}
+</code></pre>
 
                     </main>
 

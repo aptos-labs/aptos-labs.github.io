@@ -202,6 +202,7 @@ and (2) the randomness cannot be biased in any way by validators, developers or 
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_on_new_block">Function <code>on_new_block</code></a></li>
 <li><a href="#@Specification_1_next_32_bytes">Function <code>next_32_bytes</code></a></li>
+<li><a href="#@Specification_1_bytes">Function <code>bytes</code></a></li>
 <li><a href="#@Specification_1_u8_integer">Function <code>u8_integer</code></a></li>
 <li><a href="#@Specification_1_u16_integer">Function <code>u16_integer</code></a></li>
 <li><a href="#@Specification_1_u32_integer">Function <code>u32_integer</code></a></li>
@@ -367,6 +368,13 @@ of the hash function).</p>
         v.reverse_append(blob);
 
         c += 32;
+    } <b>spec</b> {
+        <b>invariant</b> c % 32 == 0;
+        <b>invariant</b> c &lt; n + 32;
+        <b>invariant</b> len(v) == c;
+        <b>invariant</b> c &gt; 0 ==&gt; <b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework)
+            && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).seed)
+            && <a href="randomness.html#0x1_randomness_spec_is_unbiasable">spec_is_unbiasable</a>();
     };
 
     <b>if</b> (c &gt; n) {
@@ -792,6 +800,15 @@ function as its payload.</li>
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework);
 }
 </code></pre>
+<h3 id="function-bytes-1"><a class="header" href="#function-bytes-1">Function <code>bytes</code> <a id="@Specification_1_bytes"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_bytes">bytes</a>(n: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;
+</code></pre>
+<pre><code><b>aborts_if</b> n &gt; 0 && <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework).seed);
+<b>aborts_if</b> n &gt; 0 && !<a href="randomness.html#0x1_randomness_spec_is_unbiasable">spec_is_unbiasable</a>();
+<b>aborts_if</b> n &gt; 0 && !<b>exists</b>&lt;<a href="randomness.html#0x1_randomness_PerBlockRandomness">PerBlockRandomness</a>&gt;(@aptos_framework);
+<b>aborts_if</b> n &gt; MAX_U64 - 31;
+<b>ensures</b> len(result) == n;
+</code></pre>
 <h3 id="function-u8_integer-1"><a class="header" href="#function-u8_integer-1">Function <code>u8_integer</code> <a id="@Specification_1_u8_integer"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u8_integer">u8_integer</a>(): u8
 </code></pre>
@@ -824,8 +841,7 @@ function as its payload.</li>
 <h3 id="function-u256_integer-1"><a class="header" href="#function-u256_integer-1">Function <code>u256_integer</code> <a id="@Specification_1_u256_integer"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u256_integer">u256_integer</a>(): u256
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 300;
-<b>pragma</b> unroll = 32;
+<pre><code><b>pragma</b> unroll = 32;
 <b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>ensures</b> [abstract] result == <a href="randomness.html#0x1_randomness_spec_u256_integer">spec_u256_integer</a>();
 </code></pre>
@@ -833,7 +849,6 @@ function as its payload.</li>
 <pre><code><b>fun</b> <a href="randomness.html#0x1_randomness_u256_integer_internal">u256_integer_internal</a>(): u256
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> verify_duration_estimate = 300;
 <b>pragma</b> unroll = 32;
 <b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 </code></pre>
@@ -843,32 +858,28 @@ function as its payload.</li>
 <h3 id="function-u8_range-1"><a class="header" href="#function-u8_range-1">Function <code>u8_range</code> <a id="@Specification_1_u8_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u8_range">u8_range</a>(min_incl: u8, max_excl: u8): u8
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-u64_range-1"><a class="header" href="#function-u64_range-1">Function <code>u64_range</code> <a id="@Specification_1_u64_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u64_range">u64_range</a>(min_incl: u64, max_excl: u64): u64
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-u64_range_internal-1"><a class="header" href="#function-u64_range_internal-1">Function <code>u64_range_internal</code> <a id="@Specification_1_u64_range_internal"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u64_range_internal">u64_range_internal</a>(min_incl: u64, max_excl: u64): u64
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>
 <h3 id="function-u256_range-1"><a class="header" href="#function-u256_range-1">Function <code>u256_range</code> <a id="@Specification_1_u256_range"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="randomness.html#0x1_randomness_u256_range">u256_range</a>(min_incl: u256, max_excl: u256): u256
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
+<pre><code><b>include</b> <a href="randomness.html#0x1_randomness_NextBlobAbortsIf">NextBlobAbortsIf</a>;
 <b>aborts_if</b> min_incl &gt;= max_excl;
 <b>ensures</b> result &gt;= min_incl && result &lt; max_excl;
 </code></pre>

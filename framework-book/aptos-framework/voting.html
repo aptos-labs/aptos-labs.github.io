@@ -1402,16 +1402,16 @@ there are more yes votes than no. If either of these conditions is not met, this
 </code></pre>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> aborts_if_is_partial = <b>false</b>;
-<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
 <b>include</b> <a href="voting.html#0x1_voting_CreateProposalAbortsIfAndEnsures">CreateProposalAbortsIfAndEnsures</a>&lt;ProposalType&gt;{is_multi_step_proposal: <b>false</b>};
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 // This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
 <b>ensures</b> result == <b>old</b>(<b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address)).next_proposal_id;
 </code></pre>
 <h3 id="function-create_proposal_v2-1"><a class="header" href="#function-create_proposal_v2-1">Function <code>create_proposal_v2</code> <a id="@Specification_1_create_proposal_v2"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_create_proposal_v2">create_proposal_v2</a>&lt;ProposalType: store&gt;(proposer: <b>address</b>, voting_forum_address: <b>address</b>, execution_content: ProposalType, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, min_vote_threshold: u128, expiration_secs: u64, early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;, is_multi_step_proposal: bool): u64
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="voting.html#0x1_voting_CreateProposalAbortsIfAndEnsures">CreateProposalAbortsIfAndEnsures</a>&lt;ProposalType&gt;;
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_CreateProposalAbortsIfAndEnsures">CreateProposalAbortsIfAndEnsures</a>&lt;ProposalType&gt;;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 <b>ensures</b> result == <b>old</b>(<b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address)).next_proposal_id;
 </code></pre>
 <p><a id="0x1_voting_CreateProposalAbortsIfAndEnsures"></a></p>
@@ -1449,8 +1449,7 @@ there are more yes votes than no. If either of these conditions is not met, this
 <h3 id="function-vote-1"><a class="header" href="#function-vote-1">Function <code>vote</code> <a id="@Specification_1_vote"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_vote">vote</a>&lt;ProposalType: store&gt;(_proof: &ProposalType, voting_forum_address: <b>address</b>, proposal_id: u64, num_votes: u64, should_pass: bool)
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
+<pre><code>// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
 <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
 <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
@@ -1478,14 +1477,14 @@ there are more yes votes than no. If either of these conditions is not met, this
 <h3 id="function-is_proposal_resolvable-1"><a class="header" href="#function-is_proposal_resolvable-1">Function <code>is_proposal_resolvable</code> <a id="@Specification_1_is_proposal_resolvable"></a></a></h3>
 <pre><code><b>fun</b> <a href="voting.html#0x1_voting_is_proposal_resolvable">is_proposal_resolvable</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64)
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
 </code></pre>
 <p><a id="0x1_voting_IsProposalResolvableAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt; {
     voting_forum_address: <b>address</b>;
     proposal_id: u64;
     <b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
     <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
     <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
     <b>let</b> voting_closed = <a href="voting.html#0x1_voting_spec_is_voting_closed">spec_is_voting_closed</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
@@ -1502,8 +1501,7 @@ there are more yes votes than no. If either of these conditions is not met, this
 <h3 id="function-resolve-1"><a class="header" href="#function-resolve-1">Function <code>resolve</code> <a id="@Specification_1_resolve"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_resolve">resolve</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): ProposalType
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
 <b>aborts_if</b> !std::string::spec_internal_check_utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">IS_MULTI_STEP_PROPOSAL_KEY</a>);
 <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
 <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
@@ -1524,9 +1522,7 @@ there are more yes votes than no. If either of these conditions is not met, this
 <h3 id="function-resolve_proposal_v2-1"><a class="header" href="#function-resolve_proposal_v2-1">Function <code>resolve_proposal_v2</code> <a id="@Specification_1_resolve_proposal_v2"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_resolve_proposal_v2">resolve_proposal_v2</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64, next_execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_IsProposalResolvableAbortsIf">IsProposalResolvableAbortsIf</a>&lt;ProposalType&gt;;
 <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
 <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
 <b>let</b> <b>post</b> post_voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
@@ -1573,10 +1569,18 @@ there are more yes votes than no. If either of these conditions is not met, this
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_is_voting_closed">is_voting_closed</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+<pre><code><b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>include</b> <a href="voting.html#0x1_voting_AbortsIfNoClockWhenNotResolvedEarly">AbortsIfNoClockWhenNotResolvedEarly</a>&lt;ProposalType&gt;;
 <b>ensures</b> result == <a href="voting.html#0x1_voting_spec_is_voting_closed">spec_is_voting_closed</a>&lt;ProposalType&gt;(voting_forum_address, proposal_id);
+</code></pre>
+<p>The clock is only read when the proposal cannot be resolved early.</p>
+<p><a id="0x1_voting_AbortsIfNoClockWhenNotResolvedEarly"></a></p>
+<pre><code><b>schema</b> <a href="voting.html#0x1_voting_AbortsIfNoClockWhenNotResolvedEarly">AbortsIfNoClockWhenNotResolvedEarly</a>&lt;ProposalType&gt; {
+    voting_forum_address: <b>address</b>;
+    proposal_id: u64;
+    <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(<b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address).proposals, proposal_id);
+    <b>aborts_if</b> !<a href="voting.html#0x1_voting_spec_can_be_resolved_early">spec_can_be_resolved_early</a>&lt;ProposalType&gt;(proposal) && !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
+}
 </code></pre>
 <p><a id="0x1_voting_spec_is_voting_closed"></a></p>
 <pre><code><b>fun</b> <a href="voting.html#0x1_voting_spec_is_voting_closed">spec_is_voting_closed</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): bool {
@@ -1657,8 +1661,8 @@ there are more yes votes than no. If either of these conditions is not met, this
 <b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_get_proposal_state">get_proposal_state</a>&lt;ProposalType: store&gt;(voting_forum_address: <b>address</b>, proposal_id: u64): u64
 </code></pre>
 <pre><code><b>pragma</b> addition_overflow_unchecked;
-<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
 <b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">AbortsIfNotContainProposalID</a>&lt;ProposalType&gt;;
+<b>include</b> <a href="voting.html#0x1_voting_AbortsIfNoClockWhenNotResolvedEarly">AbortsIfNoClockWhenNotResolvedEarly</a>&lt;ProposalType&gt;;
 <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(voting_forum_address);
 <b>ensures</b> result == <a href="voting.html#0x1_voting_spec_get_proposal_state">spec_get_proposal_state</a>(voting_forum_address, proposal_id, voting_forum);
 </code></pre>
@@ -1759,8 +1763,7 @@ there are more yes votes than no. If either of these conditions is not met, this
 <h3 id="function-is_voting_period_over-1"><a class="header" href="#function-is_voting_period_over-1">Function <code>is_voting_period_over</code> <a id="@Specification_1_is_voting_period_over"></a></a></h3>
 <pre><code><b>fun</b> <a href="voting.html#0x1_voting_is_voting_period_over">is_voting_period_over</a>&lt;ProposalType: store&gt;(proposal: &<a href="voting.html#0x1_voting_Proposal">voting::Proposal</a>&lt;ProposalType&gt;): bool
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>aborts_if</b> <b>false</b>;
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 <b>ensures</b> result == (<a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() &gt; proposal.expiration_secs);
 </code></pre>
 

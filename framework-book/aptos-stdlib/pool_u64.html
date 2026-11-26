@@ -650,6 +650,17 @@ This would dilute other shareholders if the pool's balance of coins didn't chang
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
+<p>The <code>shareholders</code> vector after <code><a href="pool_u64.html#0x1_pool_u64_buy_in">buy_in</a>(pool, shareholder, coins_amount)</code>.</p>
+<p><a id="0x1_pool_u64_spec_buy_in_shareholders"></a></p>
+<pre><code><b>fun</b> <a href="pool_u64.html#0x1_pool_u64_spec_buy_in_shareholders">spec_buy_in_shareholders</a>(pool: <a href="pool_u64.html#0x1_pool_u64_Pool">Pool</a>, shareholder: <b>address</b>, coins_amount: u64): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt; {
+   <b>let</b> new_shares = <a href="pool_u64.html#0x1_pool_u64_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(pool, coins_amount, pool.total_coins);
+   <b>if</b> (coins_amount &gt; 0 && !<a href="pool_u64.html#0x1_pool_u64_spec_contains">spec_contains</a>(pool, shareholder) && new_shares &gt; 0) {
+       concat(pool.shareholders, vec(shareholder))
+   } <b>else</b> {
+       pool.shareholders
+   }
+}
+</code></pre>
 <h3 id="struct-pool-1"><a class="header" href="#struct-pool-1">Struct <code>Pool</code> <a id="@Specification_1_Pool"></a></a></h3>
 <pre><code><b>struct</b> <a href="pool_u64.html#0x1_pool_u64_Pool">Pool</a> <b>has</b> store
 </code></pre>
@@ -793,15 +804,34 @@ This would dilute other shareholders if the pool's balance of coins didn't chang
 <pre><code><b>public</b> <b>fun</b> <a href="pool_u64.html#0x1_pool_u64_buy_in">buy_in</a>(self: &<b>mut</b> <a href="pool_u64.html#0x1_pool_u64_Pool">pool_u64::Pool</a>, shareholder: <b>address</b>, coins_amount: u64): u64
 </code></pre>
 <pre><code><b>pragma</b> opaque = <b>true</b>;
-<b>let</b> new_shares = <a href="pool_u64.html#0x1_pool_u64_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(self, coins_amount, self.total_coins);
 <b>aborts_if</b> self.total_coins + coins_amount &gt; <a href="pool_u64.html#0x1_pool_u64_MAX_U64">MAX_U64</a>;
-<b>aborts_if</b> self.total_shares + new_shares &gt; <a href="pool_u64.html#0x1_pool_u64_MAX_U64">MAX_U64</a>;
-<b>include</b> coins_amount &gt; 0 ==&gt; <a href="pool_u64.html#0x1_pool_u64_AddSharesAbortsIf">AddSharesAbortsIf</a> { new_shares };
-<b>include</b> coins_amount &gt; 0 ==&gt; <a href="pool_u64.html#0x1_pool_u64_AddSharesEnsures">AddSharesEnsures</a> { new_shares };
+<b>aborts_if</b> self.total_shares
+    + <a href="pool_u64.html#0x1_pool_u64_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(self, coins_amount, self.total_coins) &gt; <a href="pool_u64.html#0x1_pool_u64_MAX_U64">MAX_U64</a>;
+<b>include</b> coins_amount &gt; 0 ==&gt; <a href="pool_u64.html#0x1_pool_u64_AddSharesAbortsIf">AddSharesAbortsIf</a> {
+    new_shares: <a href="pool_u64.html#0x1_pool_u64_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(self, coins_amount, self.total_coins)
+};
+<b>include</b> coins_amount &gt; 0 ==&gt; <a href="pool_u64.html#0x1_pool_u64_AddSharesEnsures">AddSharesEnsures</a> {
+    new_shares: <a href="pool_u64.html#0x1_pool_u64_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(<b>old</b>(self), coins_amount, <b>old</b>(self).total_coins)
+};
 <b>ensures</b> self.total_coins == <b>old</b>(self).total_coins + coins_amount;
 <b>ensures</b> self.total_shares == <b>old</b>(self).total_shares
     + <a href="pool_u64.html#0x1_pool_u64_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(<b>old</b>(self), coins_amount, <b>old</b>(self).total_coins);
 <b>ensures</b> result == <a href="pool_u64.html#0x1_pool_u64_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(<b>old</b>(self), coins_amount, <b>old</b>(self).total_coins);
+<b>ensures</b> self.shareholders_limit == <b>old</b>(self).shareholders_limit;
+<b>ensures</b> self.scaling_factor == <b>old</b>(self).scaling_factor;
+<b>ensures</b> self.shares == <a href="pool_u64.html#0x1_pool_u64_spec_buy_in_shares">spec_buy_in_shares</a>(<b>old</b>(self), shareholder, coins_amount);
+<b>ensures</b> self.shareholders == <a href="pool_u64.html#0x1_pool_u64_spec_buy_in_shareholders">spec_buy_in_shareholders</a>(<b>old</b>(self), shareholder, coins_amount);
+</code></pre>
+<p>The <code>shares</code> map after <code><a href="pool_u64.html#0x1_pool_u64_buy_in">buy_in</a>(pool, shareholder, coins_amount)</code>.</p>
+<p><a id="0x1_pool_u64_spec_buy_in_shares"></a></p>
+<pre><code><b>fun</b> <a href="pool_u64.html#0x1_pool_u64_spec_buy_in_shares">spec_buy_in_shares</a>(pool: <a href="pool_u64.html#0x1_pool_u64_Pool">Pool</a>, shareholder: <b>address</b>, coins_amount: u64): SimpleMap&lt;<b>address</b>, u64&gt; {
+   <b>let</b> new_shares = <a href="pool_u64.html#0x1_pool_u64_spec_amount_to_shares_with_total_coins">spec_amount_to_shares_with_total_coins</a>(pool, coins_amount, pool.total_coins);
+   <b>if</b> (coins_amount &gt; 0 && (<a href="pool_u64.html#0x1_pool_u64_spec_contains">spec_contains</a>(pool, shareholder) || new_shares &gt; 0)) {
+       <a href="simple_map.html#0x1_simple_map_spec_set">simple_map::spec_set</a>(pool.shares, shareholder, <a href="pool_u64.html#0x1_pool_u64_spec_shares">spec_shares</a>(pool, shareholder) + new_shares)
+   } <b>else</b> {
+       pool.shares
+   }
+}
 </code></pre>
 <h3 id="function-add_shares-1"><a class="header" href="#function-add_shares-1">Function <code>add_shares</code> <a id="@Specification_1_add_shares"></a></a></h3>
 <pre><code><b>fun</b> <a href="pool_u64.html#0x1_pool_u64_add_shares">add_shares</a>(self: &<b>mut</b> <a href="pool_u64.html#0x1_pool_u64_Pool">pool_u64::Pool</a>, shareholder: <b>address</b>, new_shares: u64): u64
@@ -823,10 +853,10 @@ This would dilute other shareholders if the pool's balance of coins didn't chang
     self: <a href="pool_u64.html#0x1_pool_u64_Pool">Pool</a>;
     shareholder: <b>address</b>;
     new_shares: u64;
-    <b>let</b> key_exists = <a href="simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(self.shares, shareholder);
-    <b>let</b> current_shares = <a href="simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(self.shares, shareholder);
-    <b>aborts_if</b> key_exists && current_shares + new_shares &gt; <a href="pool_u64.html#0x1_pool_u64_MAX_U64">MAX_U64</a>;
-    <b>aborts_if</b> !key_exists && new_shares &gt; 0 && len(self.shareholders) &gt;= self.shareholders_limit;
+    <b>aborts_if</b> <a href="simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(self.shares, shareholder)
+        && <a href="simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(self.shares, shareholder) + new_shares &gt; <a href="pool_u64.html#0x1_pool_u64_MAX_U64">MAX_U64</a>;
+    <b>aborts_if</b> !<a href="simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(self.shares, shareholder)
+        && new_shares &gt; 0 && len(self.shareholders) &gt;= self.shareholders_limit;
 }
 </code></pre>
 <p><a id="0x1_pool_u64_AddSharesEnsures"></a></p>

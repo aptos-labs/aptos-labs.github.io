@@ -1482,9 +1482,9 @@ where the core resources account exists and has been granted power to mint Aptos
 </tr>
 <tr>
 <td>3</td>
-<td>The Approved execution hashes resources that exist when the vote function is called.</td>
+<td>A vote that makes the proposal succeed requires the ApprovedExecutionHashes resource to exist.</td>
 <td>Low</td>
-<td>The Vote function acquires the Approved execution hashes resources.</td>
+<td>After recording the vote, vote_internal adds the execution hash to ApprovedExecutionHashes if the proposal has succeeded, which aborts if the resource is missing; other votes do not access it.</td>
 <td>Formally verified in <a href="#high-level-req-3">VoteAbortIf</a>.</td>
 </tr>
 <tr>
@@ -1496,14 +1496,12 @@ where the core resources account exists and has been granted power to mint Aptos
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>pragma</b> aborts_if_is_partial;
+<pre><code><b>pragma</b> aborts_if_is_partial;
 </code></pre>
 <h3 id="function-store_signer_cap-1"><a class="header" href="#function-store_signer_cap-1">Function <code>store_signer_cap</code> <a id="@Specification_1_store_signer_cap"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_store_signer_cap">store_signer_cap</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, signer_address: <b>address</b>, signer_cap: <a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework));
+<pre><code><b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework));
 <b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_framework_reserved_address">system_addresses::is_framework_reserved_address</a>(signer_address);
 <b>let</b> signer_caps = <b>global</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceResponsbility">GovernanceResponsbility</a>&gt;(@aptos_framework).signer_caps;
 <b>aborts_if</b> <b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceResponsbility">GovernanceResponsbility</a>&gt;(@aptos_framework) &&
@@ -1519,8 +1517,7 @@ where the core resources account exists and has been granted power to mint Aptos
 The signer does not allow these resources (GovernanceProposal, GovernanceConfig, GovernanceEvents, VotingRecords, ApprovedExecutionHashes) to exist.
 The signer must have an Account.
 Limit addition overflow.</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>let</b> register_account = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(addr);
 <b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;GovernanceProposal&gt;();
@@ -1536,15 +1533,12 @@ Limit addition overflow.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_update_governance_config">update_governance_config</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, min_voting_threshold: u128, required_proposer_stake: u64, voting_duration_secs: u64)
 </code></pre>
 <p>Signer address must be @aptos_framework.
-Address @aptos_framework must exist GovernanceConfig and GovernanceEvents.</p>
+Address @aptos_framework must exist GovernanceConfig.</p>
 <pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>let</b> governance_config = <b>global</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceConfig">GovernanceConfig</a>&gt;(@aptos_framework);
 <b>let</b> <b>post</b> new_governance_config = <b>global</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceConfig">GovernanceConfig</a>&gt;(@aptos_framework);
 <b>aborts_if</b> addr != @aptos_framework;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceConfig">GovernanceConfig</a>&gt;(@aptos_framework);
-<b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_MODULE_EVENT_MIGRATION">features::MODULE_EVENT_MIGRATION</a>) && !<b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceEvents">GovernanceEvents</a>&gt;(
-    @aptos_framework
-);
 <b>modifies</b> <b>global</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceConfig">GovernanceConfig</a>&gt;(addr);
 <b>ensures</b> new_governance_config.voting_duration_secs == voting_duration_secs;
 <b>ensures</b> new_governance_config.min_voting_threshold == min_voting_threshold;
@@ -1555,8 +1549,7 @@ Address @aptos_framework must exist GovernanceConfig and GovernanceEvents.</p>
 </code></pre>
 <p>Signer address must be @aptos_framework.
 Abort if structs have already been created.</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>aborts_if</b> addr != @aptos_framework;
 <b>aborts_if</b> <b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_VotingRecordsV2">VotingRecordsV2</a>&gt;(@aptos_framework);
 <b>ensures</b> <b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_VotingRecordsV2">VotingRecordsV2</a>&gt;(@aptos_framework);
@@ -1582,22 +1575,19 @@ Abort if structs have already been created.</p>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_get_voting_duration_secs">get_voting_duration_secs</a>(): u64
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AbortsIfNotGovernanceConfig">AbortsIfNotGovernanceConfig</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AbortsIfNotGovernanceConfig">AbortsIfNotGovernanceConfig</a>;
 </code></pre>
 <h3 id="function-get_min_voting_threshold-1"><a class="header" href="#function-get_min_voting_threshold-1">Function <code>get_min_voting_threshold</code> <a id="@Specification_1_get_min_voting_threshold"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_get_min_voting_threshold">get_min_voting_threshold</a>(): u128
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AbortsIfNotGovernanceConfig">AbortsIfNotGovernanceConfig</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AbortsIfNotGovernanceConfig">AbortsIfNotGovernanceConfig</a>;
 </code></pre>
 <h3 id="function-get_required_proposer_stake-1"><a class="header" href="#function-get_required_proposer_stake-1">Function <code>get_required_proposer_stake</code> <a id="@Specification_1_get_required_proposer_stake"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_get_required_proposer_stake">get_required_proposer_stake</a>(): u64
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AbortsIfNotGovernanceConfig">AbortsIfNotGovernanceConfig</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AbortsIfNotGovernanceConfig">AbortsIfNotGovernanceConfig</a>;
 </code></pre>
 <p><a id="0x1_aptos_governance_AbortsIfNotGovernanceConfig"></a></p>
 <pre><code><b>schema</b> <a href="aptos_governance.html#0x1_aptos_governance_AbortsIfNotGovernanceConfig">AbortsIfNotGovernanceConfig</a> {
@@ -1608,8 +1598,7 @@ Abort if structs have already been created.</p>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_has_entirely_voted">has_entirely_voted</a>(stake_pool: <b>address</b>, proposal_id: u64): bool
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_VotingRecords">VotingRecords</a>&gt;(@aptos_framework);
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_VotingRecords">VotingRecords</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-get_remaining_voting_power-1"><a class="header" href="#function-get_remaining_voting_power-1">Function <code>get_remaining_voting_power</code> <a id="@Specification_1_get_remaining_voting_power"></a></a></h3>
 <pre><code>#[view]
@@ -1620,9 +1609,9 @@ Abort if structs have already been created.</p>
     voting_forum_address: @aptos_framework
 };
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(stake_pool);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 <b>let</b> spec_proposal_expiration = <a href="voting.html#0x1_voting_spec_get_proposal_expiration_secs">voting::spec_get_proposal_expiration_secs</a>&lt;GovernanceProposal&gt;(@aptos_framework, proposal_id);
 <b>let</b> locked_until = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(stake_pool).locked_until_secs;
+<b>aborts_if</b> spec_proposal_expiration &lt; locked_until && !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 <b>let</b> remain_zero_1_cond = (spec_proposal_expiration &gt;= locked_until || <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() &gt;= spec_proposal_expiration);
 <b>ensures</b> remain_zero_1_cond ==&gt; result == 0;
 <b>let</b> record_key = <a href="aptos_governance.html#0x1_aptos_governance_RecordKey">RecordKey</a> {
@@ -1694,8 +1683,7 @@ Abort if structs have already been created.</p>
 <h3 id="function-assert_proposal_expiration-1"><a class="header" href="#function-assert_proposal_expiration-1">Function <code>assert_proposal_expiration</code> <a id="@Specification_1_assert_proposal_expiration"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_assert_proposal_expiration">assert_proposal_expiration</a>(stake_pool: <b>address</b>, proposal_id: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingInitializationAbortIfs">VotingInitializationAbortIfs</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingInitializationAbortIfs">VotingInitializationAbortIfs</a>;
 <b>include</b> <a href="voting.html#0x1_voting_AbortsIfNotContainProposalID">voting::AbortsIfNotContainProposalID</a>&lt;GovernanceProposal&gt;{voting_forum_address: @aptos_framework};
 <b>let</b> proposal_expiration = <a href="voting.html#0x1_voting_spec_get_proposal_expiration_secs">voting::spec_get_proposal_expiration_secs</a>&lt;GovernanceProposal&gt;(@aptos_framework, proposal_id);
 <b>aborts_if</b> !<a href="stake.html#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(stake_pool);
@@ -1707,92 +1695,23 @@ Abort if structs have already been created.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_create_proposal">create_proposal</a>(proposer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, stake_pool: <b>address</b>, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, metadata_location: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, metadata_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 <p>The same as spec of <code><a href="aptos_governance.html#0x1_aptos_governance_create_proposal_v2">create_proposal_v2</a>()</code>.</p>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalAbortsIf">CreateProposalAbortsIf</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalAbortsIf">CreateProposalAbortsIf</a>;
 </code></pre>
 <h3 id="function-create_proposal_v2-1"><a class="header" href="#function-create_proposal_v2-1">Function <code>create_proposal_v2</code> <a id="@Specification_1_create_proposal_v2"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_create_proposal_v2">create_proposal_v2</a>(proposer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, stake_pool: <b>address</b>, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, metadata_location: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, metadata_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, is_multi_step_proposal: bool)
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalAbortsIf">CreateProposalAbortsIf</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalAbortsIf">CreateProposalAbortsIf</a>;
 </code></pre>
 <h3 id="function-create_proposal_v2_impl-1"><a class="header" href="#function-create_proposal_v2_impl-1">Function <code>create_proposal_v2_impl</code> <a id="@Specification_1_create_proposal_v2_impl"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_create_proposal_v2_impl">create_proposal_v2_impl</a>(proposer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, stake_pool: <b>address</b>, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, metadata_location: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, metadata_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, is_multi_step_proposal: bool): u64
 </code></pre>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalAbortsIf">CreateProposalAbortsIf</a>;
-</code></pre>
-<p><code>stake_pool</code> must exist StakePool.
-The delegated voter under the resource StakePool of the stake_pool must be the proposer address.
-Address @aptos_framework must exist GovernanceEvents.</p>
-<p><a id="0x1_aptos_governance_CreateProposalAbortsIf"></a></p>
-<pre><code><b>schema</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalAbortsIf">CreateProposalAbortsIf</a> {
-    proposer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    stake_pool: <b>address</b>;
-    execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
-    metadata_location: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
-    metadata_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
-    <b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingGetDelegatedVoterAbortsIf">VotingGetDelegatedVoterAbortsIf</a> { sign: proposer };
-    <b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AbortsIfNotGovernanceConfig">AbortsIfNotGovernanceConfig</a>;
-    <b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_GetVotingPowerAbortsIf">GetVotingPowerAbortsIf</a> { pool_address: stake_pool };
-    <b>let</b> <a href="staking_config.html#0x1_staking_config">staking_config</a> = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
-    <b>let</b> allow_validator_set_change = <a href="staking_config.html#0x1_staking_config">staking_config</a>.allow_validator_set_change;
-    <b>let</b> stake_pool_res = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(stake_pool);
-    <b>let</b> stake_balance_0 = stake_pool_res.active.value + stake_pool_res.pending_active.value + stake_pool_res.pending_inactive.value;
-    <b>let</b> stake_balance_1 = stake_pool_res.active.value + stake_pool_res.pending_inactive.value;
-    <b>let</b> stake_balance_2 = 0;
-    <b>let</b> governance_config = <b>global</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceConfig">GovernanceConfig</a>&gt;(@aptos_framework);
-    <b>let</b> required_proposer_stake = governance_config.required_proposer_stake;
-    // This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
-    <b>aborts_if</b> allow_validator_set_change && stake_balance_0 &lt; required_proposer_stake;
-    <b>aborts_if</b> !allow_validator_set_change && <a href="stake.html#0x1_stake_spec_is_current_epoch_validator">stake::spec_is_current_epoch_validator</a>(stake_pool) && stake_balance_1 &lt; required_proposer_stake;
-    <b>aborts_if</b> !allow_validator_set_change && !<a href="stake.html#0x1_stake_spec_is_current_epoch_validator">stake::spec_is_current_epoch_validator</a>(stake_pool) && stake_balance_2 &lt; required_proposer_stake;
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
-    <b>let</b> current_time = <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>();
-    <b>let</b> proposal_expiration = current_time + governance_config.voting_duration_secs;
-    <b>aborts_if</b> stake_pool_res.locked_until_secs &lt;= proposal_expiration;
-    <b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalMetadataAbortsIf">CreateProposalMetadataAbortsIf</a>;
-    <b>let</b> addr = aptos_std::type_info::type_of&lt;AptosCoin&gt;().account_address;
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(addr);
-    <b>let</b> maybe_supply = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(addr).supply;
-    <b>let</b> supply = <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(maybe_supply);
-    <b>let</b> total_supply = aptos_framework::optional_aggregator::optional_aggregator_value(supply);
-    <b>let</b> early_resolution_vote_threshold_value = total_supply / 2 + 1;
-    <b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(maybe_supply) && governance_config.min_voting_threshold &gt; early_resolution_vote_threshold_value;
-    <b>aborts_if</b> len(execution_hash) == 0;
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
-    <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
-    <b>let</b> proposal_id = voting_forum.next_proposal_id;
-    <b>aborts_if</b> proposal_id + 1 &gt; <a href="aptos_governance.html#0x1_aptos_governance_MAX_U64">MAX_U64</a>;
-    <b>let</b> <b>post</b> post_voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
-    <b>let</b> <b>post</b> post_next_proposal_id = post_voting_forum.next_proposal_id;
-    <b>ensures</b> post_next_proposal_id == proposal_id + 1;
-    <b>aborts_if</b> !<a href="../move-stdlib/string.html#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">voting::IS_MULTI_STEP_PROPOSAL_KEY</a>);
-    <b>aborts_if</b> !<a href="../move-stdlib/string.html#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY">voting::IS_MULTI_STEP_PROPOSAL_IN_EXECUTION_KEY</a>);
-    <b>aborts_if</b> <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(voting_forum.proposals,proposal_id);
-    <b>ensures</b> <a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(post_voting_forum.proposals, proposal_id);
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceEvents">GovernanceEvents</a>&gt;(@aptos_framework);
-}
-</code></pre>
-<p><a id="0x1_aptos_governance_VotingGetDelegatedVoterAbortsIf"></a></p>
-<pre><code><b>schema</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingGetDelegatedVoterAbortsIf">VotingGetDelegatedVoterAbortsIf</a> {
-    stake_pool: <b>address</b>;
-    sign: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(sign);
-    <b>let</b> stake_pool_res = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(stake_pool);
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(stake_pool);
-    <b>aborts_if</b> stake_pool_res.delegated_voter != addr;
-}
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalAbortsIf">CreateProposalAbortsIf</a>;
 </code></pre>
 <h3 id="function-batch_vote-1"><a class="header" href="#function-batch_vote-1">Function <code>batch_vote</code> <a id="@Specification_1_batch_vote"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_batch_vote">batch_vote</a>(voter: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, stake_pools: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, proposal_id: u64, should_pass: bool)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-</code></pre>
 <h3 id="function-batch_partial_vote-1"><a class="header" href="#function-batch_partial_vote-1">Function <code>batch_partial_vote</code> <a id="@Specification_1_batch_partial_vote"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_batch_partial_vote">batch_partial_vote</a>(voter: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, stake_pools: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<b>address</b>&gt;, proposal_id: u64, voting_power: u64, should_pass: bool)
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-vote-1"><a class="header" href="#function-vote-1">Function <code>vote</code> <a id="@Specification_1_vote"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_vote">vote</a>(voter: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, stake_pool: <b>address</b>, proposal_id: u64, should_pass: bool)
@@ -1800,8 +1719,7 @@ Address @aptos_framework must exist GovernanceEvents.</p>
 <p>stake_pool must exist StakePool.
 The delegated voter under the resource StakePool of the stake_pool must be the voter address.
 Address @aptos_framework must exist VotingRecords and GovernanceProposal.</p>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VoteAbortIf">VoteAbortIf</a>  {
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VoteAbortIf">VoteAbortIf</a>  {
     voting_power: <a href="aptos_governance.html#0x1_aptos_governance_MAX_U64">MAX_U64</a>
 };
 </code></pre>
@@ -1812,8 +1730,7 @@ Address @aptos_framework must exist VotingRecords and GovernanceProposal.</p>
 The delegated voter under the resource StakePool of the stake_pool must be the voter address.
 Address @aptos_framework must exist VotingRecords and GovernanceProposal.
 Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting flag is enabled.</p>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VoteAbortIf">VoteAbortIf</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VoteAbortIf">VoteAbortIf</a>;
 </code></pre>
 <h3 id="function-vote_internal-1"><a class="header" href="#function-vote_internal-1">Function <code>vote_internal</code> <a id="@Specification_1_vote_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_vote_internal">vote_internal</a>(voter: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, stake_pool: <b>address</b>, proposal_id: u64, voting_power: u64, should_pass: bool)
@@ -1822,8 +1739,7 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
 The delegated voter under the resource StakePool of the stake_pool must be the voter address.
 Address @aptos_framework must exist VotingRecords and GovernanceProposal.
 Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting flag is enabled.</p>
-<pre><code><b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VoteAbortIf">VoteAbortIf</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VoteAbortIf">VoteAbortIf</a>;
 </code></pre>
 <p><a id="0x1_aptos_governance_VoteAbortIf"></a></p>
 <pre><code><b>schema</b> <a href="aptos_governance.html#0x1_aptos_governance_VoteAbortIf">VoteAbortIf</a> {
@@ -1884,7 +1800,6 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
     <b>ensures</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(post_proposal.metadata, key);
     <b>ensures</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(post_proposal.metadata, key) == std::bcs::to_bytes(<a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>());
     <b>aborts_if</b> used_voting_power + real_voting_power &gt; <a href="aptos_governance.html#0x1_aptos_governance_MAX_U64">MAX_U64</a>;
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_GovernanceEvents">GovernanceEvents</a>&gt;(@aptos_framework);
     <b>let</b> early_resolution_threshold = <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(proposal.early_resolution_vote_threshold);
     <b>let</b> is_voting_period_over = <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>() &gt;= proposal_expiration;
     <b>let</b> new_proposal_yes_votes_0 = proposal.yes_votes + real_voting_power;
@@ -1944,9 +1859,7 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
 <h3 id="function-add_approved_script_hash_script-1"><a class="header" href="#function-add_approved_script_hash_script-1">Function <code>add_approved_script_hash_script</code> <a id="@Specification_1_add_approved_script_hash_script"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_add_approved_script_hash_script">add_approved_script_hash_script</a>(proposal_id: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AddApprovedScriptHash">AddApprovedScriptHash</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AddApprovedScriptHash">AddApprovedScriptHash</a>;
 </code></pre>
 <p><a id="0x1_aptos_governance_AddApprovedScriptHash"></a></p>
 <pre><code><b>schema</b> <a href="aptos_governance.html#0x1_aptos_governance_AddApprovedScriptHash">AddApprovedScriptHash</a> {
@@ -1956,6 +1869,7 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
     <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
     <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
     <b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(voting_forum.proposals, proposal_id);
+    <b>include</b> <a href="voting.html#0x1_voting_AbortsIfNoClockWhenNotResolvedEarly">voting::AbortsIfNoClockWhenNotResolvedEarly</a>&lt;GovernanceProposal&gt; { voting_forum_address: @aptos_framework };
     <b>let</b> early_resolution_threshold = <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(proposal.early_resolution_vote_threshold);
     <b>aborts_if</b> <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>() &lt;= proposal.expiration_secs &&
         (<a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(proposal.early_resolution_vote_threshold) ||
@@ -1973,17 +1887,13 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
 <h3 id="function-add_approved_script_hash-1"><a class="header" href="#function-add_approved_script_hash-1">Function <code>add_approved_script_hash</code> <a id="@Specification_1_add_approved_script_hash"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_add_approved_script_hash">add_approved_script_hash</a>(proposal_id: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AddApprovedScriptHash">AddApprovedScriptHash</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_AddApprovedScriptHash">AddApprovedScriptHash</a>;
 </code></pre>
 <h3 id="function-resolve-1"><a class="header" href="#function-resolve-1">Function <code>resolve</code> <a id="@Specification_1_resolve"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_resolve">resolve</a>(proposal_id: u64, signer_address: <b>address</b>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
 </code></pre>
 <p>Address @aptos_framework must exist ApprovedExecutionHashes and GovernanceProposal and GovernanceResponsbility.</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingIsProposalResolvableAbortsif">VotingIsProposalResolvableAbortsif</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingIsProposalResolvableAbortsif">VotingIsProposalResolvableAbortsif</a>;
 <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
 <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
 <b>let</b> multi_step_key = utf8(<a href="voting.html#0x1_voting_IS_MULTI_STEP_PROPOSAL_KEY">voting::IS_MULTI_STEP_PROPOSAL_KEY</a>);
@@ -2008,9 +1918,7 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
 <h3 id="function-resolve_multi_step_proposal-1"><a class="header" href="#function-resolve_multi_step_proposal-1">Function <code>resolve_multi_step_proposal</code> <a id="@Specification_1_resolve_multi_step_proposal"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_resolve_multi_step_proposal">resolve_multi_step_proposal</a>(proposal_id: u64, signer_address: <b>address</b>, next_execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>requires</b> <a href="chain_status.html#0x1_chain_status_is_operating">chain_status::is_operating</a>();
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingIsProposalResolvableAbortsif">VotingIsProposalResolvableAbortsif</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingIsProposalResolvableAbortsif">VotingIsProposalResolvableAbortsif</a>;
 <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
 <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
 <b>let</b> <b>post</b> post_voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
@@ -2053,6 +1961,7 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
     <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
     <b>let</b> proposal = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(voting_forum.proposals, proposal_id);
     <b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(voting_forum.proposals, proposal_id);
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
     <b>let</b> early_resolution_threshold = <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(proposal.early_resolution_vote_threshold);
     <b>let</b> voting_period_over = <a href="timestamp.html#0x1_timestamp_now_seconds">timestamp::now_seconds</a>() &gt; proposal.expiration_secs;
     <b>let</b> be_resolved_early = <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(proposal.early_resolution_vote_threshold) &&
@@ -2074,8 +1983,7 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_remove_approved_hash">remove_approved_hash</a>(proposal_id: u64)
 </code></pre>
 <p>Address @aptos_framework must exist ApprovedExecutionHashes and GovernanceProposal.</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
+<pre><code><b>aborts_if</b> !<b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_governance.html#0x1_aptos_governance_ApprovedExecutionHashes">ApprovedExecutionHashes</a>&gt;(@aptos_framework);
 <b>let</b> voting_forum = <b>global</b>&lt;<a href="voting.html#0x1_voting_VotingForum">voting::VotingForum</a>&lt;GovernanceProposal&gt;&gt;(@aptos_framework);
 <b>aborts_if</b> !<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(voting_forum.proposals, proposal_id);
@@ -2120,8 +2028,7 @@ Address @aptos_framework must exist VotingRecordsV2 if partial_governance_voting
 <h3 id="function-toggle_features-1"><a class="header" href="#function-toggle_features-1">Function <code>toggle_features</code> <a id="@Specification_1_toggle_features"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_toggle_features">toggle_features</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, enable: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;)
 </code></pre>
-<p>Signer address must be @aptos_framework.
-Address @aptos_framework must exist GovernanceConfig and GovernanceEvents.</p>
+<p>Signer address must be @aptos_framework.</p>
 <pre><code><b>pragma</b> verify = <b>false</b>;
 <b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>aborts_if</b> addr != @aptos_framework;
@@ -2140,8 +2047,7 @@ Address @aptos_framework must exist GovernanceConfig and GovernanceEvents.</p>
 <p>Signer address must be @core_resources.
 signer must exist in MintCapStore.
 Address @aptos_framework must exist GovernanceResponsbility.</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(core_resources) != @core_resources;
+<pre><code><b>aborts_if</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(core_resources) != @core_resources;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_MintCapStore">aptos_coin::MintCapStore</a>&gt;(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(core_resources));
 <b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_GetSignerAbortsIf">GetSignerAbortsIf</a>;
 </code></pre>
@@ -2152,8 +2058,7 @@ Address @aptos_framework must exist GovernanceResponsbility.</p>
 <p>Address @aptos_framework must exist StakingConfig.
 limit addition overflow.
 pool_address must exist in StakePool.</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_GetVotingPowerAbortsIf">GetVotingPowerAbortsIf</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_GetVotingPowerAbortsIf">GetVotingPowerAbortsIf</a>;
 <b>let</b> <a href="staking_config.html#0x1_staking_config">staking_config</a> = <b>global</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
 <b>let</b> allow_validator_set_change = <a href="staking_config.html#0x1_staking_config">staking_config</a>.allow_validator_set_change;
 <b>let</b> stake_pool_res = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address);
@@ -2181,8 +2086,7 @@ pool_address must exist in StakePool.</p>
 <h3 id="function-get_signer-1"><a class="header" href="#function-get_signer-1">Function <code>get_signer</code> <a id="@Specification_1_get_signer"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_get_signer">get_signer</a>(signer_address: <b>address</b>): <a href="../move-stdlib/signer.html#0x1_signer">signer</a>
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_GetSignerAbortsIf">GetSignerAbortsIf</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_GetSignerAbortsIf">GetSignerAbortsIf</a>;
 </code></pre>
 <p><a id="0x1_aptos_governance_GetSignerAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="aptos_governance.html#0x1_aptos_governance_GetSignerAbortsIf">GetSignerAbortsIf</a> {
@@ -2195,8 +2099,7 @@ pool_address must exist in StakePool.</p>
 <h3 id="function-create_proposal_metadata-1"><a class="header" href="#function-create_proposal_metadata-1">Function <code>create_proposal_metadata</code> <a id="@Specification_1_create_proposal_metadata"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_create_proposal_metadata">create_proposal_metadata</a>(metadata_location: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, metadata_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalMetadataAbortsIf">CreateProposalMetadataAbortsIf</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalMetadataAbortsIf">CreateProposalMetadataAbortsIf</a>;
 </code></pre>
 <p><a id="0x1_aptos_governance_CreateProposalMetadataAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="aptos_governance.html#0x1_aptos_governance_CreateProposalMetadataAbortsIf">CreateProposalMetadataAbortsIf</a> {
@@ -2213,8 +2116,7 @@ pool_address must exist in StakePool.</p>
 <h3 id="function-assert_voting_initialization-1"><a class="header" href="#function-assert_voting_initialization-1">Function <code>assert_voting_initialization</code> <a id="@Specification_1_assert_voting_initialization"></a></a></h3>
 <pre><code><b>fun</b> <a href="aptos_governance.html#0x1_aptos_governance_assert_voting_initialization">assert_voting_initialization</a>()
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingInitializationAbortIfs">VotingInitializationAbortIfs</a>;
+<pre><code><b>include</b> <a href="aptos_governance.html#0x1_aptos_governance_VotingInitializationAbortIfs">VotingInitializationAbortIfs</a>;
 </code></pre>
 
                     </main>

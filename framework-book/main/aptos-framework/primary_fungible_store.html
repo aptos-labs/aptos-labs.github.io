@@ -212,14 +212,24 @@ fungible asset to it. This emits an deposit event.</li>
 <ul>
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
+<li><a href="#@Specification_1_create_primary_store_enabled_fungible_asset">Function <code>create_primary_store_enabled_fungible_asset</code></a></li>
+<li><a href="#@Specification_1_ensure_primary_store_exists">Function <code>ensure_primary_store_exists</code></a></li>
 <li><a href="#@Specification_1_create_primary_store">Function <code>create_primary_store</code></a></li>
 <li><a href="#@Specification_1_primary_store_address">Function <code>primary_store_address</code></a></li>
 <li><a href="#@Specification_1_primary_store">Function <code>primary_store</code></a></li>
 <li><a href="#@Specification_1_primary_store_exists">Function <code>primary_store_exists</code></a></li>
 <li><a href="#@Specification_1_withdraw">Function <code>withdraw</code></a></li>
 <li><a href="#@Specification_1_deposit">Function <code>deposit</code></a></li>
+<li><a href="#@Specification_1_deposit_with_signer">Function <code>deposit_with_signer</code></a></li>
 <li><a href="#@Specification_1_transfer">Function <code>transfer</code></a></li>
 <li><a href="#@Specification_1_transfer_assert_minimum_deposit">Function <code>transfer_assert_minimum_deposit</code></a></li>
+<li><a href="#@Specification_1_mint">Function <code>mint</code></a></li>
+<li><a href="#@Specification_1_burn">Function <code>burn</code></a></li>
+<li><a href="#@Specification_1_set_frozen_flag">Function <code>set_frozen_flag</code></a></li>
+<li><a href="#@Specification_1_withdraw_with_ref">Function <code>withdraw_with_ref</code></a></li>
+<li><a href="#@Specification_1_deposit_with_ref">Function <code>deposit_with_ref</code></a></li>
+<li><a href="#@Specification_1_transfer_with_ref">Function <code>transfer_with_ref</code></a></li>
+<li><a href="#@Specification_1_upgrade_to_concurrent">Function <code>upgrade_to_concurrent</code></a></li>
 </ul>
 </li>
 </ul>
@@ -684,21 +694,21 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 <td>Creating a fungible asset with primary store support should initiate a derived reference and store it under the metadata object.</td>
 <td>Medium</td>
 <td>The function create_primary_store_enabled_fungible_asset makes an existing object, fungible, via the fungible_asset::add_fungibility function and initializes the DeriveRefPod resource by generating a DeriveRef for the object and then stores it under the object address.</td>
-<td>Audited that the DeriveRefPod has been properly initialized and stored under the metadata object.</td>
+<td>Formally verified via <a href="#high-level-req-1.1">create_primary_store_enabled_fungible_asset</a> that the DeriveRefPod is stored under the metadata object, and via the <a href="#high-level-req-1.2">module</a> invariant that its derive ref derives from that object.</td>
 </tr>
 <tr>
 <td>2</td>
 <td>Fetching and creating a primary fungible store of an asset should only succeed if the object supports primary store.</td>
 <td>Low</td>
 <td>The function create_primary_store is used to create a primary store by borrowing the DeriveRef resource from the object. In case the resource does not exist, creation will fail. The function ensure_primary_store_exists is used to fetch the primary store if it exists, otherwise it will create one via the create_primary function.</td>
-<td>Audited that it aborts if the DeriveRefPod doesn't exist. Audited that it aborts if the FungibleStore resource exists already under the object address.</td>
+<td>Formally verified via <a href="#high-level-req-2.1">CreatePrimaryStoreAbortsIf</a> that it aborts if the DeriveRefPod doesn't exist, and via <a href="#high-level-req-2.2">CreatePrimaryStoreAbortsIf</a> that it aborts if the FungibleStore resource exists already under the object address.</td>
 </tr>
 <tr>
 <td>3</td>
 <td>It should be possible to create a primary store to hold a fungible asset.</td>
 <td>Medium</td>
 <td>The function create_primary_store borrows the DeriveRef resource from DeriveRefPod and then creates the store which is returned.</td>
-<td>Audited that it returns the newly created FungibleStore.</td>
+<td>Formally verified via <a href="#high-level-req-3.1">create_primary_store</a> and <a href="#high-level-req-3.2">create_primary_store</a> that it returns the newly created FungibleStore.</td>
 </tr>
 <tr>
 <td>4</td>
@@ -712,21 +722,21 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 <td>The ability to withdraw, deposit, transfer, mint and burn should only be available for assets with primary store support.</td>
 <td>Medium</td>
 <td>The primary store is fetched before performing either of withdraw, deposit, transfer, mint, burn operation. If the FungibleStore resource doesn't exist the operation will fail.</td>
-<td>Audited that it aborts if the primary store FungibleStore doesn't exist.</td>
+<td>Formally verified via <a href="#high-level-req-5.1">burn</a> and <a href="#high-level-req-5.2">withdraw_with_ref</a> that burning and withdrawing with a ref abort if the primary store doesn't exist, and via <a href="#high-level-req-2.1">CreatePrimaryStoreAbortsIf</a> that mint, deposit_with_ref, transfer_with_ref and set_frozen_flag create a missing store only for an asset with primary store support. Audited for withdraw, deposit and transfer, whose store-creation aborts are not specified.</td>
 </tr>
 <tr>
 <td>6</td>
 <td>The action of depositing a fungible asset of the same type as the store should never fail if the store is not frozen.</td>
 <td>Medium</td>
 <td>The function deposit fetches the owner's store, if it doesn't exist it will be created, and then deposits the fungible asset to it. The function deposit_with_ref fetches the owner's store, if it doesn't exist it will be created, and then deposit the fungible asset via the fungible_asset::deposit_with_ref function. Depositing fails if the metadata of the FungibleStore and FungibleAsset differs.</td>
-<td>Audited that it aborts if the store is frozen (deposit). Audited that the balance of the store is increased by the deposit amount (deposit, deposit_with_ref). Audited that it aborts if the metadata of the store and the asset differs (deposit, deposit_with_ref).</td>
+<td>Formally verified that deposit aborts if the store is frozen via <a href="#high-level-req-6.1">deposit</a> and, without a deposit hook, if the metadata of the store and the asset differs via <a href="#high-level-req-6.2">deposit</a>; that deposit_with_ref aborts on differing metadata via <a href="#high-level-req-6.3">deposit_with_ref</a>; and that the store balance is increased by the deposit amount via <a href="#high-level-req-6.4">PrimaryDepositBalance</a> (deposit without a deposit hook) and <a href="#high-level-req-6.5">deposit_with_ref</a>. That deposit fails for no other reason is audited, as its abort conditions are partial.</td>
 </tr>
 <tr>
 <td>7</td>
 <td>Withdrawing should only be allowed to the owner of an existing store with sufficient balance.</td>
 <td>Critical</td>
 <td>The withdraw function fetches the owner's store via the primary_store function and then calls fungible_asset::withdraw which validates the owner of the store, checks the frozen status and the balance of the store. The withdraw_with_ref function fetches the store of the owner via primary_store function and calls the fungible_asset::withdraw_with_ref which validates transfer_ref's metadata with the withdrawing stores metadata, and the balance of the store.</td>
-<td>Audited that it aborts if the owner doesn't own the store (withdraw). Audited that it aborts if the store is frozen (withdraw). Audited that it aborts if the transfer ref's metadata doesn't match the withdrawing store's metadata (withdraw_with_ref). Audited that it aborts if the store doesn't have sufficient balance. Audited that the store is not burned. Audited that the balance of the store is decreased by the amount withdrawn.</td>
+<td>Formally verified that withdraw aborts if the store is frozen via <a href="#high-level-req-7.1">withdraw</a>; that withdraw_with_ref aborts if the transfer ref's metadata doesn't match the store's metadata via <a href="#high-level-req-7.2">withdraw_with_ref</a>; that it aborts if the store doesn't have sufficient balance via <a href="#high-level-req-7.3">withdraw</a> (without a withdraw hook) and <a href="#high-level-req-7.4">withdraw_with_ref</a>; and that the store balance is decreased by the amount withdrawn via <a href="#high-level-req-7.5">withdraw</a> (without a withdraw hook) and <a href="#high-level-req-7.6">withdraw_with_ref</a>. Audited that it aborts if the owner doesn't own the store and that the store is unburned (withdraw).</td>
 </tr>
 <tr>
 <td>8</td>
@@ -740,32 +750,35 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 <td>Only the owner of a primary store can transfer its balance to any recipient's primary store.</td>
 <td>High</td>
 <td>The function transfer fetches sender and recipient's primary stores, if the sender's store is burned it unburns the store and calls the fungile_asset::transfer to proceed with the transfer, which first withdraws the assets from the sender's store and then deposits to the recipient's store. The function transfer_with_ref fetches the sender's and recipient's stores and calls the fungible_asset::transfer_with_ref function which withdraws the asset with the ref from the sender and deposits the asset to the recipient with the ref.</td>
-<td>Audited the deposit and withdraw (transfer). Audited the deposit_with_ref and withdraw_with_ref (transfer_with_ref). Audited that the store balance of the sender is decreased by the specified amount and its added to the recipients store. (transfer, transfer_with_ref) Audited that the sender's store is not burned (transfer).</td>
+<td>Formally verified that the sender's store balance is decreased by the specified amount and the recipient's increased by it via <a href="#high-level-req-9.1">PlainTransferBalancesToNew</a> (transfer without dispatch hooks) and <a href="#high-level-req-9.2">transfer_with_ref</a>. Audited the owner check and that the sender's store is unburned (transfer), and transfers with dispatch hooks.</td>
 </tr>
 <tr>
 <td>10</td>
 <td>Minting an amount of assets to an unfrozen store is only allowed with a valid mint reference.</td>
 <td>High</td>
 <td>The mint function fetches the primary store and calls the fungible_asset::mint_to, which mints with MintRef's metadata which internally validates the amount and the increases the total supply of the asset. And the minted asset is deposited to the provided store by validating that the store is unfrozen and the store's metadata is the same as the depositing asset's metadata.</td>
-<td>Audited that it aborts if the amount is equal to 0. Audited that it aborts if the store is frozen. Audited that it aborts if the mint_ref's metadata is not the same as the store's metadata. Audited that the asset's total supply is increased by the amount minted. Audited that the balance of the store is increased by the minted amount.</td>
+<td>Formally verified via <a href="#high-level-req-10.1">mint</a> that it aborts if the store is frozen, via <a href="#high-level-req-10.2">mint</a> that it aborts if the mint_ref's metadata is not the same as the store's metadata, via <a href="#high-level-req-10.3">mint</a> that the balance of the store is increased by the minted amount, and via <a href="#high-level-req-10.4">mint</a> that the asset's total supply is increased by the amount minted.</td>
 </tr>
 <tr>
 <td>11</td>
 <td>Burning an amount of assets from an existing unfrozen store is only allowed with a valid burn reference.</td>
 <td>High</td>
 <td>The burn function fetches the primary store and calls the fungible_asset::burn_from function which withdraws the amount from the store while enforcing that the store has enough balance and burns the withdrawn asset after validating the asset's metadata and the BurnRef's metadata followed by decreasing the supply of the asset.</td>
-<td>Audited that it aborts if the metadata of the store is not same as the BurnRef's metadata. Audited that it aborts if the burning amount is 0. Audited that it aborts if the store doesn't have enough balance. Audited that it aborts if the asset's metadata is not same as the BurnRef's metadata. Audited that the total supply of the asset is decreased. Audited that the store's balance is reduced by the amount burned.</td>
+<td>Formally verified via <a href="#high-level-req-11.1">burn</a> that it aborts if the store doesn't have enough balance, via <a href="#high-level-req-11.2">burn</a> that it aborts if the metadata of the store is not same as the BurnRef's metadata, via <a href="#high-level-req-11.3">burn</a> that the store's balance is reduced by the amount burned, and via <a href="#high-level-req-11.4">burn</a> that the total supply of the asset is decreased by it.</td>
 </tr>
 <tr>
 <td>12</td>
 <td>Setting the frozen flag of a store is only allowed with a valid reference.</td>
 <td>High</td>
 <td>The function set_frozen_flag fetches the primary store and calls fungible_asset::set_frozen_flag which validates the TransferRef's metadata with the store's metadata and then updates the frozen flag.</td>
-<td>Audited that it aborts if the store's metadata is not same as the TransferRef's metadata. Audited that the status of the frozen flag is updated correctly.</td>
+<td>Formally verified via <a href="#high-level-req-12.1">set_frozen_flag</a> and <a href="#high-level-req-12.2">set_frozen_flag</a>.</td>
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
 <pre><code><b>pragma</b> verify = <b>true</b>;
+// This enforces <a id="high-level-req-1.2" href="#high-level-req">high-level requirement 1</a>:
+<b>invariant</b> <b>forall</b> m: <b>address</b> {<b>exists</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a>&gt;(m)} <b>where</b> <b>exists</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a>&gt;(m):
+    <b>global</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a>&gt;(m).metadata_derive_ref.self == m;
 </code></pre>
 <p><a id="0x1_primary_fungible_store_spec_primary_store_exists"></a></p>
 <pre><code><b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_exists">spec_primary_store_exists</a>&lt;T: key&gt;(<a href="account.html#0x1_account">account</a>: <b>address</b>, metadata: Object&lt;T&gt;): bool {
@@ -778,23 +791,62 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
    <a href="object.html#0x1_object_spec_create_user_derived_object_address">object::spec_create_user_derived_object_address</a>(owner, metadata_addr)
 }
 </code></pre>
+<h3 id="function-create_primary_store_enabled_fungible_asset-1"><a class="header" href="#function-create_primary_store_enabled_fungible_asset-1">Function <code>create_primary_store_enabled_fungible_asset</code> <a id="@Specification_1_create_primary_store_enabled_fungible_asset"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_create_primary_store_enabled_fungible_asset">create_primary_store_enabled_fungible_asset</a>(constructor_ref: &<a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, maximum_supply: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, icon_uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, project_uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>)
+</code></pre>
+<p>Makes the object a fungible asset whose primary stores can be derived from it.</p>
+<pre><code><b>let</b> addr = constructor_ref.self;
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_AddFungibilityAbortsIf">fungible_asset::AddFungibilityAbortsIf</a>;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a>&gt;(addr);
+// This enforces <a id="high-level-req-1.1" href="#high-level-req">high-level requirement 1</a>:
+<b>ensures</b> <b>exists</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a>&gt;(addr);
+<b>ensures</b> <b>global</b>&lt;Metadata&gt;(addr) == <a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a> { name, symbol, decimals, icon_uri, project_uri };
+</code></pre>
+<h3 id="function-ensure_primary_store_exists-1"><a class="header" href="#function-ensure_primary_store_exists-1">Function <code>ensure_primary_store_exists</code> <a id="@Specification_1_ensure_primary_store_exists"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_ensure_primary_store_exists">ensure_primary_store_exists</a>&lt;T: key&gt;(owner: <b>address</b>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;
+</code></pre>
+<p>Returns the primary store of <code>owner</code>, creating it if missing.</p>
+<pre><code><b>let</b> metadata_addr = metadata.inner;
+<b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, metadata);
+<b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+<b>aborts_if</b> existing && !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+<b>include</b> !existing ==&gt; <a href="primary_fungible_store.html#0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf">CreatePrimaryStoreAbortsIf</a>&lt;T&gt; { owner_addr: owner };
+<b>ensures</b> result.inner == store_addr;
+<b>ensures</b> <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+<b>ensures</b> existing ==&gt; <b>global</b>&lt;FungibleStore&gt;(store_addr) == <b>old</b>(<b>global</b>&lt;FungibleStore&gt;(store_addr));
+<b>ensures</b> !existing ==&gt; <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata.inner == metadata_addr
+    && !<b>global</b>&lt;FungibleStore&gt;(store_addr).frozen
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == 0
+    && <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr).owner == owner;
+</code></pre>
 <h3 id="function-create_primary_store-1"><a class="header" href="#function-create_primary_store-1">Function <code>create_primary_store</code> <a id="@Specification_1_create_primary_store"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_create_primary_store">create_primary_store</a>&lt;T: key&gt;(owner_addr: <b>address</b>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;
 </code></pre>
-<pre><code><b>let</b> metadata_addr = metadata.inner;
-<b>let</b> store_addr = <a href="object.html#0x1_object_spec_create_user_derived_object_address">object::spec_create_user_derived_object_address</a>(
-    owner_addr, <b>global</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a>&gt;(metadata_addr).metadata_derive_ref.self
-);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(metadata_addr) || !<b>exists</b>&lt;Metadata&gt;(metadata_addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a>&gt;(metadata_addr);
-<b>aborts_if</b> <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
-<b>aborts_if</b> <b>exists</b>&lt;<a href="object.html#0x1_object_Untransferable">object::Untransferable</a>&gt;(store_addr);
-<b>aborts_if</b> <b>exists</b>&lt;FungibleStore&gt;(store_addr);
-<b>aborts_if</b> std::features::spec_is_enabled(std::features::DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE)
-    && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(store_addr);
+<pre><code><b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner_addr, metadata);
+<b>include</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf">CreatePrimaryStoreAbortsIf</a>&lt;T&gt;;
+// This enforces <a id="high-level-req-3.1" href="#high-level-req">high-level requirement 3</a>:
 <b>ensures</b> result.inner == store_addr;
+// This enforces <a id="high-level-req-3.2" href="#high-level-req">high-level requirement 3</a>:
+<b>ensures</b> <b>exists</b>&lt;FungibleStore&gt;(store_addr);
 <b>ensures</b> <b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr).owner == owner_addr;
 <b>ensures</b> !<b>global</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr).allow_ungated_transfer;
+</code></pre>
+<p><a id="0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf">CreatePrimaryStoreAbortsIf</a>&lt;T&gt; {
+    owner_addr: <b>address</b>;
+    metadata: Object&lt;T&gt;;
+    <b>let</b> metadata_addr = metadata.inner;
+    <b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner_addr, metadata);
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(metadata_addr) || !<b>exists</b>&lt;Metadata&gt;(metadata_addr);
+    // This enforces <a id="high-level-req-2.1" href="#high-level-req">high-level requirement 2</a>:
+    <b>aborts_if</b> !<b>exists</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">DeriveRefPod</a>&gt;(metadata_addr);
+    <b>aborts_if</b> <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+    <b>aborts_if</b> <b>exists</b>&lt;<a href="object.html#0x1_object_Untransferable">object::Untransferable</a>&gt;(store_addr);
+    // This enforces <a id="high-level-req-2.2" href="#high-level-req">high-level requirement 2</a>:
+    <b>aborts_if</b> <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+    <b>aborts_if</b> std::features::spec_is_enabled(std::features::DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE)
+        && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(store_addr);
+}
 </code></pre>
 <h3 id="function-primary_store_address-1"><a class="header" href="#function-primary_store_address-1">Function <code>primary_store_address</code> <a id="@Specification_1_primary_store_address"></a></a></h3>
 <pre><code>#[view]
@@ -829,9 +881,12 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 <b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner), metadata);
 <b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
 <b>let</b> store = <b>global</b>&lt;FungibleStore&gt;(store_addr);
+// This enforces <a id="high-level-req-7.1" href="#high-level-req">high-level requirement 7</a>:
 <b>aborts_if</b> existing && store.frozen;
+// This enforces <a id="high-level-req-7.3" href="#high-level-req">high-level requirement 7</a>:
 <b>aborts_if</b> existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(store_addr)
     && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
+// This enforces <a id="high-level-req-7.5" href="#high-level-req">high-level requirement 7</a>:
 <b>ensures</b> existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(store_addr) ==&gt;
     <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) - amount
     && result == FungibleAsset { metadata: store.metadata, amount };
@@ -843,29 +898,65 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 <b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, fa.metadata);
 <b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
 <b>let</b> store = <b>global</b>&lt;FungibleStore&gt;(store_addr);
+// This enforces <a id="high-level-req-6.1" href="#high-level-req">high-level requirement 6</a>:
 <b>aborts_if</b> existing && store.frozen;
+// This enforces <a id="high-level-req-6.2" href="#high-level-req">high-level requirement 6</a>:
 <b>aborts_if</b> existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(store_addr)
     && fa.metadata != store.metadata;
-<b>ensures</b> existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(store_addr) ==&gt;
-    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) + fa.amount;
+<b>include</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PrimaryDepositBalance">PrimaryDepositBalance</a>;
 </code></pre>
-<p>Both stores exist and the transfer runs without withdraw or deposit hooks.</p>
-<p><a id="0x1_primary_fungible_store_spec_is_plain_transfer"></a></p>
-<pre><code><b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_is_plain_transfer">spec_is_plain_transfer</a>(from: <b>address</b>, <b>to</b>: <b>address</b>): bool {
-   <b>exists</b>&lt;FungibleStore&gt;(from) && <b>exists</b>&lt;FungibleStore&gt;(<b>to</b>)
-       && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(from) && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(<b>to</b>)
+<p>Without a deposit hook, <code>fa</code> lands in the primary store of <code>owner</code>, which is created if missing.</p>
+<p><a id="0x1_primary_fungible_store_PrimaryDepositBalance"></a></p>
+<pre><code><b>schema</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PrimaryDepositBalance">PrimaryDepositBalance</a> {
+    owner: <b>address</b>;
+    fa: FungibleAsset;
+    <b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, fa.metadata);
+    <b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+    <b>let</b> no_hook = <b>if</b> (existing) {
+        <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(store_addr)
+    } <b>else</b> {
+        <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_metadata_no_deposit_hook">spec_metadata_no_deposit_hook</a>(fa.metadata.inner)
+    };
+    // This enforces <a id="high-level-req-6.4" href="#high-level-req">high-level requirement 6</a>:
+    <b>ensures</b> no_hook ==&gt; <b>exists</b>&lt;FungibleStore&gt;(store_addr)
+        && <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata == fa.metadata
+        && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
+            == (<b>if</b> (existing) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) } <b>else</b> { 0 }) + fa.amount;
 }
 </code></pre>
-<p>If <code>plain</code>, <code>amount</code> moves from the store at <code>from</code> to the store at <code><b>to</b></code>; a self-transfer changes nothing.</p>
-<p><a id="0x1_primary_fungible_store_PlainTransferBalances"></a></p>
-<pre><code><b>schema</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PlainTransferBalances">PlainTransferBalances</a> {
+<p>The asset at <code>m</code> has no deposit hook.</p>
+<p><a id="0x1_primary_fungible_store_spec_metadata_no_deposit_hook"></a></p>
+<pre><code><b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_metadata_no_deposit_hook">spec_metadata_no_deposit_hook</a>(m: <b>address</b>): bool {
+   !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">fungible_asset::DispatchFunctionStore</a>&gt;(m)
+       || std::option::is_none(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">fungible_asset::DispatchFunctionStore</a>&gt;(m).deposit_function)
+}
+</code></pre>
+<p>The store at <code>from</code> exists and the transfer runs without hooks; a missing store at <code><b>to</b></code> is created for asset <code>m</code>.</p>
+<p><a id="0x1_primary_fungible_store_spec_is_plain_transfer_to"></a></p>
+<pre><code><b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_is_plain_transfer_to">spec_is_plain_transfer_to</a>(from: <b>address</b>, <b>to</b>: <b>address</b>, m: <b>address</b>): bool {
+   <b>exists</b>&lt;FungibleStore&gt;(from) && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(from)
+       && <b>if</b> (<b>exists</b>&lt;FungibleStore&gt;(<b>to</b>)) {
+           <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(<b>to</b>)
+       } <b>else</b> {
+           <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_metadata_no_deposit_hook">spec_metadata_no_deposit_hook</a>(m)
+       }
+}
+</code></pre>
+<p>If <code>plain</code>, <code>amount</code> moves from the store at <code>from</code> to the store at <code><b>to</b></code>, where a store missing at <code><b>to</b></code> is
+created with balance <code>amount</code>; a self-transfer changes nothing.</p>
+<p><a id="0x1_primary_fungible_store_PlainTransferBalancesToNew"></a></p>
+<pre><code><b>schema</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PlainTransferBalancesToNew">PlainTransferBalancesToNew</a> {
     from: <b>address</b>;
     <b>to</b>: <b>address</b>;
     amount: u64;
     plain: bool;
+    // This enforces <a id="high-level-req-9.1" href="#high-level-req">high-level requirement 9</a>:
     <b>ensures</b> plain && from != <b>to</b> ==&gt;
         <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from)) - amount
-        && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(<b>to</b>) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(<b>to</b>)) + amount;
+        && <b>exists</b>&lt;FungibleStore&gt;(<b>to</b>)
+        && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(<b>to</b>) == (<b>if</b> (<b>old</b>(<b>exists</b>&lt;FungibleStore&gt;(<b>to</b>))) {
+            <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(<b>to</b>))
+        } <b>else</b> { 0 }) + amount;
     <b>ensures</b> plain && from == <b>to</b> ==&gt;
         <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from));
 }
@@ -879,13 +970,25 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
     amount: u64;
     <b>let</b> from = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(sender), metadata);
     <b>let</b> <b>to</b> = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(recipient, metadata);
-    <b>let</b> plain = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_is_plain_transfer">spec_is_plain_transfer</a>(from, <b>to</b>);
+    <b>let</b> plain = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_is_plain_transfer_to">spec_is_plain_transfer_to</a>(from, <b>to</b>, metadata.inner);
     <b>aborts_if</b> <b>exists</b>&lt;FungibleStore&gt;(from) && <b>global</b>&lt;FungibleStore&gt;(from).frozen;
     <b>aborts_if</b> <b>exists</b>&lt;FungibleStore&gt;(from) && <b>exists</b>&lt;FungibleStore&gt;(<b>to</b>)
         && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(from) && <b>global</b>&lt;FungibleStore&gt;(<b>to</b>).frozen;
     <b>aborts_if</b> plain && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from) &lt; amount;
-    <b>include</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PlainTransferBalances">PlainTransferBalances</a> { from, <b>to</b>, amount, plain };
+    <b>include</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PlainTransferBalancesToNew">PlainTransferBalancesToNew</a> { from, <b>to</b>, amount, plain };
 }
+</code></pre>
+<h3 id="function-deposit_with_signer-1"><a class="header" href="#function-deposit_with_signer-1">Function <code>deposit_with_signer</code> <a id="@Specification_1_deposit_with_signer"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_deposit_with_signer">deposit_with_signer</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner), fa.metadata);
+<b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+<b>let</b> store = <b>global</b>&lt;FungibleStore&gt;(store_addr);
+<b>aborts_if</b> existing && store.frozen;
+<b>aborts_if</b> existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(store_addr)
+    && fa.metadata != store.metadata;
+<b>include</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PrimaryDepositBalance">PrimaryDepositBalance</a> { owner: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner) };
 </code></pre>
 <h3 id="function-transfer-1"><a class="header" href="#function-transfer-1">Function <code>transfer</code> <a id="@Specification_1_transfer"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_transfer">transfer</a>&lt;T: key&gt;(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, recipient: <b>address</b>, amount: u64)
@@ -900,7 +1003,153 @@ Use the minimum deposit assertion api to make sure receipient will receive a min
 <b>let</b> from = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(sender), metadata);
 <b>let</b> <b>to</b> = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(recipient, metadata);
 <b>include</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PrimaryTransfer">PrimaryTransfer</a>&lt;T&gt;;
-<b>aborts_if</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_is_plain_transfer">spec_is_plain_transfer</a>(from, <b>to</b>) && from != <b>to</b> && amount &lt; expected;
+<b>aborts_if</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_is_plain_transfer_to">spec_is_plain_transfer_to</a>(from, <b>to</b>, metadata.inner) && from != <b>to</b> && amount &lt; expected;
+</code></pre>
+<h3 id="function-mint-1"><a class="header" href="#function-mint-1">Function <code>mint</code> <a id="@Specification_1_mint"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_mint">mint</a>(mint_ref: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>, owner: <b>address</b>, amount: u64)
+</code></pre>
+<p>Mints <code>amount</code> into the primary store of <code>owner</code>, which is created if missing.</p>
+<pre><code><b>let</b> metadata = mint_ref.metadata;
+<b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, metadata);
+<b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+<b>aborts_if</b> existing && !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+<b>include</b> !existing ==&gt; <a href="primary_fungible_store.html#0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf">CreatePrimaryStoreAbortsIf</a>&lt;Metadata&gt; { owner_addr: owner };
+// This enforces <a id="high-level-req-10.1" href="#high-level-req">high-level requirement 10</a>:
+<b>aborts_if</b> existing && <b>global</b>&lt;FungibleStore&gt;(store_addr).frozen;
+// This enforces <a id="high-level-req-10.2" href="#high-level-req">high-level requirement 10</a>:
+<b>aborts_if</b> existing && <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata != metadata;
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_IncreaseSupplyAbortsIf">fungible_asset::IncreaseSupplyAbortsIf</a> { metadata_addr: metadata.inner };
+<b>include</b> existing ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDepositAbortsIf">fungible_asset::UncheckedDepositAbortsIf</a> {
+    store_addr, fa: FungibleAsset { metadata, amount }
+};
+<b>ensures</b> <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+// This enforces <a id="high-level-req-10.3" href="#high-level-req">high-level requirement 10</a>:
+<b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
+    == (<b>if</b> (existing) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) } <b>else</b> { 0 }) + amount;
+// This enforces <a id="high-level-req-10.4" href="#high-level-req">high-level requirement 10</a>:
+<b>ensures</b> amount != 0 ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(metadata.inner)
+    == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(metadata.inner)) + amount;
+</code></pre>
+<h3 id="function-burn-1"><a class="header" href="#function-burn-1">Function <code>burn</code> <a id="@Specification_1_burn"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_burn">burn</a>(burn_ref: &<a href="fungible_asset.html#0x1_fungible_asset_BurnRef">fungible_asset::BurnRef</a>, owner: <b>address</b>, amount: u64)
+</code></pre>
+<p>Burns <code>amount</code> from the primary store of <code>owner</code>, ignoring its frozen flag.</p>
+<pre><code><b>let</b> metadata = burn_ref.metadata;
+<b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, metadata);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+// This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
+<b>aborts_if</b> !<b>exists</b>&lt;FungibleStore&gt;(store_addr);
+// This enforces <a id="high-level-req-11.1" href="#high-level-req">high-level requirement 11</a>:
+<b>aborts_if</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
+// This enforces <a id="high-level-req-11.2" href="#high-level-req">high-level requirement 11</a>:
+<b>aborts_if</b> metadata != <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata;
+<b>aborts_if</b> amount != 0 && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">fungible_asset::ConcurrentSupply</a>&gt;(metadata.inner)
+    && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">fungible_asset::Supply</a>&gt;(metadata.inner);
+<b>aborts_if</b> amount != 0 && <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(metadata.inner) &lt; amount;
+// This enforces <a id="high-level-req-11.3" href="#high-level-req">high-level requirement 11</a>:
+<b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) - amount;
+// This enforces <a id="high-level-req-11.4" href="#high-level-req">high-level requirement 11</a>:
+<b>ensures</b> amount != 0 ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(metadata.inner)
+    == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(metadata.inner)) - amount;
+</code></pre>
+<h3 id="function-set_frozen_flag-1"><a class="header" href="#function-set_frozen_flag-1">Function <code>set_frozen_flag</code> <a id="@Specification_1_set_frozen_flag"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_set_frozen_flag">set_frozen_flag</a>(transfer_ref: &<a href="fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, owner: <b>address</b>, frozen: bool)
+</code></pre>
+<pre><code><b>let</b> metadata = transfer_ref.metadata;
+<b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, metadata);
+<b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+<b>aborts_if</b> existing && !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+<b>include</b> !existing ==&gt; <a href="primary_fungible_store.html#0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf">CreatePrimaryStoreAbortsIf</a>&lt;Metadata&gt; { owner_addr: owner };
+// This enforces <a id="high-level-req-12.1" href="#high-level-req">high-level requirement 12</a>:
+<b>aborts_if</b> <b>exists</b>&lt;FungibleStore&gt;(store_addr)
+    && <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata != transfer_ref.metadata;
+<b>ensures</b> <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+// This enforces <a id="high-level-req-12.2" href="#high-level-req">high-level requirement 12</a>:
+<b>ensures</b> <b>global</b>&lt;FungibleStore&gt;(store_addr).frozen == frozen;
+</code></pre>
+<h3 id="function-withdraw_with_ref-1"><a class="header" href="#function-withdraw_with_ref-1">Function <code>withdraw_with_ref</code> <a id="@Specification_1_withdraw_with_ref"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_withdraw_with_ref">withdraw_with_ref</a>(transfer_ref: &<a href="fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, owner: <b>address</b>, amount: u64): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
+</code></pre>
+<p>Withdraws from the primary store of <code>owner</code>, ignoring its frozen flag.</p>
+<pre><code><b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, transfer_ref.metadata);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+// This enforces <a id="high-level-req-5.2" href="#high-level-req">high-level requirement 5</a>:
+<b>aborts_if</b> !<b>exists</b>&lt;FungibleStore&gt;(store_addr);
+// This enforces <a id="high-level-req-7.2" href="#high-level-req">high-level requirement 7</a>:
+<b>aborts_if</b> transfer_ref.metadata != <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata;
+// This enforces <a id="high-level-req-7.4" href="#high-level-req">high-level requirement 7</a>:
+<b>aborts_if</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
+// This enforces <a id="high-level-req-7.6" href="#high-level-req">high-level requirement 7</a>:
+<b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) - amount;
+<b>ensures</b> result == FungibleAsset { metadata: transfer_ref.metadata, amount };
+</code></pre>
+<h3 id="function-deposit_with_ref-1"><a class="header" href="#function-deposit_with_ref-1">Function <code>deposit_with_ref</code> <a id="@Specification_1_deposit_with_ref"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_deposit_with_ref">deposit_with_ref</a>(transfer_ref: &<a href="fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, owner: <b>address</b>, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
+</code></pre>
+<p>Deposits into the primary store of <code>owner</code>, which is created if missing, ignoring its frozen flag.</p>
+<pre><code><b>let</b> metadata = transfer_ref.metadata;
+<b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner, metadata);
+<b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+<b>aborts_if</b> existing && !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+<b>include</b> !existing ==&gt; <a href="primary_fungible_store.html#0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf">CreatePrimaryStoreAbortsIf</a>&lt;Metadata&gt; { owner_addr: owner };
+<b>aborts_if</b> transfer_ref.metadata != fa.metadata;
+// This enforces <a id="high-level-req-6.3" href="#high-level-req">high-level requirement 6</a>:
+<b>aborts_if</b> existing && <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata != fa.metadata;
+<b>include</b> existing ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDepositAbortsIf">fungible_asset::UncheckedDepositAbortsIf</a> { store_addr };
+<b>ensures</b> <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+// This enforces <a id="high-level-req-6.5" href="#high-level-req">high-level requirement 6</a>:
+<b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
+    == (<b>if</b> (existing) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) } <b>else</b> { 0 }) + fa.amount;
+</code></pre>
+<h3 id="function-transfer_with_ref-1"><a class="header" href="#function-transfer_with_ref-1">Function <code>transfer_with_ref</code> <a id="@Specification_1_transfer_with_ref"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_transfer_with_ref">transfer_with_ref</a>(transfer_ref: &<a href="fungible_asset.html#0x1_fungible_asset_TransferRef">fungible_asset::TransferRef</a>, from: <b>address</b>, <b>to</b>: <b>address</b>, amount: u64)
+</code></pre>
+<p>Moves <code>amount</code> between the primary stores of <code>from</code> and <code><b>to</b></code>, ignoring their frozen flags.</p>
+<pre><code><b>let</b> metadata = transfer_ref.metadata;
+<b>let</b> from_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(from, metadata);
+<b>let</b> to_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(<b>to</b>, metadata);
+<b>let</b> to_existing = <b>exists</b>&lt;FungibleStore&gt;(to_addr);
+<b>let</b> to_concurrent = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(to_addr).balance;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(from_addr);
+<b>aborts_if</b> !<b>exists</b>&lt;FungibleStore&gt;(from_addr);
+<b>aborts_if</b> to_existing && !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(to_addr);
+<b>include</b> !to_existing ==&gt; <a href="primary_fungible_store.html#0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf">CreatePrimaryStoreAbortsIf</a>&lt;Metadata&gt; { owner_addr: <b>to</b> };
+<b>aborts_if</b> transfer_ref.metadata != <b>global</b>&lt;FungibleStore&gt;(from_addr).metadata;
+<b>aborts_if</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr) &lt; amount;
+<b>include</b> to_existing && from_addr != to_addr ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDepositAbortsIf">fungible_asset::UncheckedDepositAbortsIf</a> {
+    store_addr: to_addr, fa: FungibleAsset { metadata, amount }
+};
+<b>aborts_if</b> amount != 0 && from_addr == to_addr && <a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">fungible_asset::spec_is_concurrent_balance</a>(to_addr)
+    && aptos_framework::aggregator_v2::spec_get_value(to_concurrent)
+        &gt; aptos_framework::aggregator_v2::spec_get_max_value(to_concurrent);
+// This enforces <a id="high-level-req-9.2" href="#high-level-req">high-level requirement 9</a>:
+<b>ensures</b> from_addr != to_addr ==&gt;
+    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr)) - amount
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(to_addr) == (<b>if</b> (<b>old</b>(<b>exists</b>&lt;FungibleStore&gt;(to_addr))) {
+        <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(to_addr))
+    } <b>else</b> { 0 }) + amount;
+<b>ensures</b> from_addr == to_addr ==&gt;
+    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr));
+</code></pre>
+<h3 id="function-upgrade_to_concurrent-1"><a class="header" href="#function-upgrade_to_concurrent-1">Function <code>upgrade_to_concurrent</code> <a id="@Specification_1_upgrade_to_concurrent"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_upgrade_to_concurrent">upgrade_to_concurrent</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;)
+</code></pre>
+<pre><code><b>let</b> owner_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>let</b> store_addr = <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">spec_primary_store_address</a>(owner_address, metadata);
+<b>let</b> existing = <b>exists</b>&lt;FungibleStore&gt;(store_addr);
+<b>let</b> concurrent = <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(store_addr);
+<b>let</b> created_concurrent = !existing
+    && std::features::spec_is_enabled(std::features::DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE);
+<b>aborts_if</b> existing && !<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+<b>aborts_if</b> existing && !concurrent && <a href="object.html#0x1_object_spec_owns_aborts">object::spec_owns_aborts</a>(store_addr, owner_address);
+<b>aborts_if</b> existing && !concurrent && !<a href="object.html#0x1_object_spec_owns">object::spec_owns</a>(store_addr, owner_address);
+<b>aborts_if</b> existing && !concurrent && <b>global</b>&lt;FungibleStore&gt;(store_addr).frozen;
+<b>aborts_if</b> !concurrent && !created_concurrent
+    && !std::features::spec_is_enabled(std::features::CONCURRENT_FUNGIBLE_BALANCE);
+<b>include</b> !existing ==&gt; <a href="primary_fungible_store.html#0x1_primary_fungible_store_CreatePrimaryStoreAbortsIf">CreatePrimaryStoreAbortsIf</a>&lt;Metadata&gt; { owner_addr: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner) };
+<b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(store_addr);
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;FungibleStore&gt;(store_addr)) ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
+    == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr));
 </code></pre>
 
                     </main>

@@ -196,6 +196,9 @@ than or equal to the requested multiplier is chosen.</p>
 <li><a href="#0x1_transaction_limits_validate_high_txn_limits">Function <code>validate_high_txn_limits</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_validate_tiers">Function <code>validate_tiers</code></a></li>
+<li><a href="#@Specification_1_new_tiers">Function <code>new_tiers</code></a></li>
+<li><a href="#@Specification_1_find_min_stake_required">Function <code>find_min_stake_required</code></a></li>
 <li><a href="#@Specification_1_initialize">Function <code>initialize</code></a></li>
 <li><a href="#@Specification_1_update_config">Function <code>update_config</code></a></li>
 <li><a href="#@Specification_1_validate_enough_stake">Function <code>validate_enough_stake</code></a></li>
@@ -432,6 +435,10 @@ the proof that the sender has enough stake.</p>
             <a href="../move-stdlib/error.html#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="transaction_limits.html#0x1_transaction_limits_ETHRESHOLDS_NOT_MONOTONIC">ETHRESHOLDS_NOT_MONOTONIC</a>)
         );
         i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &gt;= 1;
+        <b>invariant</b> len == 0 || i &lt;= len;
+        <b>invariant</b> <b>forall</b> j in 1..i: <a href="transaction_limits.html#0x1_transaction_limits_spec_tier_ordered">spec_tier_ordered</a>(tiers, j);
     };
 }
 </code></pre>
@@ -462,6 +469,13 @@ increasing.</li>
     <b>while</b> (i &lt; len) {
         tiers.push_back(<a href="transaction_limits.html#0x1_transaction_limits_new_tier">new_tier</a>(min_stakes[i], multipliers_percent[i]));
         i += 1;
+    } <b>spec</b> {
+        <b>invariant</b> i &lt;= len;
+        <b>invariant</b> std::vector::length(tiers) == i;
+        <b>invariant</b> <b>forall</b> j in 0..i:
+            tiers[j].min_stake == min_stakes[j]
+                && tiers[j].multiplier_percent == multipliers_percent[j];
+        <b>invariant</b> <b>forall</b> j in 0..i: <a href="transaction_limits.html#0x1_transaction_limits_spec_valid_multiplier">spec_valid_multiplier</a>(multipliers_percent[j]);
     };
     <a href="transaction_limits.html#0x1_transaction_limits_validate_tiers">validate_tiers</a>(&tiers);
 
@@ -653,48 +667,81 @@ for the requested limit multipliers.</p>
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<h3 id="function-validate_tiers-1"><a class="header" href="#function-validate_tiers-1">Function <code>validate_tiers</code> <a id="@Specification_1_validate_tiers"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_validate_tiers">validate_tiers</a>(tiers: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">transaction_limits::TxnLimitTier</a>&gt;)
+</code></pre>
+<p>Consecutive tiers must be ordered.</p>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="transaction_limits.html#0x1_transaction_limits_spec_tiers_valid">spec_tiers_valid</a>(tiers) <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+</code></pre>
+<h3 id="function-new_tiers-1"><a class="header" href="#function-new_tiers-1">Function <code>new_tiers</code> <a id="@Specification_1_new_tiers"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_new_tiers">new_tiers</a>(min_stakes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, multipliers_percent: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">transaction_limits::TxnLimitTier</a>&gt;
+</code></pre>
+<p>Pairs the inputs into tiers; every multiplier must be valid and the tiers ordered.</p>
+<pre><code><b>pragma</b> opaque;
+<b>include</b> <a href="transaction_limits.html#0x1_transaction_limits_NewTiersAbortsIf">NewTiersAbortsIf</a>;
+<b>ensures</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_tiers_built_from">spec_tiers_built_from</a>(result, min_stakes, multipliers_percent);
+</code></pre>
+<h3 id="function-find_min_stake_required-1"><a class="header" href="#function-find_min_stake_required-1">Function <code>find_min_stake_required</code> <a id="@Specification_1_find_min_stake_required"></a></a></h3>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_find_min_stake_required">find_min_stake_required</a>(tiers: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">transaction_limits::TxnLimitTier</a>&gt;, multiplier_percent: u64): u64
+</code></pre>
+<p>Returns the minimum stake of the first tier that covers the multiplier.</p>
+<pre><code><b>pragma</b> opaque;
+<b>aborts_if</b> !<a href="transaction_limits.html#0x1_transaction_limits_spec_has_tier">spec_has_tier</a>(tiers, multiplier_percent) <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+<b>ensures</b> result == <a href="transaction_limits.html#0x1_transaction_limits_spec_min_stake_required">spec_min_stake_required</a>(tiers, multiplier_percent);
 </code></pre>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, execution_tiers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">transaction_limits::TxnLimitTier</a>&gt;, io_tiers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">transaction_limits::TxnLimitTier</a>&gt;)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>pragma</b> aborts_if_is_partial;
-<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(addr);
+<b>aborts_if</b> !<a href="transaction_limits.html#0x1_transaction_limits_spec_tiers_valid">spec_tiers_valid</a>(execution_tiers);
+<b>aborts_if</b> !<a href="transaction_limits.html#0x1_transaction_limits_spec_tiers_valid">spec_tiers_valid</a>(io_tiers);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(addr);
 <b>ensures</b> <b>global</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(addr) == TxnLimitsConfig::V1 { execution_tiers, io_tiers };
 </code></pre>
 <h3 id="function-update_config-1"><a class="header" href="#function-update_config-1">Function <code>update_config</code> <a id="@Specification_1_update_config"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_update_config">update_config</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, execution_min_stakes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, execution_multipliers_percent: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, io_min_stakes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, io_multipliers_percent: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;)
 </code></pre>
-<p>Only the framework may update the tiers; each min-stake vector must match its multiplier vector in length.</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>pragma</b> aborts_if_is_partial;
-<b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework));
-<b>aborts_if</b> len(execution_min_stakes) != len(execution_multipliers_percent);
-<b>aborts_if</b> len(io_min_stakes) != len(io_multipliers_percent);
+<p>Only the framework may update the tiers; each min-stake vector must match its multiplier vector in length,
+every multiplier must be valid and the tiers ordered.</p>
+<pre><code><b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework));
+<b>include</b> <a href="transaction_limits.html#0x1_transaction_limits_NewTiersAbortsIf">NewTiersAbortsIf</a> { min_stakes: execution_min_stakes, multipliers_percent: execution_multipliers_percent };
+<b>include</b> <a href="transaction_limits.html#0x1_transaction_limits_NewTiersAbortsIf">NewTiersAbortsIf</a> { min_stakes: io_min_stakes, multipliers_percent: io_multipliers_percent };
+<b>modifies</b> <b>global</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(@aptos_framework);
+<b>let</b> <b>post</b> config = <b>global</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(@aptos_framework);
 <b>ensures</b> <b>exists</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(@aptos_framework);
+<b>ensures</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_tiers_built_from">spec_tiers_built_from</a>(config.execution_tiers, execution_min_stakes, execution_multipliers_percent);
+<b>ensures</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_tiers_built_from">spec_tiers_built_from</a>(config.io_tiers, io_min_stakes, io_multipliers_percent);
 </code></pre>
 <h3 id="function-validate_enough_stake-1"><a class="header" href="#function-validate_enough_stake-1">Function <code>validate_enough_stake</code> <a id="@Specification_1_validate_enough_stake"></a></a></h3>
 <pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_validate_enough_stake">validate_enough_stake</a>(stake_amount: u64, multipliers: <a href="transaction_limits.html#0x1_transaction_limits_RequestedMultipliers">transaction_limits::RequestedMultipliers</a>)
 </code></pre>
-<p>Both multipliers must be in (1x, 100x].</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>pragma</b> aborts_if_is_partial;
-<b>let</b> execution = multipliers.execution_multiplier_percent;
+<p>Both multipliers must be in (1x, 100x] and covered by a tier, and the stake must reach both tiers' minimum
+stakes.</p>
+<pre><code><b>let</b> execution = multipliers.execution_multiplier_percent;
 <b>let</b> io = multipliers.io_multiplier_percent;
-<b>aborts_if</b> execution &lt;= <a href="transaction_limits.html#0x1_transaction_limits_MIN_MULTIPLIER_PERCENT">MIN_MULTIPLIER_PERCENT</a> || execution &gt; <a href="transaction_limits.html#0x1_transaction_limits_MAX_MULTIPLIER_PERCENT">MAX_MULTIPLIER_PERCENT</a>;
-<b>aborts_if</b> io &lt;= <a href="transaction_limits.html#0x1_transaction_limits_MIN_MULTIPLIER_PERCENT">MIN_MULTIPLIER_PERCENT</a> || io &gt; <a href="transaction_limits.html#0x1_transaction_limits_MAX_MULTIPLIER_PERCENT">MAX_MULTIPLIER_PERCENT</a>;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(@aptos_framework);
+<b>let</b> config = <b>global</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(@aptos_framework);
+<b>let</b> multipliers_ok = <a href="transaction_limits.html#0x1_transaction_limits_spec_valid_multiplier">spec_valid_multiplier</a>(execution) && <a href="transaction_limits.html#0x1_transaction_limits_spec_valid_multiplier">spec_valid_multiplier</a>(io);
+<b>let</b> config_ok = multipliers_ok && <b>exists</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(@aptos_framework);
+<b>let</b> tiers_ok = config_ok && <a href="transaction_limits.html#0x1_transaction_limits_spec_has_tier">spec_has_tier</a>(config.execution_tiers, execution)
+    && <a href="transaction_limits.html#0x1_transaction_limits_spec_has_tier">spec_has_tier</a>(config.io_tiers, io);
+<b>aborts_if</b> !<a href="transaction_limits.html#0x1_transaction_limits_spec_valid_multiplier">spec_valid_multiplier</a>(execution) <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+<b>aborts_if</b> !<a href="transaction_limits.html#0x1_transaction_limits_spec_valid_multiplier">spec_valid_multiplier</a>(io) <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+<b>aborts_if</b> multipliers_ok && !<b>exists</b>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitsConfig">TxnLimitsConfig</a>&gt;(@aptos_framework);
+<b>aborts_if</b> config_ok && !<a href="transaction_limits.html#0x1_transaction_limits_spec_has_tier">spec_has_tier</a>(config.execution_tiers, execution) <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+<b>aborts_if</b> config_ok && !<a href="transaction_limits.html#0x1_transaction_limits_spec_has_tier">spec_has_tier</a>(config.io_tiers, io) <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+<b>aborts_if</b> tiers_ok && stake_amount &lt; <a href="transaction_limits.html#0x1_transaction_limits_spec_min_stake_required">spec_min_stake_required</a>(config.execution_tiers, execution)
+    <b>with</b> <a href="../move-stdlib/error.html#0x1_error_PERMISSION_DENIED">error::PERMISSION_DENIED</a>;
+<b>aborts_if</b> tiers_ok && stake_amount &lt; <a href="transaction_limits.html#0x1_transaction_limits_spec_min_stake_required">spec_min_stake_required</a>(config.io_tiers, io)
+    <b>with</b> <a href="../move-stdlib/error.html#0x1_error_PERMISSION_DENIED">error::PERMISSION_DENIED</a>;
 </code></pre>
 <h3 id="function-validate_high_txn_limits-1"><a class="header" href="#function-validate_high_txn_limits-1">Function <code>validate_high_txn_limits</code> <a id="@Specification_1_validate_high_txn_limits"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_validate_high_txn_limits">validate_high_txn_limits</a>(fee_payer: <b>address</b>, request: <a href="transaction_limits.html#0x1_transaction_limits_UserTxnLimitsRequest">transaction_limits::UserTxnLimitsRequest</a>)
 </code></pre>
 <p>The fee payer must own, or be the delegated voter of, a stake pool in the current validator set, or the
 requested delegation pool must exist and be in it.</p>
-<pre><code><b>pragma</b> verify = <b>true</b>;
-<b>pragma</b> opaque;
+<pre><code><b>pragma</b> opaque;
 <b>pragma</b> aborts_if_is_partial;
 <b>let</b> owner = request is UserTxnLimitsRequest::StakePoolOwner;
 <b>let</b> pool_address = <b>if</b> (owner) {
@@ -708,6 +755,57 @@ requested delegation pool must exist and be in it.</p>
 <b>aborts_if</b> (request is UserTxnLimitsRequest::DelegationPoolDelegator)
     && !<b>exists</b>&lt;<a href="delegation_pool.html#0x1_delegation_pool_DelegationPool">delegation_pool::DelegationPool</a>&gt;(pool_address);
 <b>aborts_if</b> !<a href="stake.html#0x1_stake_spec_is_current_epoch_validator">stake::spec_is_current_epoch_validator</a>(pool_address);
+</code></pre>
+<p><a id="0x1_transaction_limits_spec_valid_multiplier"></a></p>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_valid_multiplier">spec_valid_multiplier</a>(multiplier_percent: u64): bool {
+   multiplier_percent &gt; <a href="transaction_limits.html#0x1_transaction_limits_MIN_MULTIPLIER_PERCENT">MIN_MULTIPLIER_PERCENT</a> && multiplier_percent &lt;= <a href="transaction_limits.html#0x1_transaction_limits_MAX_MULTIPLIER_PERCENT">MAX_MULTIPLIER_PERCENT</a>
+}
+</code></pre>
+<p>Tier <code>j</code> is ordered against tier <code>j - 1</code>.</p>
+<p><a id="0x1_transaction_limits_spec_tier_ordered"></a></p>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_tier_ordered">spec_tier_ordered</a>(tiers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">TxnLimitTier</a>&gt;, j: u64): bool {
+   tiers[j].min_stake &gt;= tiers[j - 1].min_stake
+       && tiers[j].multiplier_percent &gt; tiers[j - 1].multiplier_percent
+}
+</code></pre>
+<p><a id="0x1_transaction_limits_spec_tiers_valid"></a></p>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_tiers_valid">spec_tiers_valid</a>(tiers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">TxnLimitTier</a>&gt;): bool {
+   <b>forall</b> j in 1..len(tiers): <a href="transaction_limits.html#0x1_transaction_limits_spec_tier_ordered">spec_tier_ordered</a>(tiers, j)
+}
+</code></pre>
+<p>Some tier covers the requested multiplier.</p>
+<p><a id="0x1_transaction_limits_spec_has_tier"></a></p>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_has_tier">spec_has_tier</a>(tiers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">TxnLimitTier</a>&gt;, multiplier_percent: u64): bool {
+   <b>exists</b> i in 0..len(tiers): tiers[i].multiplier_percent &gt;= multiplier_percent
+}
+</code></pre>
+<p>Minimum stake of the first tier covering the requested multiplier.</p>
+<p><a id="0x1_transaction_limits_spec_min_stake_required"></a></p>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_min_stake_required">spec_min_stake_required</a>(tiers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">TxnLimitTier</a>&gt;, multiplier_percent: u64): u64 {
+   tiers[<b>choose</b> <b>min</b> i in 0..len(tiers) <b>where</b> tiers[i].multiplier_percent &gt;= multiplier_percent].min_stake
+}
+</code></pre>
+<p><code>tiers</code> pairs <code>min_stakes</code> with <code>multipliers_percent</code> element-wise.</p>
+<p><a id="0x1_transaction_limits_spec_tiers_built_from"></a></p>
+<pre><code><b>fun</b> <a href="transaction_limits.html#0x1_transaction_limits_spec_tiers_built_from">spec_tiers_built_from</a>(
+   tiers: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="transaction_limits.html#0x1_transaction_limits_TxnLimitTier">TxnLimitTier</a>&gt;, min_stakes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;, multipliers_percent: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;
+): bool {
+   len(tiers) == len(min_stakes)
+       && (<b>forall</b> j in 0..len(tiers):
+           tiers[j].min_stake == min_stakes[j] && tiers[j].multiplier_percent == multipliers_percent[j])
+}
+</code></pre>
+<p><a id="0x1_transaction_limits_NewTiersAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="transaction_limits.html#0x1_transaction_limits_NewTiersAbortsIf">NewTiersAbortsIf</a> {
+    min_stakes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;;
+    multipliers_percent: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u64&gt;;
+    <b>aborts_if</b> len(min_stakes) != len(multipliers_percent) <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+    <b>aborts_if</b> <b>exists</b> j in 0..len(min_stakes): !<a href="transaction_limits.html#0x1_transaction_limits_spec_valid_multiplier">spec_valid_multiplier</a>(multipliers_percent[j])
+        <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+    <b>aborts_if</b> <b>exists</b> j in 1..len(min_stakes):
+        min_stakes[j] &lt; min_stakes[j - 1] || multipliers_percent[j] &lt;= multipliers_percent[j - 1]
+        <b>with</b> <a href="../move-stdlib/error.html#0x1_error_INVALID_ARGUMENT">error::INVALID_ARGUMENT</a>;
+}
 </code></pre>
 
                     </main>

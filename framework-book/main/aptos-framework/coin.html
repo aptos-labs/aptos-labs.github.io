@@ -266,6 +266,7 @@
 <li><a href="#high-level-req">High-level Requirements</a></li>
 <li><a href="#module-level-spec">Module-level Specification</a></li>
 <li><a href="#@Specification_1_AggregatableCoin">Struct <code>AggregatableCoin</code></a></li>
+<li><a href="#@Specification_1_paired_metadata">Function <code>paired_metadata</code></a></li>
 <li><a href="#@Specification_1_create_coin_conversion_map">Function <code>create_coin_conversion_map</code></a></li>
 <li><a href="#@Specification_1_coin_to_fungible_asset">Function <code>coin_to_fungible_asset</code></a></li>
 <li><a href="#@Specification_1_fungible_asset_to_coin">Function <code>fungible_asset_to_coin</code></a></li>
@@ -2351,7 +2352,7 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <td>Coin operations should fail if the user's CoinStore is frozen.</td>
 <td>Medium</td>
 <td>If the CoinStore of an address is frozen, coin operations are disallowed.</td>
-<td>Formally Verified via <a href="#high-level-req-8.1">withdraw</a>, <a href="#high-level-req-8.2">transfer</a> and <a href="#high-level-req-8.3">deposit</a>.</td>
+<td>Formally Verified via <a href="#high-level-req-8.1">withdraw</a>, <a href="#high-level-req-8.2">TransferAbortsIfAndEnsures</a> and <a href="#high-level-req-8.3">deposit</a>.</td>
 </tr>
 <tr>
 <td>9</td>
@@ -2395,58 +2396,28 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
         );
 }
 </code></pre>
-<p><a id="0x1_coin_spec_fun_supply_no_change"></a></p>
-<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_fun_supply_no_change">spec_fun_supply_no_change</a>&lt;CoinType&gt;(
-   old_supply: Option&lt;OptionalAggregator&gt;, <a href="coin.html#0x1_coin_supply">supply</a>: Option&lt;OptionalAggregator&gt;
-): bool {
-   <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(old_supply) ==&gt;
-       <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator::optional_aggregator_value</a>(
-           <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(old_supply)
-       ) == <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator::optional_aggregator_value</a>(
-           <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(<a href="coin.html#0x1_coin_supply">supply</a>)
-       )
-}
-</code></pre>
-<p><a id="0x1_coin_TotalSupplyNoChange"></a></p>
-<pre><code><b>schema</b> <a href="coin.html#0x1_coin_TotalSupplyNoChange">TotalSupplyNoChange</a>&lt;CoinType&gt; {
-    <b>let</b> old_supply = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(
-        <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address
-    ).<a href="coin.html#0x1_coin_supply">supply</a>;
-    <b>let</b> <b>post</b> <a href="coin.html#0x1_coin_supply">supply</a> = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(
-        <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address
-    ).<a href="coin.html#0x1_coin_supply">supply</a>;
-    <b>ensures</b> <a href="coin.html#0x1_coin_spec_fun_supply_no_change">spec_fun_supply_no_change</a>&lt;CoinType&gt;(old_supply, <a href="coin.html#0x1_coin_supply">supply</a>);
-}
-</code></pre>
-<p>The balance left in a not yet migrated <code><a href="coin.html#0x1_coin_CoinStore">CoinStore</a></code>.</p>
-<p><a id="0x1_coin_spec_coin_balance"></a></p>
-<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_coin_balance">spec_coin_balance</a>&lt;CoinType&gt;(owner: <b>address</b>): u64 {
-   <b>if</b> (<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">CoinStore</a>&lt;CoinType&gt;&gt;(owner)) { <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">CoinStore</a>&lt;CoinType&gt;&gt;(owner).<a href="coin.html#0x1_coin">coin</a>.value } <b>else</b> { 0 }
-}
-</code></pre>
-<p>The primary store of <code>owner</code> for the paired fungible asset <code>paired</code>; meaningful only if it is some.</p>
-<p><a id="0x1_coin_spec_paired_store_address"></a></p>
-<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner: <b>address</b>, paired: Option&lt;Object&lt;Metadata&gt;&gt;): <b>address</b> {
-   <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">primary_fungible_store::spec_primary_store_address</a>(owner, <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(paired))
-}
-</code></pre>
-<p><a id="0x1_coin_spec_has_paired_store"></a></p>
-<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(owner: <b>address</b>, paired: Option&lt;Object&lt;Metadata&gt;&gt;): bool {
-   <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(paired) && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(<a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner, paired))
-}
-</code></pre>
-<p><a id="0x1_coin_spec_fa_balance"></a></p>
-<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_fa_balance">spec_fa_balance</a>(owner: <b>address</b>, paired: Option&lt;Object&lt;Metadata&gt;&gt;): u64 {
-   <b>if</b> (<a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(owner, paired)) {
-       <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(<a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner, paired))
-   } <b>else</b> { 0 }
-}
-</code></pre>
 <p>The balance of <code>owner</code>'s paired store is computed by a dispatch hook rather than read from the store.</p>
 <p><a id="0x1_coin_spec_has_balance_hook"></a></p>
 <pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_has_balance_hook">spec_has_balance_hook</a>(owner: <b>address</b>, paired: Option&lt;Object&lt;Metadata&gt;&gt;): bool {
    <a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(owner, paired)
        && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_has_balance_hook">fungible_asset::spec_store_has_balance_hook</a>(<a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner, paired))
+}
+</code></pre>
+<p>The fungible asset metadata paired with the coin type <code>coin_type</code>, if any.</p>
+<p><a id="0x1_coin_spec_paired_metadata"></a></p>
+<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_paired_metadata">spec_paired_metadata</a>(coin_type: TypeInfo): Option&lt;Object&lt;Metadata&gt;&gt; {
+   <b>if</b> (<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>&gt;(@aptos_framework)) {
+       <b>let</b> map =
+           <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>&gt;(@aptos_framework).coin_to_fungible_asset_map;
+       <b>if</b> (<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(map, coin_type)) {
+           <b>let</b> metadata = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(map, coin_type);
+           <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(metadata)
+       } <b>else</b> {
+           <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>()
+       }
+   } <b>else</b> {
+       <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>()
+   }
 }
 </code></pre>
 <h3 id="struct-aggregatablecoin-1"><a class="header" href="#struct-aggregatablecoin-1">Struct <code>AggregatableCoin</code> <a id="@Specification_1_AggregatableCoin"></a></a></h3>
@@ -2462,6 +2433,14 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 </dd>
 </dl>
 <pre><code><b>invariant</b> <a href="aggregator.html#0x1_aggregator_spec_get_limit">aggregator::spec_get_limit</a>(value) == <a href="coin.html#0x1_coin_MAX_U64">MAX_U64</a>;
+</code></pre>
+<h3 id="function-paired_metadata-1"><a class="header" href="#function-paired_metadata-1">Function <code>paired_metadata</code> <a id="@Specification_1_paired_metadata"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_paired_metadata">paired_metadata</a>&lt;CoinType&gt;(): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;&gt;
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>&gt;(@aptos_framework) && !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
+<b>ensures</b> result == <a href="coin.html#0x1_coin_spec_paired_metadata">spec_paired_metadata</a>(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;());
 </code></pre>
 <h3 id="function-create_coin_conversion_map-1"><a class="header" href="#function-create_coin_conversion_map-1">Function <code>create_coin_conversion_map</code> <a id="@Specification_1_create_coin_conversion_map"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="coin.html#0x1_coin_create_coin_conversion_map">create_coin_conversion_map</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
@@ -2660,6 +2639,30 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <p>Can only be updated by <code>@aptos_framework</code>.</p>
 <pre><code><b>aborts_if</b> <b>true</b>;
 </code></pre>
+<p>The balance left in a not yet migrated <code><a href="coin.html#0x1_coin_CoinStore">CoinStore</a></code>.</p>
+<p><a id="0x1_coin_spec_coin_balance"></a></p>
+<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_coin_balance">spec_coin_balance</a>&lt;CoinType&gt;(owner: <b>address</b>): u64 {
+   <b>if</b> (<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">CoinStore</a>&lt;CoinType&gt;&gt;(owner)) { <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">CoinStore</a>&lt;CoinType&gt;&gt;(owner).<a href="coin.html#0x1_coin">coin</a>.value } <b>else</b> { 0 }
+}
+</code></pre>
+<p>The primary store of <code>owner</code> for the paired fungible asset <code>paired</code>; meaningful only if it is some.</p>
+<p><a id="0x1_coin_spec_paired_store_address"></a></p>
+<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner: <b>address</b>, paired: Option&lt;Object&lt;Metadata&gt;&gt;): <b>address</b> {
+   <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_primary_store_address">primary_fungible_store::spec_primary_store_address</a>(owner, <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(paired))
+}
+</code></pre>
+<p><a id="0x1_coin_spec_has_paired_store"></a></p>
+<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(owner: <b>address</b>, paired: Option&lt;Object&lt;Metadata&gt;&gt;): bool {
+   <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(paired) && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(<a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner, paired))
+}
+</code></pre>
+<p><a id="0x1_coin_spec_fa_balance"></a></p>
+<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_fa_balance">spec_fa_balance</a>(owner: <b>address</b>, paired: Option&lt;Object&lt;Metadata&gt;&gt;): u64 {
+   <b>if</b> (<a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(owner, paired)) {
+       <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(<a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner, paired))
+   } <b>else</b> { 0 }
+}
+</code></pre>
 <h3 id="function-maybe_convert_to_fungible_store-1"><a class="header" href="#function-maybe_convert_to_fungible_store-1">Function <code>maybe_convert_to_fungible_store</code> <a id="@Specification_1_maybe_convert_to_fungible_store"></a></a></h3>
 <pre><code><b>fun</b> <a href="coin.html#0x1_coin_maybe_convert_to_fungible_store">maybe_convert_to_fungible_store</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: <b>address</b>)
 </code></pre>
@@ -2674,14 +2677,6 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <b>ensures</b> moved ==&gt; <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).frozen == coin_store.frozen
     && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
         == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) + coin_store.<a href="coin.html#0x1_coin">coin</a>.value;
-</code></pre>
-<p><a id="0x1_coin_DepositAbortsIf"></a></p>
-<pre><code><b>schema</b> <a href="coin.html#0x1_coin_DepositAbortsIf">DepositAbortsIf</a>&lt;CoinType&gt; {
-    account_addr: <b>address</b>;
-    <b>let</b> coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
-    <b>aborts_if</b> coin_store.frozen;
-}
 </code></pre>
 <h3 id="function-coin_address-1"><a class="header" href="#function-coin_address-1">Function <code>coin_address</code> <a id="@Specification_1_coin_address"></a></a></h3>
 <pre><code><b>fun</b> <a href="coin.html#0x1_coin_coin_address">coin_address</a>&lt;CoinType&gt;(): <b>address</b>
@@ -2730,40 +2725,20 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address);
 <b>ensures</b> result == <b>true</b>;
 </code></pre>
-<p><a id="0x1_coin_get_coin_supply_opt"></a></p>
-<pre><code><b>fun</b> <a href="coin.html#0x1_coin_get_coin_supply_opt">get_coin_supply_opt</a>&lt;CoinType&gt;(): Option&lt;OptionalAggregator&gt; {
-   <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">CoinInfo</a>&lt;CoinType&gt;&gt;(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address).<a href="coin.html#0x1_coin_supply">supply</a>
-}
-</code></pre>
-<p>The fungible asset metadata paired with the coin type <code>coin_type</code>, if any.</p>
-<p><a id="0x1_coin_spec_paired_metadata"></a></p>
-<pre><code><b>fun</b> <a href="coin.html#0x1_coin_spec_paired_metadata">spec_paired_metadata</a>(coin_type: TypeInfo): Option&lt;Object&lt;Metadata&gt;&gt; {
-   <b>if</b> (<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>&gt;(@aptos_framework)) {
-       <b>let</b> map =
-           <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>&gt;(@aptos_framework).coin_to_fungible_asset_map;
-       <b>if</b> (<a href="../aptos-stdlib/table.html#0x1_table_spec_contains">table::spec_contains</a>(map, coin_type)) {
-           <b>let</b> metadata = <a href="../aptos-stdlib/table.html#0x1_table_spec_get">table::spec_get</a>(map, coin_type);
-           <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(metadata)
-       } <b>else</b> {
-           <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>()
-       }
-   } <b>else</b> {
-       <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>()
-   }
-}
-</code></pre>
 <h3 id="function-name-1"><a class="header" href="#function-name-1">Function <code>name</code> <a id="@Specification_1_name"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_name">name</a>&lt;CoinType&gt;(): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-7.3" href="#high-level-req">high-level requirement 7</a>:
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+// This enforces <a id="high-level-req-7.3" href="#high-level-req">high-level requirement 7</a>:
 <b>include</b> <a href="coin.html#0x1_coin_AbortsIfNotExistCoinInfo">AbortsIfNotExistCoinInfo</a>&lt;CoinType&gt;;
 </code></pre>
 <h3 id="function-symbol-1"><a class="header" href="#function-symbol-1">Function <code>symbol</code> <a id="@Specification_1_symbol"></a></a></h3>
 <pre><code>#[view]
 <b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_symbol">symbol</a>&lt;CoinType&gt;(): <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-7.4" href="#high-level-req">high-level requirement 7</a>:
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+// This enforces <a id="high-level-req-7.4" href="#high-level-req">high-level requirement 7</a>:
 <b>include</b> <a href="coin.html#0x1_coin_AbortsIfNotExistCoinInfo">AbortsIfNotExistCoinInfo</a>&lt;CoinType&gt;;
 </code></pre>
 <h3 id="function-decimals-1"><a class="header" href="#function-decimals-1">Function <code>decimals</code> <a id="@Specification_1_decimals"></a></a></h3>
@@ -2863,8 +2838,40 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>&gt;(@aptos_framework);
 // This enforces <a id="high-level-req-8.3" href="#high-level-req">high-level requirement 8</a>:
 <b>aborts_if</b> existing && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).frozen;
-<b>ensures</b> existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(store_addr) ==&gt;
-    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) + <a href="coin.html#0x1_coin">coin</a>.value;
+<b>include</b> <a href="coin.html#0x1_coin_PairedDepositBalance">PairedDepositBalance</a>&lt;CoinType&gt; { owner: account_addr, amount: <a href="coin.html#0x1_coin">coin</a>.value };
+</code></pre>
+<p>Without a deposit hook, <code>amount</code> lands in the paired primary store of <code>owner</code>, which is created if missing.</p>
+<p><a id="0x1_coin_PairedDepositBalance"></a></p>
+<pre><code><b>schema</b> <a href="coin.html#0x1_coin_PairedDepositBalance">PairedDepositBalance</a>&lt;CoinType&gt; {
+    owner: <b>address</b>;
+    amount: u64;
+    <b>let</b> paired = <a href="coin.html#0x1_coin_spec_paired_metadata">spec_paired_metadata</a>(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;());
+    <b>let</b> store_addr = <a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner, paired);
+    <b>let</b> existing = <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr);
+    <b>let</b> no_hook = <b>if</b> (existing) {
+        <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(store_addr)
+    } <b>else</b> {
+        <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_metadata_no_deposit_hook">primary_fungible_store::spec_metadata_no_deposit_hook</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(paired).inner)
+    };
+    <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(paired) && no_hook ==&gt; <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr)
+        && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).metadata == <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(paired)
+        && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
+            == (<b>if</b> (existing) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) } <b>else</b> { 0 }) + amount;
+    <b>let</b> <b>post</b> post_paired = <a href="coin.html#0x1_coin_spec_paired_metadata">spec_paired_metadata</a>(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;());
+    <b>let</b> <b>post</b> post_store = <a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(owner, post_paired);
+    <b>let</b> <b>post</b> post_existing = <b>old</b>(<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(post_store));
+    <b>let</b> <b>post</b> post_no_hook = <b>if</b> (post_existing) {
+        <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(post_store)
+    } <b>else</b> {
+        <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_metadata_no_deposit_hook">primary_fungible_store::spec_metadata_no_deposit_hook</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(post_paired).inner)
+    };
+    <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(paired) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(post_paired);
+    <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(paired) && post_no_hook ==&gt;
+        <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(post_store)
+        && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(post_store).metadata == <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(post_paired)
+        && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(post_store)
+            == (<b>if</b> (post_existing) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(post_store)) } <b>else</b> { 0 }) + amount;
+}
 </code></pre>
 <h3 id="function-deposit_for_gas_fee-1"><a class="header" href="#function-deposit_for_gas_fee-1">Function <code>deposit_for_gas_fee</code> <a id="@Specification_1_deposit_for_gas_fee"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="coin.html#0x1_coin_deposit_for_gas_fee">deposit_for_gas_fee</a>&lt;CoinType&gt;(account_addr: <b>address</b>, <a href="coin.html#0x1_coin">coin</a>: <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;)
@@ -2874,8 +2881,16 @@ Returns minted <code><a href="coin.html#0x1_coin_Coin">Coin</a></code>.</p>
 <b>let</b> store_addr = <a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(account_addr, paired);
 <b>let</b> existing = <a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(account_addr, paired);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>&gt;(@aptos_framework);
-<b>ensures</b> existing ==&gt;
-    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) + <a href="coin.html#0x1_coin">coin</a>.value;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(paired) ==&gt; <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr)
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
+        == (<b>if</b> (existing) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) } <b>else</b> { 0 }) + <a href="coin.html#0x1_coin">coin</a>.value;
+<b>let</b> <b>post</b> post_paired = <a href="coin.html#0x1_coin_spec_paired_metadata">spec_paired_metadata</a>(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;());
+<b>let</b> <b>post</b> post_store = <a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(account_addr, post_paired);
+<b>let</b> <b>post</b> post_existing = <b>old</b>(<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(post_store));
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(paired) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(post_paired);
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(paired) ==&gt; <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(post_store)
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(post_store)
+        == (<b>if</b> (post_existing) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(post_store)) } <b>else</b> { 0 }) + <a href="coin.html#0x1_coin">coin</a>.value;
 </code></pre>
 <h3 id="function-destroy_zero-1"><a class="header" href="#function-destroy_zero-1">Function <code>destroy_zero</code> <a id="@Specification_1_destroy_zero"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_destroy_zero">destroy_zero</a>&lt;CoinType&gt;(zero_coin: <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;)
@@ -3068,15 +3083,9 @@ Only the creator of <code>CoinType</code> can initialize.</p>
 <b>let</b> to_store = <a href="coin.html#0x1_coin_spec_paired_store_address">spec_paired_store_address</a>(<b>to</b>, paired);
 <b>let</b> both = <a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(from), paired) && <a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(<b>to</b>, paired)
     && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(from_store).metadata == <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(paired);
-<b>let</b> plain = both && <a href="primary_fungible_store.html#0x1_primary_fungible_store_spec_is_plain_transfer">primary_fungible_store::spec_is_plain_transfer</a>(from_store, to_store);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">CoinConversionMap</a>&gt;(@aptos_framework);
-// This enforces <a id="high-level-req-8.2" href="#high-level-req">high-level requirement 8</a>:
-<b>aborts_if</b> <a href="coin.html#0x1_coin_spec_has_paired_store">spec_has_paired_store</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(from), paired)
-    && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(from_store).frozen;
+<b>include</b> <a href="coin.html#0x1_coin_TransferAbortsIfAndEnsures">TransferAbortsIfAndEnsures</a>&lt;CoinType&gt; { from: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(from) };
 <b>aborts_if</b> both && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(from_store)
     && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(to_store).frozen;
-<b>aborts_if</b> plain && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_store) &lt; amount;
-<b>include</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PlainTransferBalances">primary_fungible_store::PlainTransferBalances</a> { from: from_store, <b>to</b>: to_store, amount, plain };
 </code></pre>
 <h3 id="function-withdraw-1"><a class="header" href="#function-withdraw-1">Function <code>withdraw</code> <a id="@Specification_1_withdraw"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="coin.html#0x1_coin_withdraw">withdraw</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64): <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;
@@ -3093,18 +3102,6 @@ Only the creator of <code>CoinType</code> can initialize.</p>
 <b>aborts_if</b> plain && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
 <b>ensures</b> plain ==&gt; result.value == amount
     && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) - amount;
-</code></pre>
-<p><a id="0x1_coin_WithdrawAbortsIf"></a></p>
-<pre><code><b>schema</b> <a href="coin.html#0x1_coin_WithdrawAbortsIf">WithdrawAbortsIf</a>&lt;CoinType&gt; {
-    <a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    amount: u64;
-    <b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-    <b>let</b> coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
-    <b>let</b> balance = coin_store.<a href="coin.html#0x1_coin">coin</a>.value;
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
-    <b>aborts_if</b> coin_store.frozen;
-    <b>aborts_if</b> <a href="coin.html#0x1_coin_balance">balance</a> &lt; amount;
-}
 </code></pre>
 <h3 id="function-mint_internal-1"><a class="header" href="#function-mint_internal-1">Function <code>mint_internal</code> <a id="@Specification_1_mint_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="coin.html#0x1_coin_mint_internal">mint_internal</a>&lt;CoinType&gt;(amount: u64): <a href="coin.html#0x1_coin_Coin">coin::Coin</a>&lt;CoinType&gt;
@@ -3138,7 +3135,6 @@ Only the creator of <code>CoinType</code> can initialize.</p>
     <b>aborts_if</b> amount != 0 && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr);
     <b>aborts_if</b> amount != 0 && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
     <b>ensures</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) - amount;
-    // This enforces <a id="high-level-req-5" href="managed_coin.html#high-level-req">high-level requirement 5</a> of the <a href="managed_coin.html">managed_coin</a> module:
     <b>ensures</b> amount != 0 ==&gt;
         <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(fa_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(fa_addr)) - amount;
 }

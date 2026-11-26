@@ -285,7 +285,7 @@ Testing <code><a href="chain_status.html#0x1_chain_status_is_operating">is_opera
 <td>The end of genesis mark should persist throughout the entire life of the chain.</td>
 <td>Medium</td>
 <td>The Aptos framework account should never drop the GenesisEndMarker resource.</td>
-<td>Audited that GenesisEndMarker is published at the end of genesis and never removed. Formally verified via <a href="#high-level-req-1">set_genesis_end</a> that GenesisEndMarker is published.</td>
+<td>Formally verified via <a href="#high-level-req-1.1">set_genesis_end</a> that GenesisEndMarker is published, and via <a href="#high-level-req-1.2">update invariant</a> that no verified function removes it once published. Audited that the VM-called genesis::set_genesis_end, which delegates its invariants to its caller, does not remove it.</td>
 </tr>
 <tr>
 <td>2</td>
@@ -307,6 +307,8 @@ Testing <code><a href="chain_status.html#0x1_chain_status_is_operating">is_opera
 <b>pragma</b> aborts_if_is_strict;
 // This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
 <b>invariant</b> <a href="chain_status.html#0x1_chain_status_is_genesis">is_genesis</a>() == !<a href="chain_status.html#0x1_chain_status_is_operating">is_operating</a>();
+// This enforces <a id="high-level-req-1.2" href="#high-level-req">high-level requirement 1</a>:
+<b>invariant</b> <b>update</b> <b>old</b>(<b>exists</b>&lt;<a href="chain_status.html#0x1_chain_status_GenesisEndMarker">GenesisEndMarker</a>&gt;(@aptos_framework)) ==&gt; <b>exists</b>&lt;<a href="chain_status.html#0x1_chain_status_GenesisEndMarker">GenesisEndMarker</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-set_genesis_end-1"><a class="header" href="#function-set_genesis_end-1">Function <code>set_genesis_end</code> <a id="@Specification_1_set_genesis_end"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="chain_status.html#0x1_chain_status_set_genesis_end">set_genesis_end</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
@@ -318,7 +320,7 @@ Testing <code><a href="chain_status.html#0x1_chain_status_is_operating">is_opera
 <b>aborts_if</b> addr != @aptos_framework;
 // This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
 <b>aborts_if</b> <b>exists</b>&lt;<a href="chain_status.html#0x1_chain_status_GenesisEndMarker">GenesisEndMarker</a>&gt;(@aptos_framework);
-// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
+// This enforces <a id="high-level-req-1.1" href="#high-level-req">high-level requirement 1</a>:
 <b>ensures</b> <b>exists</b>&lt;<a href="chain_status.html#0x1_chain_status_GenesisEndMarker">GenesisEndMarker</a>&gt;(@aptos_framework);
 <b>ensures</b> <b>global</b>&lt;<a href="chain_status.html#0x1_chain_status_GenesisEndMarker">GenesisEndMarker</a>&gt;(@aptos_framework) == <a href="chain_status.html#0x1_chain_status_GenesisEndMarker">GenesisEndMarker</a> {};
 </code></pre>

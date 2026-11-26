@@ -2107,7 +2107,7 @@ not need to be restricted to just the staker or operator.</p>
 <td>The stake pool ensures that the commission is correctly requested and paid out from the old operator's stake pool before allowing the switch to the new operator.</td>
 <td>High</td>
 <td>The switch_operator function initiates the commission payout from the stake pool associated with the old operator, ensuring a smooth transition. Paying out the commission before the switch guarantees that the staker receives the appropriate commission amount and maintains the integrity of the staking process.</td>
-<td>Audited that the commission is paid to the old operator.</td>
+<td>Audited that the commission is paid to the old operator. Formally verified via <a href="#high-level-req-7">switch_operator</a> that the contract moves from the old to the new operator, keeping its stake pool.</td>
 </tr>
 <tr>
 <td>8</td>
@@ -2266,12 +2266,13 @@ not need to be restricted to just the staker or operator.</p>
 </code></pre>
 <p>The staker's paired store holds enough to withdraw.</p>
 <pre><code><b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="staking_contract.html#0x1_staking_contract_PreconditionsInCreateContract">PreconditionsInCreateContract</a>;
 <b>let</b> staker_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(staker);
 <b>let</b> store_addr = <a href="stake.html#0x1_stake_spec_apt_paired_store_address">stake::spec_apt_paired_store_address</a>(staker_address);
 <b>let</b> plain = <a href="stake.html#0x1_stake_spec_has_apt_paired_store">stake::spec_has_apt_paired_store</a>(staker_address)
     && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(store_addr);
 <b>aborts_if</b> plain && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
+<b>aborts_if</b> plain && amount != 0 && !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework);
 // This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
 <b>ensures</b> <b>exists</b>&lt;<a href="staking_contract.html#0x1_staking_contract_Store">Store</a>&gt;(staker_address);
 </code></pre>
@@ -2283,10 +2284,12 @@ Initialize Store resource if this is the first time the staker has delegated to 
 Cannot create the staking contract if it already exists.</p>
 <pre><code><b>pragma</b> opaque;
 <b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="staking_contract.html#0x1_staking_contract_PreconditionsInCreateContract">PreconditionsInCreateContract</a>;
-<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework);
 <b>let</b> amount = coins.value;
 <b>include</b> <a href="staking_contract.html#0x1_staking_contract_CreateStakingContractWithCoinsAbortsIfAndEnsures">CreateStakingContractWithCoinsAbortsIfAndEnsures</a> { amount };
+<b>aborts_if</b> amount != 0 && !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework));
+<b>ensures</b> amount != 0 ==&gt; <b>old</b>(<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework));
+<b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework) == <b>old</b>(<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework));
 </code></pre>
 <h3 id="function-add_stake-1"><a class="header" href="#function-add_stake-1">Function <code>add_stake</code> <a id="@Specification_1_add_stake"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="staking_contract.html#0x1_staking_contract_add_stake">add_stake</a>(staker: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, operator: <b>address</b>, amount: u64)
@@ -2294,7 +2297,6 @@ Cannot create the staking contract if it already exists.</p>
 <p>The staker's paired store holds enough to withdraw.
 Staking_contract exists the stacker/operator pair.</p>
 <pre><code><b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">stake::ResourceRequirement</a>;
 <b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>let</b> staker_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(staker);
 <b>include</b> <a href="staking_contract.html#0x1_staking_contract_ContractExistsAbortsIf">ContractExistsAbortsIf</a> { staker: staker_address };
@@ -2304,6 +2306,8 @@ Staking_contract exists the stacker/operator pair.</p>
 <b>let</b> plain = <a href="stake.html#0x1_stake_spec_has_apt_paired_store">stake::spec_has_apt_paired_store</a>(staker_address)
     && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(store_addr);
 <b>aborts_if</b> plain && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
+<b>aborts_if</b> plain && amount != 0 && !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework);
+<b>aborts_if</b> plain && amount != 0 && !<b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingConfig">staking_config::StakingConfig</a>&gt;(@aptos_framework);
 <b>let</b> <b>post</b> post_store = <b>global</b>&lt;<a href="staking_contract.html#0x1_staking_contract_Store">Store</a>&gt;(staker_address);
 <b>let</b> <b>post</b> post_staking_contract = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(
     post_store.staking_contracts, operator
@@ -2358,8 +2362,14 @@ Only active validator can update locked_until_secs.</p>
 <h3 id="function-request_commission_internal-1"><a class="header" href="#function-request_commission_internal-1">Function <code>request_commission_internal</code> <a id="@Specification_1_request_commission_internal"></a></a></h3>
 <pre><code><b>fun</b> <a href="staking_contract.html#0x1_staking_contract_request_commission_internal">request_commission_internal</a>(operator: <b>address</b>, <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>: &<b>mut</b> <a href="staking_contract.html#0x1_staking_contract_StakingContract">staking_contract::StakingContract</a>): u64
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> aborts_if_is_partial;
 <b>include</b> <a href="staking_contract.html#0x1_staking_contract_GetStakingContractAmountsAbortsIf">GetStakingContractAmountsAbortsIf</a>;
+<b>let</b> stake_pool = <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(<a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.pool_address);
+<b>let</b> total_active_stake = <a href="coin.html#0x1_coin_value">coin::value</a>(stake_pool.active) + <a href="coin.html#0x1_coin_value">coin::value</a>(stake_pool.pending_active);
+<b>let</b> commission_amount = (total_active_stake - <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.principal)
+    * <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.commission_percentage / 100;
+<b>ensures</b> result == commission_amount;
+<b>ensures</b> <a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.principal == total_active_stake - commission_amount;
 </code></pre>
 <h3 id="function-unlock_stake-1"><a class="header" href="#function-unlock_stake-1">Function <code>unlock_stake</code> <a id="@Specification_1_unlock_stake"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="staking_contract.html#0x1_staking_contract_unlock_stake">unlock_stake</a>(staker: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, operator: <b>address</b>, amount: u64)
@@ -2399,6 +2409,14 @@ Only active validator can update locked_until_secs.</p>
 <b>let</b> store = <b>global</b>&lt;<a href="staking_contract.html#0x1_staking_contract_Store">Store</a>&gt;(staker_address);
 <b>let</b> staking_contracts = store.staking_contracts;
 <b>aborts_if</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(staking_contracts, new_operator);
+<b>let</b> pre_contract = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(staking_contracts, old_operator);
+<b>let</b> <b>post</b> post_contracts = <b>global</b>&lt;<a href="staking_contract.html#0x1_staking_contract_Store">Store</a>&gt;(staker_address).staking_contracts;
+<b>let</b> <b>post</b> post_contract = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(post_contracts, new_operator);
+<b>ensures</b> !<a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(post_contracts, old_operator);
+<b>ensures</b> <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(post_contracts, new_operator);
+// This enforces <a id="high-level-req-7" href="#high-level-req">high-level requirement 7</a>:
+<b>ensures</b> post_contract.pool_address == pre_contract.pool_address;
+<b>ensures</b> post_contract.commission_percentage == new_commission_percentage;
 </code></pre>
 <h3 id="function-set_beneficiary_for_operator-1"><a class="header" href="#function-set_beneficiary_for_operator-1">Function <code>set_beneficiary_for_operator</code> <a id="@Specification_1_set_beneficiary_for_operator"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="staking_contract.html#0x1_staking_contract_set_beneficiary_for_operator">set_beneficiary_for_operator</a>(operator: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, new_beneficiary: <b>address</b>)
@@ -2472,9 +2490,7 @@ The value of inactive and pending_inactive in the stake_pool is up to MAX_U64.</
 <h3 id="function-create_stake_pool-1"><a class="header" href="#function-create_stake_pool-1">Function <code>create_stake_pool</code> <a id="@Specification_1_create_stake_pool"></a></a></h3>
 <pre><code><b>fun</b> <a href="staking_contract.html#0x1_staking_contract_create_stake_pool">create_stake_pool</a>(staker: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, operator: <b>address</b>, voter: <b>address</b>, contract_creation_seed: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): (<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <a href="account.html#0x1_account_SignerCapability">account::SignerCapability</a>, <a href="stake.html#0x1_stake_OwnerCapability">stake::OwnerCapability</a>)
 </code></pre>
-<pre><code><b>pragma</b> verify_duration_estimate = 120;
-<b>include</b> <a href="stake.html#0x1_stake_ResourceRequirement">stake::ResourceRequirement</a>;
-<b>let</b> staker_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(staker);
+<pre><code><b>let</b> staker_address = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(staker);
 <b>let</b> seed_0 = <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(staker_address);
 <b>let</b> seed_1 = concat(
     concat(concat(seed_0, <a href="../move-stdlib/bcs.html#0x1_bcs_to_bytes">bcs::to_bytes</a>(operator)), <a href="staking_contract.html#0x1_staking_contract_SALT">SALT</a>),
@@ -2544,18 +2560,6 @@ a staking_contract exists for the staker/operator pair.</p>
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address);
     <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(<a href="staking_contract.html#0x1_staking_contract">staking_contract</a>.owner_cap.pool_address);
     <b>include</b> <a href="staking_contract.html#0x1_staking_contract_ContractExistsAbortsIf">ContractExistsAbortsIf</a>;
-}
-</code></pre>
-<p><a id="0x1_staking_contract_WithdrawAbortsIf"></a></p>
-<pre><code><b>schema</b> <a href="staking_contract.html#0x1_staking_contract_WithdrawAbortsIf">WithdrawAbortsIf</a>&lt;CoinType&gt; {
-    <a href="account.html#0x1_account">account</a>: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
-    amount: u64;
-    <b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-    <b>let</b> coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
-    <b>let</b> balance = coin_store.<a href="coin.html#0x1_coin">coin</a>.value;
-    <b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
-    <b>aborts_if</b> coin_store.frozen;
-    <b>aborts_if</b> balance &lt; amount;
 }
 </code></pre>
 <p><a id="0x1_staking_contract_GetStakingContractAmountsAbortsIf"></a></p>
@@ -2629,18 +2633,6 @@ a staking_contract exists for the staker/operator pair.</p>
     <b>let</b> owner_cap = <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_spec_get">simple_map::spec_get</a>(store.staking_contracts, operator).owner_cap;
     <b>let</b> <b>post</b> post_store = <b>global</b>&lt;<a href="staking_contract.html#0x1_staking_contract_Store">Store</a>&gt;(staker_address);
     <b>let</b> <b>post</b> post_staking_contracts = post_store.staking_contracts;
-}
-</code></pre>
-<p><a id="0x1_staking_contract_PreconditionsInCreateContract"></a></p>
-<pre><code><b>schema</b> <a href="staking_contract.html#0x1_staking_contract_PreconditionsInCreateContract">PreconditionsInCreateContract</a> {
-    <b>requires</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorPerformance">stake::ValidatorPerformance</a>&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorSet">stake::ValidatorSet</a>&gt;(@aptos_framework);
-    <b>requires</b> <b>exists</b>&lt;<a href="staking_config.html#0x1_staking_config_StakingRewardsConfig">staking_config::StakingRewardsConfig</a>&gt;(@aptos_framework)
-        || !std::features::spec_periodical_reward_rate_decrease_enabled();
-    <b>requires</b> <b>exists</b>&lt;aptos_framework::timestamp::CurrentTimeMicroseconds&gt;(
-        @aptos_framework
-    );
-    <b>requires</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
 }
 </code></pre>
 <p><a id="0x1_staking_contract_CreateStakePoolAbortsIf"></a></p>

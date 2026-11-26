@@ -384,14 +384,14 @@ Required if user wants to start accepting deposits of <code>CoinType</code> in h
 <td>If the total supply of coins is being monitored, burn and mint operations will appropriately adjust the total supply.</td>
 <td>High</td>
 <td>The coin::burn and coin::mint functions, when tracking the supply, adjusts the total coin supply accordingly.</td>
-<td>Audited that mint and burn change the supply only through coin::mint and coin::burn.</td>
+<td>Formally verified via <a href="#high-level-req-4.1">burn</a>, <a href="#high-level-req-4.2">mint</a> and <a href="#high-level-req-4.3">mint</a> that burn and mint adjust the supply of the paired fungible asset by the amount (for burn, when the withdrawal runs without a withdraw hook), while the tracked coin supply is unchanged (ManagedCoinSupplyUnchanged).</td>
 </tr>
 <tr>
 <td>5</td>
 <td>Before burning coins, exact amount of coins are withdrawn.</td>
 <td>High</td>
-<td>After utilizing the coin::withdraw function to withdraw coins, they are then burned, and the function ensures the precise return of the initially specified coin amount.</td>
-<td>Enforced via <a href="coin.html#high-level-req-5">burn_from</a>.</td>
+<td>The burn function withdraws amount via coin::withdraw from the paired primary store of the signer and burns it; when the withdrawal runs without a hook, the store balance drops by exactly amount.</td>
+<td>Enforced via <a href="#high-level-req-5">burn</a>.</td>
 </tr>
 <tr>
 <td>6</td>
@@ -408,21 +408,35 @@ Required if user wants to start accepting deposits of <code>CoinType</code> in h
 <h3 id="function-burn-1"><a class="header" href="#function-burn-1">Function <code>burn</code> <a id="@Specification_1_burn"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_burn">burn</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, amount: u64)
 </code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<p>Withdraws <code>amount</code> from the paired primary store of the signer and burns it.</p>
+<pre><code><b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<b>let</b> paired = <a href="coin.html#0x1_coin_spec_paired_metadata">coin::spec_paired_metadata</a>(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;());
+<b>let</b> store_addr = <a href="coin.html#0x1_coin_spec_paired_store_address">coin::spec_paired_store_address</a>(account_addr, paired);
+<b>let</b> existing = <a href="coin.html#0x1_coin_spec_has_paired_store">coin::spec_has_paired_store</a>(account_addr, paired);
+<b>let</b> plain = existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(store_addr);
+// This enforces <a id="high-level-req-3.2" href="#high-level-req">high-level requirement 3</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
-<b>let</b> coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
-<b>let</b> balance = coin_store.<a href="coin.html#0x1_coin">coin</a>.value;
-// This enforces <a id="high-level-req-3.2" href="#high-level-req">high-level requirement 3</a> and <a id="high-level-req-4.1" href="#high-level-req">high-level requirement 4</a>:
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
-<b>aborts_if</b> coin_store.frozen;
-<b>aborts_if</b> balance &lt; amount;
-<b>let</b> addr =  <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
-<b>let</b> maybe_supply = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;CoinType&gt;&gt;(addr).supply;
-<b>aborts_if</b> amount == 0;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;CoinType&gt;&gt;(addr);
-<b>include</b> <a href="coin.html#0x1_coin_CoinSubAbortsIf">coin::CoinSubAbortsIf</a>&lt;CoinType&gt; { amount:amount };
-<b>ensures</b> <a href="coin.html#0x1_coin_supply">coin::supply</a>&lt;CoinType&gt; == <b>old</b>(<a href="coin.html#0x1_coin_supply">coin::supply</a>&lt;CoinType&gt;) - amount;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">coin::CoinConversionMap</a>&gt;(@aptos_framework);
+<b>aborts_if</b> existing && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).frozen;
+<b>aborts_if</b> plain && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
+// This enforces <a id="high-level-req-5" href="#high-level-req">high-level requirement 5</a>:
+<b>ensures</b> plain ==&gt;
+    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) - amount;
+<b>let</b> fa_addr = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).metadata.inner;
+<b>include</b> <a href="managed_coin.html#0x1_managed_coin_ManagedCoinSupplyUnchanged">ManagedCoinSupplyUnchanged</a>&lt;CoinType&gt;;
+// This enforces <a id="high-level-req-4.1" href="#high-level-req">high-level requirement 4</a>:
+<b>ensures</b> plain ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(fa_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(fa_addr)) - amount;
+</code></pre>
+<p>The tracked coin supply of <code>CoinType</code> keeps its value.</p>
+<p><a id="0x1_managed_coin_ManagedCoinSupplyUnchanged"></a></p>
+<pre><code><b>schema</b> <a href="managed_coin.html#0x1_managed_coin_ManagedCoinSupplyUnchanged">ManagedCoinSupplyUnchanged</a>&lt;CoinType&gt; {
+    <b>let</b> coin_addr = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
+    <b>let</b> maybe_supply = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;CoinType&gt;&gt;(coin_addr).supply;
+    <b>let</b> <b>post</b> post_maybe_supply = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;CoinType&gt;&gt;(coin_addr).supply;
+    <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(maybe_supply) ==&gt; <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(post_maybe_supply)
+        && <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator::optional_aggregator_value</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(post_maybe_supply))
+            == <a href="optional_aggregator.html#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator::optional_aggregator_value</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(maybe_supply));
+}
 </code></pre>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_initialize">initialize</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, symbol: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, decimals: u8, monitor_supply: bool)
@@ -442,35 +456,37 @@ The Capabilities<CoinType> should be under the signer after creating;</p>
 <h3 id="function-mint-1"><a class="header" href="#function-mint-1">Function <code>mint</code> <a id="@Specification_1_mint"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_mint">mint</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, dst_addr: <b>address</b>, amount: u64)
 </code></pre>
-<p>The Capabilities<CoinType> should not exist in the signer address.
-The <code>dst_addr</code> should not be frozen.</p>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<p>The Capabilities<CoinType> should exist in the signer address.
+The paired primary store of <code>dst_addr</code> should not be frozen.</p>
+<pre><code><b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 // This enforces <a id="high-level-req-3.3" href="#high-level-req">high-level requirement 3</a>:
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="managed_coin.html#0x1_managed_coin_Capabilities">Capabilities</a>&lt;CoinType&gt;&gt;(account_addr);
 <b>let</b> addr = <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;().account_address;
 <b>aborts_if</b> (amount != 0) && !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;CoinType&gt;&gt;(addr);
-<b>let</b> coin_store = <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(dst_addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(dst_addr);
-<b>aborts_if</b> coin_store.frozen;
-<b>include</b> <a href="coin.html#0x1_coin_CoinAddAbortsIf">coin::CoinAddAbortsIf</a>&lt;CoinType&gt;;
-<b>ensures</b> <a href="coin.html#0x1_coin_supply">coin::supply</a>&lt;CoinType&gt; == <b>old</b>(<a href="coin.html#0x1_coin_supply">coin::supply</a>&lt;CoinType&gt;) + amount;
+<b>let</b> paired = <a href="coin.html#0x1_coin_spec_paired_metadata">coin::spec_paired_metadata</a>(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;());
+<b>let</b> store_addr = <a href="coin.html#0x1_coin_spec_paired_store_address">coin::spec_paired_store_address</a>(dst_addr, paired);
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">coin::CoinConversionMap</a>&gt;(@aptos_framework);
+<b>aborts_if</b> <a href="coin.html#0x1_coin_spec_has_paired_store">coin::spec_has_paired_store</a>(dst_addr, paired)
+    && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).frozen;
 // This enforces <a id="high-level-req-6" href="#high-level-req">high-level requirement 6</a>:
-<b>ensures</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(dst_addr).<a href="coin.html#0x1_coin">coin</a>.value == <b>old</b>(<b>global</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(dst_addr)).<a href="coin.html#0x1_coin">coin</a>.value + amount;
+<b>include</b> <a href="coin.html#0x1_coin_PairedDepositBalance">coin::PairedDepositBalance</a>&lt;CoinType&gt; { owner: dst_addr, amount };
+<b>include</b> <a href="managed_coin.html#0x1_managed_coin_ManagedCoinSupplyUnchanged">ManagedCoinSupplyUnchanged</a>&lt;CoinType&gt;;
+// This enforces <a id="high-level-req-4.2" href="#high-level-req">high-level requirement 4</a>:
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(paired) ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(paired).inner)
+    == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(paired).inner)) + amount;
+<b>let</b> <b>post</b> post_fa_addr = <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(<a href="coin.html#0x1_coin_spec_paired_metadata">coin::spec_paired_metadata</a>(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;CoinType&gt;())).inner;
+// This enforces <a id="high-level-req-4.3" href="#high-level-req">high-level requirement 4</a>:
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(paired) ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(post_fa_addr)
+    == (<b>if</b> (<b>old</b>(<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">fungible_asset::ConcurrentSupply</a>&gt;(post_fa_addr))) {
+        <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(post_fa_addr))
+    } <b>else</b> { 0 }) + amount;
 </code></pre>
 <h3 id="function-register-1"><a class="header" href="#function-register-1">Function <code>register</code> <a id="@Specification_1_register"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_register">register</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<p>An account can only be registered once.
-Updating <code>Account.guid_creation_num</code> will not overflow.</p>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-<b>let</b> account_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
-<b>let</b> acc = <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(account_addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr) && acc.guid_creation_num + 2 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">account::MAX_GUID_CREATION_NUM</a>;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr) && acc.guid_creation_num + 2 &gt; MAX_U64;
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr) && !<b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(account_addr);
-<b>aborts_if</b> !<b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr) && !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;CoinType&gt;();
-<b>ensures</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinStore">coin::CoinStore</a>&lt;CoinType&gt;&gt;(account_addr);
+<p>Registering requires an initialized coin.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>include</b> <a href="coin.html#0x1_coin_AbortsIfNotExistCoinInfo">coin::AbortsIfNotExistCoinInfo</a>&lt;CoinType&gt;;
 </code></pre>
 <h3 id="function-destroy_caps-1"><a class="header" href="#function-destroy_caps-1">Function <code>destroy_caps</code> <a id="@Specification_1_destroy_caps"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="managed_coin.html#0x1_managed_coin_destroy_caps">destroy_caps</a>&lt;CoinType&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)

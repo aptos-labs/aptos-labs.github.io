@@ -177,6 +177,9 @@
 <li><a href="#0x1_nonce_validation_check_and_insert_nonce">Function <code>check_and_insert_nonce</code></a></li>
 <li><a href="#@Specification_1">Specification</a>
 <ul>
+<li><a href="#@Specification_1_initialize_nonce_table">Function <code>initialize_nonce_table</code></a></li>
+<li><a href="#@Specification_1_empty_bucket">Function <code>empty_bucket</code></a></li>
+<li><a href="#@Specification_1_add_nonce_buckets">Function <code>add_nonce_buckets</code></a></li>
 <li><a href="#@Specification_1_check_and_insert_nonce">Function <code>check_and_insert_nonce</code></a></li>
 </ul>
 </li>
@@ -447,6 +450,32 @@
    <a href="nonce_validation.html#0x1_nonce_validation_spec_has_nonce">spec_has_nonce</a>(sender_address, nonce) && (exp &gt;= <a href="timestamp.html#0x1_timestamp_spec_now_seconds">timestamp::spec_now_seconds</a>()
        || txn_expiration_time &lt;= exp + <a href="nonce_validation.html#0x1_nonce_validation_NONCE_REPLAY_PROTECTION_OVERLAP_INTERVAL_SECONDS">NONCE_REPLAY_PROTECTION_OVERLAP_INTERVAL_SECONDS</a>)
 }
+</code></pre>
+<h3 id="function-initialize_nonce_table-1"><a class="header" href="#function-initialize_nonce_table-1">Function <code>initialize_nonce_table</code> <a id="@Specification_1_initialize_nonce_table"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_initialize_nonce_table">initialize_nonce_table</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
+</code></pre>
+<p>Creates the empty nonce history unless it exists.</p>
+<pre><code><b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework));
+<b>ensures</b> <b>exists</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework)) ==&gt;
+    <b>global</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework) == <b>old</b>(<b>global</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework));
+<b>ensures</b> !<b>old</b>(<b>exists</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework)) ==&gt;
+    <b>global</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework).next_key == 0;
+</code></pre>
+<h3 id="function-empty_bucket-1"><a class="header" href="#function-empty_bucket-1">Function <code>empty_bucket</code> <a id="@Specification_1_empty_bucket"></a></a></h3>
+<pre><code><b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_empty_bucket">empty_bucket</a>(pre_allocate_slots: bool): <a href="nonce_validation.html#0x1_nonce_validation_Bucket">nonce_validation::Bucket</a>
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">big_ordered_map::spec_len</a>(result.nonces_ordered_by_exp_time) == 0;
+<b>ensures</b> <a href="big_ordered_map.html#0x1_big_ordered_map_spec_len">big_ordered_map::spec_len</a>(result.nonce_to_exp_time_map) == 0;
+</code></pre>
+<h3 id="function-add_nonce_buckets-1"><a class="header" href="#function-add_nonce_buckets-1">Function <code>add_nonce_buckets</code> <a id="@Specification_1_add_nonce_buckets"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_add_nonce_buckets">add_nonce_buckets</a>(count: u64)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework);
+<b>ensures</b> <b>exists</b>&lt;<a href="nonce_validation.html#0x1_nonce_validation_NonceHistory">NonceHistory</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-check_and_insert_nonce-1"><a class="header" href="#function-check_and_insert_nonce-1">Function <code>check_and_insert_nonce</code> <a id="@Specification_1_check_and_insert_nonce"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="nonce_validation.html#0x1_nonce_validation_check_and_insert_nonce">check_and_insert_nonce</a>(sender_address: <b>address</b>, nonce: u64, txn_expiration_time: u64): bool

@@ -629,10 +629,12 @@ mint capability.</p>
 <b>let</b> apt_store_exists = <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(apt_store);
 <b>let</b> coin_store_exists = <a href="coin.html#0x1_coin_spec_has_paired_store">coin::spec_has_paired_store</a>(<a href="account.html#0x1_account">account</a>, paired);
 <b>aborts_if</b> !fa_path && !<b>exists</b>&lt;<a href="transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">AptosCoinMintCapability</a>&gt;(@aptos_framework);
-<b>ensures</b> fa_path && apt_store_exists ==&gt;
-    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(apt_store) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(apt_store)) + refund;
-<b>ensures</b> !fa_path && coin_store_exists ==&gt;
-    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(coin_store) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(coin_store)) + refund;
+<b>ensures</b> fa_path && (apt_store_exists || refund != 0) ==&gt; <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(apt_store)
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(apt_store)
+        == (<b>if</b> (apt_store_exists) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(apt_store)) } <b>else</b> { 0 }) + refund;
+<b>ensures</b> !fa_path && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(paired) ==&gt; <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(coin_store)
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(coin_store)
+        == (<b>if</b> (coin_store_exists) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(coin_store)) } <b>else</b> { 0 }) + refund;
 </code></pre>
 <h3 id="function-store_aptos_coin_burn_cap-1"><a class="header" href="#function-store_aptos_coin_burn_cap-1">Function <code>store_aptos_coin_burn_cap</code> <a id="@Specification_1_store_aptos_coin_burn_cap"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.html#0x1_transaction_fee_store_aptos_coin_burn_cap">store_aptos_coin_burn_cap</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, burn_cap: <a href="coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;)

@@ -256,8 +256,6 @@
 <li><a href="#@Specification_4_rotate_authentication_key_internal">Function <code>rotate_authentication_key_internal</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key_call">Function <code>rotate_authentication_key_call</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key_from_public_key">Function <code>rotate_authentication_key_from_public_key</code></a></li>
-<li><a href="#@Specification_4_upsert_ed25519_backup_key_on_keyless_account">Function <code>upsert_ed25519_backup_key_on_keyless_account</code></a></li>
-<li><a href="#@Specification_4_upsert_ed25519_backup_key_and_encrypt_dk">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code></a></li>
 <li><a href="#@Specification_4_upsert_encrypted_dk">Function <code>upsert_encrypted_dk</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key">Function <code>rotate_authentication_key</code></a></li>
 <li><a href="#@Specification_4_rotate_authentication_key_with_rotation_capability">Function <code>rotate_authentication_key_with_rotation_capability</code></a></li>
@@ -2202,7 +2200,7 @@ inheriting the same behavior regarding account existence and feature flags.</p>
 <td>The initialization of the account module should result in the proper system initialization with valid and consistent resources.</td>
 <td>High</td>
 <td>Initialization of the account module creates a valid address_map table and moves the resources to the OriginatingAddress under the aptos_framework account.</td>
-<td>Audited that the address_map table is created and populated correctly with the expected initial values.</td>
+<td>Formally verified via <a href="#high-level-req-1.1">initialize</a> and <a href="#high-level-req-1.2">initialize</a> that only the Aptos framework account can initialize the module and that OriginatingAddress is published under it. Audited that the address_map table starts empty.</td>
 </tr>
 <tr>
 <td>2</td>
@@ -2265,7 +2263,7 @@ inheriting the same behavior regarding account existence and feature flags.</p>
 <td>The rotation of the authentication key updates the account's authentication key with the newly supplied one.</td>
 <td>High</td>
 <td>The auth_key may only update to the provided new_auth_key after verifying the signature.</td>
-<td>Formally Verified in <a href="#high-level-req-10">rotate_authentication_key_internal</a> that the authentication key of an account is modified to the provided authentication key if the signature verification was successful.</td>
+<td>Formally Verified in <a href="#high-level-req-10.1">rotate_authentication_key_internal</a>, <a href="#high-level-req-10.2">rotate_authentication_key_call</a> and <a href="#high-level-req-10.3">rotate_authentication_key</a> that the authentication key of an account is modified to the provided authentication key if the signature verification was successful.</td>
 </tr>
 <tr>
 <td>11</td>
@@ -2279,11 +2277,13 @@ inheriting the same behavior regarding account existence and feature flags.</p>
 <td>The Account resource is persistent.</td>
 <td>Low</td>
 <td>The Account structure assigned to the address should be persistent.</td>
-<td>Audited that the Account structure is persistent.</td>
+<td>Formally verified via <a href="#high-level-req-12">update invariant</a> that a published Account resource is never removed.</td>
 </tr>
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
 <pre><code><b>pragma</b> verify = <b>true</b>;
+// This enforces <a id="high-level-req-12" href="#high-level-req">high-level requirement 12</a>:
+<b>invariant</b> <b>update</b> <b>forall</b> a: <b>address</b> {<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(a)}: <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(a)) ==&gt; <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(a);
 </code></pre>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_4_initialize"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
@@ -2291,8 +2291,10 @@ inheriting the same behavior regarding account existence and feature flags.</p>
 <p>Only the address <code>@aptos_framework</code> can call.
 OriginatingAddress does not exist under <code>@aptos_framework</code> before the call.</p>
 <pre><code><b>let</b> aptos_addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+// This enforces <a id="high-level-req-1.1" href="#high-level-req">high-level requirement 1</a>:
 <b>aborts_if</b> !<a href="system_addresses.html#0x1_system_addresses_is_aptos_framework_address">system_addresses::is_aptos_framework_address</a>(aptos_addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(aptos_addr);
+// This enforces <a id="high-level-req-1.2" href="#high-level-req">high-level requirement 1</a>:
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(aptos_addr);
 </code></pre>
 <h3 id="function-create_account_if_does_not_exist-1"><a class="header" href="#function-create_account_if_does_not_exist-1">Function <code>create_account_if_does_not_exist</code> <a id="@Specification_4_create_account_if_does_not_exist"></a></a></h3>
@@ -2459,8 +2461,8 @@ The length of new_auth_key is 32.</p>
 <b>include</b> <a href="account.html#0x1_account_EnsureResourceExistsAbortsIf">EnsureResourceExistsAbortsIf</a>;
 <b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_auth_key) != 32;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
+// This enforces <a id="high-level-req-10.1" href="#high-level-req">high-level requirement 10</a>:
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key == new_auth_key;
 <b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt; <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)
     == update_field(<b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)), authentication_key, new_auth_key);
@@ -2477,7 +2479,7 @@ The length of new_auth_key is 32.</p>
 <b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_length">vector::length</a>(new_auth_key) != 32;
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>ensures</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
-// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
+// This enforces <a id="high-level-req-10.2" href="#high-level-req">high-level requirement 10</a>:
 <b>ensures</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key == new_auth_key;
 <b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)) ==&gt; <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)
     == update_field(<b>old</b>(<b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr)), authentication_key, new_auth_key);
@@ -2499,16 +2501,6 @@ The length of new_auth_key is 32.</p>
 </code></pre>
 <p><a id="0x1_account_spec_assert_valid_rotation_proof_signature_and_get_auth_key"></a></p>
 <pre><code><b>fun</b> <a href="account.html#0x1_account_spec_assert_valid_rotation_proof_signature_and_get_auth_key">spec_assert_valid_rotation_proof_signature_and_get_auth_key</a>(scheme: u8, public_key_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, signature: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, challenge: <a href="account.html#0x1_account_RotationProofChallenge">RotationProofChallenge</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;;
-</code></pre>
-<h3 id="function-upsert_ed25519_backup_key_on_keyless_account-1"><a class="header" href="#function-upsert_ed25519_backup_key_on_keyless_account-1">Function <code>upsert_ed25519_backup_key_on_keyless_account</code> <a id="@Specification_4_upsert_ed25519_backup_key_on_keyless_account"></a></a></h3>
-<pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_on_keyless_account">upsert_ed25519_backup_key_on_keyless_account</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
-</code></pre>
-<h3 id="function-upsert_ed25519_backup_key_and_encrypt_dk-1"><a class="header" href="#function-upsert_ed25519_backup_key_and_encrypt_dk-1">Function <code>upsert_ed25519_backup_key_and_encrypt_dk</code> <a id="@Specification_4_upsert_ed25519_backup_key_and_encrypt_dk"></a></a></h3>
-<pre><code>entry <b>fun</b> <a href="account.html#0x1_account_upsert_ed25519_backup_key_and_encrypt_dk">upsert_ed25519_backup_key_and_encrypt_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, keyless_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, backup_key_proof: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, dk_ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
-</code></pre>
-<pre><code><b>pragma</b> verify = <b>false</b>;
 </code></pre>
 <h3 id="function-upsert_encrypted_dk-1"><a class="header" href="#function-upsert_encrypted_dk-1">Function <code>upsert_encrypted_dk</code> <a id="@Specification_4_upsert_encrypted_dk"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="account.html#0x1_account_upsert_encrypted_dk">upsert_encrypted_dk</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, ciphertext: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
@@ -2572,10 +2564,10 @@ The authentication scheme is ED25519_SCHEME and MULTI_ED25519_SCHEME</p>
     current_authentication_key_bytes: current_auth_key_bytes,
     new_auth_key_vector,
 };
-// This enforces <a id="high-level-req-10" href="#high-level-req">high-level requirement 10</a>:
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr);
 <b>modifies</b> <b>global</b>&lt;<a href="account.html#0x1_account_OriginatingAddress">OriginatingAddress</a>&gt;(@aptos_framework);
 <b>let</b> <b>post</b> auth_key = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(addr).authentication_key;
+// This enforces <a id="high-level-req-10.3" href="#high-level-req">high-level requirement 10</a>:
 <b>ensures</b> auth_key == new_auth_key_vector;
 </code></pre>
 <h3 id="function-rotate_authentication_key_with_rotation_capability-1"><a class="header" href="#function-rotate_authentication_key_with_rotation_capability-1">Function <code>rotate_authentication_key_with_rotation_capability</code> <a id="@Specification_4_rotate_authentication_key_with_rotation_capability"></a></a></h3>
@@ -3024,15 +3016,6 @@ The system reserved addresses is @0x1 / @0x2 / @0x3 / @0x4 / @0x5  / @0x6 / @0x7
 <b>let</b> addr = capability.<a href="account.html#0x1_account">account</a>;
 <b>aborts_if</b> <b>false</b>;
 <b>ensures</b> <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(result) == addr;
-</code></pre>
-<p><a id="0x1_account_CreateResourceAccountAbortsIf"></a></p>
-<pre><code><b>schema</b> <a href="account.html#0x1_account_CreateResourceAccountAbortsIf">CreateResourceAccountAbortsIf</a> {
-    resource_addr: <b>address</b>;
-    <b>let</b> <a href="account.html#0x1_account">account</a> = <b>global</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr);
-    <b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr)
-        && <a href="../move-stdlib/option.html#0x1_option_spec_is_some">option::spec_is_some</a>(<a href="account.html#0x1_account">account</a>.signer_capability_offer.for);
-    <b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">Account</a>&gt;(resource_addr) && <a href="account.html#0x1_account">account</a>.sequence_number != 0;
-}
 </code></pre>
 <h3 id="function-verify_signed_message-1"><a class="header" href="#function-verify_signed_message-1">Function <code>verify_signed_message</code> <a id="@Specification_4_verify_signed_message"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="account.html#0x1_account_verify_signed_message">verify_signed_message</a>&lt;T: drop&gt;(<a href="account.html#0x1_account">account</a>: <b>address</b>, account_scheme: u8, account_public_key: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, signed_message_bytes: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, message: T)

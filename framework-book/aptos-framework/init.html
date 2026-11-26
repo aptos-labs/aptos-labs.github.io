@@ -182,6 +182,11 @@
 <li><a href="#@Specification_1">Specification</a>
 <ul>
 <li><a href="#@Specification_1_internal_maybe_initialize">Function <code>internal_maybe_initialize</code></a></li>
+<li><a href="#@Specification_1_assert_may_self_initialize">Function <code>assert_may_self_initialize</code></a></li>
+<li><a href="#@Specification_1_record_deploy_owner">Function <code>record_deploy_owner</code></a></li>
+<li><a href="#@Specification_1_reset_initialized">Function <code>reset_initialized</code></a></li>
+<li><a href="#@Specification_1_check_and_set_initialized">Function <code>check_and_set_initialized</code></a></li>
+<li><a href="#@Specification_1_ensure_module_state">Function <code>ensure_module_state</code></a></li>
 <li><a href="#@Specification_1_get_caller_address_and_module_id">Function <code>get_caller_address_and_module_id</code></a></li>
 </ul>
 </li>
@@ -456,6 +461,91 @@ the bcs encoding of a u128.</p>
 <pre><code><b>public</b> <b>fun</b> <a href="init.html#0x1_init_internal_maybe_initialize">internal_maybe_initialize</a>(only_once: bool): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;<a href="../move-stdlib/signer.html#0x1_signer">signer</a>&gt;
 </code></pre>
 <pre><code><b>pragma</b> aborts_if_is_partial;
+</code></pre>
+<p><a id="0x1_init_spec_modules"></a></p>
+<pre><code><b>fun</b> <a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr: <b>address</b>): OrderedMap&lt;<a href="init.html#0x1_init_ModuleId">ModuleId</a>, <a href="init.html#0x1_init_ModuleState">ModuleState</a>&gt; {
+   <b>global</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr).modules
+}
+</code></pre>
+<h3 id="function-assert_may_self_initialize-1"><a class="header" href="#function-assert_may_self_initialize-1">Function <code>assert_may_self_initialize</code> <a id="@Specification_1_assert_may_self_initialize"></a></a></h3>
+<pre><code><b>fun</b> <a href="init.html#0x1_init_assert_may_self_initialize">assert_may_self_initialize</a>(addr: <b>address</b>, module_id: <a href="init.html#0x1_init_ModuleId">init::ModuleId</a>)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> recorded = <b>if</b> (<b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)
+    && <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id)) {
+    <a href="ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id).deploy_owner
+} <b>else</b> {
+    <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>()
+};
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(recorded) && <b>exists</b>&lt;ObjectCore&gt;(addr);
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(recorded) && !<b>exists</b>&lt;ObjectCore&gt;(addr);
+<b>aborts_if</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(recorded) && <b>exists</b>&lt;ObjectCore&gt;(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(recorded));
+</code></pre>
+<h3 id="function-record_deploy_owner-1"><a class="header" href="#function-record_deploy_owner-1">Function <code>record_deploy_owner</code> <a id="@Specification_1_record_deploy_owner"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="init.html#0x1_init_record_deploy_owner">record_deploy_owner</a>(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, addr: <b>address</b>, module_name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;)
+</code></pre>
+<pre><code><b>let</b> digest = <a href="../move-stdlib/hash.html#0x1_hash_sha3_256">hash::sha3_256</a>(module_name);
+<b>let</b> module_id = <a href="init.html#0x1_init_spec_module_id">spec_module_id</a>(module_name);
+<b>let</b> pre_exists = <b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)
+    && <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>let</b> pre_state = <a href="ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>aborts_if</b> !<b>exists</b>&lt;ObjectCore&gt;(addr);
+<b>aborts_if</b> <b>global</b>&lt;ObjectCore&gt;(addr).owner != <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(owner);
+<b>aborts_if</b> len(digest) &lt; 16;
+<b>aborts_if</b> !<a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserializable">from_bcs::deserializable</a>&lt;u128&gt;(digest[0..16]);
+<b>modifies</b> <b>global</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr);
+<b>let</b> <b>post</b> state = <a href="ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(state.deploy_owner);
+<b>ensures</b> !<b>exists</b>&lt;ObjectCore&gt;(<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(state.deploy_owner));
+<b>ensures</b> state.only_once == (<b>if</b> (pre_exists) { pre_state.only_once } <b>else</b> { <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>() });
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)) ==&gt; <a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr)
+    == <a href="ordered_map.html#0x1_ordered_map_spec_set">ordered_map::spec_set</a>(<b>old</b>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr)), module_id, state);
+</code></pre>
+<h3 id="function-reset_initialized-1"><a class="header" href="#function-reset_initialized-1">Function <code>reset_initialized</code> <a id="@Specification_1_reset_initialized"></a></a></h3>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="init.html#0x1_init_reset_initialized">reset_initialized</a>(addr: <b>address</b>, module_names: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;)
+</code></pre>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>modifies</b> <b>global</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr) == <b>old</b>(<b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr));
+</code></pre>
+<h3 id="function-check_and_set_initialized-1"><a class="header" href="#function-check_and_set_initialized-1">Function <code>check_and_set_initialized</code> <a id="@Specification_1_check_and_set_initialized"></a></a></h3>
+<pre><code><b>fun</b> <a href="init.html#0x1_init_check_and_set_initialized">check_and_set_initialized</a>(addr: <b>address</b>, module_id: <a href="init.html#0x1_init_ModuleId">init::ModuleId</a>, only_once: bool): bool
+</code></pre>
+<pre><code><b>let</b> pre_exists = <b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)
+    && <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>let</b> pre_state = <a href="ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>let</b> initialized = pre_exists && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(pre_state.only_once);
+<b>aborts_if</b> <b>false</b>;
+<b>modifies</b> <b>global</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr);
+<b>ensures</b> result == initialized;
+<b>let</b> <b>post</b> state = <a href="ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>ensures</b> state.only_once == (<b>if</b> (initialized) { pre_state.only_once } <b>else</b> { <a href="../move-stdlib/option.html#0x1_option_spec_some">option::spec_some</a>(only_once) });
+<b>ensures</b> state.deploy_owner == (<b>if</b> (pre_exists) { pre_state.deploy_owner } <b>else</b> { <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>() });
+</code></pre>
+<p><a id="0x1_init_spec_module_id"></a></p>
+<pre><code><b>fun</b> <a href="init.html#0x1_init_spec_module_id">spec_module_id</a>(name: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;): <a href="init.html#0x1_init_ModuleId">ModuleId</a> {
+   <a href="init.html#0x1_init_ModuleId">ModuleId</a> { <a href="../move-stdlib/hash.html#0x1_hash">hash</a>: <a href="../aptos-stdlib/from_bcs.html#0x1_from_bcs_deserialize">from_bcs::deserialize</a>&lt;u128&gt;(<a href="../move-stdlib/hash.html#0x1_hash_sha3_256">hash::sha3_256</a>(name)[0..16]) }
+}
+</code></pre>
+<h3 id="function-ensure_module_state-1"><a class="header" href="#function-ensure_module_state-1">Function <code>ensure_module_state</code> <a id="@Specification_1_ensure_module_state"></a></a></h3>
+<pre><code><b>fun</b> <a href="init.html#0x1_init_ensure_module_state">ensure_module_state</a>(addr: <b>address</b>, module_id: <a href="init.html#0x1_init_ModuleId">init::ModuleId</a>)
+</code></pre>
+<pre><code><b>aborts_if</b> <b>false</b>;
+<b>modifies</b> <b>global</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr);
+<b>ensures</b> <b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr);
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr))
+    && <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(<b>old</b>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr)), module_id)
+    ==&gt; <a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr) == <b>old</b>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr));
+<b>ensures</b> !(<b>old</b>(<b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr))
+    && <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(<b>old</b>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr)), module_id))
+    ==&gt; <a href="ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id)
+        == <a href="init.html#0x1_init_ModuleState">ModuleState</a> { only_once: <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>(), deploy_owner: <a href="../move-stdlib/option.html#0x1_option_spec_none">option::spec_none</a>() };
+<b>ensures</b> <a href="ordered_map.html#0x1_ordered_map_spec_contains_key">ordered_map::spec_contains_key</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id);
+<b>ensures</b> <b>old</b>(<b>exists</b>&lt;<a href="init.html#0x1_init_InitializationState">InitializationState</a>&gt;(addr)) ==&gt; <a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr)
+    == <a href="ordered_map.html#0x1_ordered_map_spec_set">ordered_map::spec_set</a>(<b>old</b>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr)), module_id,
+        <a href="ordered_map.html#0x1_ordered_map_spec_get">ordered_map::spec_get</a>(<a href="init.html#0x1_init_spec_modules">spec_modules</a>(addr), module_id));
 </code></pre>
 <h3 id="function-get_caller_address_and_module_id-1"><a class="header" href="#function-get_caller_address_and_module_id-1">Function <code>get_caller_address_and_module_id</code> <a id="@Specification_1_get_caller_address_and_module_id"></a></a></h3>
 <pre><code><b>fun</b> <a href="init.html#0x1_init_get_caller_address_and_module_id">get_caller_address_and_module_id</a>(): (<b>address</b>, <a href="init.html#0x1_init_ModuleId">init::ModuleId</a>)
