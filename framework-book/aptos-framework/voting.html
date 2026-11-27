@@ -1387,13 +1387,15 @@ there are more yes votes than no. If either of these conditions is not met, this
 </table>
 <h3 id="module-level-specification"><a class="header" href="#module-level-specification">Module-level Specification <a id="module-level-spec"></a></a></h3>
 <pre><code><b>pragma</b> verify = <b>true</b>;
-<b>pragma</b> aborts_if_is_partial;
 </code></pre>
 <h3 id="function-register-1"><a class="header" href="#function-register-1">Function <code>register</code> <a id="@Specification_1_register"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_register">register</a>&lt;ProposalType: store&gt;(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr);
+<b>include</b> <a href="account.html#0x1_account_NewEventHandleAbortsIf">account::NewEventHandleAbortsIf</a>;
+<b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr)
+    && <b>global</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(addr).guid_creation_num + 4 &gt;= <a href="account.html#0x1_account_MAX_GUID_CREATION_NUM">account::MAX_GUID_CREATION_NUM</a>;
 <b>aborts_if</b> !<a href="../aptos-stdlib/type_info.html#0x1_type_info_spec_is_struct">type_info::spec_is_struct</a>&lt;ProposalType&gt;();
 <b>ensures</b> <b>exists</b>&lt;<a href="voting.html#0x1_voting_VotingForum">VotingForum</a>&lt;ProposalType&gt;&gt;(addr);
 </code></pre>
@@ -1401,7 +1403,6 @@ there are more yes votes than no. If either of these conditions is not met, this
 <pre><code><b>public</b> <b>fun</b> <a href="voting.html#0x1_voting_create_proposal">create_proposal</a>&lt;ProposalType: store&gt;(proposer: <b>address</b>, voting_forum_address: <b>address</b>, execution_content: ProposalType, execution_hash: <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;, min_vote_threshold: u128, expiration_secs: u64, early_resolution_vote_threshold: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, metadata: <a href="../aptos-stdlib/simple_map.html#0x1_simple_map_SimpleMap">simple_map::SimpleMap</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;u8&gt;&gt;): u64
 </code></pre>
 <pre><code><b>pragma</b> opaque;
-<b>pragma</b> aborts_if_is_partial = <b>false</b>;
 <b>include</b> <a href="voting.html#0x1_voting_CreateProposalAbortsIfAndEnsures">CreateProposalAbortsIfAndEnsures</a>&lt;ProposalType&gt;{is_multi_step_proposal: <b>false</b>};
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="timestamp.html#0x1_timestamp_CurrentTimeMicroseconds">timestamp::CurrentTimeMicroseconds</a>&gt;(@aptos_framework);
 // This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:

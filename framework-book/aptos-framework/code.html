@@ -951,15 +951,18 @@ requires to be upgradable for maintenance and evolution, and is configured to be
 <h3 id="function-check_upgradability-1"><a class="header" href="#function-check_upgradability-1">Function <code>check_upgradability</code> <a id="@Specification_1_check_upgradability"></a></a></h3>
 <pre><code><b>fun</b> <a href="code.html#0x1_code_check_upgradability">check_upgradability</a>(old_pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>, new_pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>, new_modules: &<a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;)
 </code></pre>
-<pre><code>// This enforces <a id="high-level-req-4.1" href="#high-level-req">high-level requirement 4</a>:
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+// This enforces <a id="high-level-req-4.1" href="#high-level-req">high-level requirement 4</a>:
 <b>aborts_if</b> old_pack.upgrade_policy.policy &gt;= <a href="code.html#0x1_code_upgrade_policy_immutable">upgrade_policy_immutable</a>().policy;
 // This enforces <a id="high-level-req-4.2" href="#high-level-req">high-level requirement 4</a>:
 <b>aborts_if</b> !<a href="code.html#0x1_code_can_change_upgrade_policy_to">can_change_upgrade_policy_to</a>(old_pack.upgrade_policy, new_pack.upgrade_policy);
+<b>aborts_if</b> <b>exists</b> i in 0..len(old_pack.modules): !<a href="../move-stdlib/vector.html#0x1_vector_spec_contains">vector::spec_contains</a>(new_modules, old_pack.modules[i].name);
 </code></pre>
 <h3 id="function-get_module_names-1"><a class="header" href="#function-get_module_names-1">Function <code>get_module_names</code> <a id="@Specification_1_get_module_names"></a></a></h3>
 <pre><code><b>fun</b> <a href="code.html#0x1_code_get_module_names">get_module_names</a>(pack: &<a href="code.html#0x1_code_PackageMetadata">code::PackageMetadata</a>): <a href="../move-stdlib/vector.html#0x1_vector">vector</a>&lt;<a href="../move-stdlib/string.html#0x1_string_String">string::String</a>&gt;
 </code></pre>
-<pre><code><b>pragma</b> opaque;
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
 <b>ensures</b> [abstract] len(result) == len(pack.modules);
 <b>ensures</b> [abstract] <b>forall</b> i in 0..len(result): result[i] == pack.modules[i].name;

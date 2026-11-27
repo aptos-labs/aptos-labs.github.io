@@ -691,7 +691,7 @@ to transfer APT) - if we want to allow APT PFS without account itself</p>
 <td>After creating an Aptos account, the account should become registered to receive AptosCoin.</td>
 <td>Critical</td>
 <td>The create_account function creates a new account for the particular address and registers AptosCoin.</td>
-<td>Audited that create_account creates the APT primary fungible store of the new account.</td>
+<td>Formally verified via <a href="#high-level-req-2">create_account</a> that create_account creates the APT primary fungible store of the new account.</td>
 </tr>
 <tr>
 <td>3</td>
@@ -738,14 +738,18 @@ to transfer APT) - if we want to allow APT PFS without account itself</p>
 <p>Check if the bytes of the auth_key is 32.
 The Account does not exist under the auth_key before creating the account.
 Limit the address of auth_key is not @vm_reserved / @aptos_framework / @aptos_toke.</p>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
+<pre><code>// This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
 <b>include</b> <a href="aptos_account.html#0x1_aptos_account_CreateAccountAbortsIf">CreateAccountAbortsIf</a>;
+<b>include</b> <a href="aptos_account.html#0x1_aptos_account_RegisterAptAbortsIf">RegisterAptAbortsIf</a> { owner: auth_key };
+<b>ensures</b> <a href="account.html#0x1_account_spec_exists_at">account::spec_exists_at</a>(auth_key);
+// This enforces <a id="high-level-req-2" href="#high-level-req">high-level requirement 2</a>:
+<b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(<a href="aptos_account.html#0x1_aptos_account_spec_apt_store_address">spec_apt_store_address</a>(auth_key));
 </code></pre>
 <p><a id="0x1_aptos_account_CreateAccountAbortsIf"></a></p>
 <pre><code><b>schema</b> <a href="aptos_account.html#0x1_aptos_account_CreateAccountAbortsIf">CreateAccountAbortsIf</a> {
     auth_key: <b>address</b>;
     <b>aborts_if</b> <b>exists</b>&lt;<a href="account.html#0x1_account_Account">account::Account</a>&gt;(auth_key);
+    <b>aborts_if</b> !<a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_DEFAULT_ACCOUNT_RESOURCE">features::DEFAULT_ACCOUNT_RESOURCE</a>) && <a href="aptos_account.html#0x1_aptos_account_length_judgment">length_judgment</a>(auth_key);
     <b>aborts_if</b> auth_key == @vm_reserved || auth_key == @aptos_framework || auth_key == @aptos_token;
 }
 </code></pre>
@@ -766,8 +770,7 @@ Limit the address of auth_key is not @vm_reserved / @aptos_framework / @aptos_to
 <h3 id="function-transfer-1"><a class="header" href="#function-transfer-1">Function <code>transfer</code> <a id="@Specification_1_transfer"></a></a></h3>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_transfer">transfer</a>(source: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <b>to</b>: <b>address</b>, amount: u64)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="aptos_account.html#0x1_aptos_account_CreateAccountTransferAbortsIf">CreateAccountTransferAbortsIf</a>;
+<pre><code><b>include</b> <a href="aptos_account.html#0x1_aptos_account_CreateAccountTransferAbortsIf">CreateAccountTransferAbortsIf</a>;
 <b>include</b> <a href="aptos_account.html#0x1_aptos_account_AptTransfer">AptTransfer</a>;
 // This enforces <a id="high-level-req-5.1" href="#high-level-req">high-level requirement 5</a>:
 <b>ensures</b> <a href="account.html#0x1_account_spec_exists_at">account::spec_exists_at</a>(<b>to</b>);
@@ -899,13 +902,30 @@ Check if the AptosCoin under the address existed.</p>
 <h3 id="function-register_apt-1"><a class="header" href="#function-register_apt-1">Function <code>register_apt</code> <a id="@Specification_1_register_apt"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_register_apt">register_apt</a>(account_signer: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
+<p>Creates the APT primary store of the signer if missing.</p>
+<pre><code><b>let</b> store_addr = <a href="aptos_account.html#0x1_aptos_account_spec_apt_store_address">spec_apt_store_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(account_signer));
+<b>include</b> <a href="aptos_account.html#0x1_aptos_account_RegisterAptAbortsIf">RegisterAptAbortsIf</a> { owner: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(account_signer) };
+<b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr);
+</code></pre>
+<p>Creating the APT primary store of <code>owner</code> when it is missing.</p>
+<p><a id="0x1_aptos_account_RegisterAptAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="aptos_account.html#0x1_aptos_account_RegisterAptAbortsIf">RegisterAptAbortsIf</a> {
+    owner: <b>address</b>;
+    <b>let</b> store_addr = <a href="aptos_account.html#0x1_aptos_account_spec_apt_store_address">spec_apt_store_address</a>(owner);
+    <b>let</b> m = @aptos_fungible_asset;
+    <b>let</b> missing = !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr);
+    <b>aborts_if</b> missing && (!<b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(m) || !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;(m));
+    <b>aborts_if</b> missing && !<b>exists</b>&lt;<a href="primary_fungible_store.html#0x1_primary_fungible_store_DeriveRefPod">primary_fungible_store::DeriveRefPod</a>&gt;(m);
+    <b>aborts_if</b> missing && <b>exists</b>&lt;<a href="object.html#0x1_object_ObjectCore">object::ObjectCore</a>&gt;(store_addr);
+    <b>aborts_if</b> missing && <b>exists</b>&lt;<a href="object.html#0x1_object_Untransferable">object::Untransferable</a>&gt;(store_addr);
+    <b>aborts_if</b> missing && std::features::spec_is_enabled(std::features::DEFAULT_TO_CONCURRENT_FUNGIBLE_BALANCE)
+        && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(store_addr);
+}
 </code></pre>
 <h3 id="function-fungible_transfer_only-1"><a class="header" href="#function-fungible_transfer_only-1">Function <code>fungible_transfer_only</code> <a id="@Specification_1_fungible_transfer_only"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) entry <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_fungible_transfer_only">fungible_transfer_only</a>(source: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, <b>to</b>: <b>address</b>, amount: u64)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>include</b> <a href="aptos_account.html#0x1_aptos_account_AptTransfer">AptTransfer</a>;
+<pre><code><b>include</b> <a href="aptos_account.html#0x1_aptos_account_AptTransfer">AptTransfer</a>;
 </code></pre>
 <h3 id="function-is_fungible_balance_at_least-1"><a class="header" href="#function-is_fungible_balance_at_least-1">Function <code>is_fungible_balance_at_least</code> <a id="@Specification_1_is_fungible_balance_at_least"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_is_fungible_balance_at_least">is_fungible_balance_at_least</a>(<a href="account.html#0x1_account">account</a>: <b>address</b>, amount: u64): bool
@@ -960,10 +980,29 @@ store at <code><b>to</b></code> is created.</p>
     <b>let</b> from_store = <a href="aptos_account.html#0x1_aptos_account_spec_apt_store_address">spec_apt_store_address</a>(<a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(source));
     <b>let</b> to_store = <a href="aptos_account.html#0x1_aptos_account_spec_apt_store_address">spec_apt_store_address</a>(<b>to</b>);
     <b>let</b> existing = <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(from_store);
-    <b>let</b> both = existing && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(to_store);
+    <b>let</b> to_existing = <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(to_store);
+    <b>let</b> both = existing && to_existing;
+    <b>let</b> apt = @aptos_fungible_asset;
+    <b>let</b> to_store_rec = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(to_store);
+    <b>let</b> to_concurrent = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(to_store).balance;
+    <b>include</b> <a href="aptos_account.html#0x1_aptos_account_RegisterAptAbortsIf">RegisterAptAbortsIf</a> { owner: <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(source) };
+    <b>include</b> to_store != from_store ==&gt; <a href="aptos_account.html#0x1_aptos_account_RegisterAptAbortsIf">RegisterAptAbortsIf</a> { owner: <b>to</b> };
     <b>aborts_if</b> existing && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_store) &lt; amount;
+    <b>aborts_if</b> !existing && amount != 0;
     <b>aborts_if</b> both && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(from_store).metadata
         != <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(to_store).metadata;
+    <b>aborts_if</b> existing && !to_existing && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(from_store).metadata.inner != apt;
+    <b>aborts_if</b> !existing && to_existing && to_store_rec.metadata.inner != apt;
+    <b>aborts_if</b> amount != 0 && to_existing && from_store != to_store
+        && <a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">fungible_asset::spec_is_concurrent_balance</a>(to_store)
+        && aptos_framework::aggregator_v2::spec_get_value(to_concurrent) + amount
+            &gt; aptos_framework::aggregator_v2::spec_get_max_value(to_concurrent);
+    <b>aborts_if</b> amount != 0 && to_existing && from_store != to_store
+        && !<a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">fungible_asset::spec_is_concurrent_balance</a>(to_store) && to_store_rec.balance + amount &gt; MAX_U64;
+    <b>aborts_if</b> amount != 0 && existing && from_store == to_store
+        && <a href="fungible_asset.html#0x1_fungible_asset_spec_is_concurrent_balance">fungible_asset::spec_is_concurrent_balance</a>(to_store)
+        && aptos_framework::aggregator_v2::spec_get_value(to_concurrent)
+            &gt; aptos_framework::aggregator_v2::spec_get_max_value(to_concurrent);
     <b>include</b> <a href="primary_fungible_store.html#0x1_primary_fungible_store_PlainTransferBalancesToNew">primary_fungible_store::PlainTransferBalancesToNew</a> { from: from_store, <b>to</b>: to_store, amount, plain: existing };
     // This enforces <a id="high-level-req-5.2" href="#high-level-req">high-level requirement 5</a>:
     <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(to_store);
@@ -980,10 +1019,15 @@ store at <code><b>to</b></code> is created.</p>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_account.html#0x1_aptos_account_mint_to_fungible_store_for_gas">mint_to_fungible_store_for_gas</a>(ref: &<a href="fungible_asset.html#0x1_fungible_asset_MintRef">fungible_asset::MintRef</a>, <a href="account.html#0x1_account">account</a>: <b>address</b>, amount: u64)
 </code></pre>
 <p>Mints <code>amount</code> into the APT primary store of <code><a href="account.html#0x1_account">account</a></code>, ignoring its frozen flag.</p>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>let</b> store_addr = <a href="aptos_account.html#0x1_aptos_account_spec_apt_store_address">spec_apt_store_address</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>let</b> store_addr = <a href="aptos_account.html#0x1_aptos_account_spec_apt_store_address">spec_apt_store_address</a>(<a href="account.html#0x1_account">account</a>);
 <b>let</b> existing = <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr);
+<b>include</b> amount != 0 ==&gt; <a href="aptos_account.html#0x1_aptos_account_RegisterAptAbortsIf">RegisterAptAbortsIf</a> { owner: <a href="account.html#0x1_account">account</a> };
+<b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_IncreaseSupplyAbortsIf">fungible_asset::IncreaseSupplyAbortsIf</a> { metadata_addr: ref.metadata.inner };
 <b>aborts_if</b> amount != 0 && existing && <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).metadata != ref.metadata;
+<b>aborts_if</b> amount != 0 && !existing && ref.metadata.inner != @aptos_fungible_asset;
+<b>include</b> amount != 0 && existing ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDepositAbortsIf">fungible_asset::UncheckedDepositAbortsIf</a> {
+    store_addr, fa: FungibleAsset { metadata: ref.metadata, amount }
+};
 <b>ensures</b> existing || amount != 0 ==&gt; <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr)
     && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)
         == (<b>if</b> (existing) { <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) } <b>else</b> { 0 }) + amount;

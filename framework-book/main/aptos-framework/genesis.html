@@ -879,6 +879,35 @@ encoded in a single BCS byte array.</p>
 <pre><code><b>pragma</b> opaque;
 // This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
 <b>requires</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
+<b>let</b> addr = std::signer::address_of(aptos_framework);
+<b>let</b> apt = @aptos_fungible_asset;
+<b>let</b> named = aptos_framework::object::spec_create_object_address(apt, <a href="../aptos-stdlib/type_info.html#0x1_type_info_type_name">type_info::type_name</a>&lt;AptosCoin&gt;().bytes);
+<b>let</b> paired = <a href="coin.html#0x1_coin_spec_paired_metadata">coin::spec_paired_metadata</a>(<a href="../aptos-stdlib/type_info.html#0x1_type_info_type_of">type_info::type_of</a>&lt;AptosCoin&gt;());
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;AptosCoin&gt;&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_MintCapStore">aptos_coin::MintCapStore</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinConversionMap">coin::CoinConversionMap</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="aggregator_factory.html#0x1_aggregator_factory_AggregatorFactory">aggregator_factory::AggregatorFactory</a>&gt;(@aptos_framework);
+<b>modifies</b> <b>global</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="transaction_fee.html#0x1_transaction_fee_AptosFABurnCapabilities">transaction_fee::AptosFABurnCapabilities</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="transaction_fee.html#0x1_transaction_fee_AptosFAMintCapabilities">transaction_fee::AptosFAMintCapabilities</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="transaction_fee.html#0x1_transaction_fee_AptosCoinMintCapability">transaction_fee::AptosCoinMintCapability</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::object::ObjectCore&gt;(apt);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::object::ObjectCore&gt;(named);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::fungible_asset::Metadata&gt;(apt);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::fungible_asset::Metadata&gt;(named);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::fungible_asset::Supply&gt;(apt);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::fungible_asset::Supply&gt;(named);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::fungible_asset::ConcurrentSupply&gt;(apt);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::fungible_asset::ConcurrentSupply&gt;(named);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::primary_fungible_store::DeriveRefPod&gt;(apt);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::primary_fungible_store::DeriveRefPod&gt;(named);
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_PairedCoinType">coin::PairedCoinType</a>&gt;(apt);
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_PairedCoinType">coin::PairedCoinType</a>&gt;(named);
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_PairedFungibleAssetRefs">coin::PairedFungibleAssetRefs</a>&gt;(apt);
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_PairedFungibleAssetRefs">coin::PairedFungibleAssetRefs</a>&gt;(named);
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_PairedFungibleAssetRefs">coin::PairedFungibleAssetRefs</a>&gt;(
+    <b>if</b> (<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(paired)) { <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(paired).inner } <b>else</b> { apt }
+);
 <b>ensures</b> <b>exists</b>&lt;<a href="stake.html#0x1_stake_AptosCoinCapabilities">stake::AptosCoinCapabilities</a>&gt;(@aptos_framework);
 </code></pre>
 <h3 id="function-initialize_core_resources_and_aptos_coin-1"><a class="header" href="#function-initialize_core_resources_and_aptos_coin-1">Function <code>initialize_core_resources_and_aptos_coin</code> <a id="@Specification_1_initialize_core_resources_and_aptos_coin"></a></a></h3>
@@ -934,11 +963,16 @@ encoded in a single BCS byte array.</p>
 <h3 id="function-initialize_validator-1"><a class="header" href="#function-initialize_validator-1">Function <code>initialize_validator</code> <a id="@Specification_1_initialize_validator"></a></a></h3>
 <pre><code><b>fun</b> <a href="genesis.html#0x1_genesis_initialize_validator">initialize_validator</a>(pool_address: <b>address</b>, validator: &<a href="genesis.html#0x1_genesis_ValidatorConfiguration">genesis::ValidatorConfiguration</a>)
 </code></pre>
-<pre><code><b>pragma</b> aborts_if_is_partial;
-<b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
+<pre><code><b>aborts_if</b> <a href="reconfiguration_state.html#0x1_reconfiguration_state_spec_is_in_progress">reconfiguration_state::spec_is_in_progress</a>();
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">stake::ValidatorConfig</a>&gt;(pool_address);
 <b>aborts_if</b> validator.operator_address != <b>global</b>&lt;<a href="stake.html#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address).operator_address;
+<b>aborts_if</b> !<a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<a href="../aptos-stdlib/bls12381.html#0x1_bls12381_spec_public_key_from_bytes_with_pop">bls12381::spec_public_key_from_bytes_with_pop</a>(
+    validator.consensus_pubkey,
+    <a href="../aptos-stdlib/bls12381.html#0x1_bls12381_proof_of_possession_from_bytes">bls12381::proof_of_possession_from_bytes</a>(validator.proof_of_possession)
+));
+<b>aborts_if</b> <a href="../move-stdlib/vector.html#0x1_vector_is_empty">vector::is_empty</a>(validator.consensus_pubkey);
+<b>include</b> <a href="stake.html#0x1_stake_JoinValidatorSetStakeAbortsIf">stake::JoinValidatorSetStakeAbortsIf</a> { operator_address: validator.operator_address };
 <b>let</b> <b>post</b> config = <b>global</b>&lt;<a href="stake.html#0x1_stake_ValidatorConfig">stake::ValidatorConfig</a>&gt;(pool_address);
 <b>ensures</b> config.consensus_pubkey == validator.consensus_pubkey;
 <b>ensures</b> config.network_addresses == validator.network_addresses;

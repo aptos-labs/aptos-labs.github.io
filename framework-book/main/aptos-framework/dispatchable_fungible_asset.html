@@ -204,6 +204,12 @@ and is safe for non-dispatchable (aka vanilla) fungible assets as well.</p>
 <ul>
 <li><a href="#@Specification_1_withdraw">Function <code>withdraw</code></a></li>
 <li><a href="#@Specification_1_deposit">Function <code>deposit</code></a></li>
+<li><a href="#@Specification_1_transfer">Function <code>transfer</code></a></li>
+<li><a href="#@Specification_1_transfer_assert_minimum_deposit">Function <code>transfer_assert_minimum_deposit</code></a></li>
+<li><a href="#@Specification_1_derived_balance">Function <code>derived_balance</code></a></li>
+<li><a href="#@Specification_1_derived_balance_snapshot">Function <code>derived_balance_snapshot</code></a></li>
+<li><a href="#@Specification_1_is_derived_balance_at_least">Function <code>is_derived_balance_at_least</code></a></li>
+<li><a href="#@Specification_1_derived_supply">Function <code>derived_supply</code></a></li>
 <li><a href="#@Specification_1_dispatch_withdraw_hook">Function <code>dispatch_withdraw_hook</code></a></li>
 <li><a href="#@Specification_1_dispatch_deposit_hook">Function <code>dispatch_deposit_hook</code></a></li>
 <li><a href="#@Specification_1_dispatch_derived_balance_hook">Function <code>dispatch_derived_balance_hook</code></a></li>
@@ -625,19 +631,181 @@ do the following runners; <code>#[module_lock]</code> preserves AIP-73 reentranc
 </code></pre>
 </details>
 <h2 id="specification"><a class="header" href="#specification">Specification <a id="@Specification_1"></a></a></h2>
-<pre><code><b>pragma</b> verify = <b>false</b>;
+<pre><code><b>pragma</b> verify = <b>true</b>;
+</code></pre>
+<p>The asset of the store at <code>store_addr</code> has a withdraw hook (no APT short-circuit).</p>
+<p><a id="0x1_dispatchable_fungible_asset_spec_has_withdraw_hook"></a></p>
+<pre><code><b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_withdraw_hook">spec_has_withdraw_hook</a>(store_addr: <b>address</b>): bool {
+   !<a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">fungible_asset::spec_store_no_withdraw_hook</a>(store_addr)
+}
+</code></pre>
+<p>The asset of the store at <code>store_addr</code> has a deposit hook (no APT short-circuit).</p>
+<p><a id="0x1_dispatchable_fungible_asset_spec_has_deposit_hook"></a></p>
+<pre><code><b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_deposit_hook">spec_has_deposit_hook</a>(store_addr: <b>address</b>): bool {
+   !<a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">fungible_asset::spec_store_no_deposit_hook</a>(store_addr)
+}
+</code></pre>
+<p>The metadata of the store at <code>store_addr</code> holds a <code><a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_TransferRefStore">TransferRefStore</a></code>.</p>
+<p><a id="0x1_dispatchable_fungible_asset_spec_has_transfer_ref_store"></a></p>
+<pre><code><b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_transfer_ref_store">spec_has_transfer_ref_store</a>(store_addr: <b>address</b>): bool {
+   <b>exists</b>&lt;<a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_TransferRefStore">TransferRefStore</a>&gt;(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr).metadata.inner)
+}
+</code></pre>
+<p>The store balance as <code><a href="fungible_asset.html#0x1_fungible_asset_balance">fungible_asset::balance</a></code> reads it; a missing store counts as an empty one.</p>
+<p><a id="0x1_dispatchable_fungible_asset_spec_balance_or_zero"></a></p>
+<pre><code><b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_balance_or_zero">spec_balance_or_zero</a>(store_addr: <b>address</b>): u64 {
+   <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr)) { <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) } <b>else</b> { 0 }
+}
 </code></pre>
 <h3 id="function-withdraw-1"><a class="header" href="#function-withdraw-1">Function <code>withdraw</code> <a id="@Specification_1_withdraw"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_withdraw">withdraw</a>&lt;T: key&gt;(owner: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
 </code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(store));
-<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(store));
+<p>Without a withdraw hook, withdraws as <code><a href="fungible_asset.html#0x1_fungible_asset_withdraw">fungible_asset::withdraw</a></code>.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> store_addr = store.inner;
+<b>let</b> owner_address = std::signer::address_of(owner);
+<b>let</b> hook = <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_withdraw_hook">spec_has_withdraw_hook</a>(store_addr);
+<b>include</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_WithdrawSanityAbortsIf">WithdrawSanityAbortsIf</a>;
+<b>aborts_if</b> hook && !<a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_transfer_ref_store">spec_has_transfer_ref_store</a>(store_addr);
+<b>aborts_if</b> !hook && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &lt; amount;
+<b>ensures</b> !hook ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) - amount;
+<b>ensures</b> !hook ==&gt; result == FungibleAsset { metadata: <b>old</b>(<b>global</b>&lt;FungibleStore&gt;(store_addr).metadata), amount };
+<b>ensures</b> !hook ==&gt; <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata == <b>old</b>(<b>global</b>&lt;FungibleStore&gt;(store_addr).metadata);
+<b>ensures</b> !hook ==&gt; <b>global</b>&lt;FungibleStore&gt;(store_addr).frozen == <b>old</b>(<b>global</b>&lt;FungibleStore&gt;(store_addr).frozen);
+<b>ensures</b> !hook ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(<b>old</b>(<b>global</b>&lt;FungibleStore&gt;(store_addr).metadata.inner))
+    == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(<b>global</b>&lt;FungibleStore&gt;(store_addr).metadata.inner));
+</code></pre>
+<p>The checks <code><a href="fungible_asset.html#0x1_fungible_asset_withdraw_sanity_check">fungible_asset::withdraw_sanity_check</a></code> makes before any hook runs.</p>
+<p><a id="0x1_dispatchable_fungible_asset_WithdrawSanityAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_WithdrawSanityAbortsIf">WithdrawSanityAbortsIf</a> {
+    store_addr: <b>address</b>;
+    owner_address: <b>address</b>;
+    <b>aborts_if</b> <a href="object.html#0x1_object_spec_owns_aborts">object::spec_owns_aborts</a>(store_addr, owner_address);
+    <b>aborts_if</b> !<a href="object.html#0x1_object_spec_owns">object::spec_owns</a>(store_addr, owner_address);
+    <b>aborts_if</b> !<b>exists</b>&lt;FungibleStore&gt;(store_addr);
+    <b>aborts_if</b> <b>global</b>&lt;FungibleStore&gt;(store_addr).frozen;
+}
+</code></pre>
+<p>The checks <code><a href="fungible_asset.html#0x1_fungible_asset_deposit_sanity_check">fungible_asset::deposit_sanity_check</a></code> makes before any hook runs.</p>
+<p><a id="0x1_dispatchable_fungible_asset_DepositSanityAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_DepositSanityAbortsIf">DepositSanityAbortsIf</a> {
+    store_addr: <b>address</b>;
+    <b>aborts_if</b> !<b>exists</b>&lt;FungibleStore&gt;(store_addr);
+    <b>aborts_if</b> <b>global</b>&lt;FungibleStore&gt;(store_addr).frozen;
+}
 </code></pre>
 <h3 id="function-deposit-1"><a class="header" href="#function-deposit-1">Function <code>deposit</code> <a id="@Specification_1_deposit"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_deposit">deposit</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, fa: <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>)
 </code></pre>
-<pre><code><b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(store));
-<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentFungibleBalance">fungible_asset::ConcurrentFungibleBalance</a>&gt;(<a href="object.html#0x1_object_object_address">object::object_address</a>(store));
+<p>Without a deposit hook, deposits as <code><a href="fungible_asset.html#0x1_fungible_asset_deposit">fungible_asset::deposit</a></code>.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> store_addr = store.inner;
+<b>let</b> hook = <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_deposit_hook">spec_has_deposit_hook</a>(store_addr);
+<b>include</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_DepositSanityAbortsIf">DepositSanityAbortsIf</a>;
+<b>aborts_if</b> hook && !<a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_transfer_ref_store">spec_has_transfer_ref_store</a>(store_addr);
+<b>include</b> !hook ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDepositAbortsIf">fungible_asset::UncheckedDepositAbortsIf</a>;
+<b>ensures</b> !hook ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr)) + fa.amount;
+<b>ensures</b> !hook ==&gt; <b>global</b>&lt;FungibleStore&gt;(store_addr).metadata == <b>old</b>(<b>global</b>&lt;FungibleStore&gt;(store_addr).metadata);
+<b>ensures</b> !hook ==&gt; <b>global</b>&lt;FungibleStore&gt;(store_addr).frozen == <b>old</b>(<b>global</b>&lt;FungibleStore&gt;(store_addr).frozen);
+<b>ensures</b> !hook ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(fa.metadata.inner) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(fa.metadata.inner));
+</code></pre>
+<h3 id="function-transfer-1"><a class="header" href="#function-transfer-1">Function <code>transfer</code> <a id="@Specification_1_transfer"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_transfer">transfer</a>&lt;T: key&gt;(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, from: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, <b>to</b>: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64)
+</code></pre>
+<p>Without hooks, moves <code>amount</code> from <code>from</code> to <code><b>to</b></code>.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> from_addr = from.inner;
+<b>let</b> to_addr = <b>to</b>.inner;
+<b>let</b> hooks = <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_withdraw_hook">spec_has_withdraw_hook</a>(from_addr) || <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_deposit_hook">spec_has_deposit_hook</a>(to_addr);
+<b>include</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_TransferAbortsIf">TransferAbortsIf</a>;
+<b>ensures</b> !hooks && from_addr != to_addr ==&gt;
+    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr)) - amount
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(to_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(to_addr)) + amount;
+<b>ensures</b> !hooks && from_addr == to_addr ==&gt;
+    <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr) == <b>old</b>(<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr));
+</code></pre>
+<p>Aborts of a transfer that occur before or without a hook.</p>
+<p><a id="0x1_dispatchable_fungible_asset_TransferAbortsIf"></a></p>
+<pre><code><b>schema</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_TransferAbortsIf">TransferAbortsIf</a> {
+    sender: <a href="../move-stdlib/signer.html#0x1_signer">signer</a>;
+    from_addr: <b>address</b>;
+    to_addr: <b>address</b>;
+    amount: u64;
+    <b>let</b> withdraw_hook = <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_withdraw_hook">spec_has_withdraw_hook</a>(from_addr);
+    <b>include</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_WithdrawSanityAbortsIf">WithdrawSanityAbortsIf</a> { store_addr: from_addr, owner_address: std::signer::address_of(sender) };
+    <b>aborts_if</b> withdraw_hook && !<a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_transfer_ref_store">spec_has_transfer_ref_store</a>(from_addr);
+    <b>aborts_if</b> !withdraw_hook && <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(from_addr) &lt; amount;
+    <b>include</b> !withdraw_hook && from_addr != to_addr ==&gt; <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_DepositSanityAbortsIf">DepositSanityAbortsIf</a> { store_addr: to_addr };
+    <b>aborts_if</b> !withdraw_hook && from_addr != to_addr && <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_deposit_hook">spec_has_deposit_hook</a>(to_addr)
+        && !<a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_transfer_ref_store">spec_has_transfer_ref_store</a>(to_addr);
+    <b>include</b> !withdraw_hook && from_addr != to_addr && !<a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_deposit_hook">spec_has_deposit_hook</a>(to_addr)
+        ==&gt; <a href="fungible_asset.html#0x1_fungible_asset_UncheckedDepositAbortsIf">fungible_asset::UncheckedDepositAbortsIf</a> {
+            store_addr: to_addr,
+            fa: FungibleAsset { metadata: <b>global</b>&lt;FungibleStore&gt;(from_addr).metadata, amount }
+        };
+}
+</code></pre>
+<h3 id="function-transfer_assert_minimum_deposit-1"><a class="header" href="#function-transfer_assert_minimum_deposit-1">Function <code>transfer_assert_minimum_deposit</code> <a id="@Specification_1_transfer_assert_minimum_deposit"></a></a></h3>
+<pre><code><b>public</b> entry <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_transfer_assert_minimum_deposit">transfer_assert_minimum_deposit</a>&lt;T: key&gt;(sender: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>, from: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, <b>to</b>: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64, expected: u64)
+</code></pre>
+<p>The balance of <code><b>to</b></code> grows by at least <code>expected</code>, whatever the hooks do.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> from_addr = from.inner;
+<b>let</b> to_addr = <b>to</b>.inner;
+<b>let</b> hooks = <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_withdraw_hook">spec_has_withdraw_hook</a>(from_addr) || <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_has_deposit_hook">spec_has_deposit_hook</a>(to_addr);
+<b>aborts_if</b> <b>exists</b>&lt;FungibleStore&gt;(to_addr)
+    && <a href="fungible_asset.html#0x1_fungible_asset_spec_has_balance_dispatch_function">fungible_asset::spec_has_balance_dispatch_function</a>(<b>global</b>&lt;FungibleStore&gt;(to_addr).metadata);
+<b>include</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_TransferAbortsIf">TransferAbortsIf</a>;
+<b>aborts_if</b> !hooks && from_addr != to_addr && amount &lt; expected;
+<b>aborts_if</b> !hooks && from_addr == to_addr && expected &gt; 0;
+<b>ensures</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_balance_or_zero">spec_balance_or_zero</a>(to_addr) &gt;= <b>old</b>(<a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_spec_balance_or_zero">spec_balance_or_zero</a>(to_addr)) + expected;
+</code></pre>
+<h3 id="function-derived_balance-1"><a class="header" href="#function-derived_balance-1">Function <code>derived_balance</code> <a id="@Specification_1_derived_balance"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_balance">derived_balance</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): u64
+</code></pre>
+<p>Without a derived-balance hook, the store balance.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> store_addr = store.inner;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr);
+<b>ensures</b> !<a href="fungible_asset.html#0x1_fungible_asset_spec_store_has_balance_hook">fungible_asset::spec_store_has_balance_hook</a>(store_addr) ==&gt;
+    result == <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr);
+</code></pre>
+<h3 id="function-derived_balance_snapshot-1"><a class="header" href="#function-derived_balance_snapshot-1">Function <code>derived_balance_snapshot</code> <a id="@Specification_1_derived_balance_snapshot"></a></a></h3>
+<pre><code><b>public</b> <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_balance_snapshot">derived_balance_snapshot</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="aggregator_v2.html#0x1_aggregator_v2_AggregatorSnapshot">aggregator_v2::AggregatorSnapshot</a>&lt;u64&gt;
+</code></pre>
+<p>Without a derived-balance hook, a snapshot of the store balance.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> store_addr = store.inner;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr);
+<b>ensures</b> !<a href="fungible_asset.html#0x1_fungible_asset_spec_store_has_balance_hook">fungible_asset::spec_store_has_balance_hook</a>(store_addr) ==&gt;
+    <a href="aggregator_v2.html#0x1_aggregator_v2_spec_read_snapshot">aggregator_v2::spec_read_snapshot</a>(result) == <a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr);
+</code></pre>
+<h3 id="function-is_derived_balance_at_least-1"><a class="header" href="#function-is_derived_balance_at_least-1">Function <code>is_derived_balance_at_least</code> <a id="@Specification_1_is_derived_balance_at_least"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_is_derived_balance_at_least">is_derived_balance_at_least</a>&lt;T: key&gt;(store: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;, amount: u64): bool
+</code></pre>
+<p>Without a derived-balance hook, whether the store balance is at least <code>amount</code>.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> store_addr = store.inner;
+<b>aborts_if</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">fungible_asset::FungibleStore</a>&gt;(store_addr);
+<b>ensures</b> !<a href="fungible_asset.html#0x1_fungible_asset_spec_store_has_balance_hook">fungible_asset::spec_store_has_balance_hook</a>(store_addr) ==&gt;
+    result == (<a href="fungible_asset.html#0x1_fungible_asset_spec_balance">fungible_asset::spec_balance</a>(store_addr) &gt;= amount);
+</code></pre>
+<h3 id="function-derived_supply-1"><a class="header" href="#function-derived_supply-1">Function <code>derived_supply</code> <a id="@Specification_1_derived_supply"></a></a></h3>
+<pre><code>#[view]
+<b>public</b> <b>fun</b> <a href="dispatchable_fungible_asset.html#0x1_dispatchable_fungible_asset_derived_supply">derived_supply</a>&lt;T: key&gt;(metadata: <a href="object.html#0x1_object_Object">object::Object</a>&lt;T&gt;): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;
+</code></pre>
+<p>Without a derived-supply hook, the supply.</p>
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>let</b> addr = metadata.inner;
+<b>let</b> hook = <b>exists</b>&lt;DeriveSupply&gt;(addr) && std::option::is_some(<b>global</b>&lt;DeriveSupply&gt;(addr).dispatch_function);
+<b>aborts_if</b> !hook && addr != @aptos_fungible_asset && <b>exists</b>&lt;DeriveSupply&gt;(addr);
+<b>ensures</b> !hook ==&gt; result == <b>if</b> (<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">fungible_asset::ConcurrentSupply</a>&gt;(addr) || <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">fungible_asset::Supply</a>&gt;(addr)) {
+    std::option::spec_some(<a href="fungible_asset.html#0x1_fungible_asset_spec_supply">fungible_asset::spec_supply</a>(addr))
+} <b>else</b> {
+    std::option::spec_none()
+};
 </code></pre>
 <h3 id="function-dispatch_withdraw_hook-1"><a class="header" href="#function-dispatch_withdraw_hook-1">Function <code>dispatch_withdraw_hook</code> <a id="@Specification_1_dispatch_withdraw_hook"></a></a></h3>
 <pre><code>#[module_lock]

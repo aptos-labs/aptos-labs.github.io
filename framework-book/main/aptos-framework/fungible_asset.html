@@ -2971,12 +2971,50 @@ not create conflicts and maintain parallelism.</p>
 <p>APT has no dispatch functions.</p>
 <pre><code><b>invariant</b> !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(@aptos_fungible_asset);
 </code></pre>
+<p>Mirrors <code>has_deposit_dispatch_function</code>, which is false for APT without looking up its function store.</p>
+<p><a id="0x1_fungible_asset_spec_has_deposit_dispatch_function"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_deposit_dispatch_function">spec_has_deposit_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool {
+   metadata.inner != @aptos_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner)
+       && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner).deposit_function)
+}
+</code></pre>
+<p>Mirrors <code>has_withdraw_dispatch_function</code>, which is false for APT without looking up its function store.</p>
+<p><a id="0x1_fungible_asset_spec_has_withdraw_dispatch_function"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_withdraw_dispatch_function">spec_has_withdraw_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool {
+   metadata.inner != @aptos_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner)
+       && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner).withdraw_function)
+}
+</code></pre>
+<p>The asset of the store at <code>store_addr</code> has a derived-balance hook (dispatchable path, no APT short-circuit).</p>
+<p><a id="0x1_fungible_asset_spec_store_has_balance_hook"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_has_balance_hook">spec_store_has_balance_hook</a>(store_addr: <b>address</b>): bool {
+   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
+   <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).derived_balance_function)
+}
+</code></pre>
+<p>The asset of the store at <code>store_addr</code> has no deposit hook (dispatchable path, no APT short-circuit).</p>
+<p><a id="0x1_fungible_asset_spec_store_no_deposit_hook"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">spec_store_no_deposit_hook</a>(store_addr: <b>address</b>): bool {
+   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
+   !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) || <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).deposit_function)
+}
+</code></pre>
+<p>The asset of the store at <code>store_addr</code> has no withdraw hook (dispatchable path, no APT short-circuit).</p>
+<p><a id="0x1_fungible_asset_spec_store_no_withdraw_hook"></a></p>
+<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">spec_store_no_withdraw_hook</a>(store_addr: <b>address</b>): bool {
+   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
+   !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) || <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).withdraw_function)
+}
+</code></pre>
 <h3 id="function-add_fungibility-1"><a class="header" href="#function-add_fungibility-1">Function <code>add_fungibility</code> <a id="@Specification_1_add_fungibility"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_add_fungibility">add_fungibility</a>(constructor_ref: &<a href="object.html#0x1_object_ConstructorRef">object::ConstructorRef</a>, maximum_supply: <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u128&gt;, name: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, symbol: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, decimals: u8, icon_uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>, project_uri: <a href="../move-stdlib/string.html#0x1_string_String">string::String</a>): <a href="object.html#0x1_object_Object">object::Object</a>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">fungible_asset::Metadata</a>&gt;
 </code></pre>
 <pre><code><b>let</b> addr = constructor_ref.self;
 <b>let</b> concurrent = <a href="../move-stdlib/features.html#0x1_features_spec_is_enabled">features::spec_is_enabled</a>(<a href="../move-stdlib/features.html#0x1_features_CONCURRENT_FUNGIBLE_ASSETS">features::CONCURRENT_FUNGIBLE_ASSETS</a>);
 <b>let</b> <b>post</b> supply = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr).current;
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr);
 <b>include</b> <a href="fungible_asset.html#0x1_fungible_asset_AddFungibilityAbortsIf">AddFungibilityAbortsIf</a>;
 // This enforces <a id="high-level-req-2.1" href="#high-level-req">high-level requirement 2</a>:
 <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;(addr) && (concurrent ==&gt; <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(addr))
@@ -3529,41 +3567,6 @@ store has been upgraded.</p>
        && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner).derived_balance_function)
 }
 </code></pre>
-<p>Mirrors <code>has_deposit_dispatch_function</code>, which is false for APT without looking up its function store.</p>
-<p><a id="0x1_fungible_asset_spec_has_deposit_dispatch_function"></a></p>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_deposit_dispatch_function">spec_has_deposit_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool {
-   metadata.inner != @aptos_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner)
-       && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner).deposit_function)
-}
-</code></pre>
-<p>Mirrors <code>has_withdraw_dispatch_function</code>, which is false for APT without looking up its function store.</p>
-<p><a id="0x1_fungible_asset_spec_has_withdraw_dispatch_function"></a></p>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_has_withdraw_dispatch_function">spec_has_withdraw_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.html#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool {
-   metadata.inner != @aptos_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner)
-       && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata.inner).withdraw_function)
-}
-</code></pre>
-<p>The asset of the store at <code>store_addr</code> has a derived-balance hook (dispatchable path, no APT short-circuit).</p>
-<p><a id="0x1_fungible_asset_spec_store_has_balance_hook"></a></p>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_has_balance_hook">spec_store_has_balance_hook</a>(store_addr: <b>address</b>): bool {
-   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
-   <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) && <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).derived_balance_function)
-}
-</code></pre>
-<p>The asset of the store at <code>store_addr</code> has no deposit hook (dispatchable path, no APT short-circuit).</p>
-<p><a id="0x1_fungible_asset_spec_store_no_deposit_hook"></a></p>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_deposit_hook">spec_store_no_deposit_hook</a>(store_addr: <b>address</b>): bool {
-   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
-   !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) || <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).deposit_function)
-}
-</code></pre>
-<p>The asset of the store at <code>store_addr</code> has no withdraw hook (dispatchable path, no APT short-circuit).</p>
-<p><a id="0x1_fungible_asset_spec_store_no_withdraw_hook"></a></p>
-<pre><code><b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_spec_store_no_withdraw_hook">spec_store_no_withdraw_hook</a>(store_addr: <b>address</b>): bool {
-   <b>let</b> m = <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_FungibleStore">FungibleStore</a>&gt;(store_addr).metadata.inner;
-   !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m) || <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(m).withdraw_function)
-}
-</code></pre>
 <h3 id="function-extract-1"><a class="header" href="#function-extract-1">Function <code>extract</code> <a id="@Specification_1_extract"></a></a></h3>
 <pre><code><b>public</b> <b>fun</b> <a href="fungible_asset.html#0x1_fungible_asset_extract">extract</a>(self: &<b>mut</b> <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>, amount: u64): <a href="fungible_asset.html#0x1_fungible_asset_FungibleAsset">fungible_asset::FungibleAsset</a>
 </code></pre>
@@ -3647,6 +3650,24 @@ store has been upgraded.</p>
     <b>aborts_if</b> amount != 0 && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) && !<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr);
     // This enforces <a id="high-level-req-12" href="#high-level-req">high-level requirement 12</a>:
     <b>aborts_if</b> amount != 0 && <a href="fungible_asset.html#0x1_fungible_asset_spec_supply">spec_supply</a>(metadata_addr) &lt; amount;
+}
+</code></pre>
+<p>Minting and burning change only the current supply.</p>
+<p><a id="0x1_fungible_asset_SupplyFrame"></a></p>
+<pre><code><b>schema</b> <a href="fungible_asset.html#0x1_fungible_asset_SupplyFrame">SupplyFrame</a> {
+    metadata_addr: <b>address</b>;
+    amount: u64;
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr) == <b>old</b>(<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) == <b>old</b>(<b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr) ==&gt;
+        <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr).maximum == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr).maximum);
+    <b>ensures</b> amount == 0 ==&gt; <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr) == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr));
+    <b>ensures</b> amount == 0 ==&gt; <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) ==&gt;
+        <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr).current)
+            == <a href="aggregator_v2.html#0x1_aggregator_v2_spec_get_max_value">aggregator_v2::spec_get_max_value</a>(<b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr).current));
+    <b>ensures</b> <b>exists</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_ConcurrentSupply">ConcurrentSupply</a>&gt;(metadata_addr) ==&gt;
+        <b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr) == <b>old</b>(<b>global</b>&lt;<a href="fungible_asset.html#0x1_fungible_asset_Supply">Supply</a>&gt;(metadata_addr));
 }
 </code></pre>
 <h3 id="function-upgrade_to_concurrent-1"><a class="header" href="#function-upgrade_to_concurrent-1">Function <code>upgrade_to_concurrent</code> <a id="@Specification_1_upgrade_to_concurrent"></a></a></h3>

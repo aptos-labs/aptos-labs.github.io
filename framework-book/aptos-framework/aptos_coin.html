@@ -432,7 +432,14 @@ Claim the delegated mint capability and destroy the delegated token.</p>
     <b>let</b> i = 0;
     <b>let</b> len = delegations.length();
     <b>let</b> index = <a href="../move-stdlib/option.html#0x1_option_none">option::none</a>();
-    <b>while</b> (i &lt; len) {
+    <b>while</b> ({
+        <b>spec</b> {
+            <b>invariant</b> i &lt;= len;
+            <b>invariant</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(index);
+            <b>invariant</b> <b>forall</b> j in 0..i: delegations[j].<b>to</b> != addr;
+        };
+        i &lt; len
+    }) {
         <b>let</b> element = delegations.borrow(i);
         <b>if</b> (element.<b>to</b> == addr) {
             index = <a href="../move-stdlib/option.html#0x1_option_some">option::some</a>(i);
@@ -486,12 +493,16 @@ Claim the delegated mint capability and destroy the delegated token.</p>
 <h3 id="function-initialize-1"><a class="header" href="#function-initialize-1">Function <code>initialize</code> <a id="@Specification_1_initialize"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_coin.html#0x1_aptos_coin_initialize">initialize</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>): (<a href="coin.html#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;, <a href="coin.html#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">aptos_coin::AptosCoin</a>&gt;)
 </code></pre>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>aborts_if</b> addr != @aptos_framework;
 <b>aborts_if</b> !<a href="../move-stdlib/string.html#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"Aptos Coin");
 <b>aborts_if</b> !<a href="../move-stdlib/string.html#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"APT");
 <b>aborts_if</b> <b>exists</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_MintCapStore">MintCapStore</a>&gt;(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">AptosCoin</a>&gt;&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="coin.html#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;<a href="aptos_coin.html#0x1_aptos_coin_AptosCoin">AptosCoin</a>&gt;&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_MintCapStore">MintCapStore</a>&gt;(addr);
+<b>modifies</b> <b>global</b>&lt;aptos_framework::aggregator_factory::AggregatorFactory&gt;(@aptos_framework);
 // This enforces <a id="high-level-req-1" href="#high-level-req">high-level requirement 1</a>:
 <b>ensures</b> <b>exists</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_MintCapStore">MintCapStore</a>&gt;(addr);
 // This enforces <a id="high-level-req-3" href="#high-level-req">high-level requirement 3</a>:
@@ -503,7 +514,8 @@ Claim the delegated mint capability and destroy the delegated token.</p>
 <h3 id="function-destroy_mint_cap-1"><a class="header" href="#function-destroy_mint_cap-1">Function <code>destroy_mint_cap</code> <a id="@Specification_1_destroy_mint_cap"></a></a></h3>
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="aptos_coin.html#0x1_aptos_coin_destroy_mint_cap">destroy_mint_cap</a>(aptos_framework: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(aptos_framework);
 <b>aborts_if</b> addr != @aptos_framework;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_MintCapStore">MintCapStore</a>&gt;(@aptos_framework);
 </code></pre>
@@ -548,7 +560,8 @@ Claim the delegated mint capability and destroy the delegated token.</p>
 <pre><code><b>public</b> entry <b>fun</b> <a href="aptos_coin.html#0x1_aptos_coin_claim_mint_capability">claim_mint_capability</a>(<a href="account.html#0x1_account">account</a>: &<a href="../move-stdlib/signer.html#0x1_signer">signer</a>)
 </code></pre>
 <p>Consumes the delegation to the signer and grants it a copy of the mint capability.</p>
-<pre><code><b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> addr = <a href="../move-stdlib/signer.html#0x1_signer_address_of">signer::address_of</a>(<a href="account.html#0x1_account">account</a>);
 <b>let</b> inner = <b>global</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_Delegations">Delegations</a>&gt;(@core_resources).inner;
 <b>let</b> <b>post</b> post_inner = <b>global</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_Delegations">Delegations</a>&gt;(@core_resources).inner;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_Delegations">Delegations</a>&gt;(@core_resources);
@@ -564,10 +577,12 @@ Claim the delegated mint capability and destroy the delegated token.</p>
 <pre><code><b>fun</b> <a href="aptos_coin.html#0x1_aptos_coin_find_delegation">find_delegation</a>(addr: <b>address</b>): <a href="../move-stdlib/option.html#0x1_option_Option">option::Option</a>&lt;u64&gt;
 </code></pre>
 <p>Returns the index of a delegation to <code>addr</code>, if any.</p>
-<pre><code><b>let</b> inner = <b>global</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_Delegations">Delegations</a>&gt;(@core_resources).inner;
+<pre><code><b>pragma</b> aborts_if_is_partial = <b>false</b>;
+<b>let</b> inner = <b>global</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_Delegations">Delegations</a>&gt;(@core_resources).inner;
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aptos_coin.html#0x1_aptos_coin_Delegations">Delegations</a>&gt;(@core_resources);
 <b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_some">option::is_some</a>(result) ==&gt; <a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result) &lt; len(inner)
     && inner[<a href="../move-stdlib/option.html#0x1_option_borrow">option::borrow</a>(result)].<b>to</b> == addr;
+<b>ensures</b> <a href="../move-stdlib/option.html#0x1_option_is_none">option::is_none</a>(result) ==&gt; (<b>forall</b> i in 0..len(inner): inner[i].<b>to</b> != addr);
 </code></pre>
 <p><a id="0x1_aptos_coin_ExistsAptosCoin"></a></p>
 <pre><code><b>schema</b> <a href="aptos_coin.html#0x1_aptos_coin_ExistsAptosCoin">ExistsAptosCoin</a> {
